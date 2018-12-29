@@ -27,4 +27,30 @@ data modify block ~ ~ ~ Items append from entity @s Inventory[{Slot:24b}]
 data modify block ~ ~ ~ Items append from entity @s Inventory[{Slot:25b}]
 data modify block ~ ~ ~ Items append from entity @s Inventory[{Slot:26b}]
 
-execute if data block ~ ~ ~ Items[{Slot:0b,id:"minecraft:shulker_box"}] run function shulker_item:process_box
+execute if data block ~ ~ ~ Items[{Slot:0b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/0
+execute if data block ~ ~ ~ Items[{Slot:1b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/1
+execute if data block ~ ~ ~ Items[{Slot:2b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/2
+execute if data block ~ ~ ~ Items[{Slot:3b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/3
+execute if data block ~ ~ ~ Items[{Slot:4b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/4
+execute if data block ~ ~ ~ Items[{Slot:5b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/5
+execute if data block ~ ~ ~ Items[{Slot:6b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/6
+execute if data block ~ ~ ~ Items[{Slot:7b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/7
+execute if data block ~ ~ ~ Items[{Slot:8b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/8
+execute if data block ~ ~ ~ Items[{Slot:9b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/9
+execute if data block ~ ~ ~ Items[{Slot:10b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/10
+execute if data block ~ ~ ~ Items[{Slot:11b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/11
+execute if data block ~ ~ ~ Items[{Slot:12b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/12
+execute if data block ~ ~ ~ Items[{Slot:13b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/13
+execute if data block ~ ~ ~ Items[{Slot:14b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/14
+execute if data block ~ ~ ~ Items[{Slot:15b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/15
+execute if data block ~ ~ ~ Items[{Slot:16b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/16
+execute if data block ~ ~ ~ Items[{Slot:17b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/17
+execute if data block ~ ~ ~ Items[{Slot:18b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/18
+execute if data block ~ ~ ~ Items[{Slot:19b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/19
+execute if data block ~ ~ ~ Items[{Slot:20b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/20
+execute if data block ~ ~ ~ Items[{Slot:21b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/21
+execute if data block ~ ~ ~ Items[{Slot:22b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/22
+execute if data block ~ ~ ~ Items[{Slot:23b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/23
+execute if data block ~ ~ ~ Items[{Slot:24b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/24
+execute if data block ~ ~ ~ Items[{Slot:25b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/25
+execute if data block ~ ~ ~ Items[{Slot:26b,id:"minecraft:shulker_box"}] run function shulker_item:process_box/26
