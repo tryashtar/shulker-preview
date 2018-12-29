@@ -1,0 +1,32 @@
+{
+   "providers": [
+      {
+         "type": "ttf",
+         "file": "shulker_item:negative_spaces.ttf",
+         "shift": [0.0, 0.0],
+         "size": 10.0,
+         "oversample": 1.0
+      },
+      {
+         "type": "bitmap",
+         "file": "shulker_item:tooltip.png",
+         "ascent": 23,
+         "height": 78,
+         "chars": ["\uE000"]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:item/apple.png",
+         "ascent": 5,
+         "height": 16,
+         "chars": ["\uE001"]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:item/ghast_tear.png",
+         "ascent": 5,
+         "height": 16,
+         "chars": ["\uE002"]
+      }
+   ]
+}
