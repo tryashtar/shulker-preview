@@ -89,7 +89,6 @@ execute if data block ~ ~1 ~ Items[{Slot:0b,id:"minecraft:experience_bottle"}] r
 execute if data block ~ ~1 ~ Items[{Slot:0b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~4 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:0b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~4 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:0b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~4 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.0\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:0b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~4 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:0b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~4 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:0b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~4 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:0b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~4 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.0\"}"}
@@ -354,7 +353,6 @@ execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:experience_bottle"}] r
 execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.0\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.0\"}"}
@@ -619,7 +617,6 @@ execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:experience_bottle"}] r
 execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~6 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~6 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~6 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.0\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~6 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~6 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~6 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~6 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.0\"}"}
@@ -884,7 +881,6 @@ execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:experience_bottle"}] r
 execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~7 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~7 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~7 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.0\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~7 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~7 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~7 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~7 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.0\"}"}
@@ -1149,7 +1145,6 @@ execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:experience_bottle"}] r
 execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.0\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.0\"}"}
@@ -1414,7 +1409,6 @@ execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:experience_bottle"}] r
 execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~9 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~9 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~9 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.0\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~9 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~9 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~9 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~9 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.0\"}"}
@@ -1679,7 +1673,6 @@ execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:experience_bottle"}] r
 execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~10 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~10 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~10 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.0\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~10 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~10 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~10 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~10 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.0\"}"}
@@ -1944,7 +1937,6 @@ execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:experience_bottle"}] r
 execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~11 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~11 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~11 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.0\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~11 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~11 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~11 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~11 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.0\"}"}
@@ -2209,7 +2201,6 @@ execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:experience_bottle"}] r
 execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~12 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~12 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~12 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.0\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~12 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~12 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~12 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~12 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.0\"}"}
@@ -2475,7 +2466,6 @@ execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:experience_bottle"}] r
 execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~13 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~13 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~13 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.1\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~13 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~13 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~13 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~13 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.1\"}"}
@@ -2740,7 +2730,6 @@ execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~14 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~14 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~14 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.1\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~14 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~14 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~14 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~14 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.1\"}"}
@@ -3005,7 +2994,6 @@ execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~15 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~15 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~15 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.1\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~15 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~15 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~15 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~15 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.1\"}"}
@@ -3270,7 +3258,6 @@ execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~16 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~16 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~16 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.1\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~16 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~16 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~16 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~16 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.1\"}"}
@@ -3535,7 +3522,6 @@ execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~17 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~17 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~17 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.1\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~17 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~17 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~17 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~17 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.1\"}"}
@@ -3800,7 +3786,6 @@ execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~18 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~18 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~18 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.1\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~18 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~18 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~18 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~18 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.1\"}"}
@@ -4065,7 +4050,6 @@ execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~19 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~19 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~19 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.1\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~19 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~19 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~19 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~19 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.1\"}"}
@@ -4330,7 +4314,6 @@ execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~20 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~20 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~20 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.1\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~20 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~20 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~20 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~20 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.1\"}"}
@@ -4595,7 +4578,6 @@ execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~21 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~21 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~21 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.1\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~21 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~21 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~21 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~21 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.1\"}"}
@@ -4861,7 +4843,6 @@ execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~22 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~22 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~22 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.2\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~22 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~22 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~22 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~22 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.2\"}"}
@@ -5126,7 +5107,6 @@ execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~23 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~23 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~23 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.2\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~23 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~23 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~23 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~23 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.2\"}"}
@@ -5391,7 +5371,6 @@ execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~24 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~24 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~24 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.2\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~24 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~24 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~24 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~24 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.2\"}"}
@@ -5656,7 +5635,6 @@ execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~25 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~25 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~25 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.2\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~25 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~25 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~25 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~25 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.2\"}"}
@@ -5921,7 +5899,6 @@ execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~26 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~26 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~26 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.2\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~26 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~26 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~26 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~26 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.2\"}"}
@@ -6186,7 +6163,6 @@ execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~27 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~27 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~27 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.2\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~27 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~27 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~27 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~27 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.2\"}"}
@@ -6451,7 +6427,6 @@ execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~28 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~28 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~28 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.2\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~28 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~28 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~28 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~28 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.2\"}"}
@@ -6716,7 +6691,6 @@ execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~29 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~29 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~29 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.2\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~29 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~29 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~29 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~29 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.2\"}"}
@@ -6981,7 +6955,6 @@ execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:experience_bottle"}] 
 execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:feather"}] run summon area_effect_cloud ~ ~30 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.feather.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:fermented_spider_eye"}] run summon area_effect_cloud ~ ~30 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fermented_spider_eye.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:filled_map"}] run summon area_effect_cloud ~ ~30 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map.2\"}"}
-execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:filled_map_markings"}] run summon area_effect_cloud ~ ~30 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.filled_map_markings.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:firework_rocket"}] run summon area_effect_cloud ~ ~30 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_rocket.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:firework_star"}] run summon area_effect_cloud ~ ~30 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.firework_star.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:fire_charge"}] run summon area_effect_cloud ~ ~30 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.fire_charge.2\"}"}
