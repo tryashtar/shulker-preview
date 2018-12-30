@@ -1,3 +1,4 @@
+# create an entity that draws item counts on the first row
 execute if score #count shulker_item matches 2 run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.number.2.0\"}"}
 execute if score #count shulker_item matches 3 run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.number.3.0\"}"}
 execute if score #count shulker_item matches 4 run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.number.4.0\"}"}
