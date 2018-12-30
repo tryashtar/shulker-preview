@@ -263,6 +263,8 @@ execute if data block ~ ~1 ~ Items[{Slot:0b,id:"minecraft:writable_book"}] run s
 execute if data block ~ ~1 ~ Items[{Slot:0b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~4 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:0b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~4 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.0\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:0b}] run summon area_effect_cloud ~ ~4 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:0b}].Count
+execute positioned ~ ~4.1 ~ run function shulker_item:process_count_0
 execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.0\"}"}
@@ -527,6 +529,8 @@ execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:writable_book"}] run s
 execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:1b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.0\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:1b}] run summon area_effect_cloud ~ ~5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:1b}].Count
+execute positioned ~ ~5.1 ~ run function shulker_item:process_count_0
 execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~6 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~6 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~6 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.0\"}"}
@@ -791,6 +795,8 @@ execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:writable_book"}] run s
 execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~6 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:2b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~6 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.0\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:2b}] run summon area_effect_cloud ~ ~6 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:2b}].Count
+execute positioned ~ ~6.1 ~ run function shulker_item:process_count_0
 execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~7 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~7 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~7 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.0\"}"}
@@ -1055,6 +1061,8 @@ execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:writable_book"}] run s
 execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~7 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:3b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~7 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.0\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:3b}] run summon area_effect_cloud ~ ~7 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:3b}].Count
+execute positioned ~ ~7.1 ~ run function shulker_item:process_count_0
 execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.0\"}"}
@@ -1319,6 +1327,8 @@ execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:writable_book"}] run s
 execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:4b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.0\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:4b}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:4b}].Count
+execute positioned ~ ~8.1 ~ run function shulker_item:process_count_0
 execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~9 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~9 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~9 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.0\"}"}
@@ -1583,6 +1593,8 @@ execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:writable_book"}] run s
 execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~9 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:5b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~9 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.0\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:5b}] run summon area_effect_cloud ~ ~9 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:5b}].Count
+execute positioned ~ ~9.1 ~ run function shulker_item:process_count_0
 execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~10 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~10 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~10 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.0\"}"}
@@ -1847,6 +1859,8 @@ execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:writable_book"}] run s
 execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~10 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:6b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~10 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.0\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:6b}] run summon area_effect_cloud ~ ~10 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:6b}].Count
+execute positioned ~ ~10.1 ~ run function shulker_item:process_count_0
 execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~11 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~11 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~11 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.0\"}"}
@@ -2111,6 +2125,8 @@ execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:writable_book"}] run s
 execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~11 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:7b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~11 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.0\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:7b}] run summon area_effect_cloud ~ ~11 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:7b}].Count
+execute positioned ~ ~11.1 ~ run function shulker_item:process_count_0
 execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~12 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~12 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~12 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.0\"}"}
@@ -2375,7 +2391,9 @@ execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:writable_book"}] run s
 execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~12 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.0\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:8b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~12 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.0\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:8b}] run summon area_effect_cloud ~ ~12 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
-summon area_effect_cloud ~ ~12.5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.row_end\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:8b}].Count
+execute positioned ~ ~12.1 ~ run function shulker_item:process_count_0
+summon area_effect_cloud ~ ~12.2 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.row_end\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~13 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~13 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~13 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.1\"}"}
@@ -2640,6 +2658,8 @@ execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:writable_book"}] run s
 execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~13 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:9b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~13 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.1\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:9b}] run summon area_effect_cloud ~ ~13 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:9b}].Count
+execute positioned ~ ~13.1 ~ run function shulker_item:process_count_1
 execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~14 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~14 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~14 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.1\"}"}
@@ -2904,6 +2924,8 @@ execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~14 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:10b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~14 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.1\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:10b}] run summon area_effect_cloud ~ ~14 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:10b}].Count
+execute positioned ~ ~14.1 ~ run function shulker_item:process_count_1
 execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~15 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~15 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~15 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.1\"}"}
@@ -3168,6 +3190,8 @@ execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~15 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:11b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~15 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.1\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:11b}] run summon area_effect_cloud ~ ~15 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:11b}].Count
+execute positioned ~ ~15.1 ~ run function shulker_item:process_count_1
 execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~16 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~16 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~16 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.1\"}"}
@@ -3432,6 +3456,8 @@ execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~16 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:12b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~16 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.1\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:12b}] run summon area_effect_cloud ~ ~16 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:12b}].Count
+execute positioned ~ ~16.1 ~ run function shulker_item:process_count_1
 execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~17 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~17 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~17 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.1\"}"}
@@ -3696,6 +3722,8 @@ execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~17 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:13b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~17 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.1\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:13b}] run summon area_effect_cloud ~ ~17 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:13b}].Count
+execute positioned ~ ~17.1 ~ run function shulker_item:process_count_1
 execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~18 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~18 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~18 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.1\"}"}
@@ -3960,6 +3988,8 @@ execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~18 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:14b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~18 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.1\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:14b}] run summon area_effect_cloud ~ ~18 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:14b}].Count
+execute positioned ~ ~18.1 ~ run function shulker_item:process_count_1
 execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~19 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~19 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~19 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.1\"}"}
@@ -4224,6 +4254,8 @@ execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~19 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:15b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~19 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.1\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:15b}] run summon area_effect_cloud ~ ~19 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:15b}].Count
+execute positioned ~ ~19.1 ~ run function shulker_item:process_count_1
 execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~20 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~20 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~20 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.1\"}"}
@@ -4488,6 +4520,8 @@ execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~20 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:16b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~20 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.1\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:16b}] run summon area_effect_cloud ~ ~20 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:16b}].Count
+execute positioned ~ ~20.1 ~ run function shulker_item:process_count_1
 execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~21 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~21 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~21 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.1\"}"}
@@ -4752,7 +4786,9 @@ execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~21 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.1\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:17b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~21 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.1\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:17b}] run summon area_effect_cloud ~ ~21 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
-summon area_effect_cloud ~ ~21.5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.row_end\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:17b}].Count
+execute positioned ~ ~21.1 ~ run function shulker_item:process_count_1
+summon area_effect_cloud ~ ~21.2 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.row_end\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~22 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~22 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~22 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.2\"}"}
@@ -5017,6 +5053,8 @@ execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~22 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:18b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~22 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.2\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:18b}] run summon area_effect_cloud ~ ~22 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:18b}].Count
+execute positioned ~ ~22.1 ~ run function shulker_item:process_count_2
 execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~23 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~23 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~23 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.2\"}"}
@@ -5281,6 +5319,8 @@ execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~23 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:19b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~23 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.2\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:19b}] run summon area_effect_cloud ~ ~23 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:19b}].Count
+execute positioned ~ ~23.1 ~ run function shulker_item:process_count_2
 execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~24 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~24 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~24 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.2\"}"}
@@ -5545,6 +5585,8 @@ execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~24 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:20b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~24 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.2\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:20b}] run summon area_effect_cloud ~ ~24 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:20b}].Count
+execute positioned ~ ~24.1 ~ run function shulker_item:process_count_2
 execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~25 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~25 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~25 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.2\"}"}
@@ -5809,6 +5851,8 @@ execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~25 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:21b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~25 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.2\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:21b}] run summon area_effect_cloud ~ ~25 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:21b}].Count
+execute positioned ~ ~25.1 ~ run function shulker_item:process_count_2
 execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~26 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~26 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~26 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.2\"}"}
@@ -6073,6 +6117,8 @@ execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~26 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:22b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~26 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.2\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:22b}] run summon area_effect_cloud ~ ~26 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:22b}].Count
+execute positioned ~ ~26.1 ~ run function shulker_item:process_count_2
 execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~27 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~27 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~27 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.2\"}"}
@@ -6337,6 +6383,8 @@ execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~27 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:23b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~27 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.2\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:23b}] run summon area_effect_cloud ~ ~27 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:23b}].Count
+execute positioned ~ ~27.1 ~ run function shulker_item:process_count_2
 execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~28 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~28 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~28 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.2\"}"}
@@ -6601,6 +6649,8 @@ execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~28 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:24b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~28 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.2\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:24b}] run summon area_effect_cloud ~ ~28 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:24b}].Count
+execute positioned ~ ~28.1 ~ run function shulker_item:process_count_2
 execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~29 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~29 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~29 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.2\"}"}
@@ -6865,6 +6915,8 @@ execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~29 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:25b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~29 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.2\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:25b}] run summon area_effect_cloud ~ ~29 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:25b}].Count
+execute positioned ~ ~29.1 ~ run function shulker_item:process_count_2
 execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:acacia_boat"}] run summon area_effect_cloud ~ ~30 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_boat.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:acacia_door"}] run summon area_effect_cloud ~ ~30 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_door.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:acacia_sign"}] run summon area_effect_cloud ~ ~30 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.acacia_sign.2\"}"}
@@ -7129,5 +7181,7 @@ execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:writable_book"}] run 
 execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:written_book"}] run summon area_effect_cloud ~ ~30 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.written_book.2\"}"}
 execute if data block ~ ~1 ~ Items[{Slot:26b,id:"minecraft:yellow_dye"}] run summon area_effect_cloud ~ ~30 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.yellow_dye.2\"}"}
 execute unless data block ~ ~1 ~ Items[{Slot:26b}] run summon area_effect_cloud ~ ~30 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.empty_slot\"}"}
-summon area_effect_cloud ~ ~30.5 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.row_end\"}"}
+execute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:26b}].Count
+execute positioned ~ ~30.1 ~ run function shulker_item:process_count_2
+summon area_effect_cloud ~ ~30.2 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.row_end\"}"}
 data merge block ~ ~2 ~ {Text1:"[\"\\uF800\",{\"selector\":\"@e[type=area_effect_cloud,tag=shulker_item,sort=nearest]\",\"color\":\"white\",\"italic\":false}]"}
