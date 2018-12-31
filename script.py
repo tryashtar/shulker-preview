@@ -46,6 +46,7 @@ def item_name(file):
 
 items_path = "D:\\Minecraft\\Java Storage\\Game History\\jar\\assets\\minecraft\\textures\\item"
 items_path2 = "..\\extra item images"
+overlay_path = "..\\extra item images\\overlay"
 blocks_path = "..\\block images"
 
 def get_preferred_source(file):
@@ -53,6 +54,8 @@ def get_preferred_source(file):
       return os.path.join(items_path2, item)
    elif file in os.listdir(items_path):
       return os.path.join(items_path, item)
+   elif file in os.listdir(overlay_path):
+      return os.path.join(overlay_path, item)
 
 def get_number_translation(number, row):
    digits = [int(d) for d in str(number)]
@@ -78,6 +81,7 @@ from PIL import Image
 # get all item PNGs from minecraft files
 items = []
 blocks = []
+overlays = []
 all_items = []
 for file in os.listdir(items_path):
     if include(file):
@@ -91,15 +95,20 @@ for file in os.listdir(blocks_path):
     if include(file):
       blocks.append(file)
       all_items.append(file)
+for file in os.listdir(overlay_path):
+   overlays.append(file)
 
 # create spritesheets
-size = 16*math.ceil(math.sqrt(len(items)))
+item_sprites = items.copy()
+for file in overlays:
+   item_sprites.append(file)
+size = 16*math.ceil(math.sqrt(len(item_sprites)))
 itemgrid = []
 itemrow = []
 x = 0
 y = 0
-with Image.new("RGBA", (size, size)) as sheet:
-   for item in items:
+with Image.new("RGBA", (size, size-16)) as sheet:
+   for item in item_sprites:
       image_path = get_preferred_source(item)
       with Image.open(image_path).convert("RGBA") as sprite:
          pixels = sprite.load()
@@ -193,6 +202,9 @@ with open("resourcepack\\assets\\minecraft\\lang\\en_us.json", "w") as file:
       for item in items:
          file.write("\"shulker_item.item." +item_name(item)+ "." +str(i)+ "\":\"\\uF820\\uE" +format(num,"03x").upper()+ "\\uF805\\uF800\",")
          num += 1
+      for overlay in overlays:
+         file.write("\"shulker_item.overlay." +item_name(overlay)+ "." +str(i) +"\":\"\\uF820\\uF808\\uF808\\uF802\\uE" +format(num,"03x").upper()+ "\\uF805\\uF800\",")
+         num += 1
       for block in blocks:
          file.write("\"shulker_item.block." +item_name(block)+ "." +str(i)+ "\":\"\\uF820\\uE" +format(num,"03x").upper()+ "\\uF805\\uF800\"")
          if i<2 or block != blocks[-1]:
@@ -257,6 +269,43 @@ durability_dict = {
    "minecraft:elytra": 432,
    "minecraft:crossbow": 326
 }
+potion_dict = {
+   "minecraft:night_vision": "shulker_item.overlay.potion_liquid.night_vision",
+   "minecraft:long_night_vision": "shulker_item.overlay.potion_liquid.night_vision",
+   "minecraft:invisibility": "shulker_item.overlay.potion_liquid.invisibility",
+   "minecraft:long_invisibility": "shulker_item.overlay.potion_liquid.invisibility",
+   "minecraft:leaping": "shulker_item.overlay.potion_liquid.leaping",
+   "minecraft:strong_leaping": "shulker_item.overlay.potion_liquid.leaping",
+   "minecraft:long_leaping": "shulker_item.overlay.potion_liquid.leaping",
+   "minecraft:fire_resistance": "shulker_item.overlay.potion_liquid.fire_resistance",
+   "minecraft:long_fire_resistance": "shulker_item.overlay.potion_liquid.fire_resistance",
+   "minecraft:swiftness": "shulker_item.overlay.potion_liquid.swiftness",
+   "minecraft:strong_swiftness": "shulker_item.overlay.potion_liquid.swiftness",
+   "minecraft:long_swiftness": "shulker_item.overlay.potion_liquid.swiftness",
+   "minecraft:water_breathing": "shulker_item.overlay.potion_liquid.water_breathing",
+   "minecraft:long_water_breathing": "shulker_item.overlay.potion_liquid.water_breathing",
+   "minecraft:healing": "shulker_item.overlay.potion_liquid.healing",
+   "minecraft:strong_healing": "shulker_item.overlay.potion_liquid.healing",
+   "minecraft:harming": "shulker_item.overlay.potion_liquid.harming",
+   "minecraft:strong_harming": "shulker_item.overlay.potion_liquid.harming",
+   "minecraft:poison": "shulker_item.overlay.potion_liquid.poison",
+   "minecraft:strong_poison": "shulker_item.overlay.potion_liquid.poison",
+   "minecraft:long_poison": "shulker_item.overlay.potion_liquid.poison",
+   "minecraft:regeneration": "shulker_item.overlay.potion_liquid.regeneration",
+   "minecraft:strong_regeneration": "shulker_item.overlay.potion_liquid.regeneration",
+   "minecraft:long_regeneration": "shulker_item.overlay.potion_liquid.regeneration",
+   "minecraft:strength": "shulker_item.overlay.potion_liquid.strength",
+   "minecraft:strong_strength": "shulker_item.overlay.potion_liquid.strength",
+   "minecraft:long_strength": "shulker_item.overlay.potion_liquid.strength",
+   "minecraft:weakness": "shulker_item.overlay.potion_liquid.weakness",
+   "minecraft:long_weakness": "shulker_item.overlay.potion_liquid.weakness",
+   "minecraft:luck": "shulker_item.overlay.potion_liquid.luck",
+   "minecraft:turtle_master": "shulker_item.overlay.potion_liquid.turtle_master",
+   "minecraft:strong_turtle_master": "shulker_item.overlay.potion_liquid.turtle_master",
+   "minecraft:long_turtle_master": "shulker_item.overlay.potion_liquid.turtle_master",
+   "minecraft:slow_falling": "shulker_item.overlay.potion_liquid.slow_falling",
+   "minecraft:long_slow_falling": "shulker_item.overlay.potion_liquid.slow_falling",
+}
 with open("datapack\\data\\shulker_item\\functions\\process_box.mcfunction", "w") as file:
    file.write("# scan all the item slots in the sub-global shulker box\nsummon area_effect_cloud ~ ~3 ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.background\\\"}\"}\n")
    for i in range(0, 27):
@@ -267,11 +316,14 @@ with open("datapack\\data\\shulker_item\\functions\\process_box.mcfunction", "w"
             slotfile.write("execute if data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b,id:\"minecraft:" +item_name(item)+ "\"}] run summon area_effect_cloud ~ ~" +str(i+4)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item." +item_name(item)+ "." +str(row)+ "\\\"}\"}\n")
          for block in blocks:
             slotfile.write("execute if data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b,id:\"minecraft:" +item_name(block)+ "\"}] run summon area_effect_cloud ~ ~" +str(i+4)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.block." +item_name(block)+ "." +str(row)+ "\\\"}\"}\n")
-         slotfile.write("\n# summon an entity for the item count text\nexecute store result score #count shulker_item run data get block ~1 ~ ~ Items[{Slot:" +str(i)+ "b}].Count\nexecute if score #count shulker_item matches 2.. positioned ~ ~" +str(i+4.1)+ " ~ run function shulker_item:process_count_" +str(row)+ "\n")
+         slotfile.write("\n# summon an entity for the potion overlay\n")
+         for potionname, translation in potion_dict.items():
+            slotfile.write("execute if data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b,tag:{Potion:\"" +potionname+ "\"}}] run summon area_effect_cloud ~ ~" +str(i+4.1)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"" +translation+ "." +str(row)+ "\\\"}\"}\n")
+         slotfile.write("\n# summon an entity for the item count text\nexecute store result score #count shulker_item run data get block ~1 ~ ~ Items[{Slot:" +str(i)+ "b}].Count\nexecute if score #count shulker_item matches 2.. positioned ~ ~" +str(i+4.2)+ " ~ run function shulker_item:process_count_" +str(row)+ "\n")
          slotfile.write("\n# summon an entity for the item durability bar\n")
          for itemname, damage in durability_dict.items():
             slotfile.write("execute if data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b,id:\"" +itemname+ "\"}] run scoreboard players set #max shulker_item " +str(damage)+ "\n")
-         slotfile.write("execute store result score #durability shulker_item run data get block ~1 ~ ~ Items[{Slot:" +str(i)+ "b}].tag.Damage\nexecute if score #durability shulker_item matches 1.. positioned ~ ~" +str(i+4.2)+ " ~ run function shulker_item:process_durability_" +str(row)+ "\n")
+         slotfile.write("execute store result score #durability shulker_item run data get block ~1 ~ ~ Items[{Slot:" +str(i)+ "b}].tag.Damage\nexecute if score #durability shulker_item matches 1.. positioned ~ ~" +str(i+4.3)+ " ~ run function shulker_item:process_durability_" +str(row)+ "\n")
       file.write("execute if data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b}] run function shulker_item:process_slot/" +str(i)+ "\n")
       file.write("execute unless data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b}] run summon area_effect_cloud ~ ~" +str(i+4)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.empty_slot\\\"}\"}\n")
       if (i+1)%9 == 0:

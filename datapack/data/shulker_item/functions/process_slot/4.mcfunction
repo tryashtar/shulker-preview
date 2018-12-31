@@ -867,9 +867,46 @@ execute if data block ~1 ~ ~ Items[{Slot:4b,id:"minecraft:yellow_terracotta"}] r
 execute if data block ~1 ~ ~ Items[{Slot:4b,id:"minecraft:yellow_wool"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.block.yellow_wool.0\"}"}
 execute if data block ~1 ~ ~ Items[{Slot:4b,id:"minecraft:zombie_head"}] run summon area_effect_cloud ~ ~8 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.block.zombie_head.0\"}"}
 
+# summon an entity for the potion overlay
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:night_vision"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.night_vision.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:long_night_vision"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.night_vision.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:invisibility"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.invisibility.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:long_invisibility"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.invisibility.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:leaping"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.leaping.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:strong_leaping"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.leaping.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:long_leaping"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.leaping.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:fire_resistance"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.fire_resistance.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:long_fire_resistance"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.fire_resistance.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:swiftness"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.swiftness.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:strong_swiftness"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.swiftness.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:long_swiftness"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.swiftness.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:water_breathing"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.water_breathing.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:long_water_breathing"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.water_breathing.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:healing"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.healing.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:strong_healing"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.healing.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:harming"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.harming.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:strong_harming"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.harming.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:poison"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.poison.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:strong_poison"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.poison.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:long_poison"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.poison.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:regeneration"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.regeneration.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:strong_regeneration"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.regeneration.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:long_regeneration"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.regeneration.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:strength"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.strength.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:strong_strength"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.strength.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:long_strength"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.strength.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:weakness"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.weakness.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:long_weakness"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.weakness.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:luck"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.luck.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:turtle_master"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.turtle_master.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:strong_turtle_master"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.turtle_master.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:long_turtle_master"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.turtle_master.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:slow_falling"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.slow_falling.0\"}"}
+execute if data block ~1 ~ ~ Items[{Slot:4b,tag:{Potion:"minecraft:long_slow_falling"}}] run summon area_effect_cloud ~ ~8.1 ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.overlay.potion_liquid.slow_falling.0\"}"}
+
 # summon an entity for the item count text
 execute store result score #count shulker_item run data get block ~1 ~ ~ Items[{Slot:4b}].Count
-execute if score #count shulker_item matches 2.. positioned ~ ~8.1 ~ run function shulker_item:process_count_0
+execute if score #count shulker_item matches 2.. positioned ~ ~8.2 ~ run function shulker_item:process_count_0
 
 # summon an entity for the item durability bar
 execute if data block ~1 ~ ~ Items[{Slot:4b,id:"minecraft:leather_helmet"}] run scoreboard players set #max shulker_item 55
@@ -927,4 +964,4 @@ execute if data block ~1 ~ ~ Items[{Slot:4b,id:"minecraft:trident"}] run scorebo
 execute if data block ~1 ~ ~ Items[{Slot:4b,id:"minecraft:elytra"}] run scoreboard players set #max shulker_item 432
 execute if data block ~1 ~ ~ Items[{Slot:4b,id:"minecraft:crossbow"}] run scoreboard players set #max shulker_item 326
 execute store result score #durability shulker_item run data get block ~1 ~ ~ Items[{Slot:4b}].tag.Damage
-execute if score #durability shulker_item matches 1.. positioned ~ ~8.2 ~ run function shulker_item:process_durability_0
+execute if score #durability shulker_item matches 1.. positioned ~ ~8.3 ~ run function shulker_item:process_durability_0
