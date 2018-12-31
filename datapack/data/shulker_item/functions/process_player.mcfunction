@@ -84,6 +84,15 @@ function shulker_item:shift_copy
 data remove block ~ ~ ~ Items[{tag:{shulker_placeholder:1b}}]
 
 # process any unprocessed containers
+execute if data block ~ ~ ~ Items[{Slot:0b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:0b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/0
+execute if data block ~ ~ ~ Items[{Slot:1b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:1b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/1
+execute if data block ~ ~ ~ Items[{Slot:2b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:2b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/2
+execute if data block ~ ~ ~ Items[{Slot:3b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:3b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/3
+execute if data block ~ ~ ~ Items[{Slot:4b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:4b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/4
+execute if data block ~ ~ ~ Items[{Slot:5b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:5b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/5
+execute if data block ~ ~ ~ Items[{Slot:6b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:6b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/6
+execute if data block ~ ~ ~ Items[{Slot:7b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:7b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/7
+execute if data block ~ ~ ~ Items[{Slot:8b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:8b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/8
 execute if data block ~ ~ ~ Items[{Slot:9b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:9b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/9
 execute if data block ~ ~ ~ Items[{Slot:10b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:10b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/10
 execute if data block ~ ~ ~ Items[{Slot:11b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:11b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/11
@@ -102,15 +111,6 @@ execute if data block ~ ~ ~ Items[{Slot:23b,tag:{BlockEntityTag:{Items:[{}]}}}] 
 execute if data block ~ ~ ~ Items[{Slot:24b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:24b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/24
 execute if data block ~ ~ ~ Items[{Slot:25b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:25b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/25
 execute if data block ~ ~ ~ Items[{Slot:26b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:26b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/26
-execute if data block ~ ~ ~ Items[{Slot:27b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:27b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/27
-execute if data block ~ ~ ~ Items[{Slot:28b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:28b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/28
-execute if data block ~ ~ ~ Items[{Slot:29b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:29b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/29
-execute if data block ~ ~ ~ Items[{Slot:30b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:30b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/30
-execute if data block ~ ~ ~ Items[{Slot:31b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:31b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/31
-execute if data block ~ ~ ~ Items[{Slot:32b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:32b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/32
-execute if data block ~ ~ ~ Items[{Slot:33b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:33b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/33
-execute if data block ~ ~ ~ Items[{Slot:34b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:34b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/34
-execute if data block ~ ~ ~ Items[{Slot:35b,tag:{BlockEntityTag:{Items:[{}]}}}] unless data block ~ ~ ~ Items[{Slot:35b,tag:{shulker_processed:1b}}] run function shulker_item:process_box/35
 
 # copy global shulker box inventory back to inventory
 loot replace entity @s inventory.0 27 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
