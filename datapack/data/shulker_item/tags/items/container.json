@@ -16,6 +16,8 @@
       "minecraft:yellow_shulker_box",
       "minecraft:magenta_shulker_box",
       "minecraft:light_blue_shulker_box",
-      "minecraft:light_gray_shulker_box"
+      "minecraft:light_gray_shulker_box",
+      "minecraft:chest",
+      "minecraft:trapped_chest"
    ]
 }
