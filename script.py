@@ -178,7 +178,7 @@ with open("resourcepack\\assets\\minecraft\\font\\default.json", "w") as file:
 # create translations for each
 with open("resourcepack\\assets\\minecraft\\lang\\en_us.json", "w") as file:
    num = 31
-   file.write("{\"shulker_item.background\":\"\\uF820\\uF804\\uE000\\uF80C\\uF80A\\uF808\\uF801\\uF806\\uF800\",\"shulker_item.empty_slot\":\"\\uF820\\uF828\\uF824\\uF800\",\"shulker_item.row_end\":\"\\uF820\\uF80C\\uF80A\\uF806\\uF802\\uF800\",")
+   file.write("{\"If you can see this, you still need to equip the resource pack!\":\"%s\",\"shulker_item.background\":\"\\uF820\\uF804\\uE000\\uF80C\\uF80A\\uF808\\uF801\\uF806\\uF800\",\"shulker_item.empty_slot\":\"\\uF820\\uF828\\uF824\\uF800\",\"shulker_item.row_end\":\"\\uF820\\uF80C\\uF80A\\uF806\\uF802\\uF800\",")
    for i in range(0, 3):
       for number in range(2, 65):
          file.write("\"shulker_item.number." +str(number)+ "." + str(i) + "\":\"\\uF820" +get_number_translation(number, i)+ "\\uF800\",")
