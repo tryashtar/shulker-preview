@@ -200,15 +200,15 @@ with open("datapack\\data\\shulker_item\\functions\\process_box.mcfunction", "w"
          row = i//9
          slotfile.write("# check which item is in slot " +str(i)+ " and summon the matching entity\n")
          for item in items:
-            slotfile.write("execute if data block ~ ~1 ~ Items[{Slot:" +str(i)+ "b,id:\"minecraft:" +item_name(item)+ "\"}] run summon area_effect_cloud ~ ~" +str(i+4)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item." +item_name(item)+ "." +str(row)+ "\\\"}\"}\n")
+            slotfile.write("execute if data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b,id:\"minecraft:" +item_name(item)+ "\"}] run summon area_effect_cloud ~ ~" +str(i+4)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item." +item_name(item)+ "." +str(row)+ "\\\"}\"}\n")
          for block in blocks:
-            slotfile.write("execute if data block ~ ~1 ~ Items[{Slot:" +str(i)+ "b,id:\"minecraft:" +item_name(block)+ "\"}] run summon area_effect_cloud ~ ~" +str(i+4)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.block." +item_name(block)+ "." +str(row)+ "\\\"}\"}\n")
-         slotfile.write("\n# summon an entity for the item count text\nexecute store result score #count shulker_item run data get block ~ ~1 ~ Items[{Slot:" +str(i)+ "b}].Count\nexecute if score #count shulker_item matches 2.. positioned ~ ~" +str(i+4.1)+ " ~ run function shulker_item:process_count_" +str(row)+ "\n")
-      file.write("execute if data block ~ ~1 ~ Items[{Slot:" +str(i)+ "b}] run function shulker_item:process_slot/" +str(i)+ "\n")
-      file.write("execute unless data block ~ ~1 ~ Items[{Slot:" +str(i)+ "b}] run summon area_effect_cloud ~ ~" +str(i+4)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.empty_slot\\\"}\"}\n")
+            slotfile.write("execute if data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b,id:\"minecraft:" +item_name(block)+ "\"}] run summon area_effect_cloud ~ ~" +str(i+4)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.block." +item_name(block)+ "." +str(row)+ "\\\"}\"}\n")
+         slotfile.write("\n# summon an entity for the item count text\nexecute store result score #count shulker_item run data get block ~1 ~ ~ Items[{Slot:" +str(i)+ "b}].Count\nexecute if score #count shulker_item matches 2.. positioned ~ ~" +str(i+4.1)+ " ~ run function shulker_item:process_count_" +str(row)+ "\n")
+      file.write("execute if data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b}] run function shulker_item:process_slot/" +str(i)+ "\n")
+      file.write("execute unless data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b}] run summon area_effect_cloud ~ ~" +str(i+4)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.empty_slot\\\"}\"}\n")
       if (i+1)%9 == 0:
          file.write("summon area_effect_cloud ~ ~" +str(i+4.2)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.row_end\\\"}\"}\n")
-   file.write("\n# create contents text by copying entity names to sign\ndata merge block ~ ~2 ~ {Text1:\"[\\\"\\\\uF800\\\",{\\\"selector\\\":\\\"@e[type=area_effect_cloud,tag=shulker_item,sort=nearest]\\\",\\\"color\\\":\\\"white\\\",\\\"italic\\\":false}]\"}\n")
+   file.write("\n# create contents text by copying entity names to sign\ndata merge block ~2 ~ ~ {Text1:\"[\\\"\\\\uF800\\\",{\\\"selector\\\":\\\"@e[type=area_effect_cloud,tag=shulker_item,sort=nearest]\\\",\\\"color\\\":\\\"white\\\",\\\"italic\\\":false}]\"}\n")
 
 # copy status of process_box/0
 with open("datapack\\data\\shulker_item\\functions\\process_box\\0.mcfunction", "r") as file:
