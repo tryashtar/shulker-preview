@@ -870,3 +870,61 @@ execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:zombie_head"}] run su
 # summon an entity for the item count text
 execute store result score #count shulker_item run data get block ~1 ~ ~ Items[{Slot:11b}].Count
 execute if score #count shulker_item matches 2.. positioned ~ ~15.1 ~ run function shulker_item:process_count_1
+
+# summon an entity for the item durability bar
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:leather_helmet"}] run scoreboard players set #max shulker_item 55
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:leather_chestplate"}] run scoreboard players set #max shulker_item 80
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:leather_leggings"}] run scoreboard players set #max shulker_item 75
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:leather_boots"}] run scoreboard players set #max shulker_item 65
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:golden_helmet"}] run scoreboard players set #max shulker_item 77
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:golden_chestplate"}] run scoreboard players set #max shulker_item 112
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:golden_leggings"}] run scoreboard players set #max shulker_item 105
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:golden_boots"}] run scoreboard players set #max shulker_item 91
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:chainmail_helmet"}] run scoreboard players set #max shulker_item 165
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:chainmail_chestplate"}] run scoreboard players set #max shulker_item 240
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:chainmail_leggings"}] run scoreboard players set #max shulker_item 225
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:chainmail_boots"}] run scoreboard players set #max shulker_item 195
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:iron_helmet"}] run scoreboard players set #max shulker_item 165
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:iron_chestplate"}] run scoreboard players set #max shulker_item 240
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:iron_leggings"}] run scoreboard players set #max shulker_item 225
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:iron_boots"}] run scoreboard players set #max shulker_item 195
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:diamond_helmet"}] run scoreboard players set #max shulker_item 363
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:diamond_chestplate"}] run scoreboard players set #max shulker_item 528
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:diamond_leggings"}] run scoreboard players set #max shulker_item 495
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:diamond_boots"}] run scoreboard players set #max shulker_item 429
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:golden_axe"}] run scoreboard players set #max shulker_item 32
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:golden_pickaxe"}] run scoreboard players set #max shulker_item 32
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:golden_shovel"}] run scoreboard players set #max shulker_item 32
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:golden_hoe"}] run scoreboard players set #max shulker_item 32
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:golden_sword"}] run scoreboard players set #max shulker_item 32
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:wooden_axe"}] run scoreboard players set #max shulker_item 59
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:wooden_pickaxe"}] run scoreboard players set #max shulker_item 59
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:wooden_shovel"}] run scoreboard players set #max shulker_item 59
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:wooden_hoe"}] run scoreboard players set #max shulker_item 59
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:wooden_sword"}] run scoreboard players set #max shulker_item 59
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:stone_axe"}] run scoreboard players set #max shulker_item 131
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:stone_pickaxe"}] run scoreboard players set #max shulker_item 131
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:stone_shovel"}] run scoreboard players set #max shulker_item 131
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:stone_hoe"}] run scoreboard players set #max shulker_item 131
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:stone_sword"}] run scoreboard players set #max shulker_item 131
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:iron_axe"}] run scoreboard players set #max shulker_item 250
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:iron_pickaxe"}] run scoreboard players set #max shulker_item 250
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:iron_shovel"}] run scoreboard players set #max shulker_item 250
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:iron_hoe"}] run scoreboard players set #max shulker_item 250
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:iron_sword"}] run scoreboard players set #max shulker_item 250
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:diamond_axe"}] run scoreboard players set #max shulker_item 1561
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:diamond_pickaxe"}] run scoreboard players set #max shulker_item 1561
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:diamond_shovel"}] run scoreboard players set #max shulker_item 1561
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:diamond_hoe"}] run scoreboard players set #max shulker_item 1561
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:diamond_sword"}] run scoreboard players set #max shulker_item 1561
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:fishing_rod"}] run scoreboard players set #max shulker_item 64
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:flint_and_steel"}] run scoreboard players set #max shulker_item 64
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:carrot_on_a_stick"}] run scoreboard players set #max shulker_item 25
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:shears"}] run scoreboard players set #max shulker_item 238
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:shield"}] run scoreboard players set #max shulker_item 336
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:bow"}] run scoreboard players set #max shulker_item 384
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:trident"}] run scoreboard players set #max shulker_item 250
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:elytra"}] run scoreboard players set #max shulker_item 432
+execute if data block ~1 ~ ~ Items[{Slot:11b,id:"minecraft:crossbow"}] run scoreboard players set #max shulker_item 326
+execute store result score #durability shulker_item run data get block ~1 ~ ~ Items[{Slot:11b}].tag.Damage
+execute if score #durability shulker_item matches 1.. positioned ~ ~15.2 ~ run function shulker_item:process_durability_1
