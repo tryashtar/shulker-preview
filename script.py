@@ -27,6 +27,12 @@ def include(file):
       return False
    if file == "filled_map_markings.png":
       return False
+   if file == "ruby.png":
+      return False
+   if file == "tipped_arrow_base.png":
+      return False
+   if file == "spawn_egg.png":
+      return False
    return True
 
 def item_name(file):
@@ -37,6 +43,16 @@ def item_name(file):
    if file == "crossbow_standby.png":
       return "crossbow"
    return os.path.splitext(file)[0]
+
+items_path = "D:\\Minecraft\\Java Storage\\Game History\\jar\\assets\\minecraft\\textures\\item"
+items_path2 = "..\\extra item images"
+blocks_path = "..\\block images"
+
+def get_preferred_source(file):
+   if file in os.listdir(items_path2):
+      return os.path.join(items_path2, item)
+   elif file in os.listdir(items_path):
+      return os.path.join(items_path, item)
 
 def get_number_translation(number, row):
    digits = [int(d) for d in str(number)]
@@ -52,8 +68,6 @@ def get_digit_char(digit, row):
 import os
 import math
 from PIL import Image
-items_path = "D:\\Minecraft\\Java Storage\\Game History\\jar\\assets\\minecraft\\textures\\item"
-blocks_path = "..\\block images"
 
 # get all item PNGs from minecraft files
 items = []
@@ -61,6 +75,10 @@ blocks = []
 all_items = []
 for file in os.listdir(items_path):
     if include(file):
+      items.append(file)
+      all_items.append(file)
+for file in os.listdir(items_path2):
+    if include(file) and file not in items:
       items.append(file)
       all_items.append(file)
 for file in os.listdir(blocks_path):
@@ -74,9 +92,9 @@ itemgrid = []
 itemrow = []
 x = 0
 y = 0
-with Image.new("RGBA", (size, size-16)) as sheet:
+with Image.new("RGBA", (size, size)) as sheet:
    for item in items:
-      image_path = os.path.join(items_path, item)
+      image_path = get_preferred_source(item)
       with Image.open(image_path).convert("RGBA") as sprite:
          pixels = sprite.load()
          r,g,b,a = pixels[0,0]
@@ -204,22 +222,40 @@ import json
 with open("D:\\Minecraft\\Java Storage\\Game History\\reports\\registries.json") as file:
    register = json.loads(file.read())
    mc_items = list(register["minecraft:item"]["entries"].keys())
+
+   all_items2 = []
+   for i in all_items:
+      all_items2.append(item_name(i))
+   mc_items2 = []
+   for i in mc_items:
+      mc_items2.append(i[len("minecraft:"):])
+   unsupported = list(set(mc_items2) - set(all_items2))
+   extra = list(set(all_items2) - set(mc_items2))
+   print("Unsupported Minecraft items:")
+   print(unsupported)
+   print("Extra items?")
+   print(extra)
+
    index = 0
    while index < len(mc_items):
       boxes = 0
+      boxslot = 0
       command = "setblock ~ ~1 ~ chest{Items:["
-      while index < len(mc_items):
+      while index < len(mc_items) and len(command) < 32000:
          item = mc_items[index]
-         if index%27 == 0:
+         if boxslot == 0:
             command += "{id:shulker_box,Count:1b,Slot:" +str(boxes)+ "b,tag:{BlockEntityTag:{Items:["
             boxes += 1
-         command += "{id:\"" +item[len("minecraft:"):]+ "\",Count:1b,Slot:" +str(index%27)+ "b},"
+         command += "{id:\"" +item+ "\",Count:1b,Slot:" +str(boxslot)+ "b},"
          index += 1
-         if index%27 == 0:
+         boxslot +=1
+         if boxslot >= 27:
+            boxslot = 0
+         if boxslot == 0:
             command += "]}}},"
             if boxes >= 27:
                break
-      if index%27 != 0:
+      if boxslot != 0:
          command += "]}}},"
       command += "]}"
       print(command)
