@@ -183,7 +183,7 @@ with open("resourcepack\\assets\\minecraft\\font\\default.json", "w") as file:
          if thing == "block":
             grid = blockgrid
          ascent = 5-(18*i)
-         file.write("{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:" +thing+ "_sheet.png\",   \"ascent\":" +str(ascent)+ ",\"height\":16,\"chars\":[")
+         file.write("{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:" +thing+ "_sheet.png\",\"ascent\":" +str(ascent)+ ",\"height\":16,\"chars\":[")
          last = len(grid)
          current = 0
          for row in grid:
