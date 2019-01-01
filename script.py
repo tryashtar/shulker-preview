@@ -66,7 +66,7 @@ def get_number_translation(number, row):
 def get_durability_translation(durability, row):
    val = 31
    val += (row*14)
-   val += durability
+   val += durability-1
    return "\\uF808\\uF808\\uE" +format(val,"03x").upper()+ "\\uF804"
 
 def get_digit_char(digit, row):
@@ -210,7 +210,7 @@ with open("resourcepack\\assets\\minecraft\\lang\\en_us.json", "w") as file:
    for i in range(0, 3):
       for number in range(2, 65):
          file.write("\"shulker_item.number." +str(number)+ "." +str(i)+ "\":\"\\uF820" +get_number_translation(number, i)+ "\\uF800\",")
-      for durability in range(0, 15):
+      for durability in range(1, 15):
          file.write("\"shulker_item.durability." +str(durability)+ "." +str(i)+ "\":\"\\uF820" +get_durability_translation(durability, i)+ "\\uF800\",")
       for item in items:
          file.write("\"shulker_item.item." +item_name(item)+ "." +str(i)+ "\":\"\\uF820\\uE" +format(num,"03x").upper()+ "\\uF805\\uF800\",")
@@ -354,13 +354,11 @@ for row in range(0, 3):
       for i in range(2, 65):
          file.write("execute if score #count shulker_item matches " +str(i)+ " run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.number." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
    with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_durability.mcfunction", "w") as file:
-      file.write("# create an entity that draws a durability bar\nscoreboard players operation #durability shulker_item *= #14 shulker_item\nscoreboard players operation #durability shulker_item /= #max shulker_item\n")
-      for i in range(0, 14):
-         file.write("execute if score #durability shulker_item matches ")
-         if i == 13:
-            file.write("13..")
-         else:
-            file.write(str(i))
+      file.write("# create an entity that draws a durability bar\nscoreboard players operation #durability shulker_item *= #140 shulker_item\nscoreboard players operation #durability shulker_item /= #max shulker_item\n")
+      for i in range(1, 15):
+         file.write("execute if score #durability shulker_item matches "+str(i*10-5)+ "..")
+         if i != 14:
+            file.write(str(i*10+5))
          file.write(" run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.durability." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
    with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_potion.mcfunction", "w") as file:
       file.write("# create an entity that draws the proper potion overlay color\n")
