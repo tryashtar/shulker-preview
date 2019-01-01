@@ -5,6 +5,10 @@ data modify block ~1 ~ ~ Items set from block ~ ~ ~ Items[{Slot:3b}].tag.BlockEn
 function shulker_item:process_box
 data remove block ~ ~ ~ Items[{Slot:3b}].tag.display.Lore
 data modify block ~ ~ ~ Items[{Slot:3b}].tag.display.Lore append from block ~3 ~ ~ Text1
-data modify block ~ ~ ~ Items[{Slot:3b}].tag.display.Lore append value "\"                                         \""
+data modify block ~ ~ ~ Items[{Slot:3b}].tag.display.Lore append value "\"\\uF82C\\uF82A\\uF827\""
+data modify block ~ ~ ~ Items[{Slot:3b}].tag.display.Lore append value "\"\""
+data modify block ~ ~ ~ Items[{Slot:3b}].tag.display.Lore append value "\"\""
+data modify block ~ ~ ~ Items[{Slot:3b}].tag.display.Lore append value "\"\""
+data modify block ~ ~ ~ Items[{Slot:3b}].tag.display.Lore append value "\"\""
 data modify block ~ ~ ~ Items[{Slot:3b}].tag.HideFlags set value 32
 data modify block ~ ~ ~ Items[{Slot:3b}].tag.shulker_processed set value 1b
