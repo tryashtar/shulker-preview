@@ -88,3 +88,6 @@ summon area_effect_cloud ~ ~30.2 ~ {Tags:["shulker_item"],CustomName:"{\"transla
 # evaluate entities on the sign
 data merge block ~3 ~ ~ {Text1:"[\"\\uF800\",{\"selector\":\"@e[type=area_effect_cloud,tag=shulker_item,sort=nearest]\",\"color\":\"white\",\"italic\":false}]"}
 kill @e[type=area_effect_cloud,tag=shulker_item]
+
+# don't process any more boxes this tick
+scoreboard players set #ready shulker_item 0
