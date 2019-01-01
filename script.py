@@ -72,16 +72,16 @@ def get_digit_char(digit, row):
 
 def minecraft_id_to_translation(mc_id):
    if mc_id == "minecraft:clock":
-      return "shulker_item.item.clock"
+      return "tryashtar.shulker_preview.item.clock"
    if mc_id == "minecraft:compass":
-      return "shulker_item.item.compass"
+      return "tryashtar.shulker_preview.item.compass"
    if mc_id == "minecraft:crossbow":
-      return "shulker_item.item.crossbow"
+      return "tryashtar.shulker_preview.item.crossbow"
    stripped = mc_id[len("minecraft:"):]
    if stripped+".png" in blocks:
-      return "shulker_item.block." +stripped
+      return "tryashtar.shulker_preview.block." +stripped
    if stripped+".png" in items:
-      return "shulker_item.item." +stripped
+      return "tryashtar.shulker_preview.item." +stripped
 
 import os
 import math
@@ -142,7 +142,7 @@ with Image.new("RGBA", (size, size)) as sheet:
    while len(itemrow) < len(itemgrid[0]):
       itemrow.append("")
    itemgrid.append(itemrow.copy())
-   sheet.save("resourcepack\\assets\\shulker_item\\textures\\item_sheet.png", "PNG")
+   sheet.save("resourcepack\\assets\\tryashtar.shulker_preview\\textures\\item_sheet.png", "PNG")
 
 size = 64*math.ceil(math.sqrt(len(blocks)))
 blockgrid = []
@@ -171,19 +171,19 @@ with Image.new("RGBA", (size, size)) as sheet:
    while len(blockrow) < len(blockgrid[0]):
       blockrow.append("")
    blockgrid.append(blockrow.copy())
-   sheet.save("resourcepack\\assets\\shulker_item\\textures\\block_sheet.png", "PNG")
+   sheet.save("resourcepack\\assets\\tryashtar.shulker_preview\\textures\\block_sheet.png", "PNG")
 
 # create font characters for each
 with open("resourcepack\\assets\\minecraft\\font\\default.json", "w") as file:
    num = 73
-   file.write("{\"providers\":[{\"type\":\"ttf\",\"file\":\"shulker_item:negative_spaces.ttf\",\"shift\":[0.0,0.0],\"size\":10.0,\"oversample\":1.0},{\"type\":\"bitmap\",\"file\":\"shulker_item:tooltip.png\",\"ascent\":23,\"height\":78,\"chars\":[\"\\uE000\"]},{\"type\":\"bitmap\",\"file\":\"shulker_item:numbers.png\",\"ascent\":-4,\"height\":8,\"chars\":[\"\\uE001\\uE002\\uE003\\uE004\\uE005\\uE006\\uE007\\uE008\\uE009\\uE00A\"]},{\"type\":\"bitmap\",\"file\":\"shulker_item:numbers.png\",\"ascent\":-22,\"height\":8,\"chars\":[\"\\uE00B\\uE00C\\uE00D\\uE00E\\uE00F\\uE010\\uE011\\uE012\\uE013\\uE014\"]},{\"type\":\"bitmap\",\"file\":\"shulker_item:numbers.png\",\"ascent\":-40,\"height\":8,\"chars\":[\"\\uE015\\uE016\\uE017\\uE018\\uE019\\uE01A\\uE01B\\uE01C\\uE01D\\uE01E\"]},{\"type\":\"bitmap\",\"file\":\"shulker_item:durability.png\",\"ascent\":-8,\"height\":2,\"chars\":[\"\\uE01F\\uE020\\uE021\\uE022\\uE023\",\"\\uE024\\uE025\\uE026\\uE027\\uE028\",\"\\uE029\\uE02A\\uE02B\\uE02C\\uE000\"]},{\"type\":\"bitmap\",\"file\":\"shulker_item:durability.png\",\"ascent\":-26,\"height\":2,\"chars\":[\"\\uE02D\\uE02E\\uE02F\\uE030\\uE031\",\"\\uE032\\uE033\\uE034\\uE035\\uE036\",\"\\uE037\\uE038\\uE039\\uE03A\\uE000\"]},{\"type\":\"bitmap\",\"file\":\"shulker_item:durability.png\",\"ascent\":-44,\"height\":2,\"chars\":[\"\\uE03B\\uE03C\\uE03D\\uE03E\\uE03F\",\"\\uE040\\uE041\\uE042\\uE043\\uE044\",\"\\uE045\\uE046\\uE047\\uE048\\uE000\"]},")
+   file.write("{\"providers\":[{\"type\":\"ttf\",\"file\":\"tryashtar.shulker_preview:negative_spaces.ttf\",\"shift\":[0.0,0.0],\"size\":10.0,\"oversample\":1.0},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:tooltip.png\",\"ascent\":23,\"height\":78,\"chars\":[\"\\uE000\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:numbers.png\",\"ascent\":-4,\"height\":8,\"chars\":[\"\\uE001\\uE002\\uE003\\uE004\\uE005\\uE006\\uE007\\uE008\\uE009\\uE00A\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:numbers.png\",\"ascent\":-22,\"height\":8,\"chars\":[\"\\uE00B\\uE00C\\uE00D\\uE00E\\uE00F\\uE010\\uE011\\uE012\\uE013\\uE014\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:numbers.png\",\"ascent\":-40,\"height\":8,\"chars\":[\"\\uE015\\uE016\\uE017\\uE018\\uE019\\uE01A\\uE01B\\uE01C\\uE01D\\uE01E\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:durability.png\",\"ascent\":-8,\"height\":2,\"chars\":[\"\\uE01F\\uE020\\uE021\\uE022\\uE023\",\"\\uE024\\uE025\\uE026\\uE027\\uE028\",\"\\uE029\\uE02A\\uE02B\\uE02C\\uE000\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:durability.png\",\"ascent\":-26,\"height\":2,\"chars\":[\"\\uE02D\\uE02E\\uE02F\\uE030\\uE031\",\"\\uE032\\uE033\\uE034\\uE035\\uE036\",\"\\uE037\\uE038\\uE039\\uE03A\\uE000\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:durability.png\",\"ascent\":-44,\"height\":2,\"chars\":[\"\\uE03B\\uE03C\\uE03D\\uE03E\\uE03F\",\"\\uE040\\uE041\\uE042\\uE043\\uE044\",\"\\uE045\\uE046\\uE047\\uE048\\uE000\"]},")
    for i in range(0, 3):
       for thing in ["item", "block"]:
          grid = itemgrid
          if thing == "block":
             grid = blockgrid
          ascent = 5-(18*i)
-         file.write("{\"type\":\"bitmap\",\"file\":\"shulker_item:" +thing+ "_sheet.png\",   \"ascent\":" +str(ascent)+ ",\"height\":16,\"chars\":[")
+         file.write("{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:" +thing+ "_sheet.png\",   \"ascent\":" +str(ascent)+ ",\"height\":16,\"chars\":[")
          last = len(grid)
          current = 0
          for row in grid:
@@ -206,20 +206,20 @@ with open("resourcepack\\assets\\minecraft\\font\\default.json", "w") as file:
 # create translations for each
 with open("resourcepack\\assets\\minecraft\\lang\\en_us.json", "w") as file:
    num = 73
-   file.write("{\"If you can see this, you still need to equip the resource pack!\":\"%s\",\"shulker_item.background\":\"\\uF820\\uF804\\uE000\\uF80C\\uF80A\\uF808\\uF801\\uF806\\uF800\",\"shulker_item.empty_slot\":\"\\uF820\\uF828\\uF824\\uF800\",\"shulker_item.row_end\":\"\\uF820\\uF80C\\uF80A\\uF806\\uF802\\uF800\",")
+   file.write("{\"If you can see this, you still need to equip the resource pack!\":\"%s\",\"tryashtar.shulker_preview.background\":\"\\uF820\\uF804\\uE000\\uF80C\\uF80A\\uF808\\uF801\\uF806\\uF800\",\"tryashtar.shulker_preview.empty_slot\":\"\\uF820\\uF828\\uF824\\uF800\",\"tryashtar.shulker_preview.row_end\":\"\\uF820\\uF80C\\uF80A\\uF806\\uF802\\uF800\",")
    for i in range(0, 3):
       for number in range(2, 65):
-         file.write("\"shulker_item.number." +str(number)+ "." +str(i)+ "\":\"\\uF820" +get_number_translation(number, i)+ "\\uF800\",")
+         file.write("\"tryashtar.shulker_preview.number." +str(number)+ "." +str(i)+ "\":\"\\uF820" +get_number_translation(number, i)+ "\\uF800\",")
       for durability in range(1, 15):
-         file.write("\"shulker_item.durability." +str(durability)+ "." +str(i)+ "\":\"\\uF820" +get_durability_translation(durability, i)+ "\\uF800\",")
+         file.write("\"tryashtar.shulker_preview.durability." +str(durability)+ "." +str(i)+ "\":\"\\uF820" +get_durability_translation(durability, i)+ "\\uF800\",")
       for item in items:
-         file.write("\"shulker_item.item." +item_name(item)+ "." +str(i)+ "\":\"\\uF820\\uE" +format(num,"03x").upper()+ "\\uF805\\uF800\",")
+         file.write("\"tryashtar.shulker_preview.item." +item_name(item)+ "." +str(i)+ "\":\"\\uF820\\uE" +format(num,"03x").upper()+ "\\uF805\\uF800\",")
          num += 1
       for overlay in overlays:
-         file.write("\"shulker_item.overlay." +item_name(overlay)+ "." +str(i) +"\":\"\\uF820\\uF808\\uF808\\uF802\\uE" +format(num,"03x").upper()+ "\\uF805\\uF800\",")
+         file.write("\"tryashtar.shulker_preview.overlay." +item_name(overlay)+ "." +str(i) +"\":\"\\uF820\\uF808\\uF808\\uF802\\uE" +format(num,"03x").upper()+ "\\uF805\\uF800\",")
          num += 1
       for block in blocks:
-         file.write("\"shulker_item.block." +item_name(block)+ "." +str(i)+ "\":\"\\uF820\\uE" +format(num,"03x").upper()+ "\\uF805\\uF800\"")
+         file.write("\"tryashtar.shulker_preview.block." +item_name(block)+ "." +str(i)+ "\":\"\\uF820\\uE" +format(num,"03x").upper()+ "\\uF805\\uF800\"")
          if i<2 or block != blocks[-1]:
             file.write(",")
          num += 1
@@ -330,65 +330,65 @@ for item in all_items:
       length_dict[len(name)] = [name]
 
 for row in range(0, 3):
-   with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_item.mcfunction", "w") as file:
-      file.write("# get the length of this item and call the appropriate function\nexecute store result score #length shulker_item run data get block ~2 1 ~ RecordItem.id\n")
+   with open("datapack\\data\\tryashtar.shulker_preview\\functions\\row_" +str(row)+ "\\process_item.mcfunction", "w") as file:
+      file.write("# get the length of this item and call the appropriate function\nexecute store result score #length shulker_preview run data get block ~2 1 ~ RecordItem.id\n")
       dictsort = list(length_dict.keys())
       dictsort.sort()
       for length in dictsort:
-         file.write("execute if score #length shulker_item matches " +str(length)+ " run function shulker_item:row_" +str(row)+ "/process_item/length_" +str(length)+ "\n")
-         with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_item\\length_" +str(length)+ ".mcfunction", "w") as lengthfile:
+         file.write("execute if score #length shulker_preview matches " +str(length)+ " run function tryashtar.shulker_preview:row_" +str(row)+ "/process_item/length_" +str(length)+ "\n")
+         with open("datapack\\data\\tryashtar.shulker_preview\\functions\\row_" +str(row)+ "\\process_item\\length_" +str(length)+ ".mcfunction", "w") as lengthfile:
             needspot = False
             needsdur = False
             needsarr = False
             for item in length_dict[length]:
                if item == "minecraft:elytra":
-                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\",tag:{Damage:431}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item.broken_elytra." +str(row)+ "\\\"}\"}\n")
-                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\"}} unless block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\",tag:{Damage:431}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item.elytra." +str(row)+ "\\\"}\"}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\",tag:{Damage:431}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.item.broken_elytra." +str(row)+ "\\\"}\"}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\"}} unless block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\",tag:{Damage:431}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.item.elytra." +str(row)+ "\\\"}\"}\n")
                elif item == "minecraft:crossbow":
-                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:arrow\"}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item.crossbow_arrow." +str(row)+ "\\\"}\"}\n")
-                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:firework_rocket\"}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item.crossbow_firework." +str(row)+ "\\\"}\"}\n")
-                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\"}} unless block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item.crossbow." +str(row)+ "\\\"}\"}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:arrow\"}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.item.crossbow_arrow." +str(row)+ "\\\"}\"}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:firework_rocket\"}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.item.crossbow_firework." +str(row)+ "\\\"}\"}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\"}} unless block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.item.crossbow." +str(row)+ "\\\"}\"}\n")
                else:
-                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"" +item+ "\"}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"" +minecraft_id_to_translation(item)+ "." +str(row)+ "\\\"}\"}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"" +item+ "\"}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"" +minecraft_id_to_translation(item)+ "." +str(row)+ "\\\"}\"}\n")
                if item in ("minecraft:potion", "minecraft:splash_potion", "minecraft:lingering_potion"):
                   needspot = True
                if item in durability_dict:
-                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"" +item+ "\"}} run scoreboard players set #max shulker_item " +str(durability_dict[item])+ "\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"" +item+ "\"}} run scoreboard players set #max shulker_preview " +str(durability_dict[item])+ "\n")
                   needsdur = True
                if item == "minecraft:tipped_arrow":
                   needsarr = True
             if needspot:
-               lengthfile.write("execute if data block ~2 1 ~ RecordItem.tag.Potion run function shulker_item:row_" +str(row)+ "/process_potion\n")
+               lengthfile.write("execute if data block ~2 1 ~ RecordItem.tag.Potion run function tryashtar.shulker_preview:row_" +str(row)+ "/process_potion\n")
             if needsdur:
-               lengthfile.write("execute store result score #durability shulker_item run data get block ~2 1 ~ RecordItem.tag.Damage\nexecute if data block ~2 1 ~ RecordItem.tag.Damage run function shulker_item:row_" +str(row)+ "/process_durability\n")
+               lengthfile.write("execute store result score #durability shulker_preview run data get block ~2 1 ~ RecordItem.tag.Damage\nexecute if data block ~2 1 ~ RecordItem.tag.Damage run function tryashtar.shulker_preview:row_" +str(row)+ "/process_durability\n")
             if needsarr:
-               lengthfile.write("execute if data block ~2 1 ~ RecordItem.tag.Potion run function shulker_item:row_" +str(row)+ "/process_arrow\n")
-      file.write("\n# summon in count entity\nexecute store result score #count shulker_item run data get block ~2 1 ~ RecordItem.Count\nexecute if score #count shulker_item matches 2.. run function shulker_item:row_" +str(row)+ "/process_count\n")
-   with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_count.mcfunction", "w") as file:
+               lengthfile.write("execute if data block ~2 1 ~ RecordItem.tag.Potion run function tryashtar.shulker_preview:row_" +str(row)+ "/process_arrow\n")
+      file.write("\n# summon in count entity\nexecute store result score #count shulker_preview run data get block ~2 1 ~ RecordItem.Count\nexecute if score #count shulker_preview matches 2.. run function tryashtar.shulker_preview:row_" +str(row)+ "/process_count\n")
+   with open("datapack\\data\\tryashtar.shulker_preview\\functions\\row_" +str(row)+ "\\process_count.mcfunction", "w") as file:
       file.write("# create an entity that draws item counts\n")
       for i in range(2, 65):
-         file.write("execute if score #count shulker_item matches " +str(i)+ " run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.number." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
-   with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_durability.mcfunction", "w") as file:
-      file.write("# create an entity that draws a durability bar\nscoreboard players operation #durability shulker_item *= #140 shulker_item\nscoreboard players operation #durability shulker_item /= #max shulker_item\n")
+         file.write("execute if score #count shulker_preview matches " +str(i)+ " run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.number." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
+   with open("datapack\\data\\tryashtar.shulker_preview\\functions\\row_" +str(row)+ "\\process_durability.mcfunction", "w") as file:
+      file.write("# create an entity that draws a durability bar\nscoreboard players operation #durability shulker_preview *= #140 shulker_preview\nscoreboard players operation #durability shulker_preview /= #max shulker_preview\n")
       for i in range(1, 15):
-         file.write("execute if score #durability shulker_item matches "+str(i*10-5)+ "..")
+         file.write("execute if score #durability shulker_preview matches "+str(i*10-5)+ "..")
          if i != 14:
             file.write(str(i*10+5))
-         file.write(" run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.durability." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
-   with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_potion.mcfunction", "w") as file:
+         file.write(" run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.durability." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
+   with open("datapack\\data\\tryashtar.shulker_preview\\functions\\row_" +str(row)+ "\\process_potion.mcfunction", "w") as file:
       file.write("# create an entity that draws the proper potion overlay color\n")
       for potionname, translation in potion_dict.items():
-         file.write("execute if block ~2 1 ~ jukebox{RecordItem:{tag:{Potion:\"" +potionname+ "\"}}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.overlay.potion_liquid." +translation+ "." +str(row)+ "\\\"}\"}\n")
-   with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_arrow.mcfunction", "w") as file:
+         file.write("execute if block ~2 1 ~ jukebox{RecordItem:{tag:{Potion:\"" +potionname+ "\"}}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.overlay.potion_liquid." +translation+ "." +str(row)+ "\\\"}\"}\n")
+   with open("datapack\\data\\tryashtar.shulker_preview\\functions\\row_" +str(row)+ "\\process_arrow.mcfunction", "w") as file:
       file.write("# create an entity that draws the proper tipped arrow overlay color\n")
       for potionname, translation in potion_dict.items():
-         file.write("execute if block ~2 1 ~ jukebox{RecordItem:{tag:{Potion:\"" +potionname+ "\"}}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.overlay.arrow_dust." +translation+ "." +str(row)+ "\\\"}\"}\n")
+         file.write("execute if block ~2 1 ~ jukebox{RecordItem:{tag:{Potion:\"" +potionname+ "\"}}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.overlay.arrow_dust." +translation+ "." +str(row)+ "\\\"}\"}\n")
 
 # copy status of process_box/0
-with open("datapack\\data\\shulker_item\\functions\\process_box\\0.mcfunction", "r") as file:
+with open("datapack\\data\\tryashtar.shulker_preview\\functions\\process_box\\0.mcfunction", "r") as file:
    text = file.read()
    for i in range(1, 27):
-      with open("datapack\\data\\shulker_item\\functions\\process_box\\" +str(i)+ ".mcfunction", "w") as file2:
+      with open("datapack\\data\\tryashtar.shulker_preview\\functions\\process_box\\" +str(i)+ ".mcfunction", "w") as file2:
          file2.write(text.replace("0", str(i)))
 
 # test all items!

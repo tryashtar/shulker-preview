@@ -1,2 +1,0 @@
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:light_blue_glazed_terracotta"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.block.light_blue_glazed_terracotta.0\"}"}
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:light_gray_glazed_terracotta"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.block.light_gray_glazed_terracotta.0\"}"}

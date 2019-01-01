@@ -1,5 +1,0 @@
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:heavy_weighted_pressure_plate"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.block.heavy_weighted_pressure_plate.0\"}"}
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:infested_cracked_stone_bricks"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.block.infested_cracked_stone_bricks.0\"}"}
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:light_blue_stained_glass_pane"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.light_blue_stained_glass_pane.0\"}"}
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:light_gray_stained_glass_pane"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.light_gray_stained_glass_pane.0\"}"}
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:light_weighted_pressure_plate"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.block.light_weighted_pressure_plate.0\"}"}

@@ -1,2 +1,0 @@
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:infested_mossy_stone_bricks"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.block.infested_mossy_stone_bricks.2\"}"}
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:smooth_red_sandstone_stairs"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.block.smooth_red_sandstone_stairs.2\"}"}

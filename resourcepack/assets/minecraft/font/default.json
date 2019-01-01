@@ -2,63 +2,63 @@
    "providers": [
       {
          "type": "ttf",
-         "file": "shulker_item:negative_spaces.ttf",
+         "file": "tryashtar.shulker_preview:negative_spaces.ttf",
          "shift": [0.0, 0.0],
          "size": 10.0,
          "oversample": 1.0
       },
       {
          "type": "bitmap",
-         "file": "shulker_item:tooltip.png",
+         "file": "tryashtar.shulker_preview:tooltip.png",
          "ascent": 23,
          "height": 78,
          "chars": ["\ue000"]
       },
       {
          "type": "bitmap",
-         "file": "shulker_item:numbers.png",
+         "file": "tryashtar.shulker_preview:numbers.png",
          "ascent": -4,
          "height": 8,
          "chars": ["\ue001\ue002\ue003\ue004\ue005\ue006\ue007\ue008\ue009\ue00a"]
       },
       {
          "type": "bitmap",
-         "file": "shulker_item:numbers.png",
+         "file": "tryashtar.shulker_preview:numbers.png",
          "ascent": -22,
          "height": 8,
          "chars": ["\ue00b\ue00c\ue00d\ue00e\ue00f\ue010\ue011\ue012\ue013\ue014"]
       },
       {
          "type": "bitmap",
-         "file": "shulker_item:numbers.png",
+         "file": "tryashtar.shulker_preview:numbers.png",
          "ascent": -40,
          "height": 8,
          "chars": ["\ue015\ue016\ue017\ue018\ue019\ue01a\ue01b\ue01c\ue01d\ue01e"]
       },
       {
          "type": "bitmap",
-         "file": "shulker_item:durability.png",
+         "file": "tryashtar.shulker_preview:durability.png",
          "ascent": -8,
          "height": 2,
          "chars": ["\ue01f\ue020\ue021\ue022\ue023", "\ue024\ue025\ue026\ue027\ue028", "\ue029\ue02a\ue02b\ue02c\ue000"]
       },
       {
          "type": "bitmap",
-         "file": "shulker_item:durability.png",
+         "file": "tryashtar.shulker_preview:durability.png",
          "ascent": -26,
          "height": 2,
          "chars": ["\ue02d\ue02e\ue02f\ue030\ue031", "\ue032\ue033\ue034\ue035\ue036", "\ue037\ue038\ue039\ue03a\ue000"]
       },
       {
          "type": "bitmap",
-         "file": "shulker_item:durability.png",
+         "file": "tryashtar.shulker_preview:durability.png",
          "ascent": -44,
          "height": 2,
          "chars": ["\ue03b\ue03c\ue03d\ue03e\ue03f", "\ue040\ue041\ue042\ue043\ue044", "\ue045\ue046\ue047\ue048\ue000"]
       },
       {
          "type": "bitmap",
-         "file": "shulker_item:item_sheet.png",
+         "file": "tryashtar.shulker_preview:item_sheet.png",
          "ascent": 5,
          "height": 16,
          "chars": [
@@ -87,7 +87,7 @@
       },
       {
          "type": "bitmap",
-         "file": "shulker_item:block_sheet.png",
+         "file": "tryashtar.shulker_preview:block_sheet.png",
          "ascent": 5,
          "height": 16,
          "chars": [
@@ -117,7 +117,7 @@
       },
       {
          "type": "bitmap",
-         "file": "shulker_item:item_sheet.png",
+         "file": "tryashtar.shulker_preview:item_sheet.png",
          "ascent": -13,
          "height": 16,
          "chars": [
@@ -146,7 +146,7 @@
       },
       {
          "type": "bitmap",
-         "file": "shulker_item:block_sheet.png",
+         "file": "tryashtar.shulker_preview:block_sheet.png",
          "ascent": -13,
          "height": 16,
          "chars": [
@@ -176,7 +176,7 @@
       },
       {
          "type": "bitmap",
-         "file": "shulker_item:item_sheet.png",
+         "file": "tryashtar.shulker_preview:item_sheet.png",
          "ascent": -31,
          "height": 16,
          "chars": [
@@ -205,7 +205,7 @@
       },
       {
          "type": "bitmap",
-         "file": "shulker_item:block_sheet.png",
+         "file": "tryashtar.shulker_preview:block_sheet.png",
          "ascent": -31,
          "height": 16,
          "chars": [

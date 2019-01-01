@@ -1,3 +1,0 @@
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:light_blue_concrete_powder"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.block.light_blue_concrete_powder.0\"}"}
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:light_gray_concrete_powder"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.block.light_gray_concrete_powder.0\"}"}
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:magenta_stained_glass_pane"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.magenta_stained_glass_pane.0\"}"}
