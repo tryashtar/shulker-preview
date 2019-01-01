@@ -74,6 +74,19 @@ def get_digit_char(digit, row):
    digit += (row*10)
    return "\\uE" +format(digit,"03x").upper()
 
+def minecraft_id_to_translation(mc_id):
+   if mc_id == "minecraft:clock":
+      return "shulker_item.item.clock"
+   if mc_id == "minecraft:compass":
+      return "shulker_item.item.compass"
+   if mc_id == "minecraft:crossbow":
+      return "shulker_item.item.crossbow"
+   stripped = mc_id[len("minecraft:"):]
+   if stripped+".png" in blocks:
+      return "shulker_item.block." +stripped
+   if stripped+".png" in items:
+      return "shulker_item.item." +stripped
+
 import os
 import math
 from PIL import Image
@@ -306,29 +319,53 @@ potion_dict = {
    "minecraft:slow_falling": "shulker_item.overlay.potion_liquid.slow_falling",
    "minecraft:long_slow_falling": "shulker_item.overlay.potion_liquid.slow_falling",
 }
-with open("datapack\\data\\shulker_item\\functions\\process_box.mcfunction", "w") as file:
-   file.write("# scan all the item slots in the sub-global shulker box\nsummon area_effect_cloud ~ ~3 ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.background\\\"}\"}\n")
-   for i in range(0, 27):
-      with open("datapack\\data\\shulker_item\\functions\\process_slot\\" +str(i)+ ".mcfunction", "w") as slotfile:
-         row = i//9
-         slotfile.write("# check which item is in slot " +str(i)+ " and summon the matching entity\n")
-         for item in items:
-            slotfile.write("execute if data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b,id:\"minecraft:" +item_name(item)+ "\"}] run summon area_effect_cloud ~ ~" +str(i+4)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item." +item_name(item)+ "." +str(row)+ "\\\"}\"}\n")
-         for block in blocks:
-            slotfile.write("execute if data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b,id:\"minecraft:" +item_name(block)+ "\"}] run summon area_effect_cloud ~ ~" +str(i+4)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.block." +item_name(block)+ "." +str(row)+ "\\\"}\"}\n")
-         slotfile.write("\n# summon an entity for the potion overlay\n")
-         for potionname, translation in potion_dict.items():
-            slotfile.write("execute if data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b,tag:{Potion:\"" +potionname+ "\"}}] run summon area_effect_cloud ~ ~" +str(i+4.1)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"" +translation+ "." +str(row)+ "\\\"}\"}\n")
-         slotfile.write("\n# summon an entity for the item count text\nexecute store result score #count shulker_item run data get block ~1 ~ ~ Items[{Slot:" +str(i)+ "b}].Count\nexecute if score #count shulker_item matches 2.. positioned ~ ~" +str(i+4.2)+ " ~ run function shulker_item:process_count_" +str(row)+ "\n")
-         slotfile.write("\n# summon an entity for the item durability bar\n")
-         for itemname, damage in durability_dict.items():
-            slotfile.write("execute if data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b,id:\"" +itemname+ "\"}] run scoreboard players set #max shulker_item " +str(damage)+ "\n")
-         slotfile.write("execute store result score #durability shulker_item run data get block ~1 ~ ~ Items[{Slot:" +str(i)+ "b}].tag.Damage\nexecute if score #durability shulker_item matches 1.. positioned ~ ~" +str(i+4.3)+ " ~ run function shulker_item:process_durability_" +str(row)+ "\n")
-      file.write("execute if data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b}] run function shulker_item:process_slot/" +str(i)+ "\n")
-      file.write("execute unless data block ~1 ~ ~ Items[{Slot:" +str(i)+ "b}] run summon area_effect_cloud ~ ~" +str(i+4)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.empty_slot\\\"}\"}\n")
-      if (i+1)%9 == 0:
-         file.write("summon area_effect_cloud ~ ~" +str(i+4.2)+ " ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.row_end\\\"}\"}\n")
-   file.write("\n# create contents text by copying entity names to sign\ndata merge block ~2 ~ ~ {Text1:\"[\\\"\\\\uF800\\\",{\\\"selector\\\":\\\"@e[type=area_effect_cloud,tag=shulker_item,sort=nearest]\\\",\\\"color\\\":\\\"white\\\",\\\"italic\\\":false}]\"}\n")
+length_dict = {}
+for item in all_items:
+   name = "minecraft:" +item_name(item)
+   if len(name) in length_dict:
+      length_dict[len(name)].append(name)
+   else:
+      length_dict[len(name)] = [name]
+
+for row in range(0, 3):
+   with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_item.mcfunction", "w") as file:
+      file.write("# get the length of this item and call the appropriate function\nexecute store result score #length shulker_item run data get block ~2 1 ~ RecordItem.id\n")
+      dictsort = list(length_dict.keys())
+      dictsort.sort()
+      for length in dictsort:
+         file.write("execute if score #length shulker_item matches " +str(length)+ " run function shulker_item:row_" +str(row)+ "/process_item/length_" +str(length)+ "\n")
+         with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_item\\length_" +str(length)+ ".mcfunction", "w") as lengthfile:
+            needspot = False
+            needsdur = False
+            for item in length_dict[length]:
+               lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"" +item+ "\"}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"" +minecraft_id_to_translation(item)+ "." +str(row)+ "\\\"}\"}\n")
+               if item in ("minecraft:potion", "minecraft:splash_potion", "minecraft:lingering_potion"):
+                  needspot = True
+               if item in durability_dict:
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"" +item+ "\"}} run scoreboard players set #max shulker_item " +str(durability_dict[item])+ "\n")
+                  needsdur = True
+            if needspot:
+               lengthfile.write("execute if data block ~2 1 ~ RecordItem.tag.Potion run function shulker_item:row_" +str(row)+ "/process_potion\n")
+            if needsdur:
+               lengthfile.write("execute store result score #durability shulker_item run data get block ~2 1 ~ RecordItem.tag.Damage\nexecute if data block ~2 1 ~ RecordItem.tag.Damage run function shulker_item:row_" +str(row)+ "/process_durability\n")
+      file.write("\n# summon in count entity\nexecute store result score #count shulker_item run data get block ~2 1 ~ RecordItem.Count\nexecute if score #count shulker_item matches 2.. run function shulker_item:row_" +str(row)+ "/process_count\n")
+   with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_count.mcfunction", "w") as file:
+      file.write("# create an entity that draws item counts\n")
+      for i in range(2, 65):
+         file.write("execute if score #count shulker_item matches " +str(i)+ " run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.number." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
+   with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_durability.mcfunction", "w") as file:
+      file.write("# create an entity that draws a durability bar\nscoreboard players operation #durability shulker_item *= #14 shulker_item\nscoreboard players operation #durability shulker_item /= #max shulker_item\n")
+      for i in range(0, 14):
+         file.write("execute if score #durability shulker_item matches ")
+         if i == 13:
+            file.write("13..")
+         else:
+            file.write(str(i))
+         file.write(" run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.durability." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
+   with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_potion.mcfunction", "w") as file:
+      file.write("# create an entity that draws the proper potion overlay color\n")
+      for potionname, translation in potion_dict.items():
+         file.write("execute if block ~2 1 ~ jukebox{RecordItem:{tag:{Potion:\"" +potionname+ "\"}}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"" +translation+ "." +str(row)+ "\\\"}\"}\n")
 
 # copy status of process_box/0
 with open("datapack\\data\\shulker_item\\functions\\process_box\\0.mcfunction", "r") as file:
