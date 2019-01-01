@@ -11,9 +11,7 @@ def include(file):
       return False
    if file.startswith("bow_pulling_"):
       return False
-   if file == "crossbow_standby.png":
-      return True
-   if file.startswith("crossbow_"):
+   if file.startswith("crossbow_pulling_"):
       return False
    if file.startswith("empty_armor_slot"):
       return False
@@ -22,8 +20,6 @@ def include(file):
    if file == "fishing_rod_cast.png":
       return False
    if file == "tipped_arrow_head.png":
-      return False
-   if file == "broken_elytra.png":
       return False
    if file == "filled_map_markings.png":
       return False
@@ -120,7 +116,7 @@ itemgrid = []
 itemrow = []
 x = 0
 y = 0
-with Image.new("RGBA", (size, size-16)) as sheet:
+with Image.new("RGBA", (size, size)) as sheet:
    for item in item_sprites:
       image_path = get_preferred_source(item)
       with Image.open(image_path).convert("RGBA") as sprite:
@@ -283,45 +279,47 @@ durability_dict = {
    "minecraft:crossbow": 326
 }
 potion_dict = {
-   "minecraft:night_vision": "shulker_item.overlay.potion_liquid.night_vision",
-   "minecraft:long_night_vision": "shulker_item.overlay.potion_liquid.night_vision",
-   "minecraft:invisibility": "shulker_item.overlay.potion_liquid.invisibility",
-   "minecraft:long_invisibility": "shulker_item.overlay.potion_liquid.invisibility",
-   "minecraft:leaping": "shulker_item.overlay.potion_liquid.leaping",
-   "minecraft:strong_leaping": "shulker_item.overlay.potion_liquid.leaping",
-   "minecraft:long_leaping": "shulker_item.overlay.potion_liquid.leaping",
-   "minecraft:fire_resistance": "shulker_item.overlay.potion_liquid.fire_resistance",
-   "minecraft:long_fire_resistance": "shulker_item.overlay.potion_liquid.fire_resistance",
-   "minecraft:swiftness": "shulker_item.overlay.potion_liquid.swiftness",
-   "minecraft:strong_swiftness": "shulker_item.overlay.potion_liquid.swiftness",
-   "minecraft:long_swiftness": "shulker_item.overlay.potion_liquid.swiftness",
-   "minecraft:water_breathing": "shulker_item.overlay.potion_liquid.water_breathing",
-   "minecraft:long_water_breathing": "shulker_item.overlay.potion_liquid.water_breathing",
-   "minecraft:healing": "shulker_item.overlay.potion_liquid.healing",
-   "minecraft:strong_healing": "shulker_item.overlay.potion_liquid.healing",
-   "minecraft:harming": "shulker_item.overlay.potion_liquid.harming",
-   "minecraft:strong_harming": "shulker_item.overlay.potion_liquid.harming",
-   "minecraft:poison": "shulker_item.overlay.potion_liquid.poison",
-   "minecraft:strong_poison": "shulker_item.overlay.potion_liquid.poison",
-   "minecraft:long_poison": "shulker_item.overlay.potion_liquid.poison",
-   "minecraft:regeneration": "shulker_item.overlay.potion_liquid.regeneration",
-   "minecraft:strong_regeneration": "shulker_item.overlay.potion_liquid.regeneration",
-   "minecraft:long_regeneration": "shulker_item.overlay.potion_liquid.regeneration",
-   "minecraft:strength": "shulker_item.overlay.potion_liquid.strength",
-   "minecraft:strong_strength": "shulker_item.overlay.potion_liquid.strength",
-   "minecraft:long_strength": "shulker_item.overlay.potion_liquid.strength",
-   "minecraft:weakness": "shulker_item.overlay.potion_liquid.weakness",
-   "minecraft:long_weakness": "shulker_item.overlay.potion_liquid.weakness",
-   "minecraft:luck": "shulker_item.overlay.potion_liquid.luck",
-   "minecraft:turtle_master": "shulker_item.overlay.potion_liquid.turtle_master",
-   "minecraft:strong_turtle_master": "shulker_item.overlay.potion_liquid.turtle_master",
-   "minecraft:long_turtle_master": "shulker_item.overlay.potion_liquid.turtle_master",
-   "minecraft:slow_falling": "shulker_item.overlay.potion_liquid.slow_falling",
-   "minecraft:long_slow_falling": "shulker_item.overlay.potion_liquid.slow_falling",
+   "minecraft:night_vision": "night_vision",
+   "minecraft:long_night_vision": "night_vision",
+   "minecraft:invisibility": "invisibility",
+   "minecraft:long_invisibility": "invisibility",
+   "minecraft:leaping": "leaping",
+   "minecraft:strong_leaping": "leaping",
+   "minecraft:long_leaping": "leaping",
+   "minecraft:fire_resistance": "fire_resistance",
+   "minecraft:long_fire_resistance": "fire_resistance",
+   "minecraft:swiftness": "swiftness",
+   "minecraft:strong_swiftness": "swiftness",
+   "minecraft:long_swiftness": "swiftness",
+   "minecraft:water_breathing": "water_breathing",
+   "minecraft:long_water_breathing": "water_breathing",
+   "minecraft:healing": "healing",
+   "minecraft:strong_healing": "healing",
+   "minecraft:harming": "harming",
+   "minecraft:strong_harming": "harming",
+   "minecraft:poison": "poison",
+   "minecraft:strong_poison": "poison",
+   "minecraft:long_poison": "poison",
+   "minecraft:regeneration": "regeneration",
+   "minecraft:strong_regeneration": "regeneration",
+   "minecraft:long_regeneration": "regeneration",
+   "minecraft:strength": "strength",
+   "minecraft:strong_strength": "strength",
+   "minecraft:long_strength": "strength",
+   "minecraft:weakness": "weakness",
+   "minecraft:long_weakness": "weakness",
+   "minecraft:luck": "luck",
+   "minecraft:turtle_master": "turtle_master",
+   "minecraft:strong_turtle_master": "turtle_master",
+   "minecraft:long_turtle_master": "turtle_master",
+   "minecraft:slow_falling": "slow_falling",
+   "minecraft:long_slow_falling": "slow_falling",
 }
 length_dict = {}
 for item in all_items:
    name = "minecraft:" +item_name(item)
+   if name in ("minecraft:broken_elytra", "minecraft:crossbow_arrow", "minecraft:crossbow_firework"):
+      continue
    if len(name) in length_dict:
       length_dict[len(name)].append(name)
    else:
@@ -337,17 +335,30 @@ for row in range(0, 3):
          with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_item\\length_" +str(length)+ ".mcfunction", "w") as lengthfile:
             needspot = False
             needsdur = False
+            needsarr = False
             for item in length_dict[length]:
-               lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"" +item+ "\"}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"" +minecraft_id_to_translation(item)+ "." +str(row)+ "\\\"}\"}\n")
+               if item == "minecraft:elytra":
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\",tag:{Damage:431}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item.broken_elytra." +str(row)+ "\\\"}\"}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\"}} unless block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\",tag:{Damage:431}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item.elytra." +str(row)+ "\\\"}\"}\n")
+               elif item == "minecraft:crossbow":
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:arrow\"}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item.crossbow_arrow." +str(row)+ "\\\"}\"}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:firework_rocket\"}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item.crossbow_firework." +str(row)+ "\\\"}\"}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\"}} unless block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.item.crossbow." +str(row)+ "\\\"}\"}\n")
+               else:
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"" +item+ "\"}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"" +minecraft_id_to_translation(item)+ "." +str(row)+ "\\\"}\"}\n")
                if item in ("minecraft:potion", "minecraft:splash_potion", "minecraft:lingering_potion"):
                   needspot = True
                if item in durability_dict:
                   lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"" +item+ "\"}} run scoreboard players set #max shulker_item " +str(durability_dict[item])+ "\n")
                   needsdur = True
+               if item == "minecraft:tipped_arrow":
+                  needsarr = True
             if needspot:
                lengthfile.write("execute if data block ~2 1 ~ RecordItem.tag.Potion run function shulker_item:row_" +str(row)+ "/process_potion\n")
             if needsdur:
                lengthfile.write("execute store result score #durability shulker_item run data get block ~2 1 ~ RecordItem.tag.Damage\nexecute if data block ~2 1 ~ RecordItem.tag.Damage run function shulker_item:row_" +str(row)+ "/process_durability\n")
+            if needsarr:
+               lengthfile.write("execute if data block ~2 1 ~ RecordItem.tag.Potion run function shulker_item:row_" +str(row)+ "/process_arrow\n")
       file.write("\n# summon in count entity\nexecute store result score #count shulker_item run data get block ~2 1 ~ RecordItem.Count\nexecute if score #count shulker_item matches 2.. run function shulker_item:row_" +str(row)+ "/process_count\n")
    with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_count.mcfunction", "w") as file:
       file.write("# create an entity that draws item counts\n")
@@ -363,7 +374,11 @@ for row in range(0, 3):
    with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_potion.mcfunction", "w") as file:
       file.write("# create an entity that draws the proper potion overlay color\n")
       for potionname, translation in potion_dict.items():
-         file.write("execute if block ~2 1 ~ jukebox{RecordItem:{tag:{Potion:\"" +potionname+ "\"}}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"" +translation+ "." +str(row)+ "\\\"}\"}\n")
+         file.write("execute if block ~2 1 ~ jukebox{RecordItem:{tag:{Potion:\"" +potionname+ "\"}}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.overlay.potion_liquid." +translation+ "." +str(row)+ "\\\"}\"}\n")
+   with open("datapack\\data\\shulker_item\\functions\\row_" +str(row)+ "\\process_arrow.mcfunction", "w") as file:
+      file.write("# create an entity that draws the proper tipped arrow overlay color\n")
+      for potionname, translation in potion_dict.items():
+         file.write("execute if block ~2 1 ~ jukebox{RecordItem:{tag:{Potion:\"" +potionname+ "\"}}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"shulker_item\"],CustomName:\"{\\\"translate\\\":\\\"shulker_item.overlay.arrow_dust." +translation+ "." +str(row)+ "\\\"}\"}\n")
 
 # copy status of process_box/0
 with open("datapack\\data\\shulker_item\\functions\\process_box\\0.mcfunction", "r") as file:

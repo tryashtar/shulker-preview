@@ -59,3 +59,4 @@ execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:white_banner"}} run su
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:white_carpet"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.block.white_carpet.2\"}"}
 execute store result score #durability shulker_item run data get block ~2 1 ~ RecordItem.tag.Damage
 execute if data block ~2 1 ~ RecordItem.tag.Damage run function shulker_item:row_2/process_durability
+execute if data block ~2 1 ~ RecordItem.tag.Potion run function shulker_item:row_2/process_arrow

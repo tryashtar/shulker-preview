@@ -2,7 +2,8 @@ execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:bamboo"}} run summon a
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:bucket"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.bucket.1\"}"}
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:carrot"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.carrot.1\"}"}
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:cookie"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.cookie.1\"}"}
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:elytra"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.elytra.1\"}"}
+execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:elytra",tag:{Damage:431}}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.broken_elytra.1\"}"}
+execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:elytra"}} unless block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:elytra",tag:{Damage:431}}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.elytra.1\"}"}
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:elytra"}} run scoreboard players set #max shulker_item 432
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:hopper"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.hopper.1\"}"}
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:mutton"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.mutton.1\"}"}

@@ -2,7 +2,9 @@ execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:beetroot"}} run summon
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:blue_dye"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.blue_dye.1\"}"}
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:cauldron"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.cauldron.1\"}"}
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:charcoal"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.charcoal.1\"}"}
-execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:crossbow"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.crossbow.1\"}"}
+execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:crossbow",tag:{ChargedProjectiles:[{id:"minecraft:arrow"}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.crossbow_arrow.1\"}"}
+execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:crossbow",tag:{ChargedProjectiles:[{id:"minecraft:firework_rocket"}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.crossbow_firework.1\"}"}
+execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:crossbow"}} unless block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:crossbow",tag:{ChargedProjectiles:[{}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.crossbow.1\"}"}
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:crossbow"}} run scoreboard players set #max shulker_item 326
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:cyan_dye"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.cyan_dye.1\"}"}
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:gray_dye"}} run summon area_effect_cloud ~ ~ ~ {Tags:["shulker_item"],CustomName:"{\"translate\":\"shulker_item.item.gray_dye.1\"}"}
