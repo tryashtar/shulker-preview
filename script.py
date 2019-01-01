@@ -106,6 +106,10 @@ for file in os.listdir(blocks_path):
       all_items.append(file)
 for file in os.listdir(overlay_path):
    overlays.append(file)
+items.sort()
+blocks.sort()
+overlays.sort()
+all_items.sort()
 
 # create spritesheets
 item_sprites = items.copy()
@@ -145,7 +149,7 @@ blockgrid = []
 blockrow = []
 x = 0
 y = 0
-with Image.new("RGBA", (size, size-64)) as sheet:
+with Image.new("RGBA", (size, size)) as sheet:
    for block in blocks:
       image_path = os.path.join(blocks_path, block)
       with Image.open(image_path).convert("RGBA") as sprite:
