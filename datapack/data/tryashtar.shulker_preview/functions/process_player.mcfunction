@@ -12,56 +12,8 @@ data remove block ~ ~ ~ Items[0].tag.shulker_items[{tag:{shulker_processed:1b}}]
 data remove block ~ ~ ~ Items[0].tag.shulker_items[{tag:{shulker_processed:1b}}]
 
 # save which slot that container came from
-execute store result score #slot shulker_preview run data get block ~ ~ ~ Items[0].tag.shulker_items[0].Slot
+execute store result score #slot shulker_preview store success score #success shulker_preview run data get block ~ ~ ~ Items[0].tag.shulker_items[0].Slot
 
-# turn arbitrary NBT back into real item in global shulker box
-data modify block ~ ~ ~ Items[0].tag.shulker_items[0].Slot set value 0
-data modify block ~ ~ ~ Items[0] set from block ~ ~ ~ Items[0].tag.shulker_items[0]
-
-# copy item contents to sub-global shulker box inventory, read them to create entities, and copy the entity names to the lore
-data remove block ~1 ~ ~ Items
-data modify block ~1 ~ ~ Items set from block ~ ~ ~ Items[0].tag.BlockEntityTag.Items
-function tryashtar.shulker_preview:process_box
-data modify block ~ ~ ~ Items[0].tag.display.Lore set value ["\"\\uF82C\\uF82A\\uF827\"","\"\"","\"\"","\"\"","\"\""]
-data modify block ~ ~ ~ Items[0].tag.display.Lore prepend from block ~3 ~ ~ Text1
-data modify block ~ ~ ~ Items[0].tag.HideFlags set value 32
-data modify block ~ ~ ~ Items[0].tag.shulker_processed set value 1b
-
-# return processed container to its original slot
-execute if score #slot shulker_preview matches 0 run loot replace entity @s hotbar.0 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 1 run loot replace entity @s hotbar.1 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 2 run loot replace entity @s hotbar.2 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 3 run loot replace entity @s hotbar.3 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 4 run loot replace entity @s hotbar.4 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 5 run loot replace entity @s hotbar.5 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 6 run loot replace entity @s hotbar.6 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 7 run loot replace entity @s hotbar.7 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 8 run loot replace entity @s hotbar.8 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 9 run loot replace entity @s inventory.0 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 10 run loot replace entity @s inventory.1 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 11 run loot replace entity @s inventory.2 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 12 run loot replace entity @s inventory.3 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 13 run loot replace entity @s inventory.4 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 14 run loot replace entity @s inventory.5 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 15 run loot replace entity @s inventory.6 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 16 run loot replace entity @s inventory.7 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 17 run loot replace entity @s inventory.8 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 18 run loot replace entity @s inventory.9 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 19 run loot replace entity @s inventory.10 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 20 run loot replace entity @s inventory.11 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 21 run loot replace entity @s inventory.12 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 22 run loot replace entity @s inventory.13 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 23 run loot replace entity @s inventory.14 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 24 run loot replace entity @s inventory.15 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 25 run loot replace entity @s inventory.16 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 26 run loot replace entity @s inventory.17 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 27 run loot replace entity @s inventory.18 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 28 run loot replace entity @s inventory.19 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 29 run loot replace entity @s inventory.20 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 30 run loot replace entity @s inventory.21 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 31 run loot replace entity @s inventory.22 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 32 run loot replace entity @s inventory.23 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 33 run loot replace entity @s inventory.24 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 34 run loot replace entity @s inventory.25 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches 35 run loot replace entity @s inventory.26 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
-execute if score #slot shulker_preview matches -106 run loot replace entity @s weapon.offhand 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+# workaround for the fact that /clear can find items in the cursor, but Inventory[] cannot
+# without this sub-function, picking up a lone unprocessed shulker box puts the placeholder TNT in your inventory
+execute if score #success shulker_preview matches 1 run function tryashtar.shulker_preview:finish_player
