@@ -384,13 +384,6 @@ for row in range(0, 3):
       for potionname, translation in potion_dict.items():
          file.write("execute if block ~2 1 ~ jukebox{RecordItem:{tag:{Potion:\"" +potionname+ "\"}}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.overlay.arrow_dust." +translation+ "." +str(row)+ "\\\"}\"}\n")
 
-# copy status of process_box/0
-with open("datapack\\data\\tryashtar.shulker_preview\\functions\\process_box\\0.mcfunction", "r") as file:
-   text = file.read()
-   for i in range(1, 27):
-      with open("datapack\\data\\tryashtar.shulker_preview\\functions\\process_box\\" +str(i)+ ".mcfunction", "w") as file2:
-         file2.write(text.replace("0", str(i)))
-
 # test all items!
 import json
 with open("D:\\Minecraft\\Java Storage\\Game History\\reports\\registries.json") as file:

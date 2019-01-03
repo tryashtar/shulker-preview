@@ -1,116 +1,61 @@
-# copy hotbar to global shulker box inventory
-data remove block ~ ~ ~ Items
-data modify block ~ ~ ~ Items append from entity @s Inventory[{Slot:0b}]
-data modify block ~ ~ ~ Items append from entity @s Inventory[{Slot:1b}]
-data modify block ~ ~ ~ Items append from entity @s Inventory[{Slot:2b}]
-data modify block ~ ~ ~ Items append from entity @s Inventory[{Slot:3b}]
-data modify block ~ ~ ~ Items append from entity @s Inventory[{Slot:4b}]
-data modify block ~ ~ ~ Items append from entity @s Inventory[{Slot:5b}]
-data modify block ~ ~ ~ Items append from entity @s Inventory[{Slot:6b}]
-data modify block ~ ~ ~ Items append from entity @s Inventory[{Slot:7b}]
-data modify block ~ ~ ~ Items append from entity @s Inventory[{Slot:8b}]
+# copy all containers in inventory to arbitrary NBT area (item tag)
+data merge block ~ ~ ~ {Items:[{id:tnt,Count:1b}]}
+data modify block ~ ~ ~ Items[0].tag.shulker_items append from entity @s Inventory[{tag:{BlockEntityTag:{Items:[{}]}}}]
 
-# process any unprocessed containers
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:0b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:0b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/0
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:1b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:1b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/1
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:2b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:2b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/2
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:3b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:3b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/3
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:4b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:4b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/4
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:5b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:5b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/5
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:6b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:6b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/6
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:7b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:7b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/7
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:8b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:8b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/8
+# filter out containers that have already been processed
+data remove block ~ ~ ~ Items[0].tag.shulker_items[{tag:{shulker_processed:1b}}]
 
-# copy global shulker box inventory back to hotbar
-loot replace entity @s hotbar.0 9 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+# save which slot that container came from
+execute store result score #slot shulker_preview run data get block ~ ~ ~ Items[0].tag.shulker_items[0].Slot
 
+# turn arbitrary NBT back into real item in global shulker box
+data modify block ~ ~ ~ Items[0].tag.shulker_items[0].Slot set value 0
+data modify block ~ ~ ~ Items[0] set from block ~ ~ ~ Items[0].tag.shulker_items[0]
 
-# copy inventory to global shulker box inventory
-data merge block ~ ~ ~ {Items:[{id:tnt,Count:1b,tag:{shulker_placeholder:1b}}]}
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:35b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:34b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:33b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:32b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:31b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:30b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:29b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:28b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:27b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:26b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:25b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:24b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:23b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:22b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:21b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:20b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:19b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:18b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:17b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:16b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:15b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:14b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:13b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:12b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:11b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:10b}]
-function tryashtar.shulker_preview:shift_copy
-data modify block ~ ~ ~ Items[0].tag.shulker_item set from entity @s Inventory[{Slot:9b}]
-function tryashtar.shulker_preview:shift_copy
-data remove block ~ ~ ~ Items[{tag:{shulker_placeholder:1b}}]
+# copy item contents to sub-global shulker box inventory, read them to create entities, and copy the entity names to the lore
+data remove block ~1 ~ ~ Items
+data modify block ~1 ~ ~ Items set from block ~ ~ ~ Items[0].tag.BlockEntityTag.Items
+function tryashtar.shulker_preview:process_box
+data modify block ~ ~ ~ Items[0].tag.display.Lore set value ["\"\\uF82C\\uF82A\\uF827\"","\"\"","\"\"","\"\"","\"\""]
+data modify block ~ ~ ~ Items[0].tag.display.Lore prepend from block ~3 ~ ~ Text1
+data modify block ~ ~ ~ Items[0].tag.HideFlags set value 32
+data modify block ~ ~ ~ Items[0].tag.shulker_processed set value 1b
 
-# process any unprocessed containers
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:0b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:0b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/0
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:1b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:1b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/1
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:2b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:2b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/2
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:3b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:3b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/3
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:4b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:4b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/4
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:5b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:5b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/5
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:6b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:6b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/6
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:7b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:7b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/7
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:8b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:8b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/8
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:9b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:9b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/9
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:10b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:10b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/10
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:11b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:11b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/11
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:12b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:12b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/12
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:13b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:13b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/13
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:14b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:14b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/14
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:15b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:15b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/15
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:16b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:16b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/16
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:17b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:17b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/17
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:18b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:18b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/18
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:19b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:19b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/19
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:20b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:20b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/20
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:21b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:21b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/21
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:22b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:22b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/22
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:23b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:23b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/23
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:24b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:24b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/24
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:25b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:25b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/25
-execute if score #ready shulker_preview matches 1 if data block ~ ~ ~ Items[{Slot:26b}].tag.BlockEntityTag.Items unless data block ~ ~ ~ Items[{Slot:26b}].tag.shulker_processed run function tryashtar.shulker_preview:process_box/26
-
-# copy global shulker box inventory back to inventory
-loot replace entity @s inventory.0 27 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+# return processed container to its original slot
+execute if score #slot shulker_preview matches 0 run loot replace entity @s hotbar.0 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 1 run loot replace entity @s hotbar.1 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 2 run loot replace entity @s hotbar.2 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 3 run loot replace entity @s hotbar.3 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 4 run loot replace entity @s hotbar.4 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 5 run loot replace entity @s hotbar.5 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 6 run loot replace entity @s hotbar.6 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 7 run loot replace entity @s hotbar.7 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 8 run loot replace entity @s hotbar.8 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 9 run loot replace entity @s inventory.0 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 10 run loot replace entity @s inventory.1 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 11 run loot replace entity @s inventory.2 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 12 run loot replace entity @s inventory.3 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 13 run loot replace entity @s inventory.4 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 14 run loot replace entity @s inventory.5 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 15 run loot replace entity @s inventory.6 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 16 run loot replace entity @s inventory.7 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 17 run loot replace entity @s inventory.8 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 18 run loot replace entity @s inventory.9 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 19 run loot replace entity @s inventory.10 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 20 run loot replace entity @s inventory.11 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 21 run loot replace entity @s inventory.12 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 22 run loot replace entity @s inventory.13 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 23 run loot replace entity @s inventory.14 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 24 run loot replace entity @s inventory.15 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 25 run loot replace entity @s inventory.16 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 26 run loot replace entity @s inventory.17 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 27 run loot replace entity @s inventory.18 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 28 run loot replace entity @s inventory.19 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 29 run loot replace entity @s inventory.20 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 30 run loot replace entity @s inventory.21 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 31 run loot replace entity @s inventory.22 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 32 run loot replace entity @s inventory.23 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 33 run loot replace entity @s inventory.24 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 34 run loot replace entity @s inventory.25 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches 35 run loot replace entity @s inventory.26 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
+execute if score #slot shulker_preview matches -106 run loot replace entity @s weapon.offhand 1 mine ~ ~ ~ golden_pickaxe{drop_contents:true}
