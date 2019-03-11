@@ -36,6 +36,7 @@ execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:diamond_sword"}} run s
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:dragon_breath"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:"{\"translate\":\"tryashtar.shulker_preview.item.dragon_breath.1\"}"}
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:emerald_block"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:"{\"translate\":\"tryashtar.shulker_preview.block.emerald_block.1\"}"}
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:firework_star"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:"{\"translate\":\"tryashtar.shulker_preview.item.firework_star.1\"}"}
+execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:fox_spawn_egg"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:"{\"translate\":\"tryashtar.shulker_preview.item.fox_spawn_egg.1\"}"}
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:golden_carrot"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:"{\"translate\":\"tryashtar.shulker_preview.item.golden_carrot.1\"}"}
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:golden_helmet"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:"{\"translate\":\"tryashtar.shulker_preview.item.golden_helmet.1\"}"}
 execute if block ~2 1 ~ jukebox{RecordItem:{id:"minecraft:golden_helmet"}} run scoreboard players set #max shulker_preview 77
