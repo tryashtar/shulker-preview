@@ -40,7 +40,7 @@ def item_name(file):
       return "crossbow"
    return os.path.splitext(file)[0]
 
-items_path = "D:\\Minecraft\\Java Storage\\Game History\\jar\\assets\\minecraft\\textures\\item"
+items_path = "D:\\Minecraft\\Java Storage\\History\\jar\\assets\\minecraft\\textures\\item"
 items_path2 = "..\\extra item images"
 overlay_path = "..\\extra item images\\overlay"
 blocks_path = "..\\block images"
@@ -176,7 +176,7 @@ with Image.new("RGBA", (size, size)) as sheet:
 # create font characters for each
 with open("resourcepack\\assets\\minecraft\\font\\default.json", "w") as file:
    num = 73
-   file.write("{\"providers\":[{\"type\":\"ttf\",\"file\":\"tryashtar.shulker_preview:negative_spaces.ttf\",\"shift\":[0.0,0.0],\"size\":10.0,\"oversample\":1.0},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:tooltip.png\",\"ascent\":23,\"height\":78,\"chars\":[\"\\uE000\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:numbers.png\",\"ascent\":-4,\"height\":8,\"chars\":[\"\\uE001\\uE002\\uE003\\uE004\\uE005\\uE006\\uE007\\uE008\\uE009\\uE00A\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:numbers.png\",\"ascent\":-22,\"height\":8,\"chars\":[\"\\uE00B\\uE00C\\uE00D\\uE00E\\uE00F\\uE010\\uE011\\uE012\\uE013\\uE014\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:numbers.png\",\"ascent\":-40,\"height\":8,\"chars\":[\"\\uE015\\uE016\\uE017\\uE018\\uE019\\uE01A\\uE01B\\uE01C\\uE01D\\uE01E\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:durability.png\",\"ascent\":-8,\"height\":2,\"chars\":[\"\\uE01F\\uE020\\uE021\\uE022\\uE023\",\"\\uE024\\uE025\\uE026\\uE027\\uE028\",\"\\uE029\\uE02A\\uE02B\\uE02C\\uE000\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:durability.png\",\"ascent\":-26,\"height\":2,\"chars\":[\"\\uE02D\\uE02E\\uE02F\\uE030\\uE031\",\"\\uE032\\uE033\\uE034\\uE035\\uE036\",\"\\uE037\\uE038\\uE039\\uE03A\\uE000\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:durability.png\",\"ascent\":-44,\"height\":2,\"chars\":[\"\\uE03B\\uE03C\\uE03D\\uE03E\\uE03F\",\"\\uE040\\uE041\\uE042\\uE043\\uE044\",\"\\uE045\\uE046\\uE047\\uE048\\uE000\"]},")
+   file.write("{\"providers\":[{\"type\":\"ttf\",\"note\":\"Many thanks to AmberW#4615 for this invaluable resource\",\"file\":\"tryashtar.shulker_preview:negative_spaces.ttf\",\"shift\":[0.0,0.0],\"size\":10.0,\"oversample\":1.0},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:tooltip.png\",\"ascent\":23,\"height\":78,\"chars\":[\"\\uE000\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:numbers.png\",\"ascent\":-4,\"height\":8,\"chars\":[\"\\uE001\\uE002\\uE003\\uE004\\uE005\\uE006\\uE007\\uE008\\uE009\\uE00A\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:numbers.png\",\"ascent\":-22,\"height\":8,\"chars\":[\"\\uE00B\\uE00C\\uE00D\\uE00E\\uE00F\\uE010\\uE011\\uE012\\uE013\\uE014\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:numbers.png\",\"ascent\":-40,\"height\":8,\"chars\":[\"\\uE015\\uE016\\uE017\\uE018\\uE019\\uE01A\\uE01B\\uE01C\\uE01D\\uE01E\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:durability.png\",\"ascent\":-8,\"height\":2,\"chars\":[\"\\uE01F\\uE020\\uE021\\uE022\\uE023\",\"\\uE024\\uE025\\uE026\\uE027\\uE028\",\"\\uE029\\uE02A\\uE02B\\uE02C\\uE000\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:durability.png\",\"ascent\":-26,\"height\":2,\"chars\":[\"\\uE02D\\uE02E\\uE02F\\uE030\\uE031\",\"\\uE032\\uE033\\uE034\\uE035\\uE036\",\"\\uE037\\uE038\\uE039\\uE03A\\uE000\"]},{\"type\":\"bitmap\",\"file\":\"tryashtar.shulker_preview:durability.png\",\"ascent\":-44,\"height\":2,\"chars\":[\"\\uE03B\\uE03C\\uE03D\\uE03E\\uE03F\",\"\\uE040\\uE041\\uE042\\uE043\\uE044\",\"\\uE045\\uE046\\uE047\\uE048\\uE000\"]},")
    for i in range(0, 3):
       for thing in ["item", "block"]:
          grid = itemgrid
@@ -367,14 +367,14 @@ for row in range(0, 3):
    with open("datapack\\data\\tryashtar.shulker_preview\\functions\\row_" +str(row)+ "\\process_count.mcfunction", "w") as file:
       file.write("# create an entity that draws item counts\n")
       for i in range(2, 65):
-         file.write("execute if score #count shulker_preview matches " +str(i)+ " run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.number." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
+         file.write("execute if score #count shulker_preview matches " +str(i)+ " run summon area_effect_cloud ~ ~0.2 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.number." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
    with open("datapack\\data\\tryashtar.shulker_preview\\functions\\row_" +str(row)+ "\\process_durability.mcfunction", "w") as file:
       file.write("# create an entity that draws a durability bar\nscoreboard players operation #durability shulker_preview *= #140 shulker_preview\nscoreboard players operation #durability shulker_preview /= #max shulker_preview\n")
       for i in range(1, 15):
          file.write("execute if score #durability shulker_preview matches "+str(i*10-5)+ "..")
          if i != 14:
             file.write(str(i*10+5))
-         file.write(" run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.durability." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
+         file.write(" run summon area_effect_cloud ~ ~0.3 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.durability." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
    with open("datapack\\data\\tryashtar.shulker_preview\\functions\\row_" +str(row)+ "\\process_potion.mcfunction", "w") as file:
       file.write("# create an entity that draws the proper potion overlay color\n")
       for potionname, translation in potion_dict.items():
@@ -386,7 +386,7 @@ for row in range(0, 3):
 
 # test all items!
 import json
-with open("D:\\Minecraft\\Java Storage\\Game History\\reports\\registries.json") as file:
+with open("D:\\Minecraft\\Java Storage\\History\\reports\\registries.json") as file:
    register = json.loads(file.read())
    mc_items = list(register["minecraft:item"]["entries"].keys())
 

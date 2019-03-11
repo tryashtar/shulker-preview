@@ -3,7 +3,6 @@ data modify block ~ ~ ~ Items[0].tag.shulker_items[0].Slot set value 0
 data modify block ~ ~ ~ Items[0] set from block ~ ~ ~ Items[0].tag.shulker_items[0]
 
 # copy item contents to sub-global shulker box inventory, read them to create entities, and copy the entity names to the lore
-data remove block ~1 ~ ~ Items
 data modify block ~1 ~ ~ Items set from block ~ ~ ~ Items[0].tag.BlockEntityTag.Items
 function tryashtar.shulker_preview:process_box
 data modify block ~ ~ ~ Items[0].tag.display.Lore set value ["\"\\uF82C\\uF82A\\uF827\"","\"\"","\"\"","\"\"","\"\""]
