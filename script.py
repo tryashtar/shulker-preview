@@ -342,14 +342,14 @@ for row in range(0, 3):
             needsarr = False
             for item in length_dict[length]:
                if item == "minecraft:elytra":
-                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\",tag:{Damage:431}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.item.broken_elytra." +str(row)+ "\\\"}\"}\n")
-                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\"}} unless block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\",tag:{Damage:431}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.item.elytra." +str(row)+ "\\\"}\"}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\",tag:{Damage:431}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.broken_elytra." +str(row)+ "\"}'}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\"}} unless block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:elytra\",tag:{Damage:431}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.elytra." +str(row)+ "\"}'}\n")
                elif item == "minecraft:crossbow":
-                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:arrow\"}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.item.crossbow_arrow." +str(row)+ "\\\"}\"}\n")
-                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:firework_rocket\"}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.item.crossbow_firework." +str(row)+ "\\\"}\"}\n")
-                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\"}} unless block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.item.crossbow." +str(row)+ "\\\"}\"}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:arrow\"}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.crossbow_arrow." +str(row)+ "\"}'}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:firework_rocket\"}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.crossbow_firework." +str(row)+ "\"}'}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\"}} unless block ~2 1 ~ jukebox{RecordItem:{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{}]}}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.crossbow." +str(row)+ "\"}'}\n")
                else:
-                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"" +item+ "\"}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"" +minecraft_id_to_translation(item)+ "." +str(row)+ "\\\"}\"}\n")
+                  lengthfile.write("execute if block ~2 1 ~ jukebox{RecordItem:{id:\"" +item+ "\"}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"" +minecraft_id_to_translation(item)+ "." +str(row)+ "\"}'}\n")
                if item in ("minecraft:potion", "minecraft:splash_potion", "minecraft:lingering_potion"):
                   needspot = True
                if item in durability_dict:
@@ -367,22 +367,22 @@ for row in range(0, 3):
    with open("datapack\\data\\tryashtar.shulker_preview\\functions\\row_" +str(row)+ "\\process_count.mcfunction", "w") as file:
       file.write("# create an entity that draws item counts\n")
       for i in range(2, 65):
-         file.write("execute if score #count shulker_preview matches " +str(i)+ " run summon area_effect_cloud ~ ~0.2 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.number." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
+         file.write("execute if score #count shulker_preview matches " +str(i)+ " run summon area_effect_cloud ~ ~0.2 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.number." +str(i)+ "." +str(row)+ "\"}'}\n")
    with open("datapack\\data\\tryashtar.shulker_preview\\functions\\row_" +str(row)+ "\\process_durability.mcfunction", "w") as file:
       file.write("# create an entity that draws a durability bar\nscoreboard players operation #durability shulker_preview *= #140 shulker_preview\nscoreboard players operation #durability shulker_preview /= #max shulker_preview\n")
       for i in range(1, 15):
          file.write("execute if score #durability shulker_preview matches "+str(i*10-5)+ "..")
          if i != 14:
             file.write(str(i*10+5))
-         file.write(" run summon area_effect_cloud ~ ~0.3 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.durability." +str(i)+ "." +str(row)+ "\\\"}\"}\n")
+         file.write(" run summon area_effect_cloud ~ ~0.3 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.durability." +str(i)+ "." +str(row)+ "\"}'}\n")
    with open("datapack\\data\\tryashtar.shulker_preview\\functions\\row_" +str(row)+ "\\process_potion.mcfunction", "w") as file:
       file.write("# create an entity that draws the proper potion overlay color\n")
       for potionname, translation in potion_dict.items():
-         file.write("execute if block ~2 1 ~ jukebox{RecordItem:{tag:{Potion:\"" +potionname+ "\"}}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.overlay.potion_liquid." +translation+ "." +str(row)+ "\\\"}\"}\n")
+         file.write("execute if block ~2 1 ~ jukebox{RecordItem:{tag:{Potion:\"" +potionname+ "\"}}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.overlay.potion_liquid." +translation+ "." +str(row)+ "\"}'}\n")
    with open("datapack\\data\\tryashtar.shulker_preview\\functions\\row_" +str(row)+ "\\process_arrow.mcfunction", "w") as file:
       file.write("# create an entity that draws the proper tipped arrow overlay color\n")
       for potionname, translation in potion_dict.items():
-         file.write("execute if block ~2 1 ~ jukebox{RecordItem:{tag:{Potion:\"" +potionname+ "\"}}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:\"{\\\"translate\\\":\\\"tryashtar.shulker_preview.overlay.arrow_dust." +translation+ "." +str(row)+ "\\\"}\"}\n")
+         file.write("execute if block ~2 1 ~ jukebox{RecordItem:{tag:{Potion:\"" +potionname+ "\"}}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.overlay.arrow_dust." +translation+ "." +str(row)+ "\"}'}\n")
 
 # test all items!
 import json
