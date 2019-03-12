@@ -114,7 +114,7 @@ summon area_effect_cloud ~ ~21.2 ~ {Tags:["tryashtar.shulker_preview"],CustomNam
 summon area_effect_cloud ~ ~30.2 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.row_end"}'}
 
 # evaluate entities on the sign
-data merge block ~3 ~ ~ {Text1:'["\\uF800",{"selector":"@e[type=area_effect_cloud,tag=tryashtar.shulker_preview,sort=nearest]","color":"white","italic":false}]'}
+data modify block ~3 ~ ~ Text1 set value '["\\uF800",{"selector":"@e[type=area_effect_cloud,tag=tryashtar.shulker_preview,sort=nearest]","color":"white","italic":false}]'
 kill @e[type=area_effect_cloud,tag=tryashtar.shulker_preview]
 
 # don't process any more boxes this tick
