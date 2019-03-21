@@ -1,12 +1,12 @@
 # copy all containers in inventory to arbitrary NBT area (item tag)
-data modify block ~ ~ ~ Items set value [{id:tnt,Count:1b}]
-data modify block ~ ~ ~ Items[0].tag.shulker_items append from entity @s Inventory[{tag:{BlockEntityTag:{Items:[{}]}}}]
+data modify block 29999976 1 9832 Items set value [{id:tnt,Count:1b}]
+data modify block 29999976 1 9832 Items[0].tag.shulker_items append from entity @s Inventory[{tag:{BlockEntityTag:{Items:[{}]}}}]
 
 # filter out containers that have already been processed
-data remove block ~ ~ ~ Items[0].tag.shulker_items[{tag:{shulker_processed:1b}}]
+data remove block 29999976 1 9832 Items[0].tag.shulker_items[{tag:{shulker_processed:1b}}]
 
 # save which slot first remaining container came from
-execute store result score #slot shulker_preview store success score #success shulker_preview run data get block ~ ~ ~ Items[0].tag.shulker_items[0].Slot
+execute store result score #slot shulker_preview store success score #success shulker_preview run data get block 29999976 1 9832 Items[0].tag.shulker_items[0].Slot
 
 # workaround for the fact that /clear can find items in the cursor, but Inventory[] cannot
 # without this sub-function, picking up a lone unprocessed shulker box puts the placeholder TNT in your inventory

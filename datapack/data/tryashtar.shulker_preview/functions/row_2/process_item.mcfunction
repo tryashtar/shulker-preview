@@ -1,5 +1,5 @@
 # get the length of this item and call the appropriate function
-execute store result score #length shulker_preview run data get block ~2 1 ~ RecordItem.id
+execute store result score #length shulker_preview run data get block 29999978 1 9832 RecordItem.id
 execute if score #length shulker_preview matches 13 run function tryashtar.shulker_preview:row_2/process_item/length_13
 execute if score #length shulker_preview matches 14 run function tryashtar.shulker_preview:row_2/process_item/length_14
 execute if score #length shulker_preview matches 15 run function tryashtar.shulker_preview:row_2/process_item/length_15
@@ -30,5 +30,5 @@ execute if score #length shulker_preview matches 39 run function tryashtar.shulk
 execute if score #length shulker_preview matches 40 run function tryashtar.shulker_preview:row_2/process_item/length_40
 
 # summon in count entity
-execute store result score #count shulker_preview run data get block ~2 1 ~ RecordItem.Count
+execute store result score #count shulker_preview run data get block 29999978 1 9832 RecordItem.Count
 execute if score #count shulker_preview matches 2.. run function tryashtar.shulker_preview:row_2/process_count
