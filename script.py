@@ -54,12 +54,12 @@ def main():
       dur1=[f"durability.{i}.{row}" for i in range(1,6)]
       dur2=[f"durability.{i}.{row}" for i in range(6,11)]
       dur3=[f"durability.{i}.{row}" for i in range(11,15)]+[None]
-      providers.append(register_grid("tryashtar.shulker_preview:durability.png", [dur1,dur2,dur3], height-5, 8, (["max",-16],[-4,"-max"])))
+      providers.append(register_grid("tryashtar.shulker_preview:durability.png", [dur1,dur2,dur3], height-5, 2, (["max",-16],[-4,"-max"])))
 
       # item/block/overlay grids
-      providers.append(register_grid("tryashtar.shulker_preview:item_sheet.png", apply_to_all(grid_keys(itemgrid), lambda x: f"item.{x}.{row}"), height+5, 8, (["max"],[-5,"-max"])))
-      providers.append(register_grid("tryashtar.shulker_preview:block_sheet.png", apply_to_all(grid_keys(blockgrid), lambda x: f"block.{x}.{row}"), height+5, 8, (["max"],[-5,"-max"])))
-      providers.append(register_grid("tryashtar.shulker_preview:overlay_sheet.png", apply_to_all(grid_keys(overlaygrid), lambda x: f"overlay.{x}.{row}"), height+5, 8, (["max",-18],[-5,"-max"])))
+      providers.append(register_grid("tryashtar.shulker_preview:item_sheet.png", apply_to_all(grid_keys(itemgrid), lambda x: f"item.{x}.{row}"), height+5, 16, (["max"],[-5,"-max"])))
+      providers.append(register_grid("tryashtar.shulker_preview:block_sheet.png", apply_to_all(grid_keys(blockgrid), lambda x: f"block.{x}.{row}"), height+5, 16, (["max"],[-5,"-max"])))
+      providers.append(register_grid("tryashtar.shulker_preview:overlay_sheet.png", apply_to_all(grid_keys(overlaygrid), lambda x: f"overlay.{x}.{row}"), height+5, 16, (["max",-18],[-5,"-max"])))
 
       # remaining numbers 10-64
       for n in range(10,65):
@@ -141,10 +141,10 @@ def main():
    lines=[
    "# loading a distant chunk is necessary for the global shulker box and sign",
    "# nag the player until they do it, since functions can't run forceload",
-   "execute store success score #setup shulker_preview run forceload query 29999976 9832",
+   "execute store success score #setup shulker_preview run forceload query 29999977 9832",
    "execute if score #setup shulker_preview matches 1 run function tryashtar.shulker_preview:.meta/setup",
    "execute unless score #setup shulker_preview matches 1 run schedule function tryashtar.shulker_preview:.meta/check_setup 5s",
-   "execute unless score #setup shulker_preview matches 1 run tellraw @a {\"translate\":\"If you can see this, you still need to equip the resource pack!\",\"with\":[[{\"text\":\""+unicode_escape(charmap["block.shulker_box.0"])+"\\n     \",\"color\":\"white\"},{\"text\":\"Welcome! Click this text to finalize installation\\nof the Shulker Box tooltip preview pack.\",\"color\":\"green\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/execute in overworld run forceload add 29999976 9832\"}}]],\"color\":\"red\"}"
+   "execute unless score #setup shulker_preview matches 1 run tellraw @a {\"translate\":\"If you can see this, you still need to equip the resource pack!\",\"with\":[[{\"text\":\""+unicode_escape(charmap["block.shulker_box.0"])+"\\n     \",\"color\":\"white\"},{\"text\":\"Welcome! Click this text to finalize installation\\nof the Shulker Box tooltip preview pack.\",\"color\":\"green\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/execute in overworld run forceload add 29999977 9832\"}}]],\"color\":\"red\"}"
    ]
    write_lines(lines, "datapack/data/tryashtar.shulker_preview/functions/.meta/check_setup.mcfunction")
 
