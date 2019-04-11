@@ -1,5 +1,5 @@
 # move items one by one to the global jukebox and process them
-summon area_effect_cloud ~ ~3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.background"}'}
+summon area_effect_cloud ~ ~3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip"}'}
 
 data modify block 29999978 1 9832 RecordItem set from block 29999977 1 9832 Items[0].tag.BlockEntityTag.Items[{Slot:0b}]
 execute if data block 29999977 1 9832 Items[0].tag.BlockEntityTag.Items[{Slot:0b}] positioned ~ ~4 ~ run function tryashtar.shulker_preview:row_0/process_item
