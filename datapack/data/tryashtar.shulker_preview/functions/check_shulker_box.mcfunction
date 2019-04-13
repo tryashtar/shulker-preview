@@ -4,10 +4,11 @@ data modify block 29999977 1 9832 Items[0].tag.shulker_items append from entity 
 
 # filter out containers that have already been processed
 data remove block 29999977 1 9832 Items[0].tag.shulker_items[{tag:{shulker_processed:1b}}]
+scoreboard players set #uuid shulker_preview -1
 
 # save which slot first remaining container came from
 execute store result score #slot shulker_preview store success score #success shulker_preview run data get block 29999977 1 9832 Items[0].tag.shulker_items[0].Slot
 
 # workaround for the fact that /clear can find items in the cursor, but Inventory[] cannot
 # without this sub-function, picking up a lone unprocessed shulker box puts the placeholder TNT in your inventory
-execute if score #success shulker_preview matches 1 run function tryashtar.shulker_preview:finish_player
+execute if score #success shulker_preview matches 1 run function tryashtar.shulker_preview:from_player

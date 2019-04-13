@@ -144,9 +144,49 @@ def main():
    "execute store success score #setup shulker_preview run forceload query 29999977 9832",
    "execute if score #setup shulker_preview matches 1 run function tryashtar.shulker_preview:.meta/setup",
    "execute unless score #setup shulker_preview matches 1 run schedule function tryashtar.shulker_preview:.meta/check_setup 5s",
-   "execute unless score #setup shulker_preview matches 1 run tellraw @a {\"translate\":\"If you can see this, you still need to equip the resource pack!\",\"with\":[[{\"text\":\""+unicode_escape(charmap["block.shulker_box.0"])+"\\n     \",\"color\":\"white\"},{\"text\":\"Welcome! Click this text to finalize installation\\nof the Shulker Box tooltip preview pack.\",\"color\":\"green\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/execute in overworld run forceload add 29999977 9832\"}}]],\"color\":\"red\"}"
+   'execute unless score #setup shulker_preview matches 1 run tellraw @a {"translate":"If you can see this, you still need to equip the resource pack!","with":[[{"text":"'+unicode_escape(charmap["block.shulker_box.0"])+'\\n     ","color":"white"},{"text":"Welcome! Click this text to finalize installation\\nof the Shulker Box tooltip preview pack.","color":"green","clickEvent":{"action":"run_command","value":"/execute in overworld run forceload add 29999977 9832"}}]],"color":"red"}'
    ]
    write_lines(lines, "datapack/data/tryashtar.shulker_preview/functions/.meta/check_setup.mcfunction")
+
+   # setup
+   lines=[
+   "# place the global shulker box, jukebox, and sign",
+   "fill 29999976 0 9831 29999980 2 9833 bedrock",
+   "setblock 29999977 1 9832 shulker_box{CustomName:'\"tryashtar Global Shulker Box®\"'}",
+   "setblock 29999978 1 9832 jukebox",
+   "setblock 29999979 1 9832 birch_sign{Text1:'\"\"',Text2:'\"tryashtar\"',Text3:'\"Evaluation Sign®\"',Text4:'\"\"'}",
+   "execute if block 29999978 1 9832 jukebox run scoreboard players reset #ender_enabled shulker_preview",
+   'execute if block 29999978 1 9832 jukebox run tellraw @a [{"text":"Success! Thank you and enjoy.","color":"yellow"},{"text":"\\n'+unicode_escape(charmap["block.ender_chest.0"])+'\\n     ","color":"white"},{"text":"If you want, you can click this text\\nto enable previews for ender chest items too.","color":"green","clickEvent":{"action":"run_command","value":"/function tryashtar.shulker_preview:.meta/enable_ender"}},{"text":"\\nIt\'s a bit experimental and will prevent ender chest\\nitems from stacking in most cases.","color":"gray"}]',
+   'execute unless block 29999978 1 9832 jukebox run tellraw @a {"text":"It failed somehow? Trying again in one second...","color":"red"}',
+   "execute unless block 29999978 1 9832 jukebox run schedule function tryashtar.shulker_preview:.meta/check_setup 1s"
+   ]
+   write_lines(lines, "datapack/data/tryashtar.shulker_preview/functions/.meta/setup.mcfunction")
+
+   # generate all items for testing
+   index = 0
+   chest_items=list(all_items.keys())
+   while index < len(chest_items):
+      boxes = 0
+      boxslot = 0
+      command = "setblock ~ ~1 ~ chest{Items:["
+      while index < len(chest_items) and len(command) < 32000:
+         item = chest_items[index]
+         if boxslot == 0:
+            command += "{id:shulker_box,Count:1b,Slot:" +str(boxes)+ "b,tag:{BlockEntityTag:{Items:["
+            boxes += 1
+         command += "{id:\"" +item+ "\",Count:1b,Slot:" +str(boxslot)+ "b},"
+         index += 1
+         boxslot +=1
+         if boxslot >= 27:
+            boxslot = 0
+         if boxslot == 0:
+            command += "]}}},"
+            if boxes >= 27:
+               break
+      if boxslot != 0:
+         command += "]}}},"
+      command += "]}"
+      print(command)
 
 
 def unicode_escape(character):
@@ -193,7 +233,7 @@ def get_spacing(sequence):
 
 currentchar='\uE000'
 charmap={}
-translations={"If you can see this, you still need to equip the resource pack!":"%s","tryashtar.shulker_preview.empty_slot":get_spacing(["max",12,"-max"]),"tryashtar.shulker_preview.row_end":get_spacing(["max",168,"-max"])}
+translations={"If you can see this, you still need to equip the resource pack!":"%s","tryashtar.shulker_preview.empty_slot":get_spacing(["max",12,"-max"]),"tryashtar.shulker_preview.row_end":get_spacing(["max",-168,"-max"])}
 # create a provider from file name, grid of icon names, and ascent/height
 # returns provider and also modifies charmap, a global [icon->character code] dictionary, and translations, which is charmap but with prefixed keys, and values padded with positive/negative spaces as specified in spacing
 def register_grid(fileid, icongrid, ascent, height, spacing):
@@ -220,16 +260,25 @@ def register_single(fileid, iconname, ascent, height, spacing):
 
 # take [item name->path] dictionary and form it into an ordered square 2D array of tuples (missing spaces are filled in with None)
 def create_grid(icondict):
-   size=math.ceil(math.sqrt(len(icondict)))
+   size=get_dimensions(len(icondict))
    ordered=sorted(icondict.items(), key=lambda x: x[0])
-   ordered.extend([None]*(size*size-len(ordered)))
+   ordered.extend([None]*(size[0]*size[1]-len(ordered)))
    result=numpy.array(ordered)
-   return numpy.reshape(result, (size,size))
+   return numpy.reshape(result, size)
+
+# returns an integer square that fits this area
+# might remove bottom row if it would be empty
+def get_dimensions(area):
+   width=math.ceil(math.sqrt(area))
+   height=width
+   if width*(height-1)>=area:
+      height-=1
+   return (height,width)
 
 # take square 2D array of (item name, path) tuples and add images to a large image grid
 def create_image(grid, icon_size):
    dim=grid.shape
-   sheet=Image.new("RGBA", (dim[0]*icon_size,dim[1]*icon_size))
+   sheet=Image.new("RGBA", (dim[1]*icon_size,dim[0]*icon_size))
    for pos, icon in numpy.ndenumerate(grid):
       if icon is None:
          continue
