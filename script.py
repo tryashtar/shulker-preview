@@ -288,9 +288,9 @@ def create_image(grid, icon_size):
       with Image.open(path).convert("RGBA") as sprite:
          pixels = sprite.load()
          r,g,b,a = pixels[0,0]
-         pixels[0,0] = (r,g,b,max(a,1))
+         pixels[0,0] = (r,g,b,max(a,18))
          r,g,b,a = pixels[icon_size-1,icon_size-1]
-         pixels[icon_size-1,icon_size-1] = (r,g,b,max(a,1))
+         pixels[icon_size-1,icon_size-1] = (r,g,b,max(a,18))
          sheet.paste(sprite, (x, y, x+icon_size, y+icon_size))
    return sheet
 
