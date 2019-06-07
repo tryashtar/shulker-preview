@@ -44,6 +44,7 @@ def main():
    print("Generating font providers...")
    providers=[{"type":"ttf","note":"Many thanks to AmberW#4615 for this invaluable resource","file":"tryashtar.shulker_preview:negative_spaces.ttf","shift":[0.0,0.0],"size":10.0,"oversample":1.0}]
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip.png", "shulker_tooltip", 23, 78, (["max",-4],[-175,"-max"])))
+   providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip_header.png", "shulker_tooltip_header", 23, 78, (["max",-4],[-175,"-max"])))
    providers.append(register_single("tryashtar.shulker_preview:ender_tooltip.png", "ender_tooltip", 23, 78, (["max",-4],[-175,"-max"])))
 
    # per-row icons
@@ -287,10 +288,11 @@ def create_image(grid, icon_size):
       path=icon[1]
       with Image.open(path).convert("RGBA") as sprite:
          pixels = sprite.load()
-         r,g,b,a = pixels[0,0]
-         pixels[0,0] = (r,g,b,max(a,18))
-         r,g,b,a = pixels[icon_size-1,icon_size-1]
-         pixels[icon_size-1,icon_size-1] = (r,g,b,max(a,18))
+         for corner in (0,icon_size-1):
+            r,g,b,a = pixels[corner,corner]
+            if a==0:
+               r,g,b=(139,139,139)
+            pixels[corner,corner] = (r,g,b,max(a,18))
          sheet.paste(sprite, (x, y, x+icon_size, y+icon_size))
    return sheet
 
