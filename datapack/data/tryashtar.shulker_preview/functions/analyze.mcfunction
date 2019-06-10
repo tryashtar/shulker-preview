@@ -1,5 +1,5 @@
 # move items one by one to the global jukebox and process them
-execute if score #uuid shulker_preview matches 0.. run summon area_effect_cloud ~ ~3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.ender_tooltip"}'}
+execute unless score #uuid shulker_preview matches -1 run summon area_effect_cloud ~ ~3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.ender_tooltip"}'}
 execute if score #uuid shulker_preview matches -1 if data block 29999977 1 9832 Items[0].tag.display.Name run summon area_effect_cloud ~ ~3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip"}'}
 execute if score #uuid shulker_preview matches -1 unless data block 29999977 1 9832 Items[0].tag.display.Name run summon area_effect_cloud ~ ~3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip_header"}'}
 
@@ -117,7 +117,7 @@ summon area_effect_cloud ~ ~30.4 ~ {Tags:["tryashtar.shulker_preview"],CustomNam
 
 # evaluate entities on the sign
 data modify block 29999979 1 9832 Text1 set value '["\\uF800",{"selector":"@e[type=area_effect_cloud,tag=tryashtar.shulker_preview,x=0,y=0,z=0,sort=nearest]","color":"white","italic":false}]'
-execute if score #uuid shulker_preview matches 0.. run data remove block 29999977 1 9832 Items[0].tag.BlockEntityTag
+execute unless score #uuid shulker_preview matches -1 run data remove block 29999977 1 9832 Items[0].tag.BlockEntityTag
 kill @e[type=area_effect_cloud,tag=tryashtar.shulker_preview]
 
 # don't process any more boxes this tick
