@@ -42,7 +42,7 @@ def main():
 
    # start creating font providers
    print("Generating font providers...")
-   providers=[{"type":"ttf","note":"Many thanks to AmberW#4615 for this invaluable resource","file":"tryashtar.shulker_preview:negative_spaces.ttf","shift":[0.0,0.0],"size":10.0,"oversample":1.0}]
+   providers=[{"type":"ttf","note":"Many thanks to AmberW#4615 for this invaluable resource","file":"tryashtar.shulker_preview:negative_spaces.ttf","shift":[0.0,0.0],"size":10.0,"oversample":1.0},{"type":"bitmap","file":"tryashtar.shulker_preview:comma.png","ascent":7,"chars":[","]}]
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip.png", "shulker_tooltip", 23, 78, (["max",-4],[-175,"-max"])))
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip_header.png", "shulker_tooltip_header", 23, 78, (["max",-4],[-175,"-max"])))
    providers.append(register_single("tryashtar.shulker_preview:ender_tooltip.png", "ender_tooltip", 23, 78, (["max",-4],[-175,"-max"])))

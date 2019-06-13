@@ -13,6 +13,14 @@
       },
       {
          "type": "bitmap",
+         "file": "tryashtar.shulker_preview:comma.png",
+         "ascent": 7,
+         "chars": [
+            ","
+         ]
+      },
+      {
+         "type": "bitmap",
          "file": "tryashtar.shulker_preview:shulker_tooltip.png",
          "ascent": 23,
          "height": 78,
