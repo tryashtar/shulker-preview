@@ -48,14 +48,14 @@ def main():
    providers.append(register_single("tryashtar.shulker_preview:ender_tooltip.png", "ender_tooltip", 23, 78, (["max",-4],[-175,"-max"])))
 
    # per-row icons
-   for row in range(0,3):
+   for row in range(0, 3):
       height=-18*row
       numbers=[f"number.{i}.{row}" for i in range(0,10)]
       providers.append(register_grid("tryashtar.shulker_preview:numbers.png", [numbers], height-4, 8, (["max",-7],[-6,"-max"])))
       dur1=[f"durability.{i}.{row}" for i in range(1,6)]
       dur2=[f"durability.{i}.{row}" for i in range(6,11)]
       dur3=[f"durability.{i}.{row}" for i in range(11,15)]+[None]
-      providers.append(register_grid("tryashtar.shulker_preview:durability.png", [dur1,dur2,dur3], height-5, 2, (["max",-16],[-4,"-max"])))
+      providers.append(register_grid("tryashtar.shulker_preview:durability.png", [dur1,dur2,dur3], height-8, 2, (["max",-16],[-4,"-max"])))
 
       # item/block/overlay grids
       providers.append(register_grid("tryashtar.shulker_preview:item_sheet.png", apply_to_all(grid_keys(itemgrid), lambda x: f"item.{x}.{row}"), height+5, 16, (["max"],[-5,"-max"])))
@@ -63,7 +63,7 @@ def main():
       providers.append(register_grid("tryashtar.shulker_preview:overlay_sheet.png", apply_to_all(grid_keys(overlaygrid), lambda x: f"overlay.{x}.{row}"), height+5, 16, (["max",-18],[-5,"-max"])))
 
       # remaining numbers 10-64
-      for n in range(10,65):
+      for n in range(10, 65):
          digit1=str(n)[0]
          digit2=str(n)[1]
          translations[f"tryashtar.shulker_preview.number.{n}.{row}"]=get_spacing(["max",-13])+charmap[f"number.{digit1}.{row}"]+get_spacing([-1])+charmap[f"number.{digit2}.{row}"]+get_spacing([-6,"-max"])
@@ -89,7 +89,7 @@ def main():
          length_dict[len(name)]=[(item,itemtype)]
 
    # write main and subfunctions
-   for row in range(0,3):
+   for row in range(0, 3):
       # process_item
       lines=[
       "# get the length of this item and call the appropriate function",
@@ -112,20 +112,26 @@ def main():
       # process_count
       lines=["# create an entity that draws item counts"]
       for i in range(2, 65):
-         lines.append("execute if score #count shulker_preview matches "+str(i)+" run summon area_effect_cloud ~ ~0.2 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.number."+str(i)+"."+str(row)+"\"}'}")
+         n = str(i) if i < 64 else f"{i}.."
+         lines.append("execute if score #count shulker_preview matches "+n+" run summon area_effect_cloud ~ ~0.2 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.number."+str(i)+"."+str(row)+"\"}'}")
       write_lines(lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/process_count.mcfunction")
 
       # process_durability
       lines=[
       "# create an entity that draws a durability bar",
-      "scoreboard players operation #durability shulker_preview *= #140 shulker_preview",
-      "scoreboard players operation #durability shulker_preview /= #max shulker_preview"
-      ]
+      "scoreboard players operation #durability shulker_preview *= #13000 shulker_preview",
+      "scoreboard players operation #durability shulker_preview /= #max shulker_preview"      ]
       for i in range(1, 15):
-         text=f"execute if score #durability shulker_preview matches {i*10-5}.."
-         if i != 14:
-            text+=str(i*10+5)
-         text+=" run summon area_effect_cloud ~ ~0.3 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.durability."+str(i)+"."+str(row)+"\"}'}"
+         text=f"execute if score #durability shulker_preview matches "
+         lower=1000*i-1500
+         upper=1000*i-501
+         if i == 14:
+            text += f"{lower}.."
+         elif i == 1:
+            text += f"1..{upper}"
+         else:
+            text += f"{lower}..{upper}"
+         text += " run summon area_effect_cloud ~ ~0.3 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.durability."+str(i)+"."+str(row)+"\"}'}"
          lines.append(text)
       write_lines(lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/process_durability.mcfunction")
 

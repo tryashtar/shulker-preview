@@ -50,7 +50,7 @@
       {
          "type": "bitmap",
          "file": "tryashtar.shulker_preview:durability.png",
-         "ascent": -5,
+         "ascent": -8,
          "height": 2,
          "chars": [
             "\ue00d\ue00e\ue00f\ue010\ue011",
@@ -142,7 +142,7 @@
       {
          "type": "bitmap",
          "file": "tryashtar.shulker_preview:durability.png",
-         "ascent": -23,
+         "ascent": -26,
          "height": 2,
          "chars": [
             "\ue3b4\ue3b5\ue3b6\ue3b7\ue3b8",
@@ -234,7 +234,7 @@
       {
          "type": "bitmap",
          "file": "tryashtar.shulker_preview:durability.png",
-         "ascent": -41,
+         "ascent": -44,
          "height": 2,
          "chars": [
             "\ue75b\ue75c\ue75d\ue75e\ue75f",

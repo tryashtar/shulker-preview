@@ -61,4 +61,4 @@ execute if score #count shulker_preview matches 60 run summon area_effect_cloud 
 execute if score #count shulker_preview matches 61 run summon area_effect_cloud ~ ~0.2 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.number.61.1"}'}
 execute if score #count shulker_preview matches 62 run summon area_effect_cloud ~ ~0.2 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.number.62.1"}'}
 execute if score #count shulker_preview matches 63 run summon area_effect_cloud ~ ~0.2 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.number.63.1"}'}
-execute if score #count shulker_preview matches 64 run summon area_effect_cloud ~ ~0.2 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.number.64.1"}'}
+execute if score #count shulker_preview matches 64.. run summon area_effect_cloud ~ ~0.2 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.number.64.1"}'}
