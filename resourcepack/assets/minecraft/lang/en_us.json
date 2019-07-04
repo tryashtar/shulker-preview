@@ -1,5 +1,5 @@
 {
-   "If you can see this, you still need to equip the resource pack!": "%s",
+   "%1$s": "%2$s",
    "tryashtar.shulker_preview.empty_slot": "\uf820\uf828\uf824\uf800",
    "tryashtar.shulker_preview.row_end": "\uf820\uf80c\uf80a\uf808\uf800",
    "tryashtar.shulker_preview.shulker_tooltip": "\uf820\uf804\ue000\uf80c\uf80a\uf808\uf807\uf800",

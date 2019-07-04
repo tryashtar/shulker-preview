@@ -144,36 +144,6 @@ def main():
       write_lines(lines1, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/process_potion.mcfunction")
       write_lines(lines2, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/process_arrow.mcfunction")
 
-   # check_setup
-   lines=[
-   "# loading a distant chunk is necessary for the global shulker box and sign",
-   "# nag the player until they do it, since functions can't run forceload",
-   "scoreboard players enable @a shulker_trigger",
-   "execute if score #setup shulker_preview matches 0 store success score #setup shulker_preview run forceload query 29999977 9832",
-   "execute if score #setup shulker_preview matches 1 positioned 29999977 1 9832 run function tryashtar.shulker_preview:.meta/setup",
-   "execute if score #setup shulker_preview matches 0 if entity @a[scores={shulker_trigger=1..},limit=1] run scoreboard players set #setup shulker_preview 2",
-   "execute if score #setup shulker_preview matches 2 run schedule function tryashtar.shulker_preview:.meta/setup 1t",
-   "execute if score #setup shulker_preview matches 0 run schedule function tryashtar.shulker_preview:.meta/check_setup 5s",
-   'execute if score #setup shulker_preview matches 0 run tellraw @a {"translate":"If you can see this, you still need to equip the resource pack!","with":[[{"text":"\\n\\n\\n'+unicode_escape(charmap["block.shulker_box.0"])+'\\n     ","color":"white"},{"text":"Welcome! Real quick, we need to do some one-time setup.\\n\\n","color":"green"},{"text":"[Click here]","clickEvent":{"action":"run_command","value":"/execute if score #setup shulker_preview matches 0 in overworld run forceload add 29999977 9832"},"color":"blue","underlined":true},{"text":" if you have cheats enabled or operator access.\\n\\n","color":"yellow"},{"text":"[Click here]","clickEvent":{"action":"run_command","value":"/trigger shulker_trigger"},"color":"light_purple","underlined":true},{"text":" if you\'re on Realms or can\'t use cheats.","color":"yellow"}]],"color":"red"}'
-   ]
-   write_lines(lines, "datapack/data/tryashtar.shulker_preview/functions/.meta/check_setup.mcfunction")
-
-   # setup
-   lines=[
-   "# place the global shulker box, jukebox, and sign",
-   "execute as @a run trigger shulker_trigger set 0",
-   "summon area_effect_cloud ~ 1 ~ {UUIDMost:29999977L,UUIDLeast:9832L,CustomName:'\"Shulker Marker\"',Age:-2147483648,Duration:-1,WaitTime:-2147483648}",
-   "fill ~-1 0 ~-1 ~3 2 ~1 bedrock",
-   "setblock ~ 1 ~ shulker_box{CustomName:'\"tryashtar Global Shulker Box®\"'}",
-   "setblock ~1 1 ~ jukebox",
-   "setblock ~2 1 ~ birch_sign{Text1:'\"\"',Text2:'\"tryashtar\"',Text3:'\"Evaluation Sign®\"',Text4:'\"\"'}",
-   "execute if block ~1 1 ~ jukebox run scoreboard players reset #ender_enabled shulker_preview",
-   'execute if block ~1 1 ~ jukebox run tellraw @a [{"text":"\\n\\n\\nSuccess! Thank you and enjoy.","color":"yellow"},{"text":"\\n'+unicode_escape(charmap["block.ender_chest.0"])+'\\n     ","color":"white"},{"text":"If you want, you can click this text\\nto enable previews for ender chest items too.","color":"green","clickEvent":{"action":"run_command","value":"/function tryashtar.shulker_preview:.meta/enable_ender"}},{"text":"\\nIt\'s a bit experimental and will prevent ender chest\\nitems from stacking in most cases.","color":"gray"}]',
-   'execute unless block ~1 1 ~ jukebox run tellraw @a {"text":"It failed somehow? Trying again in one second...","color":"red"}',
-   "execute unless block ~1 1 ~ jukebox run schedule function tryashtar.shulker_preview:.meta/check_setup 1s"
-   ]
-   write_lines(lines, "datapack/data/tryashtar.shulker_preview/functions/.meta/setup.mcfunction")
-
    # generate all items for testing
    index = 0
    chest_items=list(all_items.keys())
@@ -245,7 +215,7 @@ def get_spacing(sequence):
 
 currentchar='\uE000'
 charmap={}
-translations={"If you can see this, you still need to equip the resource pack!":"%s","tryashtar.shulker_preview.empty_slot":get_spacing(["max",12,"-max"]),"tryashtar.shulker_preview.row_end":get_spacing(["max",-168,"-max"])}
+translations={"%1$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing(["max",12,"-max"]),"tryashtar.shulker_preview.row_end":get_spacing(["max",-168,"-max"])}
 # create a provider from file name, grid of icon names, and ascent/height
 # returns provider and also modifies charmap, a global [icon->character code] dictionary, and translations, which is charmap but with prefixed keys, and values padded with positive/negative spaces as specified in spacing
 def register_grid(fileid, icongrid, ascent, height, spacing):
