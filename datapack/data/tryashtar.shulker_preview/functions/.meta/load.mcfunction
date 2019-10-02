@@ -1,12 +1,11 @@
 scoreboard objectives add shulker_preview dummy "Shulker Box Preview"
 scoreboard players set #13000 shulker_preview 13000
 
-# place the global shulker box, jukebox, and sign
+# place the global shulker box and signs
 forceload remove 29999977 9832
 forceload add 29999977 9832
 fill 29999976 0 9831 29999981 2 9833 bedrock
 setblock 29999977 1 9832 shulker_box{CustomName:'"tryashtar Global Shulker Box®"'}
-setblock 29999978 1 9832 jukebox
 setblock 29999979 1 9832 birch_sign{Text1:'""',Text2:'"tryashtar"',Text3:'"Evaluation Sign®"',Text4:'""'}
 setblock 29999980 1 9832 birch_sign{Text1:'""',Text2:'"tryashtar"',Text3:'"Evaluation Sign®"',Text4:'""'}
 

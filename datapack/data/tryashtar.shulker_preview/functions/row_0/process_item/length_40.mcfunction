@@ -1,1 +1,1 @@
-execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:infested_chiseled_stone_bricks"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.infested_chiseled_stone_bricks.0"}'}
+execute if data storage tryashtar:shulker_preview item{id:"minecraft:infested_chiseled_stone_bricks"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.infested_chiseled_stone_bricks.0"}'}
