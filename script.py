@@ -7,7 +7,7 @@ import numpy
 from PIL import Image
 from collections import OrderedDict
 
-
+specials=["broken_elytra","crossbow_arrow","crossbow_firework"]
 def main():
    # load item textures from two sources
    print("Loading icons...")
@@ -26,7 +26,9 @@ def main():
    delete_entries_regex(mcitems, r"^(cross)?bow_pulling_\d$")
    delete_entries_regex(mcitems, r"^empty_armor_slot_")
    delete_entries_regex(mcitems, r"_overlay")
-   delete_entries(mcitems,["empty_armor_slot", "fishing_rod_cast", "tipped_arrow_head", "filled_map_markings", "ruby", "tipped_arrow_base", "spawn_egg"])
+   delete_entries(mcitems,["empty_armor_slot", "fishing_rod_cast", "tipped_arrow_head", "filled_map_markings", "ruby", "tipped_arrow_base", "spawn_egg", "crystallized_honey"])
+
+   check_items(list(mcitems.keys())+list(mcblocks.keys()))
 
    # create grids
    print("Creating image sheets...")
@@ -77,9 +79,8 @@ def main():
    print("Creating functions...")
    all_items={i:"item" for i in mcitems.keys()}
    all_items.update({i:"block" for i in mcblocks.keys()})
-   del all_items["broken_elytra"]
-   del all_items["crossbow_arrow"]
-   del all_items["crossbow_firework"]
+   for texture in specials:
+      del all_items[texture]
    length_dict={}
    for item, itemtype in all_items.items():
       name="minecraft:"+item
@@ -179,6 +180,10 @@ def grid_keys(tuple_grid):
 
 def apply_to_all(tuple_grid, lamb):
    return [[(None if j is None else lamb(j)) for j in i] for i in tuple_grid]
+
+def read_json(path):
+   with open(path, "r") as file:
+      return json.loads(file.read())
 
 def write_json(j, path):
    with open(path, "w") as file:
@@ -301,6 +306,17 @@ def load_items(*args):
             location=os.path.join(folder,file)
             result[name]=location
    return result
+
+def check_items(items):
+   registry=read_json("D:/Minecraft/Java Storage/History/reports/registries.json")["minecraft:item"]["entries"]
+   for item in registry:
+      name=item.replace("minecraft:","")
+      if name not in items and name!="air":
+         print(f"ITEM NOT SUPPORTED: {name}")
+   for item in items:
+      name="minecraft:"+item
+      if name not in registry and item not in specials:
+         print(f"UNNECESSARY ITEM? {item}")
 
 # item information
 durability_dict={"leather_helmet":55,"leather_chestplate":80,"leather_leggings":75,"leather_boots":65,"golden_helmet":77,"golden_chestplate":112,"golden_leggings":105,"golden_boots":91,"chainmail_helmet":165,"chainmail_chestplate":240,"chainmail_leggings":225,"chainmail_boots":195,"iron_helmet":165,"iron_chestplate":240,"iron_leggings":225,"iron_boots":195,"diamond_helmet":363,"diamond_chestplate":528,"diamond_leggings":495,"diamond_boots":429,"golden_axe":32,"golden_pickaxe":32,"golden_shovel":32,"golden_hoe":32,"golden_sword":32,"wooden_axe":59,"wooden_pickaxe":59,"wooden_shovel":59,"wooden_hoe":59,"wooden_sword":59,"stone_axe":131,"stone_pickaxe":131,"stone_shovel":131,"stone_hoe":131,"stone_sword":131,"iron_axe":250,"iron_pickaxe":250,"iron_shovel":250,"iron_hoe":250,"iron_sword":250,"diamond_axe":1561,"diamond_pickaxe":1561,"diamond_shovel":1561,"diamond_hoe":1561,"diamond_sword":1561,"fishing_rod":64,"flint_and_steel":64,"carrot_on_a_stick":25,"shears":238,"shield":336,"bow":384,"trident":250,"elytra":432,"crossbow":326}

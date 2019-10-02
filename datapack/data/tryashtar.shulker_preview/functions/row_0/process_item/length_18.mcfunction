@@ -1,4 +1,6 @@
 execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:andesite"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.andesite.0"}'}
+execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:bee_hive"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.bee_hive.0"}'}
+execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:bee_nest"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.bee_nest.0"}'}
 execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:beetroot"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.beetroot.0"}'}
 execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:blue_bed"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.blue_bed.0"}'}
 execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:blue_dye"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.blue_dye.0"}'}

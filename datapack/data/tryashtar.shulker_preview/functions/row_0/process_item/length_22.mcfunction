@@ -27,6 +27,7 @@ execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:granite_slab"}} run su
 execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:granite_wall"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.granite_wall.0"}'}
 execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:green_banner"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.green_banner.0"}'}
 execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:green_carpet"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.green_carpet.0"}'}
+execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:honey_bottle"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.honey_bottle.0"}'}
 execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:iron_pickaxe"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.iron_pickaxe.0"}'}
 execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:iron_pickaxe"}} run scoreboard players set #max shulker_preview 250
 execute if block ~1 1 ~ jukebox{RecordItem:{id:"minecraft:jungle_fence"}} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.jungle_fence.0"}'}
