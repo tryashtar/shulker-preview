@@ -3,7 +3,7 @@
 |Version|Links|
 |---|---|
 |Minecraft 1.15|[Data Pack](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/tryashtar/shulker-preview/tree/1.15/datapack&rootDirectory=false)<br>[Resource Pack](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/tryashtar/shulker-preview/tree/1.15/resourcepack&rootDirectory=false) <sup>[[Dark Mode]](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/tryashtar/shulker-preview/tree/1.15/resourcepack_dark&rootDirectory=false)</sup>|
-|Minecraft 1.14|[Data Pack](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/tryashtar/shulker-preview/tree/1.14/datapack&rootDirectory=false)<br>[Resource Pack](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/tryashtar/shulker-preview/tree/1.14/resourcepack&rootDirectory=false) <sup>[[Dark Mode]](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/tryashtar/shulker-preview/tree/1.14/resourcepack_dark&rootDirectory=false)</sup>|
+|Minecraft 1.14.3|[Data Pack](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/tryashtar/shulker-preview/tree/1.14/datapack&rootDirectory=false)<br>[Resource Pack](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/tryashtar/shulker-preview/tree/1.14/resourcepack&rootDirectory=false) <sup>[[Dark Mode]](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/tryashtar/shulker-preview/tree/1.14/resourcepack_dark&rootDirectory=false)</sup>|
 
 If you download dark mode, it must be equipped above the regular resource pack.
 
