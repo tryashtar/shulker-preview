@@ -1,3 +1,0 @@
-scoreboard players reset #ender_enabled shulker_preview
-function tryashtar.shulker_preview:ender_tick
-tellraw @a [{"text":"\nEnder chest previews disabled successfully!\nAny existing chests can be placed then broken to return to normal.\n","color":"yellow"},{"text":"You can run this command at any time to re-enable them:\n","color":"green"},{"text":"/function tryashtar.shulker_preview:.meta/enable_ender","color":"gray","hoverEvent":{"action":"show_text","value":{"text":"Click to enable","color":"green"}},"clickEvent":{"action":"run_command","value":"/function tryashtar.shulker_preview:.meta/enable_ender"}},"\n"]
