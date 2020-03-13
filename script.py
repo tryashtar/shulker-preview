@@ -4,6 +4,7 @@ import json
 import math
 import operator
 import numpy
+import shutil
 from PIL import Image
 from collections import OrderedDict
 
@@ -169,6 +170,10 @@ def main():
          command += "]}}},"
       command += "]}"
       print(command)
+
+   shutil.make_archive("Shulker Preview Data Pack (1.14)", 'zip', "datapack")
+   shutil.make_archive("Shulker Preview Resource Pack (1.14)", 'zip', "resourcepack")
+   shutil.make_archive("Shulker Preview Dark Theme (1.14)", 'zip', "resourcepack_dark")
 
 
 def unicode_escape(character):
