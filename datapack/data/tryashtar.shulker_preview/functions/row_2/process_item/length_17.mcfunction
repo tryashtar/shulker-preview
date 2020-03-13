@@ -1,5 +1,6 @@
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:barrier"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.barrier.2"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:bedrock"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.bedrock.2"}'}
+execute if data storage tryashtar:shulker_preview item{id:"minecraft:beehive"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.beehive.2"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:chicken"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.chicken.2"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:compass"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.compass.2"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:conduit"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.conduit.2"}'}
