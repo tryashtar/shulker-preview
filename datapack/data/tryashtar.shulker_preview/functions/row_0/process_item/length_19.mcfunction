@@ -32,6 +32,7 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:red_tulip"}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:rose_bush"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.rose_bush.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:sandstone"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.sandstone.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:soul_sand"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.soul_sand.0"}'}
+execute if data storage tryashtar:shulker_preview item{id:"minecraft:soul_soil"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.soul_soil.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:stone_axe"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.stone_axe.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:stone_axe"} run scoreboard players set #max shulker_preview 131
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:stone_hoe"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.stone_hoe.0"}'}

@@ -28,16 +28,6 @@ def main():
    delete_entries_regex(mcitems, r"_overlay")
    delete_entries(mcitems,["empty_armor_slot", "fishing_rod_cast", "tipped_arrow_head", "filled_map_markings", "ruby", "tipped_arrow_base", "spawn_egg", "crystallized_honey"])
 
-   # 1.16 changes
-   rename_key(mcitems, "zombified_piglin_spawn_egg", "zombie_pigman_spawn_egg")
-   delete_entries(mcitems,["weeping_vines","twisting_vines","nether_sprouts","soul_fire_torch","soul_fire_lantern","hoglin_spawn_egg","piglin_spawn_egg"])
-   delete_entries(mcblocks,["basalt","target","soul_soil","shroomlight","ancient_debris","crying_obsidian","nether_gold_ore","netherite_block"])
-   delete_entries_regex(mcblocks,r"warped_")
-   delete_entries_regex(mcitems,r"warped_")
-   delete_entries_regex(mcblocks,r"crimson_")
-   delete_entries_regex(mcitems,r"crimson_")
-   delete_entries_regex(mcitems,r"netherite_")
-
    check_items(list(mcitems.keys())+list(mcblocks.keys()))
 
    # create grids

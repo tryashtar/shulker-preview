@@ -1,6 +1,7 @@
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:allium"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.allium.1"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:bamboo"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.bamboo.1"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:barrel"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.barrel.1"}'}
+execute if data storage tryashtar:shulker_preview item{id:"minecraft:basalt"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.basalt.1"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:beacon"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.beacon.1"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:bricks"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.bricks.1"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:bucket"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.bucket.1"}'}
@@ -31,6 +32,7 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:shield"} ru
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:smoker"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.smoker.1"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:sponge"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.sponge.1"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:string"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.string.1"}'}
+execute if data storage tryashtar:shulker_preview item{id:"minecraft:target"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.target.1"}'}
 execute if data storage tryashtar:shulker_preview item.tag.Potion run function tryashtar.shulker_preview:row_1/process_potion
 execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage
 execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_1/process_durability
