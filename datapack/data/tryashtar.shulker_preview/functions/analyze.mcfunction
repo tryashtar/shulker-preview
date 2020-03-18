@@ -116,7 +116,7 @@ summon area_effect_cloud ~ ~21.4 ~ {Tags:["tryashtar.shulker_preview"],CustomNam
 summon area_effect_cloud ~ ~30.4 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.row_end"}'}
 
 # evaluate entities on the sign
-summon item ~ ~ ~ {UUIDMost:29999977L,UUIDLeast:9832L,Item:{id:tnt,Count:1b}}
+summon item ~ ~ ~ {UUID:[I;0,29999977,0,9832],Item:{id:tnt,Count:1b}}
 
 data modify entity 0-1c9-c369-0-2668 Item set from block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[0]
 execute store result score #amount shulker_preview run data get block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[0].Count

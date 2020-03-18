@@ -1,5 +1,5 @@
 # scan each ender chest in inventory to see if it's completely new, has a different UUID (new player), or has a different content length (ender contents changed)
-execute store result score #uuid shulker_preview run data get entity @s UUIDMost 0.00000000023283064365386962890625
+execute store result score #uuid shulker_preview run data get entity @s UUID[0]
 execute store result score #contents shulker_preview run data get entity @s EnderItems
 scoreboard players set #done shulker_preview 0
 data modify block ~ 1 ~ Items set value [{id:tnt,Count:1b}]
