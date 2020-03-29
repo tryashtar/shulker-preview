@@ -2,7 +2,7 @@
 
 |Version|Links|
 |---|---|
-|Minecraft 1.16<br>(20w12a)|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Data%20Pack%20(1.16).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Resource%20Pack%20(1.16).zip) <sup>[[Dark Mode]](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Dark%20Theme%20(1.16).zip)</sup>|
+|Minecraft 1.16<br>(20w13b)|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Data%20Pack%20(1.16).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Resource%20Pack%20(1.16).zip) <sup>[[Dark Mode]](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Dark%20Theme%20(1.16).zip)</sup>|
 |Minecraft 1.15|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Data%20Pack%20(1.15).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Resource%20Pack%20(1.15).zip) <sup>[[Dark Mode]](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Dark%20Theme%20(1.15).zip)</sup>|
 |Minecraft 1.14.3|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Data%20Pack%20(1.14).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Resource%20Pack%20(1.14).zip) <sup>[[Dark Mode]](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Dark%20Theme%20(1.14).zip)</sup>|
 
