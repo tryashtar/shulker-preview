@@ -28,4 +28,5 @@ If you download dark mode, it must be equipped above the regular resource pack.
 * What happens if players don't have the resource pack?
    * They will see the vanilla shulker box tooltip, though it may contain a few blank lines.
 * It's not working for me!
-   * Feel free to message me on twitter ([@tryashtar](https://twitter.com/tryashtar)) or discord (@tryashtar#7885) and I will be happy to help.
+   * First, please [follow these instructions](https://imgur.com/a/rBukto5) to diagnose and solve some very common issues.
+   * If that didn't fix your problem, feel free to message me on twitter ([@tryashtar](https://twitter.com/tryashtar)) or discord (@tryashtar#7885) and I will be happy to help.
