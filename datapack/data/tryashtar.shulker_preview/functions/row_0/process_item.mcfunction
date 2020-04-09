@@ -28,6 +28,8 @@ execute if score #length shulker_preview matches 37 run function tryashtar.shulk
 execute if score #length shulker_preview matches 38 run function tryashtar.shulker_preview:row_0/process_item/length_38
 execute if score #length shulker_preview matches 39 run function tryashtar.shulker_preview:row_0/process_item/length_39
 execute if score #length shulker_preview matches 40 run function tryashtar.shulker_preview:row_0/process_item/length_40
+execute if score #length shulker_preview matches 42 run function tryashtar.shulker_preview:row_0/process_item/length_42
+execute if score #length shulker_preview matches 44 run function tryashtar.shulker_preview:row_0/process_item/length_44
 
 # summon in count entity
 execute store result score #count shulker_preview run data get storage tryashtar:shulker_preview item.Count

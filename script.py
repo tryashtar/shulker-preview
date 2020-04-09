@@ -255,7 +255,8 @@ def create_grid(icondict):
    size=get_dimensions(len(icondict))
    ordered=sorted(icondict.items(), key=lambda x: x[0])
    ordered.extend([None]*(size[0]*size[1]-len(ordered)))
-   result=numpy.array(ordered)
+   result=numpy.empty(len(ordered), dtype=object)
+   result[:]=ordered
    return numpy.reshape(result, size)
 
 # returns an integer square that fits this area
