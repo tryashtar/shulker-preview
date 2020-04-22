@@ -4,7 +4,7 @@ execute if score #version shulker_preview matches 1..1967 run scoreboard players
 execute if score #version shulker_preview matches 1968.. if score #setup shulker_preview matches -1 run scoreboard players set #setup shulker_preview 0
 
 scoreboard players add #setup shulker_preview 0
-execute if score #setup shulker_preview matches 0 run tellraw @a {"translate":"%1$s","with":[{"text":"\nDon't forget to equip the resource pack!\n","color":"red"},""]}
+execute if score #setup shulker_preview matches 0 run tellraw @a {"translate":"%1$s%418634357$s","with":[{"text":"\nDon't forget to equip the resource pack!\n","color":"red"},""]}
 execute if score #setup shulker_preview matches 0 run tellraw @a [{"text":"Successfully installed ","color":"green"},{"text":"tryashtar's","color":"blue","hoverEvent":{"action":"show_text","value":{"text":"(click to see more of my stuff)","color":"gray"}},"clickEvent":{"action":"open_url","value":"https://youtube.com/c/tryashtar"}},{"text":" Shulker Preview Pack!\nThank you and enjoy.\n\n","color":"green"},{"text":"You can also click this text to add previews to Ender Chests.","color":"yellow","hoverEvent":{"action":"show_text","value":[{"text":"NOTE:\n","color":"red"},{"text":"This is experimental and will prevent ender chests from stacking.","color":"gray"}]},"clickEvent":{"action":"run_command","value":"/function tryashtar.shulker_preview:.meta/enable_ender"}}]
 execute if score #setup shulker_preview matches 0 run scoreboard players set #setup shulker_preview 1
 
