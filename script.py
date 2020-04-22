@@ -73,8 +73,8 @@ def main():
 
    # write translations and providers
    print("Writing JSONs...")
-   write_json(translations, "resourcepack/assets/minecraft/lang/en_us.json")
-   write_json({"providers":providers}, "resourcepack/assets/minecraft/font/default.json")
+   write_json(translations, "resourcepack/assets/tryashtar.shulker_preview/lang/en_us.json")
+   write_json({"providers":providers}, "resourcepack/assets/tryashtar.shulker_preview/font/preview.json")
 
    # create dictionary of item lengths
    print("Creating functions...")
@@ -158,7 +158,7 @@ def main():
          if boxslot == 0:
             command += "{id:shulker_box,Count:1b,Slot:" +str(boxes)+ "b,tag:{BlockEntityTag:{Items:["
             boxes += 1
-         command += "{id:\"" +item+ "\",Count:1b,Slot:" +str(boxslot)+ "b},"
+         command += "{id:\"minecraft:" +item+ "\",Count:1b,Slot:" +str(boxslot)+ "b},"
          index += 1
          boxslot +=1
          if boxslot >= 27:
@@ -192,7 +192,7 @@ def read_json(path):
 
 def write_json(j, path):
    with open(path, "w") as file:
-      file.write(json.dumps(j, indent=3))
+      file.write(json.dumps(j, indent=3, ensure_ascii=True))
 
 def write_lines(lines, path):
    with open(path, "w") as file:
@@ -223,7 +223,7 @@ def get_spacing(sequence):
                result+=negative_spaces[space]
    return result
 
-currentchar='\uE000'
+currentchar='\u0021'
 charmap={}
 translations={"%1$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing(["max",12,"-max"]),"tryashtar.shulker_preview.row_end":get_spacing(["max",-168,"-max"])}
 # create a provider from file name, grid of icon names, and ascent/height
