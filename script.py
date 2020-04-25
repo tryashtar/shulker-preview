@@ -223,7 +223,7 @@ def get_spacing(sequence):
                result+=negative_spaces[space]
    return result
 
-currentchar='\u0021'
+currentchar='\u0030'
 charmap={}
 translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing(["max",12,"-max"]),"tryashtar.shulker_preview.row_end":get_spacing(["max",-168,"-max"])}
 # create a provider from file name, grid of icon names, and ascent/height
