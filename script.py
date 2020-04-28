@@ -8,13 +8,12 @@ import shutil
 from PIL import Image
 from collections import OrderedDict
 
-specials=["broken_elytra","crossbow_arrow","crossbow_firework","spawn_egg","spawn_egg_overlay","firework_star_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","potion_overlay"]
+specials=["broken_elytra","crossbow_arrow","crossbow_firework","spawn_egg","spawn_egg_overlay","firework_star_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","potion_overlay","tipped_arrow_base","tipped_arrow_head"]
 def main():
    # load item textures from two sources
    print("Loading icons...")
    mcitems=load_items("D:/Minecraft/Java Storage/History/jar/assets/minecraft/textures/item", "../extra item images")
    mcblocks=load_items("../block images")
-   mcoverlays=load_items("../extra item images/overlay")
 
    # a few renames
    rename_key(mcitems, "clock_00", "clock")
@@ -26,8 +25,8 @@ def main():
    delete_entries_regex(mcitems, r"^compass_\d\d$")
    delete_entries_regex(mcitems, r"^(cross)?bow_pulling_\d$")
    delete_entries_regex(mcitems, r"^empty_armor_slot_")
-   delete_entries(mcitems,["empty_armor_slot", "fishing_rod_cast", "tipped_arrow_head", "filled_map_markings", "ruby", "tipped_arrow_base", "crystallized_honey"])
-   blockitems=["acacia_sapling","activator_rail","allium","azure_bluet","birch_sapling","black_stained_glass_pane","blue_orchid","blue_stained_glass_pane","brain_coral","brain_coral_fan","brown_mushroom","brown_stained_glass_pane","bubble_coral","bubble_coral_fan","cobweb","cornflower","crimson_fungus","crimson_roots","cyan_stained_glass_pane","dandelion","dark_oak_sapling","dead_brain_coral","dead_brain_coral_fan","dead_bubble_coral","dead_bubble_coral_fan","dead_bush","dead_fire_coral","dead_fire_coral_fan","dead_horn_coral","dead_horn_coral_fan","dead_tube_coral","dead_tube_coral_fan","detector_rail","fern","fire_coral","fire_coral_fan","glass_pane","grass","gray_stained_glass_pane","green_stained_glass_pane","horn_coral","horn_coral_fan","iron_bars","jungle_sapling","ladder","large_fern","lever","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lilac","lily_of_the_valley","lily_pad","lime_stained_glass_pane","magenta_stained_glass_pane","nether_sprouts","oak_sapling","orange_stained_glass_pane","orange_tulip","oxeye_daisy","peony","pink_stained_glass_pane","pink_tulip","poppy","potion","powered_rail","purple_stained_glass_pane","rail","redstone_torch","red_mushroom","red_stained_glass_pane","red_tulip","rose_bush","soul_torch","spruce_sapling","sunflower","tall_grass","torch","tripwire_hook","tube_coral","tube_coral_fan","twisting_vines","vine","warped_fungus","warped_roots","weeping_vines","white_stained_glass_pane","white_tulip","wither_rose","yellow_stained_glass_pane"]
+   delete_entries(mcitems,["empty_armor_slot", "fishing_rod_cast", "filled_map_markings", "ruby", "crystallized_honey"])
+   blockitems=["acacia_sapling","activator_rail","allium","azure_bluet","birch_sapling","black_stained_glass_pane","blue_orchid","blue_stained_glass_pane","brain_coral","brain_coral_fan","brown_mushroom","brown_stained_glass_pane","bubble_coral","bubble_coral_fan","cobweb","cornflower","crimson_fungus","crimson_roots","cyan_stained_glass_pane","dandelion","dark_oak_sapling","dead_brain_coral","dead_brain_coral_fan","dead_bubble_coral","dead_bubble_coral_fan","dead_bush","dead_fire_coral","dead_fire_coral_fan","dead_horn_coral","dead_horn_coral_fan","dead_tube_coral","dead_tube_coral_fan","detector_rail","fern","fire_coral","fire_coral_fan","glass_pane","grass","gray_stained_glass_pane","green_stained_glass_pane","horn_coral","horn_coral_fan","iron_bars","jungle_sapling","ladder","large_fern","lever","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lilac","lily_of_the_valley","lily_pad","lime_stained_glass_pane","magenta_stained_glass_pane","nether_sprouts","oak_sapling","orange_stained_glass_pane","orange_tulip","oxeye_daisy","peony","pink_stained_glass_pane","pink_tulip","poppy","powered_rail","purple_stained_glass_pane","rail","redstone_torch","red_mushroom","red_stained_glass_pane","red_tulip","rose_bush","soul_torch","spruce_sapling","sunflower","tall_grass","torch","tripwire_hook","tube_coral","tube_coral_fan","twisting_vines","vine","warped_fungus","warped_roots","weeping_vines","white_stained_glass_pane","white_tulip","wither_rose","yellow_stained_glass_pane"]
    for blockitem in blockitems:
       mcitems[blockitem]="block"
 
@@ -35,7 +34,6 @@ def main():
 
    mcitems=dict(sorted(mcitems.items()))
    mcblocks=dict(sorted(mcblocks.items()))
-   mcoverlays=dict(sorted(mcoverlays.items()))
 
    # create grids
    print("Creating image sheets...")
@@ -61,7 +59,7 @@ def main():
       dur3=[f"durability.{i}.{row}" for i in range(11,15)]+[None]
       providers.append(register_grid("tryashtar.shulker_preview:durability.png", [dur1,dur2,dur3], height-8, 2, (get_spacing(["max",-16]),get_spacing([-4,"-max"]))))
 
-      # item/block/overlay grids
+      # grids
       providers.append(register_grid("tryashtar.shulker_preview:block_sheet.png", apply_to_all(grid_keys(blockgrid), lambda x: f"block.{x}.{row}"), height+5, 16, (get_spacing(["max"]),get_spacing([-5,"-max"]))))
       providers.extend(register_items(mcitems, row, height+5, 16, True))
 
@@ -140,9 +138,9 @@ def main():
       # process_potion and process_arrow
       lines1=["# create an entity that draws the proper potion overlay color"]
       lines2=["# create an entity that draws the proper tipped arrow overlay color"]
-      for potionname, colorname in potion_dict.items():
-         lines1.append("execute if data storage tryashtar:shulker_preview item{tag:{Potion:\"minecraft:"+potionname+"\"}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.overlay.potion_liquid."+colorname+"."+str(row)+"\"}'}")
-         lines2.append("execute if data storage tryashtar:shulker_preview item{tag:{Potion:\"minecraft:"+potionname+"\"}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.overlay.arrow_dust."+colorname+"."+str(row)+"\"}'}")
+      for potionname, color in potion_dict.items():
+         lines1.append("execute if data storage tryashtar:shulker_preview item{tag:{Potion:\"minecraft:"+potionname+"\"}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.potion_overlay."+str(row)+"\",\"color\":\"#"+format(color,'06x')+"\"}'}")
+         lines2.append("execute if data storage tryashtar:shulker_preview item{tag:{Potion:\"minecraft:"+potionname+"\"}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.tipped_arrow_head."+str(row)+"\",\"color\":\"#"+format(color,'06x')+"\"}'}")
       write_lines(lines1, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/process_potion.mcfunction")
       write_lines(lines2, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/process_arrow.mcfunction")
 
@@ -258,7 +256,10 @@ def register_items(items, row, ascent, height, real_version):
       itype="block" if v=="block" else "item"
       if real_version:
          negative=charmap[f"negative.item.{item}"]
-         results.append(register_single(f"minecraft:{itype}/{location}.png", f"item.{item}.{row}", ascent, height, (get_spacing(["max"]),negative+get_spacing([9,"-max"]))))         
+         firstspace=get_spacing(["max"])
+         if item in ["tipped_arrow_head","spawn_egg_overlay","potion_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay"]:
+            firstspace=get_spacing(["max",-18])
+         results.append(register_single(f"minecraft:{itype}/{location}.png", f"item.{item}.{row}", ascent, height, (firstspace,negative+get_spacing([9,"-max"]))))         
       else:
          results.append(register_single(f"minecraft:{itype}/{location}.png", f"negative.item.{item}", -32768, -height, None))
    return results
@@ -343,7 +344,9 @@ def check_items(items):
 
 # item information
 durability_dict={"leather_helmet":55,"leather_chestplate":80,"leather_leggings":75,"leather_boots":65,"golden_helmet":77,"golden_chestplate":112,"golden_leggings":105,"golden_boots":91,"chainmail_helmet":165,"chainmail_chestplate":240,"chainmail_leggings":225,"chainmail_boots":195,"iron_helmet":165,"iron_chestplate":240,"iron_leggings":225,"iron_boots":195,"diamond_helmet":363,"diamond_chestplate":528,"diamond_leggings":495,"diamond_boots":429,"golden_axe":32,"golden_pickaxe":32,"golden_shovel":32,"golden_hoe":32,"golden_sword":32,"wooden_axe":59,"wooden_pickaxe":59,"wooden_shovel":59,"wooden_hoe":59,"wooden_sword":59,"stone_axe":131,"stone_pickaxe":131,"stone_shovel":131,"stone_hoe":131,"stone_sword":131,"iron_axe":250,"iron_pickaxe":250,"iron_shovel":250,"iron_hoe":250,"iron_sword":250,"diamond_axe":1561,"diamond_pickaxe":1561,"diamond_shovel":1561,"diamond_hoe":1561,"diamond_sword":1561,"fishing_rod":64,"flint_and_steel":64,"carrot_on_a_stick":25,"shears":238,"shield":336,"bow":384,"trident":250,"elytra":432,"crossbow":326}
-potion_dict={"night_vision":"night_vision","long_night_vision":"night_vision","invisibility":"invisibility","long_invisibility":"invisibility","leaping":"leaping","strong_leaping":"leaping","long_leaping":"leaping","fire_resistance":"fire_resistance","long_fire_resistance":"fire_resistance","swiftness":"swiftness","strong_swiftness":"swiftness","long_swiftness":"swiftness","water_breathing":"water_breathing","long_water_breathing":"water_breathing","healing":"healing","strong_healing":"healing","harming":"harming","strong_harming":"harming","poison":"poison","strong_poison":"poison","long_poison":"poison","regeneration":"regeneration","strong_regeneration":"regeneration","long_regeneration":"regeneration","strength":"strength","strong_strength":"strength","long_strength":"strength","weakness":"weakness","long_weakness":"weakness","luck":"luck","turtle_master":"turtle_master","strong_turtle_master":"turtle_master","long_turtle_master":"turtle_master","slow_falling":"slow_falling","long_slow_falling":"slow_falling"}
+potion_dict={"night_vision":2039713,"long_night_vision":2039713,"invisibility":8356754,"long_invisibility":8356754,"leaping":2293580,"strong_leaping":2293580,"long_leaping":2293580,"fire_resistance":14981690,"long_fire_resistance":14981690,"swiftness":8171462,"strong_swiftness":8171462,"long_swiftness":8171462,"water_breathing":3035801,"long_water_breathing":3035801,"healing":16262179,"strong_healing":16262179,"harming":4393481,"strong_harming":4393481,"poison":5149489,"strong_poison":5149489,"long_poison":5149489,"regeneration":13458603,"strong_regeneration":13458603,"long_regeneration":13458603,"strength":9643043,"strong_strength":9643043,"long_strength":9643043,"weakness":4738376,"long_weakness":4738376,"luck":3381504,"turtle_master":7559776,"strong_turtle_master":7559776,"long_turtle_master":7559776,"slow_falling":16773073,"long_slow_falling":16773073,"slowness":5926017,"long_slowness":5926017,"strong_slowness":5926017}
+potion_dict=dict(sorted(potion_dict.items()))
+
 spawn_egg_colors={
    "bat_spawn_egg": (4996656, 986895),
    "bee_spawn_egg": (15582019, 4400155),
@@ -440,6 +443,11 @@ def process_item_lines(items, row):
             "execute if data storage tryashtar:shulker_preview item{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:firework_rocket\"}]}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.crossbow_firework."+str(row)+"\"}'}",
             "execute if data storage tryashtar:shulker_preview item{id:\"minecraft:crossbow\"} unless data storage tryashtar:shulker_preview item{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{}]}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.crossbow."+str(row)+"\"}'}"
             ])
+      elif item in ["leather_helmet","leather_chestplate","leather_leggings","leather_boots","leather_horse_armor"]:
+         if item in ("leather_chestplate","leather_horse_armor"):
+            lines.append("execute if data storage tryashtar:shulker_preview item{id:\""+name+"\"} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item."+item+"."+str(row)+"\",\"color\":\"#"+format(10511680,'06x')+"\"}'}")
+         else:
+            lines.append("execute if data storage tryashtar:shulker_preview item{id:\""+name+"\"} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'[{\"translate\":\"tryashtar.shulker_preview.item."+item+"."+str(row)+"\",\"color\":\"#"+format(10511680,'06x')+"\"},\", \",{\"translate\":\"tryashtar.shulker_preview.item."+item+"_overlay."+str(row)+"\",\"color\":\"white\"}]'}")
       else:
          lines.append("execute if data storage tryashtar:shulker_preview item{id:\""+name+"\"} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview."+itemtype+"."+item+"."+str(row)+"\"}'}")
       if item in ("potion","splash_potion","lingering_potion"):
