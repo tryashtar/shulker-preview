@@ -1,3 +1,4 @@
+
 ### Download
 
 |Version|Links|
@@ -24,7 +25,8 @@ If you download dark mode, it must be equipped above the regular resource pack.
 * Does this work with Optifine?
    * Yes.
 * Does this work with other resource packs?
-   * Yes, but the icons inside of shulker boxes will use vanilla textures. Also,  in 1.15 and earlier, other packs that also override private use characters will conflict with this one.
+   * In 1.16 and later, items in the preview will look as they do in your personal resource pack, but blocks will appear with vanilla textures.
+   * In 1.15 and earlier, both items and blocks will use vanilla textures. Also, the pack may conflict with other packs that override private use characters.
 * What happens if players don't have the resource pack?
    * They will see the vanilla shulker box tooltip, though it may contain a few blank lines.
 * It's not working for me!
