@@ -28,42 +28,43 @@ def main():
    delete_entries_regex(mcitems, r"^empty_armor_slot_")
    delete_entries_regex(mcitems, r"_overlay")
    delete_entries(mcitems,["empty_armor_slot", "fishing_rod_cast", "tipped_arrow_head", "filled_map_markings", "ruby", "tipped_arrow_base", "spawn_egg", "crystallized_honey"])
+   blockitems=["acacia_sapling","activator_rail","allium","azure_bluet","birch_sapling","black_stained_glass_pane","blue_orchid","blue_stained_glass_pane","brain_coral","brain_coral_fan","brown_mushroom","brown_stained_glass_pane","bubble_coral","bubble_coral_fan","cobweb","cornflower","crimson_fungus","crimson_roots","cyan_stained_glass_pane","dandelion","dark_oak_sapling","dead_brain_coral","dead_brain_coral_fan","dead_bubble_coral","dead_bubble_coral_fan","dead_bush","dead_fire_coral","dead_fire_coral_fan","dead_horn_coral","dead_horn_coral_fan","dead_tube_coral","dead_tube_coral_fan","detector_rail","enchanted_golden_apple","fern","fire_coral","fire_coral_fan","glass_pane","grass","gray_stained_glass_pane","green_stained_glass_pane","horn_coral","horn_coral_fan","iron_bars","jungle_sapling","ladder","large_fern","lever","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lilac","lily_of_the_valley","lily_pad","lime_stained_glass_pane","magenta_stained_glass_pane","nether_sprouts","oak_sapling","orange_stained_glass_pane","orange_tulip","oxeye_daisy","peony","pink_stained_glass_pane","pink_tulip","poppy","potion","powered_rail","purple_stained_glass_pane","rail","redstone_torch","red_mushroom","red_stained_glass_pane","red_tulip","rose_bush","soul_torch","spruce_sapling","sunflower","tall_grass","torch","tripwire_hook","tube_coral","tube_coral_fan","twisting_vines","vine","warped_fungus","warped_roots","weeping_vines","white_stained_glass_pane","white_tulip","wither_rose","yellow_stained_glass_pane"]
+   for blockitem in blockitems:
+      mcitems[blockitem]="block"
 
    check_items(list(mcitems.keys())+list(mcblocks.keys()))
 
+   mcitems=dict(sorted(mcitems.items()))
+   mcblocks=dict(sorted(mcblocks.items()))
+   mcoverlays=dict(sorted(mcoverlays.items()))
+
    # create grids
    print("Creating image sheets...")
-   itemgrid=create_grid(mcitems)
-   itemsheet=create_image(itemgrid, 16)
-   itemsheet.save("resourcepack/assets/tryashtar.shulker_preview/textures/item_sheet.png", "PNG")
    blockgrid=create_grid(mcblocks)
    blocksheet=create_image(blockgrid, 64)
    blocksheet.save("resourcepack/assets/tryashtar.shulker_preview/textures/block_sheet.png", "PNG")
-   overlaygrid=create_grid(mcoverlays)
-   overlaysheet=create_image(overlaygrid, 16)
-   overlaysheet.save("resourcepack/assets/tryashtar.shulker_preview/textures/overlay_sheet.png", "PNG")
 
    # start creating font providers
    print("Generating font providers...")
    providers=[{"comment":"Many thanks to AmberW#4615 for this invaluable concept","type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-3,"chars":["\uf801"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-4,"chars":["\uf802"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-5,"chars":["\uf803"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-6,"chars":["\uf804"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-7,"chars":["\uf805"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-8,"chars":["\uf806"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-9,"chars":["\uf807"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-10,"chars":["\uf808"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-18,"chars":["\uf809"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-34,"chars":["\uf80a"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-66,"chars":["\uf80b"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-130,"chars":["\uf80c"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-258,"chars":["\uf80d"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-514,"chars":["\uf80e"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-1026,"chars":["\uf80f"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":0,"chars":["\uf821"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":1,"chars":["\uf822"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":2,"chars":["\uf823"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":3,"chars":["\uf824"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":4,"chars":["\uf825"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":5,"chars":["\uf826"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":6,"chars":["\uf827"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":7,"chars":["\uf828"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":15,"chars":["\uf829"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":31,"chars":["\uf82a"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":63,"chars":["\uf82b"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":127,"chars":["\uf82c"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":255,"chars":["\uf82d"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":511,"chars":["\uf82e"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":1023,"chars":["\uf82f"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32770,"height":-32770,"chars":["\uf800"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":32767,"chars":["\uf820"]},{"type":"bitmap","file":"tryashtar.shulker_preview:comma.png","ascent":7,"chars":[","]}]
-   providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip.png", "shulker_tooltip", 23, 78, (["max",-4],[-175,"-max"])))
-   providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip_header.png", "shulker_tooltip_header", 23, 78, (["max",-4],[-175,"-max"])))
-   providers.append(register_single("tryashtar.shulker_preview:ender_tooltip.png", "ender_tooltip", 23, 78, (["max",-4],[-175,"-max"])))
+   providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip.png", "shulker_tooltip", 23, 78, (get_spacing(["max",-4]),get_spacing([-175,"-max"]))))
+   providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip_header.png", "shulker_tooltip_header", 23, 78, (get_spacing(["max",-4]),get_spacing([-175,"-max"]))))
+   providers.append(register_single("tryashtar.shulker_preview:ender_tooltip.png", "ender_tooltip", 23, 78, (get_spacing(["max",-4]),get_spacing([-175,"-max"]))))
 
+   providers.extend(register_items(mcitems, 0, -32768, 16, False))
    # per-row icons
    for row in range(0, 3):
       height=-18*row
       numbers=[f"number.{i}.{row}" for i in range(0,10)]
-      providers.append(register_grid("tryashtar.shulker_preview:numbers.png", [numbers], height-4, 8, (["max",-7],[-6,"-max"])))
+      providers.append(register_grid("tryashtar.shulker_preview:numbers.png", [numbers], height-4, 8, (get_spacing(["max",-7]),get_spacing([-6,"-max"]))))
       dur1=[f"durability.{i}.{row}" for i in range(1,6)]
       dur2=[f"durability.{i}.{row}" for i in range(6,11)]
       dur3=[f"durability.{i}.{row}" for i in range(11,15)]+[None]
-      providers.append(register_grid("tryashtar.shulker_preview:durability.png", [dur1,dur2,dur3], height-8, 2, (["max",-16],[-4,"-max"])))
+      providers.append(register_grid("tryashtar.shulker_preview:durability.png", [dur1,dur2,dur3], height-8, 2, (get_spacing(["max",-16]),get_spacing([-4,"-max"]))))
 
       # item/block/overlay grids
-      providers.append(register_grid("tryashtar.shulker_preview:item_sheet.png", apply_to_all(grid_keys(itemgrid), lambda x: f"item.{x}.{row}"), height+5, 16, (["max"],[-5,"-max"])))
-      providers.append(register_grid("tryashtar.shulker_preview:block_sheet.png", apply_to_all(grid_keys(blockgrid), lambda x: f"block.{x}.{row}"), height+5, 16, (["max"],[-5,"-max"])))
-      providers.append(register_grid("tryashtar.shulker_preview:overlay_sheet.png", apply_to_all(grid_keys(overlaygrid), lambda x: f"overlay.{x}.{row}"), height+5, 16, (["max",-18],[-5,"-max"])))
+      providers.append(register_grid("tryashtar.shulker_preview:block_sheet.png", apply_to_all(grid_keys(blockgrid), lambda x: f"block.{x}.{row}"), height+5, 16, (get_spacing(["max"]),get_spacing([-5,"-max"]))))
+      providers.extend(register_items(mcitems, row, height+5, 16, True))
 
       # remaining numbers 10-64
       for n in range(10, 65):
@@ -239,12 +240,25 @@ def register_grid(fileid, icongrid, ascent, height, spacing):
             string+='\u0000'
             continue
          charmap[entry]=currentchar
-         translations[f"tryashtar.shulker_preview.{entry}"]=get_spacing(spacing[0])+currentchar+get_spacing(spacing[1])
+         if spacing is not None:
+            translations[f"tryashtar.shulker_preview.{entry}"]=spacing[0]+currentchar+spacing[1]
          string+=currentchar
          currentchar=chr(ord(currentchar)+1)
       chars.append(string)
    base["chars"]=chars
    return base
+
+def register_items(items, row, ascent, height, real_version):
+   global currentchar
+   results=[]
+   for item,v in items.items():
+      itype="block" if v=="block" else "item"
+      if real_version:
+         negative=charmap[f"negative.item.{item}"]
+         results.append(register_single(f"minecraft:{itype}/{item}.png", f"item.{item}.{row}", ascent, height, (get_spacing(["max"]),negative+get_spacing([9,"-max"]))))         
+      else:
+         results.append(register_single(f"minecraft:{itype}/{item}.png", f"negative.item.{item}", -32768, -height, None))
+   return results
 
 # shortcut to create provider from one image
 def register_single(fileid, iconname, ascent, height, spacing):
@@ -327,6 +341,71 @@ def check_items(items):
 # item information
 durability_dict={"leather_helmet":55,"leather_chestplate":80,"leather_leggings":75,"leather_boots":65,"golden_helmet":77,"golden_chestplate":112,"golden_leggings":105,"golden_boots":91,"chainmail_helmet":165,"chainmail_chestplate":240,"chainmail_leggings":225,"chainmail_boots":195,"iron_helmet":165,"iron_chestplate":240,"iron_leggings":225,"iron_boots":195,"diamond_helmet":363,"diamond_chestplate":528,"diamond_leggings":495,"diamond_boots":429,"golden_axe":32,"golden_pickaxe":32,"golden_shovel":32,"golden_hoe":32,"golden_sword":32,"wooden_axe":59,"wooden_pickaxe":59,"wooden_shovel":59,"wooden_hoe":59,"wooden_sword":59,"stone_axe":131,"stone_pickaxe":131,"stone_shovel":131,"stone_hoe":131,"stone_sword":131,"iron_axe":250,"iron_pickaxe":250,"iron_shovel":250,"iron_hoe":250,"iron_sword":250,"diamond_axe":1561,"diamond_pickaxe":1561,"diamond_shovel":1561,"diamond_hoe":1561,"diamond_sword":1561,"fishing_rod":64,"flint_and_steel":64,"carrot_on_a_stick":25,"shears":238,"shield":336,"bow":384,"trident":250,"elytra":432,"crossbow":326}
 potion_dict={"night_vision":"night_vision","long_night_vision":"night_vision","invisibility":"invisibility","long_invisibility":"invisibility","leaping":"leaping","strong_leaping":"leaping","long_leaping":"leaping","fire_resistance":"fire_resistance","long_fire_resistance":"fire_resistance","swiftness":"swiftness","strong_swiftness":"swiftness","long_swiftness":"swiftness","water_breathing":"water_breathing","long_water_breathing":"water_breathing","healing":"healing","strong_healing":"healing","harming":"harming","strong_harming":"harming","poison":"poison","strong_poison":"poison","long_poison":"poison","regeneration":"regeneration","strong_regeneration":"regeneration","long_regeneration":"regeneration","strength":"strength","strong_strength":"strength","long_strength":"strength","weakness":"weakness","long_weakness":"weakness","luck":"luck","turtle_master":"turtle_master","strong_turtle_master":"turtle_master","long_turtle_master":"turtle_master","slow_falling":"slow_falling","long_slow_falling":"slow_falling"}
+spawn_egg_colors={
+   "bat_spawn_egg": (4996656, 986895),
+   "bee_spawn_egg": (15582019, 4400155),
+   "blaze_spawn_egg": (16167425, 16775294),
+   "cat_spawn_egg": (15714446, 9794134),
+   "cave_spider_spawn_egg": (803406, 11013646),
+   "chicken_spawn_egg": (10592673, 16711680),
+   "cod_spawn_egg": (12691306, 15058059),
+   "cow_spawn_egg": (4470310, 10592673),
+   "creeper_spawn_egg": (894731, 0),
+   "dolphin_spawn_egg": (2243405, 16382457),
+   "donkey_spawn_egg": (5457209, 8811878),
+   "drowned_spawn_egg": (9433559, 7969893),
+   "elder_guardian_spawn_egg": (13552826, 7632531),
+   "enderman_spawn_egg": (1447446, 0),
+   "endermite_spawn_egg": (1447446, 7237230),
+   "evoker_spawn_egg": (9804699, 1973274),
+   "fox_spawn_egg": (14005919, 13396256),
+   "ghast_spawn_egg": (16382457, 12369084),
+   "guardian_spawn_egg": (5931634, 15826224),
+   "hoglin_spawn_egg": (13004373, 6251620),
+   "horse_spawn_egg": (12623485, 15656192),
+   "husk_spawn_egg": (7958625, 15125652),
+   "llama_spawn_egg": (12623485, 10051392),
+   "magma_cube_spawn_egg": (3407872, 16579584),
+   "mooshroom_spawn_egg": (10489616, 12040119),
+   "mule_spawn_egg": (1769984, 5321501),
+   "ocelot_spawn_egg": (15720061, 5653556),
+   "panda_spawn_egg": (15198183, 1776418),
+   "parrot_spawn_egg": (894731, 16711680),
+   "phantom_spawn_egg": (4411786, 8978176),
+   "pig_spawn_egg": (15771042, 14377823),
+   "piglin_spawn_egg": (10051392, 16380836),
+   "pillager_spawn_egg": (5451574, 9804699),
+   "polar_bear_spawn_egg": (15921906, 9803152),
+   "pufferfish_spawn_egg": (16167425, 3654642),
+   "rabbit_spawn_egg": (10051392, 7555121),
+   "ravager_spawn_egg": (7697520, 5984329),
+   "salmon_spawn_egg": (10489616, 951412),
+   "sheep_spawn_egg": (15198183, 16758197),
+   "shulker_spawn_egg": (9725844, 5060690),
+   "silverfish_spawn_egg": (7237230, 3158064),
+   "skeleton_spawn_egg": (12698049, 4802889),
+   "skeleton_horse_spawn_egg": (6842447, 15066584),
+   "slime_spawn_egg": (5349438, 8306542),
+   "spider_spawn_egg": (3419431, 11013646),
+   "squid_spawn_egg": (2243405, 7375001),
+   "stray_spawn_egg": (6387319, 14543594),
+   "strider_spawn_egg": (10236982, 5065037),
+   "trader_llama_spawn_egg": (15377456, 4547222),
+   "tropical_fish_spawn_egg": (15690005, 16775663),
+   "turtle_spawn_egg": (15198183, 44975),
+   "vex_spawn_egg": (8032420, 15265265),
+   "villager_spawn_egg": (5651507, 12422002),
+   "vindicator_spawn_egg": (9804699, 2580065),
+   "wandering_trader_spawn_egg": (4547222, 15377456),
+   "witch_spawn_egg": (3407872, 5349438),
+   "wither_skeleton_spawn_egg": (1315860, 4672845),
+   "wolf_spawn_egg": (14144467, 13545366),
+   "zoglin_spawn_egg": (13004373, 15132390),
+   "zombie_spawn_egg": (44975, 7969893),
+   "zombie_horse_spawn_egg": (3232308, 9945732),
+   "zombified_piglin_spawn_egg": (15373203, 5009705),
+   "zombie_villager_spawn_egg": (5651507, 7969893),
+}
 
 # generates a very specific function
 def process_item_lines(items, row):
@@ -336,7 +415,10 @@ def process_item_lines(items, row):
    arrow=False
    for item, itemtype in sorted(items, key=lambda x: x[0]):
       name="minecraft:"+item
-      if item == "elytra":
+      if "spawn_egg" in item:
+         color=spawn_egg_colors[item]
+         lines.append("execute if data storage tryashtar:shulker_preview item{id:\""+name+"\"} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.spawn_egg."+str(row)+"\",\"color\":\"#"+format(color[0],'06x')+"\"}'}")
+      elif item == "elytra":
          lines.extend([
             "execute if data storage tryashtar:shulker_preview item{id:\"minecraft:elytra\",tag:{Damage:431}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.broken_elytra."+str(row)+"\"}'}",
             "execute if data storage tryashtar:shulker_preview item{id:\"minecraft:elytra\"} unless data storage tryashtar:shulker_preview item{id:\"minecraft:elytra\",tag:{Damage:431}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.elytra."+str(row)+"\"}'}"
