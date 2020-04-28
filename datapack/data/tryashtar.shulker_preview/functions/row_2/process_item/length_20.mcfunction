@@ -18,6 +18,7 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:cornflower"
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:dragon_egg"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.dragon_egg.2"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:dried_kelp"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.dried_kelp.2"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:filled_map"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.filled_map.2"}'}
+execute if data storage tryashtar:shulker_preview item{id:"minecraft:filled_map"} unless data storage tryashtar:shulker_preview item.tag.display.MapColor run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.overlay.filled_map_markings.2","color":"#46402d"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:fire_coral"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.fire_coral.2"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:flower_pot"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.flower_pot.2"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:ghast_tear"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.ghast_tear.2"}'}
@@ -79,3 +80,4 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:yellow_bed"
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:yellow_dye"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.yellow_dye.2"}'}
 execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage
 execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_2/process_durability
+execute if data storage tryashtar:shulker_preview item.tag.display.MapColor run function tryashtar.shulker_preview:row_2/process_map
