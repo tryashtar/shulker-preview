@@ -12,7 +12,12 @@ specials=["broken_elytra","crossbow_arrow","crossbow_firework","spawn_egg","spaw
 def main():
    # load item textures from two sources
    print("Loading icons...")
-   mcitems=load_items("D:/Minecraft/Java Storage/History/jar/assets/minecraft/textures/item", "../extra item images")
+   mcitems=load_items("D:/Minecraft/Java Storage/History/jar/assets/minecraft/textures/item")
+   for item in reused_textures:
+      mcitems[item]="."
+   for item in spawn_egg_colors:
+      mcitems[item]="."
+   mcitems["tipped_arrow"]="."
    mcblocks=load_items("../block images")
 
    # a few renames
