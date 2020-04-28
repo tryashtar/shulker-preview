@@ -8,7 +8,7 @@ import shutil
 from PIL import Image
 from collections import OrderedDict
 
-specials=["broken_elytra","crossbow_arrow","crossbow_firework"]
+specials=["broken_elytra","crossbow_arrow","crossbow_firework","spawn_egg","spawn_egg_overlay","firework_star_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","potion_overlay"]
 def main():
    # load item textures from two sources
    print("Loading icons...")
@@ -26,9 +26,8 @@ def main():
    delete_entries_regex(mcitems, r"^compass_\d\d$")
    delete_entries_regex(mcitems, r"^(cross)?bow_pulling_\d$")
    delete_entries_regex(mcitems, r"^empty_armor_slot_")
-   delete_entries_regex(mcitems, r"_overlay")
-   delete_entries(mcitems,["empty_armor_slot", "fishing_rod_cast", "tipped_arrow_head", "filled_map_markings", "ruby", "tipped_arrow_base", "spawn_egg", "crystallized_honey"])
-   blockitems=["acacia_sapling","activator_rail","allium","azure_bluet","birch_sapling","black_stained_glass_pane","blue_orchid","blue_stained_glass_pane","brain_coral","brain_coral_fan","brown_mushroom","brown_stained_glass_pane","bubble_coral","bubble_coral_fan","cobweb","cornflower","crimson_fungus","crimson_roots","cyan_stained_glass_pane","dandelion","dark_oak_sapling","dead_brain_coral","dead_brain_coral_fan","dead_bubble_coral","dead_bubble_coral_fan","dead_bush","dead_fire_coral","dead_fire_coral_fan","dead_horn_coral","dead_horn_coral_fan","dead_tube_coral","dead_tube_coral_fan","detector_rail","enchanted_golden_apple","fern","fire_coral","fire_coral_fan","glass_pane","grass","gray_stained_glass_pane","green_stained_glass_pane","horn_coral","horn_coral_fan","iron_bars","jungle_sapling","ladder","large_fern","lever","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lilac","lily_of_the_valley","lily_pad","lime_stained_glass_pane","magenta_stained_glass_pane","nether_sprouts","oak_sapling","orange_stained_glass_pane","orange_tulip","oxeye_daisy","peony","pink_stained_glass_pane","pink_tulip","poppy","potion","powered_rail","purple_stained_glass_pane","rail","redstone_torch","red_mushroom","red_stained_glass_pane","red_tulip","rose_bush","soul_torch","spruce_sapling","sunflower","tall_grass","torch","tripwire_hook","tube_coral","tube_coral_fan","twisting_vines","vine","warped_fungus","warped_roots","weeping_vines","white_stained_glass_pane","white_tulip","wither_rose","yellow_stained_glass_pane"]
+   delete_entries(mcitems,["empty_armor_slot", "fishing_rod_cast", "tipped_arrow_head", "filled_map_markings", "ruby", "tipped_arrow_base", "crystallized_honey"])
+   blockitems=["acacia_sapling","activator_rail","allium","azure_bluet","birch_sapling","black_stained_glass_pane","blue_orchid","blue_stained_glass_pane","brain_coral","brain_coral_fan","brown_mushroom","brown_stained_glass_pane","bubble_coral","bubble_coral_fan","cobweb","cornflower","crimson_fungus","crimson_roots","cyan_stained_glass_pane","dandelion","dark_oak_sapling","dead_brain_coral","dead_brain_coral_fan","dead_bubble_coral","dead_bubble_coral_fan","dead_bush","dead_fire_coral","dead_fire_coral_fan","dead_horn_coral","dead_horn_coral_fan","dead_tube_coral","dead_tube_coral_fan","detector_rail","fern","fire_coral","fire_coral_fan","glass_pane","grass","gray_stained_glass_pane","green_stained_glass_pane","horn_coral","horn_coral_fan","iron_bars","jungle_sapling","ladder","large_fern","lever","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lilac","lily_of_the_valley","lily_pad","lime_stained_glass_pane","magenta_stained_glass_pane","nether_sprouts","oak_sapling","orange_stained_glass_pane","orange_tulip","oxeye_daisy","peony","pink_stained_glass_pane","pink_tulip","poppy","potion","powered_rail","purple_stained_glass_pane","rail","redstone_torch","red_mushroom","red_stained_glass_pane","red_tulip","rose_bush","soul_torch","spruce_sapling","sunflower","tall_grass","torch","tripwire_hook","tube_coral","tube_coral_fan","twisting_vines","vine","warped_fungus","warped_roots","weeping_vines","white_stained_glass_pane","white_tulip","wither_rose","yellow_stained_glass_pane"]
    for blockitem in blockitems:
       mcitems[blockitem]="block"
 
@@ -224,7 +223,7 @@ def get_spacing(sequence):
                result+=negative_spaces[space]
    return result
 
-currentchar='\u0030'
+currentchar='\u00b0'
 charmap={}
 translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing(["max",12,"-max"]),"tryashtar.shulker_preview.row_end":get_spacing(["max",-168,"-max"])}
 # create a provider from file name, grid of icon names, and ascent/height
@@ -252,12 +251,16 @@ def register_items(items, row, ascent, height, real_version):
    global currentchar
    results=[]
    for item,v in items.items():
+      if "_spawn_egg" in item or item in reused_textures:
+         continue
+      location=item.replace("glass_pane","glass")
+      location={"large_fern":"large_fern_top","lilac":"lilac_top","peony":"peony_top","rose_bush":"rose_bush_top","sunflower":"sunflower_front","clock":"clock_00","compass":"compass_00","crossbow":"crossbow_standby","tall_grass":"tall_grass_top","tipped_arrow":"tipped_arrow_base","twisting_vines":"twisting_vines_plant","weeping_vines":"weeping_vines_plant"}.get(location,location)
       itype="block" if v=="block" else "item"
       if real_version:
          negative=charmap[f"negative.item.{item}"]
-         results.append(register_single(f"minecraft:{itype}/{item}.png", f"item.{item}.{row}", ascent, height, (get_spacing(["max"]),negative+get_spacing([9,"-max"]))))         
+         results.append(register_single(f"minecraft:{itype}/{location}.png", f"item.{item}.{row}", ascent, height, (get_spacing(["max"]),negative+get_spacing([9,"-max"]))))         
       else:
-         results.append(register_single(f"minecraft:{itype}/{item}.png", f"negative.item.{item}", -32768, -height, None))
+         results.append(register_single(f"minecraft:{itype}/{location}.png", f"negative.item.{item}", -32768, -height, None))
    return results
 
 # shortcut to create provider from one image
@@ -406,6 +409,8 @@ spawn_egg_colors={
    "zombified_piglin_spawn_egg": (15373203, 5009705),
    "zombie_villager_spawn_egg": (5651507, 7969893),
 }
+reused_textures={"debug_stick":"stick","enchanted_golden_apple":"golden_apple"}
+grass_colors={"vine":"#48b518","lily_pad":"#71c35c","grass":"#7bbd6b","fern":"#7bbd6b","tall_grass":"#7bbd6b","large_fern":"#7bbd6b"}
 
 # generates a very specific function
 def process_item_lines(items, row):
@@ -415,9 +420,15 @@ def process_item_lines(items, row):
    arrow=False
    for item, itemtype in sorted(items, key=lambda x: x[0]):
       name="minecraft:"+item
-      if "spawn_egg" in item:
+      reused=reused_textures.get(item)
+      grass=grass_colors.get(item)
+      if reused is not None:
+         lines.append("execute if data storage tryashtar:shulker_preview item{id:\""+name+"\"} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview."+itemtype+"."+reused+"."+str(row)+"\"}'}")
+      elif grass is not None:
+         lines.append("execute if data storage tryashtar:shulker_preview item{id:\""+name+"\"} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview."+itemtype+"."+item+"."+str(row)+"\",\"color\":\""+grass+"\"}'}")
+      elif "spawn_egg" in item:
          color=spawn_egg_colors[item]
-         lines.append("execute if data storage tryashtar:shulker_preview item{id:\""+name+"\"} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.spawn_egg."+str(row)+"\",\"color\":\"#"+format(color[0],'06x')+"\"}'}")
+         lines.append("execute if data storage tryashtar:shulker_preview item{id:\""+name+"\"} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'[{\"translate\":\"tryashtar.shulker_preview.item.spawn_egg."+str(row)+"\",\"color\":\"#"+format(color[0],'06x')+"\"},\", \",{\"translate\":\"tryashtar.shulker_preview.item.spawn_egg_overlay."+str(row)+"\",\"color\":\"#"+format(color[1],'06x')+"\"}]'}")
       elif item == "elytra":
          lines.extend([
             "execute if data storage tryashtar:shulker_preview item{id:\"minecraft:elytra\",tag:{Damage:431}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.broken_elytra."+str(row)+"\"}'}",
