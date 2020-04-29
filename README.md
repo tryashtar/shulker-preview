@@ -1,4 +1,3 @@
-
 ### Download
 
 |Version|Links|
@@ -32,3 +31,28 @@ If you download dark mode, it must be equipped above the regular resource pack.
 * It's not working for me!
    * First, please [follow these instructions](https://imgur.com/a/rBukto5) to diagnose and solve some very common issues.
    * If that didn't fix your problem, feel free to message me on twitter ([@tryashtar](https://twitter.com/tryashtar)) or discord (@tryashtar#7885) and I will be happy to help.
+
+### Changelog
+```diff
+Current 1.16 version
++ All 1.16 items
++ Private use character conflict no longer possible
++ Item textures use the player's current resource pack
+
+Current 1.15 version
++ All 1.15 items
+
+Current 1.14 version
++ All 1.14 items
++ Option to preview ender chests
++ Optifine compatibility
++ Show custom item name in tooltip
++ More accurate durability bars
++ Data pack no longer requires clicking forceload text
++ Default Minecraft tooltip appears for players without the pack
+
+Video release
++ Dropped shulker box items are processed
+
+Initial release (reddit)
+```
