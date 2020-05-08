@@ -291,8 +291,9 @@
       },
       {
          "type": "bitmap",
-         "file": "tryashtar.shulker_preview:comma.png",
-         "ascent": 7,
+         "file": "tryashtar.shulker_preview:pixel.png",
+         "ascent": 0,
+         "height": 0,
          "chars": [
             ","
          ]
