@@ -28,6 +28,9 @@ If you download dark mode, it must be equipped above the regular resource pack.
    * In 1.15 and earlier, both items and blocks will use vanilla textures. Also, the pack may conflict with other packs that override private use characters.
 * What happens if players don't have the resource pack?
    * They will see the vanilla shulker box tooltip, though it may contain a few blank lines.
+* How do I disable/enable ender chest previews?
+   * Disable: `/function tryashtar.shulker_preview:.meta/disable_ender`
+   * Enable: `/function tryashtar.shulker_preview:.meta/enable_ender`
 * It's not working for me!
    * First, please [follow these instructions](https://imgur.com/a/rBukto5) to diagnose and solve some very common issues.
    * If that didn't fix your problem, feel free to message me on twitter ([@tryashtar](https://twitter.com/tryashtar)) or discord (@tryashtar#7885) and I will be happy to help.
