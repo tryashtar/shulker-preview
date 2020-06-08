@@ -47,4 +47,4 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:repeater"} 
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:seagrass"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.seagrass.1"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:snowball"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.snowball.1"}'}
 execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage
-execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_1/process_durability
+execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_1/overlay/durability

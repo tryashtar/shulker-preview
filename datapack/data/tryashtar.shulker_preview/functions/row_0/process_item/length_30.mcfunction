@@ -35,4 +35,4 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:tropical_fi
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:vindicator_spawn_egg"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'[{"text":"","color":"#959b9b"},{"translate":"tryashtar.shulker_preview.item.spawn_egg.0"},", ",[{"text":"","color":"#275e61"},{"translate":"tryashtar.shulker_preview.overlay.spawn_egg_overlay.0"}]]'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:yellow_stained_glass"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.yellow_stained_glass.0"}'}
 execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage
-execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_0/process_durability
+execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_0/overlay/durability

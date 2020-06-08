@@ -1,4 +1,8 @@
 scoreboard objectives add shulker_preview dummy "Shulker Box Preview"
+scoreboard players set #2 shulker_preview 2
+scoreboard players set #4 shulker_preview 4
+scoreboard players set #256 shulker_preview 256
+scoreboard players set #65536 shulker_preview 65536
 scoreboard players set #13000 shulker_preview 13000
 
 # place the global shulker box and signs

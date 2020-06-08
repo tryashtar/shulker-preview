@@ -33,4 +33,4 @@ execute if score #length shulker_preview matches 44 run function tryashtar.shulk
 
 # summon in count entity
 execute store result score #count shulker_preview run data get storage tryashtar:shulker_preview item.Count
-execute if score #count shulker_preview matches 2.. run function tryashtar.shulker_preview:row_2/process_count
+execute if score #count shulker_preview matches 2.. run function tryashtar.shulker_preview:row_2/overlay/count

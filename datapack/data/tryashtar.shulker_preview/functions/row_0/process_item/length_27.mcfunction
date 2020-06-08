@@ -51,4 +51,4 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:warped_wart
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:white_shulker_box"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.white_shulker_box.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:yellow_terracotta"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.yellow_terracotta.0"}'}
 execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage
-execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_0/process_durability
+execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_0/overlay/durability

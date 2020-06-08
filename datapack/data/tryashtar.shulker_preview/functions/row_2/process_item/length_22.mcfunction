@@ -66,5 +66,6 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:wooden_swor
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:wooden_sword"} run scoreboard players set #max shulker_preview 59
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:written_book"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.written_book.2"}'}
 execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage
-execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_2/process_durability
-execute if data storage tryashtar:shulker_preview item.tag.Potion run function tryashtar.shulker_preview:row_2/process_arrow
+execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_2/overlay/durability
+execute if data storage tryashtar:shulker_preview item.tag.Potion run function tryashtar.shulker_preview:row_2/overlay/arrow
+execute if data storage tryashtar:shulker_preview item.tag.CustomPotionColor run function tryashtar.shulker_preview:row_2/overlay/custom_arrow

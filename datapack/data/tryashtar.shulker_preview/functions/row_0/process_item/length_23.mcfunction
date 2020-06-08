@@ -53,7 +53,9 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:jungle_butt
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:jungle_leaves"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.jungle_leaves.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:jungle_planks"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.jungle_planks.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:jungle_stairs"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.jungle_stairs.0"}'}
-execute if data storage tryashtar:shulker_preview item{id:"minecraft:leather_boots"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'[{"text":"","color":"#a06540"},{"translate":"tryashtar.shulker_preview.item.leather_boots.0"},", ",[{"text":"","color":"white"},{"translate":"tryashtar.shulker_preview.overlay.leather_boots_overlay.0"}]]'}
+execute if data storage tryashtar:shulker_preview item{id:"minecraft:leather_boots"} unless data storage tryashtar:shulker_preview item.tag.display.color run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'[{"text":"","color":"#a06540"},{"translate":"tryashtar.shulker_preview.item.leather_boots.0"}]'}
+execute if data storage tryashtar:shulker_preview item{id:"minecraft:leather_boots"} if data storage tryashtar:shulker_preview item.tag.display.color run function tryashtar.shulker_preview:row_0/dye_armor/boots
+execute if data storage tryashtar:shulker_preview item{id:"minecraft:leather_boots"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.overlay.leather_boots_overlay.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:leather_boots"} run scoreboard players set #max shulker_preview 65
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:lime_concrete"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.lime_concrete.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:mushroom_stem"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.mushroom_stem.0"}'}
@@ -107,6 +109,7 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:wooden_shov
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:writable_book"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.writable_book.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:yellow_banner"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.yellow_banner.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:yellow_carpet"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.yellow_carpet.0"}'}
-execute if data storage tryashtar:shulker_preview item.tag.Potion run function tryashtar.shulker_preview:row_0/process_potion
+execute if data storage tryashtar:shulker_preview item.tag.Potion run function tryashtar.shulker_preview:row_0/overlay/potion
+execute if data storage tryashtar:shulker_preview item.tag.CustomPotionColor run function tryashtar.shulker_preview:row_0/overlay/custom_potion
 execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage
-execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_0/process_durability
+execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_0/overlay/durability
