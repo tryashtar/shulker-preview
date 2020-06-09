@@ -41,6 +41,7 @@ Current 1.16 version
 + All 1.16 items
 + Now uses custom font, preventing potential private use conflicts
 + Item textures use the player's current resource pack
++ Custom colored armor, potions, etc. show approximate colors
 
 Current 1.15 version
 + All 1.15 items
