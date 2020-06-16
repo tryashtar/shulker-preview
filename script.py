@@ -582,7 +582,7 @@ def process_item_lines(items, row):
             ])
       elif item in ["leather_helmet","leather_chestplate","leather_leggings","leather_boots","leather_horse_armor"]:
          dye_armor=item.replace("leather_","").replace("_armor","")
-         lines.append(f'{if_item} unless data storage tryashtar:shulker_preview item.tag.display.color run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},"color":"{color_hex(10511680)}"\'}}')
+         lines.append(f'{if_item} unless data storage tryashtar:shulker_preview item.tag.display.color run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{item}.{row}","color":"{color_hex(10511680)}"}}\'}}')
          lines.append(f'{if_item} if data storage tryashtar:shulker_preview item.tag.display.color run function tryashtar.shulker_preview:row_{row}/dye_armor/{dye_armor}')
          if item not in ("leather_chestplate","leather_horse_armor"):
             lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.{item}_overlay.{row}"}}\'}}')

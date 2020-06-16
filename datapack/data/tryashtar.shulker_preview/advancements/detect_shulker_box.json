@@ -8,6 +8,7 @@
       "conditions": {
         "items": [
           {
+            "tag": "tryashtar.shulker_preview:shulker_boxes",
             "nbt": "{BlockEntityTag:{Items:[{}]}}"
           }
         ]
