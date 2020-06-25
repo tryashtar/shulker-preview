@@ -6,6 +6,8 @@
 |Minecraft 1.15|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Data%20Pack%20(1.15).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Resource%20Pack%20(1.15).zip)|
 |Minecraft 1.14.3|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Data%20Pack%20(1.14).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Resource%20Pack%20(1.14).zip)|
 
+There is also a [Faithful x32 version of the resource pack](https://github.com/FaithfulTeam/Shulker-Preview), thanks to Faithful creator [xMrVizzy](https://github.com/xMrVizzy)!
+
 ### How to use
 1. Download the data pack and resource pack for your Minecraft version.
 2. Select your world in-game and click `Edit`, then `Open World Folder`.
