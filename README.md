@@ -2,11 +2,9 @@
 
 |Version|Links|
 |---|---|
-|Minecraft 1.16|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Data%20Pack%20(1.16).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Resource%20Pack%20(1.16).zip) <sup>[[Dark Mode]](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Dark%20Theme%20(1.16).zip)</sup>|
-|Minecraft 1.15|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Data%20Pack%20(1.15).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Resource%20Pack%20(1.15).zip) <sup>[[Dark Mode]](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Dark%20Theme%20(1.15).zip)</sup>|
-|Minecraft 1.14.3|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Data%20Pack%20(1.14).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Resource%20Pack%20(1.14).zip) <sup>[[Dark Mode]](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Dark%20Theme%20(1.14).zip)</sup>|
-
-If you download dark mode, it must be equipped above the regular resource pack.
+|Minecraft 1.16|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Data%20Pack%20(1.16).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Resource%20Pack%20(1.16).zip)|
+|Minecraft 1.15|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Data%20Pack%20(1.15).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Resource%20Pack%20(1.15).zip)|
+|Minecraft 1.14.3|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Data%20Pack%20(1.14).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Resource%20Pack%20(1.14).zip)|
 
 ### How to use
 1. Download the data pack and resource pack for your Minecraft version.
@@ -15,8 +13,7 @@ If you download dark mode, it must be equipped above the regular resource pack.
 4. Go to the resource packs menu and click `Open Resource Pack Folder`.
 5. Drag the resource pack zip from your `Downloads` folder to the resource packs folder.
 6. Equip the resource pack.
-7. If you also downloaded the dark mode pack, equip it above the normal pack.
-8. Enter your world and enjoy!
+7. Enter your world and enjoy!
 
 ### FAQ
 * Does this work with Spigot/Bukkit/Paper?
