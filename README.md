@@ -42,6 +42,7 @@ Current 1.16 version
 + Now uses custom font, preventing potential private use conflicts
 + Item textures use the player's current resource pack
 + Custom colored armor, potions, etc. show approximate colors
++ When ender chest previews are enabled, ender chests showing the same preview can stack
 
 Current 1.15 version
 + All 1.15 items
