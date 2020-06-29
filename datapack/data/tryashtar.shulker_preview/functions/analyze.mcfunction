@@ -1,7 +1,7 @@
 # move items one by one to storage and process them
-execute unless score #uuid shulker_preview matches -1 run summon area_effect_cloud ~ ~3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.ender_tooltip"}'}
-execute if score #uuid shulker_preview matches -1 if data block ~ 1 ~ Items[0].tag.display.Name run summon area_effect_cloud ~ ~3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip"}'}
-execute if score #uuid shulker_preview matches -1 unless data block ~ 1 ~ Items[0].tag.display.Name run summon area_effect_cloud ~ ~3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip_header"}'}
+execute if score #ender_header shulker_preview matches 1 run summon area_effect_cloud ~ ~3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.ender_tooltip"}'}
+execute if score #ender_header shulker_preview matches 0 if data block ~ 1 ~ Items[0].tag.display.Name run summon area_effect_cloud ~ ~3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip"}'}
+execute if score #ender_header shulker_preview matches 0 unless data block ~ 1 ~ Items[0].tag.display.Name run summon area_effect_cloud ~ ~3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip_header"}'}
 
 data modify storage tryashtar:shulker_preview item set from block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:0b}]
 execute if data block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:0b}] positioned ~ ~4 ~ run function tryashtar.shulker_preview:row_0/process_item
@@ -153,7 +153,7 @@ scoreboard players remove #total shulker_preview 5
 execute if score #total shulker_preview matches 1.. run data modify block ~3 1 ~ Text2 set value '{"translate":"%1$s%418634357$s","with":[{"translate":"container.shulkerBox.more","color":"gray","italic":true,"with":[{"score":{"name":"#total","objective":"shulker_preview"}}]},""]}'
 
 kill 0-1c9-c369-0-2668
-execute unless score #uuid shulker_preview matches -1 run data remove block ~ 1 ~ Items[0].tag.BlockEntityTag
+execute if score #ender_header shulker_preview matches 1 run data remove block ~ 1 ~ Items[0].tag.BlockEntityTag
 kill @e[type=area_effect_cloud,tag=tryashtar.shulker_preview]
 
 # don't process any more boxes this tick
