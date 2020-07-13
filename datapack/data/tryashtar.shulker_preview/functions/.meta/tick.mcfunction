@@ -1,3 +1,3 @@
-scoreboard players set #ready shulker_preview 1
+scoreboard players operation #ready shulker_preview = #loot_table shulker_preview
 execute if score #ready shulker_preview matches 1 as @e[type=item,tag=!shulker_processed] run function tryashtar.shulker_preview:check_dropped
-execute as @a run function tryashtar.shulker_preview:player_tick
+execute if score #loot_table shulker_preview matches 1 as @a run function tryashtar.shulker_preview:player_tick

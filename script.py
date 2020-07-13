@@ -512,6 +512,7 @@ spawn_egg_colors={
    "phantom_spawn_egg": (4411786, 8978176),
    "pig_spawn_egg": (15771042, 14377823),
    "piglin_spawn_egg": (10051392, 16380836),
+   "piglin_brute_spawn_egg": (5843472, 16380836),
    "pillager_spawn_egg": (5451574, 9804699),
    "polar_bear_spawn_egg": (15921906, 9803152),
    "pufferfish_spawn_egg": (16167425, 3654642),
