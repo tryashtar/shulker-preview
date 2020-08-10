@@ -1,6 +1,6 @@
 {
    "pack": {
-      "pack_format": 5,
+      "pack_format": 6,
       "description": {
          "text": "Shulker Box tooltip preview: data pack",
          "color": "#8fdff7"
