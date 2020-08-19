@@ -369,10 +369,17 @@ def register_grid(fileid, icongrid, ascent, height, spacing):
          if spacing is not None:
             translations[f"tryashtar.shulker_preview.{entry}"]=spacing[0]+currentchar+spacing[1]
          string+=currentchar
-         currentchar=chr(ord(currentchar)+1)
+         currentchar=next_legal_character(currentchar)
       chars.append(string)
    base["chars"]=chars
    return base
+
+def next_legal_character(currentchar):
+   i=ord(currentchar)
+   i+=1
+   if i>=0x600 and i<=0x6ff:
+      i=0x700
+   return chr(i)
 
 def register_items(items, row, ascent, height, real_version):
    global currentchar
