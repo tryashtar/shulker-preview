@@ -68,6 +68,6 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:white_concr
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:wolf_spawn_egg"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'[{"translate":"tryashtar.shulker_preview.item.spawn_egg.1","color":"#d7d3d3"},", ",{"translate":"tryashtar.shulker_preview.overlay.spawn_egg_overlay.1","color":"#ceaf96"}]'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:wooden_pickaxe"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.wooden_pickaxe.1"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:wooden_pickaxe"} run scoreboard players set #max shulker_preview 59
+execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0] positioned ~ ~0.7 ~ run function tryashtar.shulker_preview:row_1/overlay/banner
 execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage
 execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_1/overlay/durability
-execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0] run function tryashtar.shulker_preview:row_1/overlay/banner
