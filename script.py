@@ -175,9 +175,13 @@ def main():
          f'data modify storage tryashtar:shulker_preview pattern set from storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0]'
       ]
       for pid,pname in banner_pattern_ids.items():
+         banner_pattern_lines.append(f'execute if data storage tryashtar:shulker_preview pattern{{Pattern:"{pid}"}} run function tryashtar.shulker_preview:row_{row}/overlay/banner/{pname}')
+         single_pattern_lines=[]
          for cid,cname in int_colors.items():
             chex=dye_colors[cname]
-            banner_pattern_lines.append(f'execute if data storage tryashtar:shulker_preview pattern{{Pattern:"{pid}",Color:{cid}}} run summon area_effect_cloud ~ ~0.1 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.banner_pattern.{pname}.{row}","color":"#{chex}"}}\'}}')
+            single_pattern_lines.append(f'execute if data storage tryashtar:shulker_preview pattern{{Color:{cid}}} run summon area_effect_cloud ~ ~0.1 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.banner_pattern.{pname}.{row}","color":"#{chex}"}}\'}}')
+         write_lines(single_pattern_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner/{pname}.mcfunction")
+
 
       # dyed armor
       default_armor_lines=[
