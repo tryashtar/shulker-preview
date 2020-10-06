@@ -174,13 +174,13 @@ def main():
          f'# create an entity that draws a banner pattern overlay',
          f'data modify storage tryashtar:shulker_preview pattern set from storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0]'
       ]
-      for pid,pname in banner_pattern_ids.items():
-         banner_pattern_lines.append(f'execute if data storage tryashtar:shulker_preview pattern{{Pattern:"{pid}"}} run function tryashtar.shulker_preview:row_{row}/overlay/banner/{pname}')
+      for cid,cname in int_colors.items():
+         chex=dye_colors[cname]
+         banner_pattern_lines.append(f'execute if data storage tryashtar:shulker_preview pattern{{Color:{cid}}} run function tryashtar.shulker_preview:row_{row}/overlay/banner/{cname}')
          single_pattern_lines=[]
-         for cid,cname in int_colors.items():
-            chex=dye_colors[cname]
-            single_pattern_lines.append(f'execute if data storage tryashtar:shulker_preview pattern{{Color:{cid}}} run summon area_effect_cloud ~ ~0.1 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.banner_pattern.{pname}.{row}","color":"#{chex}"}}\'}}')
-         write_lines(single_pattern_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner/{pname}.mcfunction")
+         for pid,pname in banner_pattern_ids.items():
+            single_pattern_lines.append(f'execute if data storage tryashtar:shulker_preview pattern{{Pattern:"{pid}"}} run summon area_effect_cloud ~ ~0.1 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.banner_pattern.{pname}.{row}","color":"#{chex}"}}\'}}')
+         write_lines(single_pattern_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner/{cname}.mcfunction")
 
 
       # dyed armor
