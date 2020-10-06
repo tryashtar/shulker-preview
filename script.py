@@ -20,6 +20,7 @@ def main():
    mcitems["tipped_arrow"]="."
    mcblocks=load_items("../block images")
    mcbanners=load_items("../block images/banner")
+   mcshields=load_items("../block images/shield")
 
    # a few renames
    rename_key(mcitems, "clock_00", "clock")
@@ -41,12 +42,15 @@ def main():
    mcitems=dict(sorted(mcitems.items()))
    mcblocks=dict(sorted(mcblocks.items()))
    mcbanners=dict(sorted(mcbanners.items()))
+   mcshields=dict(sorted(mcshields.items()))
 
    mc_block_textures={}
    for k,v in mcblocks.items():
       mc_block_textures[k]=v
    for k,v in mcbanners.items():
       mc_block_textures[f"banner_pattern.{k}"]=v
+   for k,v in mcshields.items():
+      mc_block_textures[f"shield_pattern.{k}"]=v
 
    # create grids
    print("Creating image sheets...")
@@ -170,18 +174,35 @@ def main():
          f'data remove storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0]',
          f'execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0] positioned ~ ~0.01 ~ run function tryashtar.shulker_preview:row_{row}/overlay/banner',
       ]
+      shield_base=[
+         f'# draw shield base and patterns'
+      ]
+      shield_lines=[
+         f'# recursively draw all banner patterns',
+         f'function tryashtar.shulker_preview:row_{row}/overlay/shield_pattern',
+         f'data remove storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0]',
+         f'execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0] positioned ~ ~0.01 ~ run function tryashtar.shulker_preview:row_{row}/overlay/shield',
+      ]
       banner_pattern_lines=[
          f'# create an entity that draws a banner pattern overlay',
          f'data modify storage tryashtar:shulker_preview pattern set from storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0]'
       ]
+      shield_pattern_lines=banner_pattern_lines.copy()
       for cid,cname in int_colors.items():
          chex=dye_colors[cname]
+         shield_base.append(f'execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag{{Base:{cid}}} run summon area_effect_cloud ~ ~0.01 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.shield_pattern.base.{row}","color":"#{chex}"}}\'}}')
          banner_pattern_lines.append(f'execute if data storage tryashtar:shulker_preview pattern{{Color:{cid}}} run function tryashtar.shulker_preview:row_{row}/overlay/banner/{cname}')
-         single_pattern_lines=[]
+         shield_pattern_lines.append(f'execute if data storage tryashtar:shulker_preview pattern{{Color:{cid}}} run function tryashtar.shulker_preview:row_{row}/overlay/shield/{cname}')
+         single_b_pattern_lines=[]
+         single_s_pattern_lines=[]
          for i,(pid,pname) in enumerate(banner_pattern_ids.items()):
-            single_pattern_lines.append(f'execute if data storage tryashtar:shulker_preview pattern{{Pattern:"{pid}"}} run summon area_effect_cloud ~ ~{round(i*0.0001,4)} ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.banner_pattern.{pname}.{row}","color":"#{chex}"}}\'}}')
-         write_lines(single_pattern_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner/{cname}.mcfunction")
-
+            line=f'execute if data storage tryashtar:shulker_preview pattern{{Pattern:"{pid}"}} run summon area_effect_cloud ~ ~{round((i+1)*0.0001,4)} ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.banner_pattern.{pname}.{row}","color":"#{chex}"}}\'}}'
+            single_b_pattern_lines.append(line)
+            single_s_pattern_lines.append(line.replace("banner_pattern","shield_pattern"))
+         write_lines(single_b_pattern_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner/{cname}.mcfunction")
+         write_lines(single_s_pattern_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/shield/{cname}.mcfunction")
+      shield_base.append(f'execute positioned ~ ~0.02 ~ run function tryashtar.shulker_preview:row_{row}/overlay/shield')
+      write_lines(shield_base, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/shield_base.mcfunction")
 
       # dyed armor
       default_armor_lines=[
@@ -277,7 +298,9 @@ def main():
       write_lines(map_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/map.mcfunction")
       write_lines(custom_map_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/custom_map.mcfunction")
       write_lines(banner_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner.mcfunction")
+      write_lines(shield_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/shield.mcfunction")
       write_lines(banner_pattern_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner_pattern.mcfunction")
+      write_lines(shield_pattern_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/shield_pattern.mcfunction")
       for armor,lines in armor_lines.items():
          dye_armor=armor.replace("leather_","").replace("_armor","")
          write_lines(lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/dye_armor/{dye_armor}.mcfunction")
@@ -329,7 +352,7 @@ def block_translation(key, row):
    return f"{key}.{row}"
 
 def block_spacing(key):
-   if "banner_pattern." in key:
+   if "_pattern." in key:
       return (get_spacing([-18]),get_spacing([-4]))
    return ("",get_spacing([-4]))
 
@@ -671,6 +694,7 @@ def process_item_lines(items, row):
    arrow=False
    filledmap=False
    banner=False
+   shield=False
    for item, itemtype in sorted(items, key=lambda x: x[0]):
       name="minecraft:"+item
       if_item=f'execute if data storage tryashtar:shulker_preview item{{id:"{name}"}}'
@@ -716,6 +740,8 @@ def process_item_lines(items, row):
          lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.{itemtype}.{item}.{row}"}}\'}}')
       if "banner" in item and "pattern" not in item:
          banner=True
+      if item=="shield":
+         shield=True
       if item in durability_dict:
          lines.append(f'{if_item} run scoreboard players set #max shulker_preview {durability_dict[item]}')
          durability=True
@@ -729,6 +755,8 @@ def process_item_lines(items, row):
       lines.append(f'execute if data storage tryashtar:shulker_preview item.tag.display.MapColor run function tryashtar.shulker_preview:row_{row}/overlay/map')
    if banner:
       lines.append(f'execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0] positioned ~ ~0.7 ~ run function tryashtar.shulker_preview:row_{row}/overlay/banner')
+   if shield:
+      lines.append(f'execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Base positioned ~ ~0.7 ~ run function tryashtar.shulker_preview:row_{row}/overlay/shield_base')
    if durability:
       lines.extend([
          f'execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage',

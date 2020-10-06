@@ -35,5 +35,6 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:string"} ru
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:target"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.target.2"}'}
 execute if data storage tryashtar:shulker_preview item.tag.Potion run function tryashtar.shulker_preview:row_2/overlay/potion
 execute if data storage tryashtar:shulker_preview item.tag.CustomPotionColor run function tryashtar.shulker_preview:row_2/overlay/custom_potion
+execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Base positioned ~ ~0.7 ~ run function tryashtar.shulker_preview:row_2/overlay/shield_base
 execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage
 execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_2/overlay/durability
