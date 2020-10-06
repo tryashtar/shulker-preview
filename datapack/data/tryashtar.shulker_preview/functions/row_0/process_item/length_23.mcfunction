@@ -55,7 +55,7 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:jungle_plan
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:jungle_stairs"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.jungle_stairs.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:leather_boots"} unless data storage tryashtar:shulker_preview item.tag.display.color run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.leather_boots.0","color":"#a06540"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:leather_boots"} if data storage tryashtar:shulker_preview item.tag.display.color run function tryashtar.shulker_preview:row_0/dye_armor/boots
-execute if data storage tryashtar:shulker_preview item{id:"minecraft:leather_boots"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.overlay.leather_boots_overlay.0"}'}
+execute if data storage tryashtar:shulker_preview item{id:"minecraft:leather_boots"} run summon area_effect_cloud ~ ~0.02 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.overlay.leather_boots_overlay.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:leather_boots"} run scoreboard players set #max shulker_preview 65
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:lime_concrete"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.lime_concrete.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:mushroom_stem"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.mushroom_stem.0"}'}
@@ -113,5 +113,6 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:yellow_bann
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:yellow_carpet"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.yellow_carpet.0"}'}
 execute if data storage tryashtar:shulker_preview item.tag.Potion run function tryashtar.shulker_preview:row_0/overlay/potion
 execute if data storage tryashtar:shulker_preview item.tag.CustomPotionColor run function tryashtar.shulker_preview:row_0/overlay/custom_potion
+execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0] positioned ~ ~0.7 ~ run function tryashtar.shulker_preview:row_0/overlay/banner
 execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage
 execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_0/overlay/durability

@@ -93,5 +93,6 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:white_tulip
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:wither_rose"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.wither_rose.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:yellow_wool"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.yellow_wool.0"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:zombie_head"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.zombie_head.0"}'}
+execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0] positioned ~ ~0.7 ~ run function tryashtar.shulker_preview:row_0/overlay/banner
 execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage
 execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_0/overlay/durability
