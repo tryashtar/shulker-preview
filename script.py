@@ -265,7 +265,7 @@ def main():
          custom_arrow_lines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon area_effect_cloud ~ ~0.4 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.tipped_arrow_head.{row}","color":"#{chex}"}}\'}}')
          custom_map_lines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon area_effect_cloud ~ ~0.6 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.filled_map_markings.{row}","color":"#{chex}"}}\'}}')
          for armor,armorlines in armor_lines.items():
-            armorlines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{armor}.{row}","color":"#{chex}"}}\'}}')
+            armorlines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon area_effect_cloud ~ ~0.01 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{armor}.{row}","color":"#{chex}"}}\'}}')
 
       lines.extend(color_assigns)
       write_lines(lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/analyze_color.mcfunction")
@@ -699,7 +699,7 @@ def process_item_lines(items, row):
          lines.append(f'{if_item} unless data storage tryashtar:shulker_preview item.tag.display.color run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{item}.{row}","color":"{color_hex(10511680)}"}}\'}}')
          lines.append(f'{if_item} if data storage tryashtar:shulker_preview item.tag.display.color run function tryashtar.shulker_preview:row_{row}/dye_armor/{dye_armor}')
          if item not in ("leather_chestplate","leather_horse_armor"):
-            lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.{item}_overlay.{row}"}}\'}}')
+            lines.append(f'{if_item} run summon area_effect_cloud ~ ~0.02 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.{item}_overlay.{row}"}}\'}}')
       elif item in ("potion","splash_potion","lingering_potion"):
          lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.potion_overlay.{row}","color":"{color_hex(16253176)}"}}]\'}}')
          potion=True
@@ -707,7 +707,7 @@ def process_item_lines(items, row):
          lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.firework_star_overlay.{row}","color":"{color_hex(9079434)}"}}]\'}}')
       elif item=="filled_map":
          lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}}\'}}')
-         lines.append(f'{if_item} unless data storage tryashtar:shulker_preview item.tag.display.MapColor run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.filled_map_markings.{row}","color":"#46402d"}}\'}}')
+         lines.append(f'{if_item} unless data storage tryashtar:shulker_preview item.tag.display.MapColor run summon area_effect_cloud ~ ~0.01 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.filled_map_markings.{row}","color":"#46402d"}}\'}}')
          filledmap=True
       elif item=="tipped_arrow":
          lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.tipped_arrow_head.{row}","color":"{color_hex(16253176)}"}}]\'}}')
