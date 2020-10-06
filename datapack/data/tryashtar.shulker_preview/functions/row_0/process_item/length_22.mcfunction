@@ -69,3 +69,4 @@ execute store result score #durability shulker_preview run data get storage trya
 execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_0/overlay/durability
 execute if data storage tryashtar:shulker_preview item.tag.Potion run function tryashtar.shulker_preview:row_0/overlay/arrow
 execute if data storage tryashtar:shulker_preview item.tag.CustomPotionColor run function tryashtar.shulker_preview:row_0/overlay/custom_arrow
+execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0] run function tryashtar.shulker_preview:row_0/overlay/banner

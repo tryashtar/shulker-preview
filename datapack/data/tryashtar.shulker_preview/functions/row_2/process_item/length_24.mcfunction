@@ -70,3 +70,4 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:wooden_pick
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:wooden_pickaxe"} run scoreboard players set #max shulker_preview 59
 execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage
 execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_2/overlay/durability
+execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0] run function tryashtar.shulker_preview:row_2/overlay/banner

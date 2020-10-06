@@ -81,3 +81,4 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:yellow_dye"
 execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage
 execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_2/overlay/durability
 execute if data storage tryashtar:shulker_preview item.tag.display.MapColor run function tryashtar.shulker_preview:row_2/overlay/map
+execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0] run function tryashtar.shulker_preview:row_2/overlay/banner

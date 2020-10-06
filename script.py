@@ -19,6 +19,7 @@ def main():
       mcitems[item]="."
    mcitems["tipped_arrow"]="."
    mcblocks=load_items("../block images")
+   mcbanners=load_items("../block images/banner")
 
    # a few renames
    rename_key(mcitems, "clock_00", "clock")
@@ -39,10 +40,17 @@ def main():
 
    mcitems=dict(sorted(mcitems.items()))
    mcblocks=dict(sorted(mcblocks.items()))
+   mcbanners=dict(sorted(mcbanners.items()))
+
+   mc_block_textures={}
+   for k,v in mcblocks.items():
+      mc_block_textures[k]=v
+   for k,v in mcbanners.items():
+      mc_block_textures[f"banner_pattern.{k}"]=v
 
    # create grids
    print("Creating image sheets...")
-   blockgrid=create_grid(mcblocks)
+   blockgrid=create_grid(mc_block_textures)
    blocksheet=create_image(blockgrid, 64)
    blocksheet.save("resourcepack/assets/tryashtar.shulker_preview/textures/block_sheet.png", "PNG")
 
@@ -58,14 +66,14 @@ def main():
    for row in range(0, 3):
       height=-18*row
       numbers=[f"number.{i}.{row}" for i in range(0,10)]
-      providers.append(register_grid("tryashtar.shulker_preview:numbers.png", [numbers], height-4, 8, (get_spacing([-7]),get_spacing([-5]))))
+      providers.append(register_grid("tryashtar.shulker_preview:numbers.png", [numbers], height-4, 8, lambda x:(get_spacing([-7]),get_spacing([-5]))))
       dur1=[f"durability.{i}.{row}" for i in range(1,6)]
       dur2=[f"durability.{i}.{row}" for i in range(6,11)]
       dur3=[f"durability.{i}.{row}" for i in range(11,15)]+[None]
-      providers.append(register_grid("tryashtar.shulker_preview:durability.png", [dur1,dur2,dur3], height-8, 2, (get_spacing([-16]),get_spacing([-3]))))
+      providers.append(register_grid("tryashtar.shulker_preview:durability.png", [dur1,dur2,dur3], height-8, 2, lambda x:(get_spacing([-16]),get_spacing([-3]))))
 
       # grids
-      providers.append(register_grid("tryashtar.shulker_preview:block_sheet.png", apply_to_all(grid_keys(blockgrid), lambda x: f"block.{x}.{row}"), height+5, 16, ("",get_spacing([-4]))))
+      providers.append(register_grid("tryashtar.shulker_preview:block_sheet.png", apply_to_all(grid_keys(blockgrid), lambda x: block_translation(x,row)), height+5, 16, lambda x: block_spacing(x)))
       providers.extend(register_items(mcitems, row, height+5, 16, True))
 
       # remaining numbers 10-64
@@ -155,6 +163,22 @@ def main():
       ]
       custom_arrow_lines=custom_potion_lines.copy()
 
+      # banner patterns
+      banner_lines=[
+         f'# recursively draw all banner patterns',
+         f'function tryashtar.shulker_preview:row_{row}/overlay/banner_pattern',
+         f'data remove storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0]',
+         f'execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0] run function tryashtar.shulker_preview:row_{row}/overlay/banner',
+      ]
+      banner_pattern_lines=[
+         f'# create an entity that draws a banner pattern overlay',
+         f'data modify storage tryashtar:shulker_preview pattern set from storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0]'
+      ]
+      for pid,pname in banner_pattern_ids.items():
+         for cid,cname in int_colors.items():
+            chex=dye_colors[cname]
+            banner_pattern_lines.append(f'execute if data storage tryashtar:shulker_preview pattern{{Pattern:"{pid}",Color:{cid}}} run summon area_effect_cloud ~ ~0.1 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.banner_pattern.{pname}.{row}","color":"#{chex}"}}\'}}')
+
       # dyed armor
       default_armor_lines=[
          f'# create an entity that draws approximately colored armor',
@@ -202,24 +226,7 @@ def main():
          ""
       ]
       color_assigns=[]
-      for i,(color,chex) in enumerate([
-         ('white','f9fffe'),
-         ('orange','f9801d'),
-         ('magenta','c74ebd'),
-         ('light_blue','3ab3da'),
-         ('yellow','fed83d'),
-         ('lime','80c71f'),
-         ('pink','f38baa'),
-         ('gray','474f52'),
-         ('light_gray','9d9d97'),
-         ('cyan','169c9c'),
-         ('purple','8932b8'),
-         ('blue','3c44aa'),
-         ('brown','835432'),
-         ('green','5e7c16'),
-         ('red','b02e26'),
-         ('black','1d1d21'),
-      ]):
+      for i,(color,chex) in enumerate(dye_colors.items()):
          rgb=tuple(int(chex[i:i+2], 16) for i in (0, 2, 4))
          r,g,b=rgb
          rgbint=(r<<16) + (g<<8) + b
@@ -265,6 +272,8 @@ def main():
       write_lines(custom_arrow_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/custom_arrow.mcfunction")
       write_lines(map_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/map.mcfunction")
       write_lines(custom_map_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/custom_map.mcfunction")
+      write_lines(banner_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner.mcfunction")
+      write_lines(banner_pattern_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner_pattern.mcfunction")
       for armor,lines in armor_lines.items():
          dye_armor=armor.replace("leather_","").replace("_armor","")
          write_lines(lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/dye_armor/{dye_armor}.mcfunction")
@@ -309,6 +318,16 @@ def grid_keys(tuple_grid):
 
 def apply_to_all(tuple_grid, lamb):
    return [[(None if j is None else lamb(j)) for j in i] for i in tuple_grid]
+
+def block_translation(key, row):
+   if not "." in key:
+      key="block."+key
+   return f"{key}.{row}"
+
+def block_spacing(key):
+   if "banner_pattern." in key:
+      return (get_spacing([-18]),get_spacing([-4]))
+   return ("",get_spacing([-4]))
 
 def read_json(path):
    with open(path, "r") as file:
@@ -355,7 +374,7 @@ charmap={}
 translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing([13]),"tryashtar.shulker_preview.row_end":get_spacing([-167])}
 # create a provider from file name, grid of icon names, and ascent/height
 # returns provider and also modifies charmap, a global [icon->character code] dictionary, and translations, which is charmap but with prefixed keys, and values padded with positive/negative spaces as specified in spacing
-def register_grid(fileid, icongrid, ascent, height, spacing):
+def register_grid(fileid, icongrid, ascent, height, spacing_lambda):
    global currentchar
    base={"type":"bitmap","file":fileid,"ascent":ascent,"height":height}
    chars=[]
@@ -366,6 +385,7 @@ def register_grid(fileid, icongrid, ascent, height, spacing):
             string+='\u0000'
             continue
          charmap[entry]=currentchar
+         spacing=spacing_lambda(entry)
          if spacing is not None:
             translations[f"tryashtar.shulker_preview.{entry}"]=spacing[0]+currentchar+spacing[1]
          string+=currentchar
@@ -405,12 +425,12 @@ def register_items(items, row, ascent, height, real_version):
 
 # shortcut to create provider from one image
 def register_single(fileid, iconname, ascent, height, spacing):
-   return register_grid(fileid, [[iconname]], ascent, height, spacing)
+   return register_grid(fileid, [[iconname]], ascent, height, lambda x: spacing)
 
 # take [item name->path] dictionary and form it into an ordered square 2D array of tuples (missing spaces are filled in with None)
 def create_grid(icondict):
    size=get_dimensions(len(icondict))
-   ordered=sorted(icondict.items(), key=lambda x: x[0])
+   ordered=list(icondict.items())
    ordered.extend([None]*(size[0]*size[1]-len(ordered)))
    result=numpy.empty(len(ordered), dtype=object)
    result[:]=ordered
@@ -485,6 +505,87 @@ def check_items(items):
 durability_dict={"leather_helmet":55,"leather_chestplate":80,"leather_leggings":75,"leather_boots":65,"golden_helmet":77,"golden_chestplate":112,"golden_leggings":105,"golden_boots":91,"chainmail_helmet":165,"chainmail_chestplate":240,"chainmail_leggings":225,"chainmail_boots":195,"iron_helmet":165,"iron_chestplate":240,"iron_leggings":225,"iron_boots":195,"diamond_helmet":363,"diamond_chestplate":528,"diamond_leggings":495,"diamond_boots":429,"golden_axe":32,"golden_pickaxe":32,"golden_shovel":32,"golden_hoe":32,"golden_sword":32,"wooden_axe":59,"wooden_pickaxe":59,"wooden_shovel":59,"wooden_hoe":59,"wooden_sword":59,"stone_axe":131,"stone_pickaxe":131,"stone_shovel":131,"stone_hoe":131,"stone_sword":131,"iron_axe":250,"iron_pickaxe":250,"iron_shovel":250,"iron_hoe":250,"iron_sword":250,"diamond_axe":1561,"diamond_pickaxe":1561,"diamond_shovel":1561,"diamond_hoe":1561,"diamond_sword":1561,"fishing_rod":64,"flint_and_steel":64,"carrot_on_a_stick":25,"shears":238,"shield":336,"bow":384,"trident":250,"elytra":432,"crossbow":326,"warped_fungus_on_a_stick":100,"netherite_axe":2031,"netherite_sword":2031,"netherite_pickaxe":2031,"netherite_shovel":2031,"netherite_hoe":2031,"netherite_helmet":407,"netherite_chestplate":592,"netherite_leggings":555,"netherite_boots":481}
 potion_dict={"night_vision":2039713,"long_night_vision":2039713,"invisibility":8356754,"long_invisibility":8356754,"leaping":2293580,"strong_leaping":2293580,"long_leaping":2293580,"fire_resistance":14981690,"long_fire_resistance":14981690,"swiftness":8171462,"strong_swiftness":8171462,"long_swiftness":8171462,"water_breathing":3035801,"long_water_breathing":3035801,"healing":16262179,"strong_healing":16262179,"harming":4393481,"strong_harming":4393481,"poison":5149489,"strong_poison":5149489,"long_poison":5149489,"regeneration":13458603,"strong_regeneration":13458603,"long_regeneration":13458603,"strength":9643043,"strong_strength":9643043,"long_strength":9643043,"weakness":4738376,"long_weakness":4738376,"luck":3381504,"turtle_master":0x755b62,"strong_turtle_master":0x735c64,"long_turtle_master":0x755b62,"slow_falling":16773073,"long_slow_falling":16773073,"slowness":5926017,"long_slowness":5926017,"strong_slowness":5926017,"water":3694022,"thick":3694022,"mundane":3694022,"awkward":3694022}
 potion_dict=dict(sorted(potion_dict.items()))
+
+int_colors={
+   0:"white",
+   1:"orange",
+   2:"magenta",
+   3:"light_blue",
+   4:"yellow",
+   5:"lime",
+   6:"pink",
+   7:"gray",
+   8:"light_gray",
+   9:"cyan",
+   10:"purple",
+   11:"blue",
+   12:"brown",
+   13:"green",
+   14:"red",
+   15:"black"
+}
+
+dye_colors={
+   "white": "f9fffe",
+   "orange": "f9801d",
+   "magenta": "c74ebd",
+   "light_blue": "3ab3da",
+   "yellow": "fed83d",
+   "lime": "80c71f",
+   "pink": "f38baa",
+   "gray": "474f52",
+   "light_gray": "9d9d97",
+   "cyan": "169c9c",
+   "purple": "8932b8",
+   "blue": "3c44aa",
+   "brown": "835432",
+   "green": "5e7c16",
+   "red": "b02e26",
+   "black": "1d1d21"
+}
+
+banner_pattern_ids={
+   "bs":"stripe_bottom",
+   "ts":"stripe_top",
+   "ls":"stripe_left",
+   "rs":"stripe_right",
+   "cs":"stripe_center",
+   "ms":"stripe_middle",
+   "drs":"stripe_downright",
+   "dls":"stripe_downleft",
+   "ss":"small_stripes",
+   "cr":"cross",
+   "sc":"straight_cross",
+   "ld":"diagonal_left",
+   "rud":"diagonal_right",
+   "lud":"diagonal_up_left",
+   "rd":"diagonal_up_right",
+   "vh":"half_vertical",
+   "vhr":"half_vertical_right",
+   "hh":"half_horizontal",
+   "hhb":"half_horizontal_bottom",
+   "bl":"square_bottom_left",
+   "br":"square_bottom_right",
+   "tl":"square_top_left",
+   "tr":"square_top_right",
+   "bt":"triangle_bottom",
+   "tt":"triangle_top",
+   "bts":"triangles_bottom",
+   "tts":"triangles_top",
+   "mc":"circle",
+   "mr":"rhombus",
+   "bo":"border",
+   "cbo":"curly_border",
+   "bri":"bricks",
+   "gra":"gradient",
+   "gru":"gradient_up",
+   "cre":"creeper",
+   "sku":"skull",
+   "flo":"flower",
+   "moj":"mojang",
+   "glb":"globe",
+   "pig":"piglin"
+}
 
 spawn_egg_colors={
    "bat_spawn_egg": (4996656, 986895),
@@ -565,6 +666,7 @@ def process_item_lines(items, row):
    durability=False
    arrow=False
    filledmap=False
+   banner=False
    for item, itemtype in sorted(items, key=lambda x: x[0]):
       name="minecraft:"+item
       if_item=f'execute if data storage tryashtar:shulker_preview item{{id:"{name}"}}'
@@ -603,14 +705,16 @@ def process_item_lines(items, row):
          lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}}\'}}')
          lines.append(f'{if_item} unless data storage tryashtar:shulker_preview item.tag.display.MapColor run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.filled_map_markings.{row}","color":"#46402d"}}\'}}')
          filledmap=True
-      elif item == "tipped_arrow":
+      elif item=="tipped_arrow":
          lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.tipped_arrow_head.{row}","color":"{color_hex(16253176)}"}}]\'}}')
-         arrow = True
+         arrow=True
       else:
          lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.{itemtype}.{item}.{row}"}}\'}}')
+      if "banner" in item and "pattern" not in item:
+         banner=True
       if item in durability_dict:
          lines.append(f'{if_item} run scoreboard players set #max shulker_preview {durability_dict[item]}')
-         durability = True
+         durability=True
    if potion:
       lines.append(f'execute if data storage tryashtar:shulker_preview item.tag.Potion run function tryashtar.shulker_preview:row_{row}/overlay/potion')
       lines.append(f'execute if data storage tryashtar:shulker_preview item.tag.CustomPotionColor run function tryashtar.shulker_preview:row_{row}/overlay/custom_potion')
@@ -624,6 +728,8 @@ def process_item_lines(items, row):
       lines.append(f'execute if data storage tryashtar:shulker_preview item.tag.CustomPotionColor run function tryashtar.shulker_preview:row_{row}/overlay/custom_arrow')
    if filledmap:
       lines.append(f'execute if data storage tryashtar:shulker_preview item.tag.display.MapColor run function tryashtar.shulker_preview:row_{row}/overlay/map')
+   if banner:
+      lines.append(f'execute if data storage tryashtar:shulker_preview item.tag.BlockEntityTag.Patterns[0] run function tryashtar.shulker_preview:row_{row}/overlay/banner')
    return lines
 
 main()
