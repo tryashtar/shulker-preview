@@ -34,6 +34,7 @@ There is also a [Faithful x32 version of the resource pack](https://github.com/F
    * After disabling the pack with `/datapack disable`, the following artifacts will remain and must be cleared manually:
       * The `shulker_preview` scoreboard objective. This can be removed with `/scoreboard objectives remove shulker_preview`.
       * A forceloaded chunk near the worldborder. This can be removed with `/forceload remove 29999977 9832`. If you wish, you can also delete the region file containing this chunk: `r.58593.19.mca`.
+      * The temporary values saved to NBT storage. This can be removed by deleting the `command_storage_tryashtar.dat` file from your world's `data` folder.
       * Any existing shulker boxes will still show the preview in the tooltip. To remove it, simply place and break the shulker box after the pack has been disabled.
 * It's not working for me!
    * First, please [follow these instructions](https://imgur.com/a/rBukto5) to diagnose and solve some very common issues.
