@@ -14,4 +14,5 @@ execute if data storage tryashtar:shulker_preview item{id:"minecraft:loom"} run 
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:rail"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.rail.2"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:sand"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.sand.2"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:snow"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.snow.2"}'}
+execute if data storage tryashtar:shulker_preview item{id:"minecraft:tuff"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.tuff.2"}'}
 execute if data storage tryashtar:shulker_preview item{id:"minecraft:vine"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.vine.2","color":"#48b518"}'}

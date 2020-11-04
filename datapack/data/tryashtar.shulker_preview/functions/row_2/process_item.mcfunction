@@ -28,8 +28,15 @@ execute if score #length shulker_preview matches 37 run function tryashtar.shulk
 execute if score #length shulker_preview matches 38 run function tryashtar.shulker_preview:row_2/process_item/length_38
 execute if score #length shulker_preview matches 39 run function tryashtar.shulker_preview:row_2/process_item/length_39
 execute if score #length shulker_preview matches 40 run function tryashtar.shulker_preview:row_2/process_item/length_40
+execute if score #length shulker_preview matches 41 run function tryashtar.shulker_preview:row_2/process_item/length_41
 execute if score #length shulker_preview matches 42 run function tryashtar.shulker_preview:row_2/process_item/length_42
+execute if score #length shulker_preview matches 43 run function tryashtar.shulker_preview:row_2/process_item/length_43
 execute if score #length shulker_preview matches 44 run function tryashtar.shulker_preview:row_2/process_item/length_44
+execute if score #length shulker_preview matches 45 run function tryashtar.shulker_preview:row_2/process_item/length_45
+execute if score #length shulker_preview matches 46 run function tryashtar.shulker_preview:row_2/process_item/length_46
+execute if score #length shulker_preview matches 48 run function tryashtar.shulker_preview:row_2/process_item/length_48
+execute if score #length shulker_preview matches 49 run function tryashtar.shulker_preview:row_2/process_item/length_49
+execute if score #length shulker_preview matches 51 run function tryashtar.shulker_preview:row_2/process_item/length_51
 
 # summon in count entity
 execute store result score #count shulker_preview run data get storage tryashtar:shulker_preview item.Count
