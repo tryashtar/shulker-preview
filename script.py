@@ -121,6 +121,9 @@ def main():
          write_lines(sublines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/process_item\\length_{length}.mcfunction")
       lines.extend([
          "",
+         "# placeholder if item was not found",
+         f'execute unless entity @e[type=area_effect_cloud,tag=tryashtar.shulker_preview,distance=..0.0001] run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.missingno.{row}"}}\'}}',
+         "",
          "# summon in count entity",
          "execute store result score #count shulker_preview run data get storage tryashtar:shulker_preview item.Count",
          f"execute if score #count shulker_preview matches 2.. run function tryashtar.shulker_preview:row_{row}/overlay/count"
@@ -432,7 +435,9 @@ def next_legal_character(currentchar):
 def register_items(items, row, ascent, height, real_version):
    global currentchar
    results=[]
-   for item,v in items.items():
+   itemlist=list(items.items())
+   itemlist.append(("missingno","item"))
+   for item,v in itemlist:
       if "_spawn_egg" in item or item in reused_textures:
          continue
       location=item.replace("glass_pane","glass")
@@ -441,14 +446,17 @@ def register_items(items, row, ascent, height, real_version):
       thingtype="item"
       if item in ["tipped_arrow_head","spawn_egg_overlay","potion_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","firework_star_overlay","filled_map_markings"]:
          thingtype="overlay"
+      resource_location=f"minecraft:{itype}/{location}.png"
+      if item=="missingno":
+         resource_location="tryashtar.shulker_preview:missingno.png"
       if real_version:
          negative=charmap[f"negative.{thingtype}.{item}"]
          firstspace=""
          if thingtype=="overlay":
             firstspace=get_spacing([-18])
-         results.append(register_single(f"minecraft:{itype}/{location}.png", f"{thingtype}.{item}.{row}", ascent, height, (firstspace,negative+get_spacing([10]))))         
+         results.append(register_single(resource_location, f"{thingtype}.{item}.{row}", ascent, height, (firstspace,negative+get_spacing([10]))))         
       else:
-         results.append(register_single(f"minecraft:{itype}/{location}.png", f"negative.{thingtype}.{item}", -32768, -height, None))
+         results.append(register_single(resource_location, f"negative.{thingtype}.{item}", -32768, -height, None))
    return results
 
 # shortcut to create provider from one image
