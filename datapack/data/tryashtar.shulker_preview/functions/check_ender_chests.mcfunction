@@ -6,7 +6,7 @@ data modify block ~ 1 ~ Items[0].tag.shulker_items set from storage tryashtar:sh
 
 # copy player ender items to ender chest item so we can reuse shulker box technique
 data modify block ~ 1 ~ Items[0].tag.shulker_items[0].tag.BlockEntityTag.Items set from entity @s EnderItems
-scoreboard players set #ender_header shulker_preview 1
+scoreboard players set #header_type shulker_preview 1
 
 # proceed if there is at least one in the inventory (not just cursor)
 execute store result score #slot shulker_preview store success score #success shulker_preview run data get storage tryashtar:shulker_preview ender_chests[0].Slot

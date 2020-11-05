@@ -64,6 +64,7 @@ def main():
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip.png", "shulker_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip_header.png", "shulker_tooltip_header", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
    providers.append(register_single("tryashtar.shulker_preview:ender_tooltip.png", "ender_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
+   providers.append(register_single("tryashtar.shulker_preview:bundle_tooltip.png", "bundle_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
 
    providers.extend(register_items(mcitems, 0, -32768, 16, False))
    # per-row icons

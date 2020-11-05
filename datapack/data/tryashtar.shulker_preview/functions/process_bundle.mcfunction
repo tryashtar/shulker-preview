@@ -10,13 +10,7 @@ data modify block ~ 1 ~ Items[0] set from block ~ 1 ~ Items[0].tag.shulker_items
 function tryashtar.shulker_preview:analyze
 
 data modify block ~ 1 ~ Items[0].tag.display.Lore set value []
-data modify block ~ 1 ~ Items[0].tag.display.Lore append from block ~2 1 ~ Text1
-data modify block ~ 1 ~ Items[0].tag.display.Lore append from block ~2 1 ~ Text2
-data modify block ~ 1 ~ Items[0].tag.display.Lore append from block ~2 1 ~ Text3
-data modify block ~ 1 ~ Items[0].tag.display.Lore append from block ~2 1 ~ Text4
-data modify block ~ 1 ~ Items[0].tag.display.Lore append from block ~3 1 ~ Text1
-execute if score #total shulker_preview matches 1.. run data modify block ~ 1 ~ Items[0].tag.display.Lore append from block ~3 1 ~ Text2
-execute unless score #total shulker_preview matches 1.. run data modify block ~ 1 ~ Items[0].tag.display.Lore append value '""'
+execute if data block ~ 1 ~ Items[0].tag.Items[0] run function tryashtar.shulker_preview:append_lore
 
 data modify block ~ 1 ~ Items[0].tag.HideFlags set value 32
 data modify block ~ 1 ~ Items[0].tag.shulker_processed set value 1b

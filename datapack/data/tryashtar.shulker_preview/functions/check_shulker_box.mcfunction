@@ -4,7 +4,7 @@ data modify block ~ 1 ~ Items[0].tag.shulker_items append from entity @s Invento
 
 # filter out containers that have already been processed
 data remove block ~ 1 ~ Items[0].tag.shulker_items[{tag:{shulker_processed:1b}}]
-scoreboard players set #ender_header shulker_preview 0
+scoreboard players set #header_type shulker_preview 0
 
 # proceed if there is at least one in the inventory (not just cursor)
 execute store result score #slot shulker_preview store success score #success shulker_preview run data get block ~ 1 ~ Items[0].tag.shulker_items[0].Slot
