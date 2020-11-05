@@ -1,6 +1,6 @@
 {
   "rewards": {
-    "function": "tryashtar.shulker_preview:detect_shulker_box"
+    "function": "tryashtar.shulker_preview:shulker_box/detect"
   },
   "criteria": {
     "has_shulker_box": {

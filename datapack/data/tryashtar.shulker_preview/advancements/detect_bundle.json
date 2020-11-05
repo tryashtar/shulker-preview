@@ -1,6 +1,6 @@
 {
   "rewards": {
-    "function": "tryashtar.shulker_preview:detect_bundle"
+    "function": "tryashtar.shulker_preview:bundle/detect"
   },
   "criteria": {
     "has_ender_chest": {

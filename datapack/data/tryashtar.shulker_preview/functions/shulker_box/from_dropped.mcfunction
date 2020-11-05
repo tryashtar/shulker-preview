@@ -1,0 +1,15 @@
+# setup
+data modify storage tryashtar:shulker_preview items set value []
+data modify storage tryashtar:shulker_preview items append from entity @s Item
+data modify storage tryashtar:shulker_preview contents set from storage tryashtar:shulker_preview items[0].tag.BlockEntityTag.Items
+scoreboard players set #header_type shulker_preview 0
+
+# read contents of item to create entities
+function tryashtar.shulker_preview:analyze
+
+# copy lore to item
+data modify storage tryashtar:shulker_preview items[0].tag.display.Lore set value []
+function tryashtar.shulker_preview:append_lore
+
+# return item to entity
+data modify entity @s Item set from storage tryashtar:shulker_preview items[0]
