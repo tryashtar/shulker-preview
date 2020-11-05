@@ -64,11 +64,10 @@ def main():
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip.png", "shulker_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip_header.png", "shulker_tooltip_header", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
    providers.append(register_single("tryashtar.shulker_preview:ender_tooltip.png", "ender_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
-   providers.append(register_single("tryashtar.shulker_preview:bundle_tooltip.png", "bundle_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
 
    providers.extend(register_items(mcitems, 0, -32768, 16, False))
    # per-row icons
-   for row in range(0, 3):
+   for row in range(0, 4):
       height=-18*row
       numbers=[f"number.{i}.{row}" for i in range(0,10)]
       providers.append(register_grid("tryashtar.shulker_preview:numbers.png", [numbers], height-4, 8, lambda x:(get_spacing([-7]),get_spacing([-5]))))
@@ -107,7 +106,7 @@ def main():
          length_dict[len(name)]=[(item,itemtype)]
 
    # write main and subfunctions
-   for row in range(0, 3):
+   for row in range(0, 4):
       # process_item
       lines=[
       "# get the length of this item and call the appropriate function",
@@ -402,7 +401,7 @@ def get_spacing(sequence):
 
 currentchar='\u00b0'
 charmap={}
-translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing([13]),"tryashtar.shulker_preview.row_end":get_spacing([-167])}
+translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing([13]),"tryashtar.shulker_preview.row_end":get_spacing([-167]),"tryashtar.shulker_preview.full_row":get_spacing([163]),"tryashtar.shulker_preview.bundle_row_end":get_spacing([-293]),"tryashtar.shulker_preview.bundle_full_row":get_spacing([289])}
 # create a provider from file name, grid of icon names, and ascent/height
 # returns provider and also modifies charmap, a global [icon->character code] dictionary, and translations, which is charmap but with prefixed keys, and values padded with positive/negative spaces as specified in spacing
 def register_grid(fileid, icongrid, ascent, height, spacing_lambda):
