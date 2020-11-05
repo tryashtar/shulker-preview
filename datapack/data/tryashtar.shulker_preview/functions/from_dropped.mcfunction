@@ -5,4 +5,13 @@ scoreboard players set #header_type shulker_preview 0
 function tryashtar.shulker_preview:analyze
 
 data modify entity @s Item.tag.display.Lore set value []
-function tryashtar.shulker_preview:append_lore
+data modify entity @s Item.tag.display.Lore append from block ~2 1 ~ Text1
+data modify entity @s Item.tag.display.Lore append from block ~2 1 ~ Text2
+data modify entity @s Item.tag.display.Lore append from block ~2 1 ~ Text3
+data modify entity @s Item.tag.display.Lore append from block ~2 1 ~ Text4
+data modify entity @s Item.tag.display.Lore append from block ~3 1 ~ Text1
+execute if score #total shulker_preview matches 1.. run data modify entity @s Item.tag.display.Lore append from block ~3 1 ~ Text2
+execute unless score #total shulker_preview matches 1.. run data modify entity @s Item.tag.display.Lore append value '""'
+
+data modify entity @s Item.tag.HideFlags set value 32
+data modify entity @s Item.tag.shulker_processed set value 1b
