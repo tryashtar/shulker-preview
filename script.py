@@ -437,7 +437,7 @@ def get_spacing(sequence):
 
 currentchar='\u00b0'
 charmap={}
-translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing([13]),"tryashtar.shulker_preview.forward_slot":get_spacing([13]),"tryashtar.shulker_preview.back_slot":get_spacing([-23]),"tryashtar.shulker_preview.positive_pixel":get_spacing([-4]),"tryashtar.shulker_preview.adjust_bundle_tooltip":get_spacing([-9]),"tryashtar.shulker_preview.row_end":get_spacing([-167])}
+translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing([13]),"tryashtar.shulker_preview.forward_slot":get_spacing([13]),"tryashtar.shulker_preview.back_slot":get_spacing([-23]),"tryashtar.shulker_preview.positive_pixel":get_spacing([-4]),"tryashtar.shulker_preview.adjust_bundle_tooltip":get_spacing([-9]),"tryashtar.shulker_preview.row_end":get_spacing([-167]),"tryashtar.shulker_preview.full_row":get_spacing([163])}
 # create a provider from file name, grid of icon names, and ascent/height
 # returns provider and also modifies charmap, a global [icon->character code] dictionary, and translations, which is charmap but with prefixed keys, and values padded with positive/negative spaces as specified in spacing
 def register_grid(fileid, icongrid, ascent, height, spacing_lambda):
