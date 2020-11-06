@@ -1,4 +1,4 @@
-# return processed container to its original slot
+# return processed item to its original slot
 execute if score #slot shulker_preview matches 0 run loot replace entity @s hotbar.0 1 mine ~ 1 ~ golden_pickaxe{drop_contents:true}
 execute if score #slot shulker_preview matches 1 run loot replace entity @s hotbar.1 1 mine ~ 1 ~ golden_pickaxe{drop_contents:true}
 execute if score #slot shulker_preview matches 2 run loot replace entity @s hotbar.2 1 mine ~ 1 ~ golden_pickaxe{drop_contents:true}

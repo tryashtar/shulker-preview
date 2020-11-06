@@ -64,10 +64,46 @@ def main():
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip.png", "shulker_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip_header.png", "shulker_tooltip_header", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
    providers.append(register_single("tryashtar.shulker_preview:ender_tooltip.png", "ender_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
+   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip_single.png",
+      [["bundle_tooltip.single.0"]],
+      6, 18, lambda x:("",get_spacing([-6]))))
+   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
+      [
+         ["bundle_tooltip.top_left.0","bundle_tooltip.top_middle.0","bundle_tooltip.top_right.0"],
+         [None,None,None],
+         [None,None,None],
+         ["bundle_tooltip.single_left.0","bundle_tooltip.single_middle.0","bundle_tooltip.single_right.0"],
+      ],
+      6, 18, lambda x:("",get_spacing([-6]))))
+   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
+      [
+         [None,None,None],
+         ["bundle_tooltip.center_left.1","bundle_tooltip.center_middle.1","bundle_tooltip.center_right.1"],
+         ["bundle_tooltip.bottom_left.1","bundle_tooltip.bottom_middle.1","bundle_tooltip.bottom_right.1"],
+         [None,None,None],
+      ],
+      -12, 18, lambda x:("",get_spacing([-6]))))
+   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
+      [
+         [None,None,None],
+         ["bundle_tooltip.center_left.2","bundle_tooltip.center_middle.2","bundle_tooltip.center_right.2"],
+         ["bundle_tooltip.bottom_left.2","bundle_tooltip.bottom_middle.2","bundle_tooltip.bottom_right.2"],
+         [None,None,None],
+      ],
+      -30, 18, lambda x:("",get_spacing([-6]))))
+   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
+      [
+         [None,None,None],
+         [None,None,None],
+         ["bundle_tooltip.bottom_left.3","bundle_tooltip.bottom_middle.3","bundle_tooltip.bottom_right.3"],
+         [None,None,None],
+      ],
+      -48, 18, lambda x:("",get_spacing([-6]))))
+
 
    providers.extend(register_items(mcitems, 0, -32768, 16, False))
    # per-row icons
-   for row in range(0, 3):
+   for row in range(0, 4):
       height=-18*row
       numbers=[f"number.{i}.{row}" for i in range(0,10)]
       providers.append(register_grid("tryashtar.shulker_preview:numbers.png", [numbers], height-4, 8, lambda x:(get_spacing([-7]),get_spacing([-5]))))
@@ -106,7 +142,7 @@ def main():
          length_dict[len(name)]=[(item,itemtype)]
 
    # write main and subfunctions
-   for row in range(0, 3):
+   for row in range(0, 4):
       # process_item
       lines=[
       "# get the length of this item and call the appropriate function",
@@ -119,6 +155,9 @@ def main():
          sublines=process_item_lines(length_dict[length], row)
          write_lines(sublines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/process_item\\length_{length}.mcfunction")
       lines.extend([
+         "",
+         "# placeholder if item was not found",
+         f'execute unless entity @e[type=area_effect_cloud,tag=tryashtar.shulker_preview,distance=..0.0001] run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.missingno.{row}"}}\'}}',
          "",
          "# summon in count entity",
          "execute store result score #count shulker_preview run data get storage tryashtar:shulker_preview item.Count",
@@ -398,7 +437,7 @@ def get_spacing(sequence):
 
 currentchar='\u00b0'
 charmap={}
-translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing([13]),"tryashtar.shulker_preview.row_end":get_spacing([-167])}
+translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing([13]),"tryashtar.shulker_preview.forward_slot":get_spacing([13]),"tryashtar.shulker_preview.back_slot":get_spacing([-23]),"tryashtar.shulker_preview.positive_pixel":get_spacing([-4]),"tryashtar.shulker_preview.adjust_bundle_tooltip":get_spacing([-9]),"tryashtar.shulker_preview.row_end":get_spacing([-167])}
 # create a provider from file name, grid of icon names, and ascent/height
 # returns provider and also modifies charmap, a global [icon->character code] dictionary, and translations, which is charmap but with prefixed keys, and values padded with positive/negative spaces as specified in spacing
 def register_grid(fileid, icongrid, ascent, height, spacing_lambda):
@@ -431,7 +470,9 @@ def next_legal_character(currentchar):
 def register_items(items, row, ascent, height, real_version):
    global currentchar
    results=[]
-   for item,v in items.items():
+   itemlist=list(items.items())
+   itemlist.append(("missingno","item"))
+   for item,v in itemlist:
       if "_spawn_egg" in item or item in reused_textures:
          continue
       location=item.replace("glass_pane","glass")
@@ -440,14 +481,17 @@ def register_items(items, row, ascent, height, real_version):
       thingtype="item"
       if item in ["tipped_arrow_head","spawn_egg_overlay","potion_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","firework_star_overlay","filled_map_markings"]:
          thingtype="overlay"
+      resource_location=f"minecraft:{itype}/{location}.png"
+      if item=="missingno":
+         resource_location="tryashtar.shulker_preview:missingno.png"
       if real_version:
          negative=charmap[f"negative.{thingtype}.{item}"]
          firstspace=""
          if thingtype=="overlay":
             firstspace=get_spacing([-18])
-         results.append(register_single(f"minecraft:{itype}/{location}.png", f"{thingtype}.{item}.{row}", ascent, height, (firstspace,negative+get_spacing([10]))))         
+         results.append(register_single(resource_location, f"{thingtype}.{item}.{row}", ascent, height, (firstspace,negative+get_spacing([10]))))         
       else:
-         results.append(register_single(f"minecraft:{itype}/{location}.png", f"negative.{thingtype}.{item}", -32768, -height, None))
+         results.append(register_single(resource_location, f"negative.{thingtype}.{item}", -32768, -height, None))
    return results
 
 # shortcut to create provider from one image
