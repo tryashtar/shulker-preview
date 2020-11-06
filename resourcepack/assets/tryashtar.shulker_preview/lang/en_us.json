@@ -1,6 +1,7 @@
 {
    "%1$s%418634357$s": "%2$s",
    "tryashtar.shulker_preview.empty_slot": "\uf828\uf825",
+   "tryashtar.shulker_preview.negative_empty_slot": "\uf809\uf807",
    "tryashtar.shulker_preview.row_end": "\uf80c\uf80a\uf807",
    "tryashtar.shulker_preview.full_row": "\uf82c\uf82a\uf823",
    "tryashtar.shulker_preview.bundle_row_end": "\uf80d\uf80a\uf805",
