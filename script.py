@@ -64,6 +64,9 @@ def main():
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip.png", "shulker_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip_header.png", "shulker_tooltip_header", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
    providers.append(register_single("tryashtar.shulker_preview:ender_tooltip.png", "ender_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
+   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip_single.png",
+      [["bundle_tooltip.single.0"]],
+      6, 18, lambda x:("",get_spacing([-6]))))
    providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
       [
          ["bundle_tooltip.top_left.0","bundle_tooltip.top_middle.0","bundle_tooltip.top_right.0"],

@@ -1,7 +1,7 @@
 summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.bundle_tooltip.single_left.0"}'}
-summon area_effect_cloud ~ ~0.01 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.bundle_tooltip.single_middle.0"}'}
-summon area_effect_cloud ~ ~0.02 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.bundle_tooltip.single_middle.0"}'}
-summon area_effect_cloud ~ ~0.03 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.bundle_tooltip.single_middle.0"}'}
+execute if score #row_size shulker_preview matches 3.. run summon area_effect_cloud ~ ~0.01 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.bundle_tooltip.single_middle.0"}'}
+execute if score #row_size shulker_preview matches 4.. run summon area_effect_cloud ~ ~0.02 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.bundle_tooltip.single_middle.0"}'}
+execute if score #row_size shulker_preview matches 5.. run summon area_effect_cloud ~ ~0.03 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.bundle_tooltip.single_middle.0"}'}
 execute if score #row_size shulker_preview matches 6.. run summon area_effect_cloud ~ ~0.04 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.bundle_tooltip.single_middle.0"}'}
 execute if score #row_size shulker_preview matches 7.. run summon area_effect_cloud ~ ~0.05 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.bundle_tooltip.single_middle.0"}'}
 execute if score #row_size shulker_preview matches 8.. run summon area_effect_cloud ~ ~0.06 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.bundle_tooltip.single_middle.0"}'}
