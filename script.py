@@ -79,7 +79,7 @@ def main():
          ["bundle_tooltip.bottom_left.1","bundle_tooltip.bottom_middle.1","bundle_tooltip.bottom_right.1"],
          [None,None,None],
       ],
-      -14, 18, lambda x:("",get_spacing([-6]))))
+      -12, 18, lambda x:("",get_spacing([-6]))))
    providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
       [
          [None,None,None],
@@ -87,7 +87,7 @@ def main():
          ["bundle_tooltip.bottom_left.2","bundle_tooltip.bottom_middle.2","bundle_tooltip.bottom_right.2"],
          [None,None,None],
       ],
-      -34, 18, lambda x:("",get_spacing([-6]))))
+      -30, 18, lambda x:("",get_spacing([-6]))))
    providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
       [
          [None,None,None],
@@ -95,7 +95,7 @@ def main():
          ["bundle_tooltip.bottom_left.3","bundle_tooltip.bottom_middle.3","bundle_tooltip.bottom_right.3"],
          [None,None,None],
       ],
-      -54, 16, lambda x:("",get_spacing([-6]))))
+      -48, 18, lambda x:("",get_spacing([-6]))))
 
 
    providers.extend(register_items(mcitems, 0, -32768, 16, False))
@@ -434,7 +434,7 @@ def get_spacing(sequence):
 
 currentchar='\u00b0'
 charmap={}
-translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing([13]),"tryashtar.shulker_preview.negative_empty_slot":get_spacing([-23]),"tryashtar.shulker_preview.row_end":get_spacing([-167]),"tryashtar.shulker_preview.full_row":get_spacing([163]),"tryashtar.shulker_preview.bundle_row_end":get_spacing([-293]),"tryashtar.shulker_preview.bundle_full_row":get_spacing([289])}
+translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing([13]),"tryashtar.shulker_preview.forward_slot":get_spacing([13]),"tryashtar.shulker_preview.back_slot":get_spacing([-23]),"tryashtar.shulker_preview.positive_pixel":get_spacing([-4]),"tryashtar.shulker_preview.adjust_bundle_tooltip":get_spacing([-9]),"tryashtar.shulker_preview.row_end":get_spacing([-167])}
 # create a provider from file name, grid of icon names, and ascent/height
 # returns provider and also modifies charmap, a global [icon->character code] dictionary, and translations, which is charmap but with prefixed keys, and values padded with positive/negative spaces as specified in spacing
 def register_grid(fileid, icongrid, ascent, height, spacing_lambda):

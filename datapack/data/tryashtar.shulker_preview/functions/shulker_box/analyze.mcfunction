@@ -109,5 +109,3 @@ execute unless data storage tryashtar:shulker_preview contents[{Slot:26b}] run s
 summon area_effect_cloud ~ 10.99 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.row_end"}'}
 summon area_effect_cloud ~ 19.99 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.row_end"}'}
 summon area_effect_cloud ~ 28.99 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.row_end"}'}
-
-summon area_effect_cloud ~ ~1000 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.full_row"}'}

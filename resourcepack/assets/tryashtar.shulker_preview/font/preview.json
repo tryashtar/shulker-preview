@@ -340,7 +340,7 @@
       {
          "type": "bitmap",
          "file": "tryashtar.shulker_preview:bundle_tooltip.png",
-         "ascent": -14,
+         "ascent": -12,
          "height": 18,
          "chars": [
             "\u0000\u0000\u0000",
@@ -352,7 +352,7 @@
       {
          "type": "bitmap",
          "file": "tryashtar.shulker_preview:bundle_tooltip.png",
-         "ascent": -34,
+         "ascent": -30,
          "height": 18,
          "chars": [
             "\u0000\u0000\u0000",
@@ -364,8 +364,8 @@
       {
          "type": "bitmap",
          "file": "tryashtar.shulker_preview:bundle_tooltip.png",
-         "ascent": -54,
-         "height": 16,
+         "ascent": -48,
+         "height": 18,
          "chars": [
             "\u0000\u0000\u0000",
             "\u0000\u0000\u0000",

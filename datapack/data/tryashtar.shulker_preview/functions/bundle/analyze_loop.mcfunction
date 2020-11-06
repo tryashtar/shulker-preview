@@ -7,5 +7,7 @@ data remove storage tryashtar:shulker_preview running_contents[0]
 
 scoreboard players add #slots shulker_preview 1
 execute if score #slots shulker_preview >= #row_size shulker_preview positioned ~ ~1 ~ run function tryashtar.shulker_preview:bundle/rows/return
+execute if score #slots shulker_preview >= #row_size shulker_preview run scoreboard players add #row shulker_preview 1
+execute if score #slots shulker_preview >= #row_size shulker_preview run scoreboard players set #slots shulker_preview 0
 
 execute if data storage tryashtar:shulker_preview running_contents[0] positioned ~ ~2 ~ run function tryashtar.shulker_preview:bundle/analyze_loop

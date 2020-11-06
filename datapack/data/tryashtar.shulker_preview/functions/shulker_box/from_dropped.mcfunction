@@ -9,7 +9,7 @@ function tryashtar.shulker_preview:analyze
 
 # copy lore to item
 data modify storage tryashtar:shulker_preview items[0].tag.display.Lore set value []
-function tryashtar.shulker_preview:append_lore
+function tryashtar.shulker_preview:shulker_box/append_lore
 
 # return item to entity
 data modify entity @s Item set from storage tryashtar:shulker_preview items[0]

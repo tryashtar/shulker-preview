@@ -4,7 +4,7 @@ execute if score #header_type shulker_preview matches 0 unless data storage trya
 execute if score #header_type shulker_preview matches 1 unless data storage tryashtar:shulker_preview items[0].tag.display.Name run summon area_effect_cloud ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.ender_tooltip"}'}
 
 # copy and analyze contents one by one
-execute if score #header_type shulker_preview matches 0..1 run function tryashtar.shulker_preview:analyze_slots
+execute if score #header_type shulker_preview matches 0..1 run function tryashtar.shulker_preview:shulker_box/analyze
 execute if score #header_type shulker_preview matches 2 positioned ~ 2 ~ run function tryashtar.shulker_preview:bundle/analyze
 
 # evaluate entities on the sign
