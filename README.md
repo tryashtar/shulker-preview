@@ -24,18 +24,18 @@ There is also a [Faithful x32 version of the resource pack](https://github.com/F
 * Does this work with Optifine?
    * Yes.
 * Does this work with other resource packs?
-   * In 1.16 and later, items in the preview will look as they do in your personal resource pack, but blocks will appear with vanilla textures.
-   * In 1.15 and earlier, both items and blocks will use vanilla textures. Also, the pack may conflict with other packs that override private use characters.
+   * In 1.16+, items in the preview will look as they do in your personal resource pack, but blocks will appear with vanilla textures.
+   * In earlier versions, both items and blocks will use vanilla textures. Also, the pack may conflict with other packs that override private use characters.
 * What happens if players don't have the resource pack?
    * They will see the vanilla shulker box tooltip, though it may contain a few extra lines.
 * How do I disable/enable ender chest previews?
-   * Disable: `/function tryashtar.shulker_preview:.meta/disable_ender`
-   * Enable: `/function tryashtar.shulker_preview:.meta/enable_ender`
+   * In 1.17+: `/function tryashtar.shulker_preview:.config/show_settings`
+   * In earlier versions, there are two functions in `.meta`
 * How do I completely uninstall the pack?
    * After disabling the pack with `/datapack disable`, the following artifacts will remain and must be cleared manually:
       * The `shulker_preview` scoreboard objective. This can be removed with `/scoreboard objectives remove shulker_preview`.
       * A forceloaded chunk near the worldborder. This can be removed with `/forceload remove 29999977 9832`. If you wish, you can also delete the region file containing this chunk: `r.58593.19.mca`.
-      * The temporary values saved to NBT storage. This can be removed by deleting the `command_storage_tryashtar.dat` file from your world's `data` folder.
+      * The temporary values saved to NBT storage. This can be removed by deleting the `command_storage_tryashtar.shulker_preview.dat` file from your world's `data` folder.
       * Any existing shulker boxes will still show the preview in the tooltip. To remove it, simply place and break the shulker box after the pack has been disabled.
 * It's not working for me!
    * First, please [follow these instructions](https://imgur.com/a/rBukto5) to diagnose and solve some very common issues.
@@ -45,6 +45,8 @@ There is also a [Faithful x32 version of the resource pack](https://github.com/F
 ```diff
 Current 1.17 version
 + All 1.17 items
++ Previews for bundle items
++ New settings menu for toggling previews for shulker boxes, ender chests, and bundles
 
 Current 1.16 version
 + All 1.16 items
