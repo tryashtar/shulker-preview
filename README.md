@@ -46,6 +46,7 @@ There is also a [Faithful x32 version of the resource pack](https://github.com/F
 Current 1.17 version
 + All 1.17 items
 + Previews for bundle items
++ Unknown items show a missing texture instead of messing up the order
 + New settings menu for toggling previews for shulker boxes, ender chests, and bundles
 
 Current 1.16 version
