@@ -1,5 +1,5 @@
 # create an entity that draws approximately the correct overlay color
-execute store result score #color shulker_preview run data get storage tryashtar:shulker_preview item.tag.CustomPotionColor
+execute store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.tag.CustomPotionColor
 function tryashtar.shulker_preview:row_1/analyze_color
 execute if score #near_color shulker_preview matches 16383998 run summon area_effect_cloud ~ ~0.2 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.overlay.potion_overlay.1","color":"#f9fffe"}'}
 execute if score #near_color shulker_preview matches 16351261 run summon area_effect_cloud ~ ~0.2 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.overlay.potion_overlay.1","color":"#f9801d"}'}

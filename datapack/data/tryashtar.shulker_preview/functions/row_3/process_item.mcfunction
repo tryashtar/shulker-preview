@@ -1,5 +1,5 @@
 # get the length of this item and call the appropriate function
-execute store result score #length shulker_preview run data get storage tryashtar:shulker_preview item.id
+execute store result score #length shulker_preview run data get storage tryashtar.shulker_preview:data item.id
 execute if score #length shulker_preview matches 13 run function tryashtar.shulker_preview:row_3/process_item/length_13
 execute if score #length shulker_preview matches 14 run function tryashtar.shulker_preview:row_3/process_item/length_14
 execute if score #length shulker_preview matches 15 run function tryashtar.shulker_preview:row_3/process_item/length_15
@@ -42,5 +42,5 @@ execute if score #length shulker_preview matches 51 run function tryashtar.shulk
 execute unless entity @e[type=area_effect_cloud,tag=tryashtar.shulker_preview,distance=..0.0001] run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.missingno.3"}'}
 
 # summon in count entity
-execute store result score #count shulker_preview run data get storage tryashtar:shulker_preview item.Count
+execute store result score #count shulker_preview run data get storage tryashtar.shulker_preview:data item.Count
 execute if score #count shulker_preview matches 2.. run function tryashtar.shulker_preview:row_3/overlay/count

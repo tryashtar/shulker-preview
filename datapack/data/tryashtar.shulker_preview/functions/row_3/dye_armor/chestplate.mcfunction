@@ -1,5 +1,5 @@
 # create an entity that draws approximately colored armor
-execute store result score #color shulker_preview run data get storage tryashtar:shulker_preview item.tag.display.color
+execute store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.tag.display.color
 function tryashtar.shulker_preview:row_3/analyze_color
 execute if score #near_color shulker_preview matches 16383998 run summon area_effect_cloud ~ ~0.01 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.leather_chestplate.3","color":"#f9fffe"}'}
 execute if score #near_color shulker_preview matches 16351261 run summon area_effect_cloud ~ ~0.01 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.leather_chestplate.3","color":"#f9801d"}'}
