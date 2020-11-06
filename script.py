@@ -64,6 +64,39 @@ def main():
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip.png", "shulker_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip_header.png", "shulker_tooltip_header", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
    providers.append(register_single("tryashtar.shulker_preview:ender_tooltip.png", "ender_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
+   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
+      [
+         ["bundle_tooltip.top_left.0","bundle_tooltip.top_middle.0","bundle_tooltip.top_right.0"],
+         [None,None,None],
+         [None,None,None],
+         ["bundle_tooltip.single_left.0","bundle_tooltip.single_middle.0","bundle_tooltip.single_right.0"],
+      ],
+      5, 16, lambda x:("",get_spacing([-6]))))
+   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
+      [
+         [None,None,None],
+         ["bundle_tooltip.center_left.1","bundle_tooltip.center_middle.1","bundle_tooltip.center_right.1"],
+         ["bundle_tooltip.bottom_left.1","bundle_tooltip.bottom_middle.1","bundle_tooltip.bottom_right.1"],
+         [None,None,None],
+      ],
+      -13, 16, lambda x:("",get_spacing([-6]))))
+   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
+      [
+         [None,None,None],
+         ["bundle_tooltip.center_left.2","bundle_tooltip.center_middle.2","bundle_tooltip.center_right.2"],
+         ["bundle_tooltip.bottom_left.2","bundle_tooltip.bottom_middle.2","bundle_tooltip.bottom_right.2"],
+         [None,None,None],
+      ],
+      -31, 16, lambda x:("",get_spacing([-6]))))
+   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
+      [
+         [None,None,None],
+         [None,None,None],
+         ["bundle_tooltip.bottom_left.3","bundle_tooltip.bottom_middle.3","bundle_tooltip.bottom_right.3"],
+         [None,None,None],
+      ],
+      -49, 16, lambda x:("",get_spacing([-6]))))
+
 
    providers.extend(register_items(mcitems, 0, -32768, 16, False))
    # per-row icons

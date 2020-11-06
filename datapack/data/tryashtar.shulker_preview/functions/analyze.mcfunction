@@ -5,7 +5,7 @@ execute if score #header_type shulker_preview matches 1 unless data storage trya
 
 # copy and analyze contents one by one
 execute if score #header_type shulker_preview matches 0..1 run function tryashtar.shulker_preview:analyze_slots
-execute if score #header_type shulker_preview matches 2 positioned ~ 2 ~ run function tryashtar.shulker_preview:analyze_slotless
+execute if score #header_type shulker_preview matches 2 positioned ~ 2 ~ run function tryashtar.shulker_preview:bundle/analyze
 
 # evaluate entities on the sign
 summon item ~ ~ ~ {UUID:[I;0,29999977,0,9832],Item:{id:tnt,Count:1b}}
