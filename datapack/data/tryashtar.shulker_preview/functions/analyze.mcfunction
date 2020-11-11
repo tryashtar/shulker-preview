@@ -1,11 +1,10 @@
 # summon tooltip background
-execute unless score #header_type shulker_preview matches 2 if data storage tryashtar.shulker_preview:data items[0].tag.display.Name run summon area_effect_cloud ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip"}'}
+execute if data storage tryashtar.shulker_preview:data items[0].tag.display.Name run summon area_effect_cloud ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip"}'}
 execute if score #header_type shulker_preview matches 0 unless data storage tryashtar.shulker_preview:data items[0].tag.display.Name run summon area_effect_cloud ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip_header"}'}
 execute if score #header_type shulker_preview matches 1 unless data storage tryashtar.shulker_preview:data items[0].tag.display.Name run summon area_effect_cloud ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.ender_tooltip"}'}
 
 # copy and analyze contents one by one
-execute if score #header_type shulker_preview matches 0..1 run function tryashtar.shulker_preview:shulker_box/analyze
-execute if score #header_type shulker_preview matches 2 positioned ~ 2 ~ run function tryashtar.shulker_preview:bundle/analyze
+function tryashtar.shulker_preview:shulker_box/analyze
 
 # evaluate entities on the sign
 summon item ~ ~ ~ {UUID:[I;0,29999977,0,9832],Item:{id:tnt,Count:1b}}

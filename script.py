@@ -103,7 +103,7 @@ def main():
 
    providers.extend(register_items(mcitems, 0, -32768, 16, False))
    # per-row icons
-   for row in range(0, 4):
+   for row in range(0, 3):
       height=-18*row
       numbers=[f"number.{i}.{row}" for i in range(0,10)]
       providers.append(register_grid("tryashtar.shulker_preview:numbers.png", [numbers], height-4, 8, lambda x:(get_spacing([-7]),get_spacing([-5]))))
@@ -142,7 +142,7 @@ def main():
          length_dict[len(name)]=[(item,itemtype)]
 
    # write main and subfunctions
-   for row in range(0, 4):
+   for row in range(0, 3):
       # process_item
       lines=[
       "# get the length of this item and call the appropriate function",
