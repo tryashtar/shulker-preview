@@ -3,7 +3,7 @@ execute store result score #boxes shulker_preview run clear @s #tryashtar.shulke
 execute store result score #processed shulker_preview run clear @s #tryashtar.shulker_preview:shulker_boxes{shulker_processed:1b} 0
 
 # if there are some, proceed
-execute if score #ready shulker_preview matches 1 if score #boxes shulker_preview > #processed shulker_preview positioned 29999977 1 9832 run function tryashtar.shulker_preview:shulker_box/prepare
+execute if score #ready shulker_preview matches 1 if score #boxes shulker_preview > #processed shulker_preview run function tryashtar.shulker_preview:shulker_box/prepare
 
 # if not, stop scanning
 execute if score #boxes shulker_preview <= #processed shulker_preview run tag @s remove shulker_preview.shulker_box
