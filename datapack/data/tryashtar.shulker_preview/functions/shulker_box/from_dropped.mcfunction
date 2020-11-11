@@ -5,5 +5,5 @@ data modify storage tryashtar.shulker_preview:data contents set from storage try
 scoreboard players set #header_type shulker_preview 0
 
 function tryashtar.shulker_preview:analyze
-data modify entity @s Item set from storage tryashtar.shulker_preview:data items[0]
+data modify entity @s Item set from entity 0-1c9-c369-0-2669 HandItems[0]
 kill 0-1c9-c369-0-2669
