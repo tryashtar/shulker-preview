@@ -34,7 +34,7 @@ There is also a [Faithful x32 version of the resource pack](https://github.com/F
 * How do I completely uninstall the pack?
    * After disabling the pack with `/datapack disable`, the following artifacts will remain and must be cleared manually:
       * The `shulker_preview` scoreboard objective. This can be removed with `/scoreboard objectives remove shulker_preview`.
-      * A forceloaded chunk near the worldborder. This can be removed with `/forceload remove 29999977 9832`. If you wish, you can also delete the region file containing this chunk: `r.58593.19.mca`.
+      * In 1.16 and earlier, a forceloaded chunk near the worldborder. This can be removed with `/forceload remove 29999977 9832`. If you wish, you can also delete the region file containing this chunk: `r.58593.19.mca`.
       * The temporary values saved to NBT storage. This can be removed by deleting the `command_storage_tryashtar.shulker_preview.dat` file from your world's `data` folder.
       * Any existing shulker boxes will still show the preview in the tooltip. To remove it, simply place and break the shulker box after the pack has been disabled.
 * It's not working for me!
@@ -48,6 +48,7 @@ Current 1.17 version
 + Previews for bundle items
 + Unknown items show a missing texture instead of messing up the order
 + New settings menu for toggling previews for shulker boxes, ender chests, and bundles
++ Now uses /item command instead of shulker trick in forceloaded chunk
 
 Current 1.16 version
 + All 1.16 items
