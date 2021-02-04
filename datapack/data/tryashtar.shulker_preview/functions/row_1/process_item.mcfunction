@@ -32,11 +32,6 @@ execute if score #length shulker_preview matches 41 run function tryashtar.shulk
 execute if score #length shulker_preview matches 42 run function tryashtar.shulker_preview:row_1/process_item/length_42
 execute if score #length shulker_preview matches 43 run function tryashtar.shulker_preview:row_1/process_item/length_43
 execute if score #length shulker_preview matches 44 run function tryashtar.shulker_preview:row_1/process_item/length_44
-execute if score #length shulker_preview matches 45 run function tryashtar.shulker_preview:row_1/process_item/length_45
-execute if score #length shulker_preview matches 46 run function tryashtar.shulker_preview:row_1/process_item/length_46
-execute if score #length shulker_preview matches 48 run function tryashtar.shulker_preview:row_1/process_item/length_48
-execute if score #length shulker_preview matches 49 run function tryashtar.shulker_preview:row_1/process_item/length_49
-execute if score #length shulker_preview matches 51 run function tryashtar.shulker_preview:row_1/process_item/length_51
 
 # placeholder if item was not found
 execute unless entity @e[type=area_effect_cloud,tag=tryashtar.shulker_preview,distance=..0.0001] run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.missingno.1"}'}

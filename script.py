@@ -33,7 +33,7 @@ def main():
    delete_entries_regex(mcitems, r"^(cross)?bow_pulling_\d$")
    delete_entries_regex(mcitems, r"^empty_armor_slot_")
    delete_entries(mcitems,["empty_armor_slot", "fishing_rod_cast", "ruby", "crystallized_honey"])
-   blockitems=["acacia_sapling","activator_rail","allium","azure_bluet","birch_sapling","black_stained_glass_pane","blue_orchid","blue_stained_glass_pane","brain_coral","brain_coral_fan","brown_mushroom","brown_stained_glass_pane","bubble_coral","bubble_coral_fan","cobweb","cornflower","crimson_fungus","crimson_roots","cyan_stained_glass_pane","dandelion","dark_oak_sapling","dead_brain_coral","dead_brain_coral_fan","dead_bubble_coral","dead_bubble_coral_fan","dead_bush","dead_fire_coral","dead_fire_coral_fan","dead_horn_coral","dead_horn_coral_fan","dead_tube_coral","dead_tube_coral_fan","detector_rail","fern","fire_coral","fire_coral_fan","glass_pane","grass","gray_stained_glass_pane","green_stained_glass_pane","horn_coral","horn_coral_fan","iron_bars","jungle_sapling","ladder","large_fern","lever","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lilac","lily_of_the_valley","lily_pad","lime_stained_glass_pane","magenta_stained_glass_pane","nether_sprouts","oak_sapling","orange_stained_glass_pane","orange_tulip","oxeye_daisy","peony","pink_stained_glass_pane","pink_tulip","poppy","powered_rail","purple_stained_glass_pane","rail","redstone_torch","red_mushroom","red_stained_glass_pane","red_tulip","rose_bush","soul_torch","spruce_sapling","sunflower","tall_grass","torch","tripwire_hook","tube_coral","tube_coral_fan","twisting_vines","vine","warped_fungus","warped_roots","weeping_vines","white_stained_glass_pane","white_tulip","wither_rose","yellow_stained_glass_pane","small_amethyst_bud","medium_amethyst_bud","large_amethyst_bud","amethyst_cluster"]
+   blockitems=["acacia_sapling","activator_rail","allium","azure_bluet","birch_sapling","black_stained_glass_pane","blue_orchid","blue_stained_glass_pane","brain_coral","brain_coral_fan","brown_mushroom","brown_stained_glass_pane","bubble_coral","bubble_coral_fan","cobweb","cornflower","crimson_fungus","crimson_roots","cyan_stained_glass_pane","dandelion","dark_oak_sapling","dead_brain_coral","dead_brain_coral_fan","dead_bubble_coral","dead_bubble_coral_fan","dead_bush","dead_fire_coral","dead_fire_coral_fan","dead_horn_coral","dead_horn_coral_fan","dead_tube_coral","dead_tube_coral_fan","detector_rail","fern","fire_coral","fire_coral_fan","glass_pane","grass","gray_stained_glass_pane","green_stained_glass_pane","horn_coral","horn_coral_fan","iron_bars","jungle_sapling","ladder","large_fern","lever","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lilac","lily_of_the_valley","lily_pad","lime_stained_glass_pane","magenta_stained_glass_pane","nether_sprouts","oak_sapling","orange_stained_glass_pane","orange_tulip","oxeye_daisy","peony","pink_stained_glass_pane","pink_tulip","poppy","powered_rail","purple_stained_glass_pane","rail","redstone_torch","red_mushroom","red_stained_glass_pane","red_tulip","rose_bush","soul_torch","spruce_sapling","sunflower","tall_grass","torch","tripwire_hook","tube_coral","tube_coral_fan","twisting_vines","vine","warped_fungus","warped_roots","weeping_vines","white_stained_glass_pane","white_tulip","wither_rose","yellow_stained_glass_pane","small_amethyst_bud","medium_amethyst_bud","large_amethyst_bud","amethyst_cluster","hanging_roots","glow_lichen"]
    for blockitem in blockitems:
       mcitems[blockitem]="block"
 
@@ -150,10 +150,15 @@ def main():
       ]
       lengths=list(length_dict.keys())
       lengths.sort()
-      for length in lengths:
-         lines.append(f"execute if score #length shulker_preview matches {length} run function tryashtar.shulker_preview:row_{row}/process_item/length_{length}")
-         sublines=process_item_lines(length_dict[length], row)
-         write_lines(sublines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/process_item\\length_{length}.mcfunction")
+      for length in range(0,100):
+         fpath=f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/process_item\\length_{length}.mcfunction"
+         if length in lengths:
+            lines.append(f"execute if score #length shulker_preview matches {length} run function tryashtar.shulker_preview:row_{row}/process_item/length_{length}")
+            sublines=process_item_lines(length_dict[length], row)
+            write_lines(sublines, fpath)
+         elif os.path.exists(fpath):
+            os.remove(fpath)
+
       lines.extend([
          "",
          "# placeholder if item was not found",
@@ -659,6 +664,7 @@ banner_pattern_ids={
 }
 
 spawn_egg_colors={
+   "axolotl_spawn_egg": (16499171, 10890612),
    "bat_spawn_egg": (4996656, 986895),
    "bee_spawn_egg": (15582019, 4400155),
    "blaze_spawn_egg": (16167425, 16775294),
@@ -677,6 +683,7 @@ spawn_egg_colors={
    "evoker_spawn_egg": (9804699, 1973274),
    "fox_spawn_egg": (14005919, 13396256),
    "ghast_spawn_egg": (16382457, 12369084),
+   "glow_squid_spawn_egg": (611926, 8778172),
    "guardian_spawn_egg": (5931634, 15826224),
    "hoglin_spawn_egg": (13004373, 6251620),
    "horse_spawn_egg": (12623485, 15656192),

@@ -1,4 +1,5 @@
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:allium"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.allium.1"}'}
+execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:azalea"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.azalea.1"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:bamboo"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.bamboo.1"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:barrel"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.barrel.1"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:basalt"} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.basalt.1"}'}
