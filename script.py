@@ -64,42 +64,6 @@ def main():
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip.png", "shulker_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
    providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip_header.png", "shulker_tooltip_header", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
    providers.append(register_single("tryashtar.shulker_preview:ender_tooltip.png", "ender_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
-   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip_single.png",
-      [["bundle_tooltip.single.0"]],
-      6, 18, lambda x:("",get_spacing([-6]))))
-   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
-      [
-         ["bundle_tooltip.top_left.0","bundle_tooltip.top_middle.0","bundle_tooltip.top_right.0"],
-         [None,None,None],
-         [None,None,None],
-         ["bundle_tooltip.single_left.0","bundle_tooltip.single_middle.0","bundle_tooltip.single_right.0"],
-      ],
-      6, 18, lambda x:("",get_spacing([-6]))))
-   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
-      [
-         [None,None,None],
-         ["bundle_tooltip.center_left.1","bundle_tooltip.center_middle.1","bundle_tooltip.center_right.1"],
-         ["bundle_tooltip.bottom_left.1","bundle_tooltip.bottom_middle.1","bundle_tooltip.bottom_right.1"],
-         [None,None,None],
-      ],
-      -12, 18, lambda x:("",get_spacing([-6]))))
-   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
-      [
-         [None,None,None],
-         ["bundle_tooltip.center_left.2","bundle_tooltip.center_middle.2","bundle_tooltip.center_right.2"],
-         ["bundle_tooltip.bottom_left.2","bundle_tooltip.bottom_middle.2","bundle_tooltip.bottom_right.2"],
-         [None,None,None],
-      ],
-      -30, 18, lambda x:("",get_spacing([-6]))))
-   providers.append(register_grid("tryashtar.shulker_preview:bundle_tooltip.png",
-      [
-         [None,None,None],
-         [None,None,None],
-         ["bundle_tooltip.bottom_left.3","bundle_tooltip.bottom_middle.3","bundle_tooltip.bottom_right.3"],
-         [None,None,None],
-      ],
-      -48, 18, lambda x:("",get_spacing([-6]))))
-
 
    providers.extend(register_items(mcitems, 0, -32768, 16, False))
    # per-row icons
@@ -442,7 +406,7 @@ def get_spacing(sequence):
 
 currentchar='\u00b0'
 charmap={}
-translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing([13]),"tryashtar.shulker_preview.forward_slot":get_spacing([13]),"tryashtar.shulker_preview.back_slot":get_spacing([-23]),"tryashtar.shulker_preview.positive_pixel":get_spacing([-4]),"tryashtar.shulker_preview.adjust_bundle_tooltip":get_spacing([-9]),"tryashtar.shulker_preview.row_end":get_spacing([-167]),"tryashtar.shulker_preview.full_row":get_spacing([163])}
+translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing([13]),"tryashtar.shulker_preview.forward_slot":get_spacing([13]),"tryashtar.shulker_preview.back_slot":get_spacing([-23]),"tryashtar.shulker_preview.positive_pixel":get_spacing([-4]),"tryashtar.shulker_preview.row_end":get_spacing([-167]),"tryashtar.shulker_preview.full_row":get_spacing([163])}
 # create a provider from file name, grid of icon names, and ascent/height
 # returns provider and also modifies charmap, a global [icon->character code] dictionary, and translations, which is charmap but with prefixed keys, and values padded with positive/negative spaces as specified in spacing
 def register_grid(fileid, icongrid, ascent, height, spacing_lambda):
