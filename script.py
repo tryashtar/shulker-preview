@@ -8,7 +8,7 @@ import shutil
 from PIL import Image
 from collections import OrderedDict
 
-specials=["broken_elytra","crossbow_arrow","crossbow_firework","spawn_egg","spawn_egg_overlay","firework_star_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","potion_overlay","tipped_arrow_base","tipped_arrow_head", "filled_map_markings","bundle_filled","light_00","light_01","light_02","light_03","light_04","light_05","light_06","light_07","light_08","light_09","light_10","light_11","light_12","light_13","light_14","light_15"]
+specials=["broken_elytra","crossbow_arrow","crossbow_firework","spawn_egg","spawn_egg_overlay","firework_star_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","potion_overlay","tipped_arrow_base","tipped_arrow_head","filled_map_markings","bundle_filled","light_00","light_01","light_02","light_03","light_04","light_05","light_06","light_07","light_08","light_09","light_10","light_11","light_12","light_13","light_14","light_15"]
 def main():
    # load item textures from two sources
    print("Loading icons...")
@@ -23,16 +23,16 @@ def main():
    mcshields=load_items("../block images/shield")
 
    # a few renames
-   rename_key(mcitems, "clock_00", "clock")
-   rename_key(mcitems, "compass_00", "compass")
-   rename_key(mcitems, "crossbow_standby", "crossbow")
+   rename_key(mcitems, "clock_00","clock")
+   rename_key(mcitems, "compass_16","compass")
+   rename_key(mcitems, "crossbow_standby","crossbow")
 
    # delete unnecessary textures
    delete_entries_regex(mcitems, r"^clock_\d\d$")
    delete_entries_regex(mcitems, r"^compass_\d\d$")
    delete_entries_regex(mcitems, r"^(cross)?bow_pulling_\d$")
    delete_entries_regex(mcitems, r"^empty_armor_slot_")
-   delete_entries(mcitems,["empty_armor_slot", "fishing_rod_cast", "ruby", "crystallized_honey", "spyglass_model"])
+   delete_entries(mcitems,["empty_armor_slot","fishing_rod_cast","ruby","crystallized_honey","spyglass_model"])
    blockitems=["acacia_sapling","activator_rail","allium","azure_bluet","birch_sapling","black_stained_glass_pane","blue_orchid","blue_stained_glass_pane","brain_coral","brain_coral_fan","brown_mushroom","brown_stained_glass_pane","bubble_coral","bubble_coral_fan","cobweb","cornflower","crimson_fungus","crimson_roots","cyan_stained_glass_pane","dandelion","dark_oak_sapling","dead_brain_coral","dead_brain_coral_fan","dead_bubble_coral","dead_bubble_coral_fan","dead_bush","dead_fire_coral","dead_fire_coral_fan","dead_horn_coral","dead_horn_coral_fan","dead_tube_coral","dead_tube_coral_fan","detector_rail","fern","fire_coral","fire_coral_fan","glass_pane","grass","gray_stained_glass_pane","green_stained_glass_pane","horn_coral","horn_coral_fan","iron_bars","jungle_sapling","ladder","large_fern","lever","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lilac","lily_of_the_valley","lily_pad","lime_stained_glass_pane","magenta_stained_glass_pane","nether_sprouts","oak_sapling","orange_stained_glass_pane","orange_tulip","oxeye_daisy","peony","pink_stained_glass_pane","pink_tulip","poppy","powered_rail","purple_stained_glass_pane","rail","redstone_torch","red_mushroom","red_stained_glass_pane","red_tulip","rose_bush","soul_torch","spruce_sapling","sunflower","tall_grass","torch","tripwire_hook","tube_coral","tube_coral_fan","twisting_vines","vine","warped_fungus","warped_roots","weeping_vines","white_stained_glass_pane","white_tulip","wither_rose","yellow_stained_glass_pane","small_amethyst_bud","medium_amethyst_bud","large_amethyst_bud","amethyst_cluster","hanging_roots","glow_lichen"]
    for blockitem in blockitems:
       mcitems[blockitem]="block"
@@ -56,35 +56,36 @@ def main():
    print("Creating image sheets...")
    blockgrid=create_grid(mc_block_textures)
    blocksheet=create_image(blockgrid, 64)
-   blocksheet.save("resourcepack/assets/tryashtar.shulker_preview/textures/block_sheet.png", "PNG")
+   blocksheet.save("resourcepack/assets/tryashtar.shulker_preview/textures/block_sheet.png","PNG")
 
    # start creating font providers
    print("Generating font providers...")
-   providers=[{"comment":"Many thanks to AmberW#4615 for this invaluable concept","type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-3,"chars":["\uf801"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-4,"chars":["\uf802"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-5,"chars":["\uf803"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-6,"chars":["\uf804"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-7,"chars":["\uf805"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-8,"chars":["\uf806"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-9,"chars":["\uf807"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-10,"chars":["\uf808"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-18,"chars":["\uf809"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-34,"chars":["\uf80a"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-66,"chars":["\uf80b"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-130,"chars":["\uf80c"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-258,"chars":["\uf80d"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-514,"chars":["\uf80e"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-1026,"chars":["\uf80f"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":0,"chars":["\uf821"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":1,"chars":["\uf822"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":2,"chars":["\uf823"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":3,"chars":["\uf824"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":4,"chars":["\uf825"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":5,"chars":["\uf826"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":6,"chars":["\uf827"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":7,"chars":["\uf828"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":15,"chars":["\uf829"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":31,"chars":["\uf82a"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":63,"chars":["\uf82b"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":127,"chars":["\uf82c"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":255,"chars":["\uf82d"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":511,"chars":["\uf82e"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":1023,"chars":["\uf82f"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32770,"height":-32770,"chars":["\uf800"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":32767,"chars":["\uf820"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":0,"height":0,"chars":[","]}]
-   providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip.png", "shulker_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
-   providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip_header.png", "shulker_tooltip_header", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
-   providers.append(register_single("tryashtar.shulker_preview:ender_tooltip.png", "ender_tooltip", 23, 78, (get_spacing([-4]),get_spacing([-174]))))
+   providers=[{"comment":"Many thanks to AmberW#4615 for this invaluable concept","type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-3,"chars":["\uf801"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-4,"chars":["\uf802"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-5,"chars":["\uf803"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-6,"chars":["\uf804"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-7,"chars":["\uf805"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-8,"chars":["\uf806"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-9,"chars":["\uf807"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-10,"chars":["\uf808"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-18,"chars":["\uf809"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-34,"chars":["\uf80a"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-66,"chars":["\uf80b"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-130,"chars":["\uf80c"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-258,"chars":["\uf80d"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-514,"chars":["\uf80e"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":-1026,"chars":["\uf80f"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":0,"chars":["\uf821"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":1,"chars":["\uf822"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":2,"chars":["\uf823"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":3,"chars":["\uf824"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":4,"chars":["\uf825"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":5,"chars":["\uf826"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":6,"chars":["\uf827"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":7,"chars":["\uf828"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":15,"chars":["\uf829"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":31,"chars":["\uf82a"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":63,"chars":["\uf82b"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":127,"chars":["\uf82c"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":255,"chars":["\uf82d"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":511,"chars":["\uf82e"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":1023,"chars":["\uf82f"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32770,"height":-32770,"chars":["\uf800"]},{"type":"bitmap","file":"tryashtar.shulker_preview:pixel.png","ascent":-32768,"height":32767,"chars":["\uf820"]}]
+   providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip.png","shulker_tooltip", 23, 78, (get_spacing(-4),get_spacing(-169))))
+   providers.append(register_single("tryashtar.shulker_preview:shulker_tooltip_header.png","shulker_tooltip_header", 23, 78, (get_spacing(-4),get_spacing(-169))))
+   providers.append(register_single("tryashtar.shulker_preview:ender_tooltip.png","ender_tooltip", 23, 78, (get_spacing(-4),get_spacing(-169))))
 
    providers.extend(register_items(mcitems, 0, -32768, 16, False))
    # per-row icons
    for row in range(0, 3):
       height=-18*row
+      # numbers 0-9
       numbers=[f"number.{i}.{row}" for i in range(0,10)]
-      providers.append(register_grid("tryashtar.shulker_preview:numbers.png", [numbers], height-4, 8, lambda x:(get_spacing([-7]),get_spacing([-5]))))
+      providers.append(register_grid("tryashtar.shulker_preview:numbers.png", [numbers], height-4, 8, lambda x:(get_spacing(-7),get_spacing(0))))
+      # numbers 10-64 (built out of two digits)
+      for n in range(10, 65):
+         digit1=str(n)[0]
+         digit2=str(n)[1]
+         translations[f"tryashtar.shulker_preview.number.{n}.{row}"]=get_spacing(-13)+charmap[f"number.{digit1}.{row}"]+get_spacing(-1)+charmap[f"number.{digit2}.{row}"]+get_spacing(0)
       dur1=[f"durability.{i}.{row}" for i in range(1,6)]
       dur2=[f"durability.{i}.{row}" for i in range(6,11)]
       dur3=[f"durability.{i}.{row}" for i in range(11,15)]+[None]
-      providers.append(register_grid("tryashtar.shulker_preview:durability.png", [dur1,dur2,dur3], height-8, 2, lambda x:(get_spacing([-16]),get_spacing([-3]))))
+      providers.append(register_grid("tryashtar.shulker_preview:durability.png", [dur1,dur2,dur3], height-8, 2, lambda x:(get_spacing(-16),get_spacing(2))))
 
       # grids
       providers.append(register_grid("tryashtar.shulker_preview:block_sheet.png", apply_to_all(grid_keys(blockgrid), lambda x: block_translation(x,row)), height+5, 16, lambda x: block_spacing(x)))
       providers.extend(register_items(mcitems, row, height+5, 16, True))
 
-      # remaining numbers 10-64
-      for n in range(10, 65):
-         digit1=str(n)[0]
-         digit2=str(n)[1]
-         translations[f"tryashtar.shulker_preview.number.{n}.{row}"]=get_spacing([-13])+charmap[f"number.{digit1}.{row}"]+get_spacing([-1])+charmap[f"number.{digit2}.{row}"]+get_spacing([-5])
 
    # write translations and providers
    print("Writing JSONs...")
@@ -294,7 +295,7 @@ def main():
          custom_arrow_lines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon marker ~ ~0.4 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.tipped_arrow_head.{row}","color":"#{chex}"}}\'}}')
          custom_map_lines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon marker ~ ~0.6 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.filled_map_markings.{row}","color":"#{chex}"}}\'}}')
          for armor,armorlines in armor_lines.items():
-            armorlines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon marker ~ ~0.01 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{armor}.{row}","color":"#{chex}"}}\'}}')
+            armorlines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{armor}.{row}","color":"#{chex}"}}\'}}')
 
       lines.extend(color_assigns)
       write_lines(lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/analyze_color.mcfunction")
@@ -361,8 +362,8 @@ def block_translation(key, row):
 
 def block_spacing(key):
    if "_pattern." in key:
-      return (get_spacing([-18]),get_spacing([-4]))
-   return ("",get_spacing([-4]))
+      return (get_spacing(-18),get_spacing(1))
+   return (get_spacing(0),get_spacing(1))
 
 def read_json(path):
    with open(path, "r") as file:
@@ -383,30 +384,28 @@ def write_lines(lines, path):
 # fewest positive/negative spaces required to move this many pixels
 positive_spaces=OrderedDict([(1024,'\uF82F'),(512,'\uF82E'),(256,'\uF82D'),(128,'\uF82C'),(64,'\uF82B'),(32,'\uF82A'),(16,'\uF829'),(8,'\uF828'),(7,'\uF827'),(6,'\uF826'),(5,'\uF825'),(4,'\uF824'),(3,'\uF823'),(2,'\uF822'),(1,'\uF821')])
 negative_spaces=OrderedDict([(-1024,'\uF80F'),(-512,'\uF80E'),(-256,'\uF80D'),(-128,'\uF80C'),(-64,'\uF80B'),(-32,'\uF80A'),(-16,'\uF809'),(-8,'\uF808'),(-7,'\uF807'),(-6,'\uF806'),(-5,'\uF805'),(-4,'\uF804'),(-3,'\uF803'),(-2,'\uF802'),(-1,'\uF801')])
-# input is list of spaces to apply
 # numbers are in pixels, alternativey "max" or "-max" in sequence applies respective size space
-def get_spacing(sequence):
+def get_spacing(pixels):
    result=""
-   for pixels in sequence:
-      if pixels=="max":
-         result+='\uF820'
-      elif pixels=="-max":
-         result+='\uF800'
-      elif pixels>=0:
-         for space in positive_spaces:
-            while pixels>=space:
-               pixels-=space
-               result+=positive_spaces[space]
-      else:
-         for space in negative_spaces:
-            while pixels<=space:
-               pixels-=space
-               result+=negative_spaces[space]
+   if pixels=="max":
+      result+='\uF820'
+   elif pixels=="-max":
+      result+='\uF800'
+   elif pixels>=0:
+      for space in positive_spaces:
+         while pixels>=space:
+            pixels-=space
+            result+=positive_spaces[space]
+   else:
+      for space in negative_spaces:
+         while pixels<=space:
+            pixels-=space
+            result+=negative_spaces[space]
    return result
 
 currentchar='\u00b0'
 charmap={}
-translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing([13]),"tryashtar.shulker_preview.forward_slot":get_spacing([13]),"tryashtar.shulker_preview.back_slot":get_spacing([-23]),"tryashtar.shulker_preview.positive_pixel":get_spacing([-4]),"tryashtar.shulker_preview.row_end":get_spacing([-167]),"tryashtar.shulker_preview.full_row":get_spacing([163])}
+translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing(18),"tryashtar.shulker_preview.row_end":get_spacing(-162)}
 # create a provider from file name, grid of icon names, and ascent/height
 # returns provider and also modifies charmap, a global [icon->character code] dictionary, and translations, which is charmap but with prefixed keys, and values padded with positive/negative spaces as specified in spacing
 def register_grid(fileid, icongrid, ascent, height, spacing_lambda):
@@ -445,7 +444,7 @@ def register_items(items, row, ascent, height, real_version):
       if "_spawn_egg" in item or item in reused_textures:
          continue
       location=item.replace("glass_pane","glass")
-      location={"large_fern":"large_fern_top","lilac":"lilac_top","peony":"peony_top","rose_bush":"rose_bush_top","sunflower":"sunflower_front","clock":"clock_00","compass":"compass_00","crossbow":"crossbow_standby","tall_grass":"tall_grass_top","tipped_arrow":"tipped_arrow_base","twisting_vines":"twisting_vines_plant","weeping_vines":"weeping_vines_plant"}.get(location,location)
+      location={"large_fern":"large_fern_top","lilac":"lilac_top","peony":"peony_top","rose_bush":"rose_bush_top","sunflower":"sunflower_front","clock":"clock_00","compass":"compass_16","crossbow":"crossbow_standby","tall_grass":"tall_grass_top","tipped_arrow":"tipped_arrow_base","twisting_vines":"twisting_vines_plant","weeping_vines":"weeping_vines_plant"}.get(location,location)
       itype="block" if v=="block" else "item"
       thingtype="item"
       if item in ["tipped_arrow_head","spawn_egg_overlay","potion_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","firework_star_overlay","filled_map_markings"]:
@@ -457,8 +456,8 @@ def register_items(items, row, ascent, height, real_version):
          negative=charmap[f"negative.{thingtype}.{item}"]
          firstspace=""
          if thingtype=="overlay":
-            firstspace=get_spacing([-18])
-         results.append(register_single(resource_location, f"{thingtype}.{item}.{row}", ascent, height, (firstspace,negative+get_spacing([10]))))         
+            firstspace=get_spacing(-18)
+         results.append(register_single(resource_location, f"{thingtype}.{item}.{row}", ascent, height, (firstspace,negative+get_spacing(15))))         
       else:
          results.append(register_single(resource_location, f"negative.{thingtype}.{item}", -32768, -height, None))
    return results
@@ -722,7 +721,7 @@ def process_item_lines(items, row):
          lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.{itemtype}.{item}.{row}","color":"{grass}"}}\'}}')
       elif "spawn_egg" in item:
          color=spawn_egg_colors[item]
-         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.spawn_egg.{row}","color":"{color_hex(color[0])}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.spawn_egg_overlay.{row}","color":"{color_hex(color[1])}"}}]\'}}')
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.spawn_egg.{row}","color":"{color_hex(color[0])}"}},{{"translate":"tryashtar.shulker_preview.overlay.spawn_egg_overlay.{row}","color":"{color_hex(color[1])}"}}]\'}}')
       elif item == "elytra":
          lines.extend([
             f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:elytra",tag:{{Damage:431}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.broken_elytra.{row}"}}\'}}',
@@ -750,16 +749,16 @@ def process_item_lines(items, row):
          if item not in ("leather_chestplate","leather_horse_armor"):
             lines.append(f'{if_item} run summon marker ~ ~0.02 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.{item}_overlay.{row}"}}\'}}')
       elif item in ("potion","splash_potion","lingering_potion"):
-         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.potion_overlay.{row}","color":"{color_hex(16253176)}"}}]\'}}')
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},{{"translate":"tryashtar.shulker_preview.overlay.potion_overlay.{row}","color":"{color_hex(16253176)}"}}]\'}}')
          potion=True
       elif item=="firework_star":
-         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.firework_star_overlay.{row}","color":"{color_hex(9079434)}"}}]\'}}')
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},{{"translate":"tryashtar.shulker_preview.overlay.firework_star_overlay.{row}","color":"{color_hex(9079434)}"}}]\'}}')
       elif item=="filled_map":
          lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}}\'}}')
          lines.append(f'{if_item} unless data storage tryashtar.shulker_preview:data item.tag.display.MapColor run summon marker ~ ~0.01 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.filled_map_markings.{row}","color":"#46402d"}}\'}}')
          filledmap=True
       elif item=="tipped_arrow":
-         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.tipped_arrow_head.{row}","color":"{color_hex(16253176)}"}}]\'}}')
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},{{"translate":"tryashtar.shulker_preview.overlay.tipped_arrow_head.{row}","color":"{color_hex(16253176)}"}}]\'}}')
          arrow=True
       else:
          lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.{itemtype}.{item}.{row}"}}\'}}')

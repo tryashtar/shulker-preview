@@ -108,6 +108,3 @@ execute unless data storage tryashtar.shulker_preview:data contents[{Slot:26b}] 
 
 summon marker ~ 10.99 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.row_end"}'}
 summon marker ~ 19.99 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.row_end"}'}
-summon marker ~ 28.99 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.row_end"}'}
-
-summon marker ~ ~29 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.full_row"}'}

@@ -291,15 +291,6 @@
       },
       {
          "type": "bitmap",
-         "file": "tryashtar.shulker_preview:pixel.png",
-         "ascent": 0,
-         "height": 0,
-         "chars": [
-            ","
-         ]
-      },
-      {
-         "type": "bitmap",
          "file": "tryashtar.shulker_preview:shulker_tooltip.png",
          "ascent": 23,
          "height": 78,
@@ -1029,7 +1020,7 @@
       },
       {
          "type": "bitmap",
-         "file": "minecraft:item/compass_00.png",
+         "file": "minecraft:item/compass_16.png",
          "ascent": -32768,
          "height": -16,
          "chars": [
@@ -5079,7 +5070,7 @@
       },
       {
          "type": "bitmap",
-         "file": "minecraft:item/compass_00.png",
+         "file": "minecraft:item/compass_16.png",
          "ascent": 5,
          "height": 16,
          "chars": [
@@ -9129,7 +9120,7 @@
       },
       {
          "type": "bitmap",
-         "file": "minecraft:item/compass_00.png",
+         "file": "minecraft:item/compass_16.png",
          "ascent": -13,
          "height": 16,
          "chars": [
@@ -13179,7 +13170,7 @@
       },
       {
          "type": "bitmap",
-         "file": "minecraft:item/compass_00.png",
+         "file": "minecraft:item/compass_16.png",
          "ascent": -31,
          "height": 16,
          "chars": [
