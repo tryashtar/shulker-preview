@@ -8,7 +8,7 @@ import shutil
 from PIL import Image
 from collections import OrderedDict
 
-specials=["broken_elytra","crossbow_arrow","crossbow_firework","spawn_egg","spawn_egg_overlay","firework_star_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","potion_overlay","tipped_arrow_base","tipped_arrow_head", "filled_map_markings","bundle_filled"]
+specials=["broken_elytra","crossbow_arrow","crossbow_firework","spawn_egg","spawn_egg_overlay","firework_star_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","potion_overlay","tipped_arrow_base","tipped_arrow_head", "filled_map_markings","bundle_filled","light_00","light_01","light_02","light_03","light_04","light_05","light_06","light_07","light_08","light_09","light_10","light_11","light_12","light_13","light_14","light_15"]
 def main():
    # load item textures from two sources
    print("Loading icons...")
@@ -648,6 +648,7 @@ spawn_egg_colors={
    "fox_spawn_egg": (14005919, 13396256),
    "ghast_spawn_egg": (16382457, 12369084),
    "glow_squid_spawn_egg": (611926, 8778172),
+   "goat_spawn_egg": (10851452, 5589310),
    "guardian_spawn_egg": (5931634, 15826224),
    "hoglin_spawn_egg": (13004373, 6251620),
    "horse_spawn_egg": (12623485, 15656192),
@@ -730,14 +731,18 @@ def process_item_lines(items, row):
       elif item == "bundle":
          lines.extend([
             f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:bundle",tag:{{Items:[{{}}]}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.bundle_filled.{row}"}}\'}}',
-            f'{if_item} unless data storage tryashtar.shulker_preview:data item{{tag:{{Items:[{{}}]}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.bundle.{row}"}}\'}}'
+            f'{if_item} unless data storage tryashtar.shulker_preview:data item.tag.Items[{{}}] run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.bundle.{row}"}}\'}}'
             ])
       elif item == "crossbow":
          lines.extend([
             f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{id:"minecraft:arrow"}}]}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow_arrow.{row}"}}\'}}',
             f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{id:"minecraft:firework_rocket"}}]}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow_firework.{row}"}}\'}}',
-            f'{if_item} unless data storage tryashtar.shulker_preview:data item{{tag:{{ChargedProjectiles:[{{}}]}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow.{row}"}}\'}}'
+            f'{if_item} unless data storage tryashtar.shulker_preview:data item.tag.ChargedProjectiles[{{}}] run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow.{row}"}}\'}}'
             ])
+      elif item == "light":
+         for light_level in range(0,16):
+            lines.append(f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:light",tag:{{BlockStateTag:{{level:"{light_level}"}}}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.light_{str(light_level).zfill(2)}.{row}"}}\'}}')
+         lines.append(f'{if_item} unless data storage tryashtar.shulker_preview:data item.tag.BlockStateTag.level run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.light_15.{row}"}}\'}}')
       elif item in ["leather_helmet","leather_chestplate","leather_leggings","leather_boots","leather_horse_armor"]:
          dye_armor=item.replace("leather_","").replace("_armor","")
          lines.append(f'{if_item} unless data storage tryashtar.shulker_preview:data item.tag.display.color run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{item}.{row}","color":"{color_hex(10511680)}"}}\'}}')
