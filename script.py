@@ -403,7 +403,7 @@ def get_spacing(pixels):
             result+=negative_spaces[space]
    return result
 
-currentchar='\u00b0'
+currentchar='\u0900'
 charmap={}
 translations={"%1$s%418634357$s":"%2$s","tryashtar.shulker_preview.empty_slot":get_spacing(18),"tryashtar.shulker_preview.row_end":get_spacing(-162)}
 # create a provider from file name, grid of icon names, and ascent/height
