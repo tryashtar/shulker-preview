@@ -126,7 +126,7 @@ def main():
       lines.extend([
          "",
          "# placeholder if item was not found",
-         f'execute unless entity @e[type=area_effect_cloud,tag=tryashtar.shulker_preview,distance=..0.0001] run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.missingno.{row}"}}\'}}',
+         f'execute unless entity @e[type=marker,tag=tryashtar.shulker_preview,distance=..0.0001] run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.missingno.{row}"}}\'}}',
          "",
          "# summon in count entity",
          "execute store result score #count shulker_preview run data get storage tryashtar.shulker_preview:data item.Count",
@@ -138,7 +138,7 @@ def main():
       lines=["# create an entity that draws item counts"]
       for i in range(2, 65):
          n = str(i) if i < 64 else f"{i}.."
-         lines.append(f'execute if score #count shulker_preview matches {n} run summon area_effect_cloud ~ ~0.9 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.number.{i}.{row}"}}\'}}')
+         lines.append(f'execute if score #count shulker_preview matches {n} run summon marker ~ ~0.9 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.number.{i}.{row}"}}\'}}')
       write_lines(lines, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/count.mcfunction')
 
       # overlay/durability
@@ -156,7 +156,7 @@ def main():
             text += f"1..{upper}"
          else:
             text += f"{lower}..{upper}"
-         text += f' run summon area_effect_cloud ~ ~0.8 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.durability.{i}.{row}"}}\'}}'
+         text += f' run summon marker ~ ~0.8 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.durability.{i}.{row}"}}\'}}'
          lines.append(text)
       write_lines(lines, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/durability.mcfunction')
 
@@ -165,8 +165,8 @@ def main():
       arrow_lines=["# create an entity that draws the proper tipped arrow overlay color"]
       for potionname, color in potion_dict.items():
          if_item=f'execute if data storage tryashtar.shulker_preview:data item{{tag:{{Potion:"minecraft:{potionname}"}}}}'
-         potion_lines.append(f'{if_item} run summon area_effect_cloud ~ ~0.1 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.potion_overlay.{row}","color":"{color_hex(color)}"}}\'}}')
-         arrow_lines.append(f'{if_item} run summon area_effect_cloud ~ ~0.3 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.tipped_arrow_head.{row}","color":"{color_hex(color)}"}}\'}}')
+         potion_lines.append(f'{if_item} run summon marker ~ ~0.1 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.potion_overlay.{row}","color":"{color_hex(color)}"}}\'}}')
+         arrow_lines.append(f'{if_item} run summon marker ~ ~0.3 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.tipped_arrow_head.{row}","color":"{color_hex(color)}"}}\'}}')
 
       custom_potion_lines=[
          f'# create an entity that draws approximately the correct overlay color',
@@ -198,13 +198,13 @@ def main():
       shield_pattern_lines=banner_pattern_lines.copy()
       for cid,cname in int_colors.items():
          chex=dye_colors[cname]
-         shield_base.append(f'execute if data storage tryashtar.shulker_preview:data item.tag.BlockEntityTag{{Base:{cid}}} run summon area_effect_cloud ~ ~0.01 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.shield_pattern.base.{row}","color":"#{chex}"}}\'}}')
+         shield_base.append(f'execute if data storage tryashtar.shulker_preview:data item.tag.BlockEntityTag{{Base:{cid}}} run summon marker ~ ~0.01 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.shield_pattern.base.{row}","color":"#{chex}"}}\'}}')
          banner_pattern_lines.append(f'execute if data storage tryashtar.shulker_preview:data pattern{{Color:{cid}}} run function tryashtar.shulker_preview:row_{row}/overlay/banner/{cname}')
          shield_pattern_lines.append(f'execute if data storage tryashtar.shulker_preview:data pattern{{Color:{cid}}} run function tryashtar.shulker_preview:row_{row}/overlay/shield/{cname}')
          single_b_pattern_lines=[]
          single_s_pattern_lines=[]
          for i,(pid,pname) in enumerate(banner_pattern_ids.items()):
-            line=f'execute if data storage tryashtar.shulker_preview:data pattern{{Pattern:"{pid}"}} run summon area_effect_cloud ~ ~{round((i+1)*0.0001,4)} ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.banner_pattern.{pname}.{row}","color":"#{chex}"}}\'}}'
+            line=f'execute if data storage tryashtar.shulker_preview:data pattern{{Pattern:"{pid}"}} run summon marker ~ ~{round((i+1)*0.0001,4)} ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.banner_pattern.{pname}.{row}","color":"#{chex}"}}\'}}'
             single_b_pattern_lines.append(line)
             single_s_pattern_lines.append(line.replace("banner_pattern","shield_pattern"))
          write_lines(single_b_pattern_lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner/{cname}.mcfunction")
@@ -233,7 +233,7 @@ def main():
       ]
       map_unless='execute '
       for color in [3830373, 5393476]:
-         map_lines.append(f'execute if score #color shulker_preview matches {color} run summon area_effect_cloud ~ ~0.5 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.filled_map_markings.{row}","color":"{color_hex(color)}"}}\'}}')
+         map_lines.append(f'execute if score #color shulker_preview matches {color} run summon marker ~ ~0.5 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.filled_map_markings.{row}","color":"{color_hex(color)}"}}\'}}')
          map_unless+=f'unless score #color shulker_preview matches {color} '
       map_unless+=f'run function tryashtar.shulker_preview:row_{row}/overlay/custom_map'
       map_lines.append(map_unless)
@@ -290,11 +290,11 @@ def main():
          lines.append(f"scoreboard players operation #diff{i} shulker_preview += #blue_diff shulker_preview")
          lines.append(f"scoreboard players operation #nearest shulker_preview < #diff{i} shulker_preview")
          lines.append("")
-         custom_potion_lines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon area_effect_cloud ~ ~0.2 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.potion_overlay.{row}","color":"#{chex}"}}\'}}')
-         custom_arrow_lines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon area_effect_cloud ~ ~0.4 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.tipped_arrow_head.{row}","color":"#{chex}"}}\'}}')
-         custom_map_lines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon area_effect_cloud ~ ~0.6 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.filled_map_markings.{row}","color":"#{chex}"}}\'}}')
+         custom_potion_lines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon marker ~ ~0.2 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.potion_overlay.{row}","color":"#{chex}"}}\'}}')
+         custom_arrow_lines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon marker ~ ~0.4 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.tipped_arrow_head.{row}","color":"#{chex}"}}\'}}')
+         custom_map_lines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon marker ~ ~0.6 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.filled_map_markings.{row}","color":"#{chex}"}}\'}}')
          for armor,armorlines in armor_lines.items():
-            armorlines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon area_effect_cloud ~ ~0.01 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{armor}.{row}","color":"#{chex}"}}\'}}')
+            armorlines.append(f'execute if score #near_color shulker_preview matches {rgbint} run summon marker ~ ~0.01 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{armor}.{row}","color":"#{chex}"}}\'}}')
 
       lines.extend(color_assigns)
       write_lines(lines, f"datapack/data/tryashtar.shulker_preview/functions/row_{row}/analyze_color.mcfunction")
@@ -716,48 +716,48 @@ def process_item_lines(items, row):
       reused=reused_textures.get(item)
       grass=grass_colors.get(item)
       if reused is not None:
-         lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.{itemtype}.{reused}.{row}"}}\'}}')
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.{itemtype}.{reused}.{row}"}}\'}}')
       elif grass is not None:
-         lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.{itemtype}.{item}.{row}","color":"{grass}"}}\'}}')
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.{itemtype}.{item}.{row}","color":"{grass}"}}\'}}')
       elif "spawn_egg" in item:
          color=spawn_egg_colors[item]
-         lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.spawn_egg.{row}","color":"{color_hex(color[0])}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.spawn_egg_overlay.{row}","color":"{color_hex(color[1])}"}}]\'}}')
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.spawn_egg.{row}","color":"{color_hex(color[0])}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.spawn_egg_overlay.{row}","color":"{color_hex(color[1])}"}}]\'}}')
       elif item == "elytra":
          lines.extend([
-            f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:elytra",tag:{{Damage:431}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.broken_elytra.{row}"}}\'}}',
-            f'{if_item} unless data storage tryashtar.shulker_preview:data item{{tag:{{Damage:431}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.elytra.{row}"}}\'}}'
+            f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:elytra",tag:{{Damage:431}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.broken_elytra.{row}"}}\'}}',
+            f'{if_item} unless data storage tryashtar.shulker_preview:data item{{tag:{{Damage:431}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.elytra.{row}"}}\'}}'
             ])
       elif item == "bundle":
          lines.extend([
-            f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:bundle",tag:{{Items:[{{}}]}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.bundle_filled.{row}"}}\'}}',
-            f'{if_item} unless data storage tryashtar.shulker_preview:data item{{tag:{{Items:[{{}}]}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.bundle.{row}"}}\'}}'
+            f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:bundle",tag:{{Items:[{{}}]}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.bundle_filled.{row}"}}\'}}',
+            f'{if_item} unless data storage tryashtar.shulker_preview:data item{{tag:{{Items:[{{}}]}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.bundle.{row}"}}\'}}'
             ])
       elif item == "crossbow":
          lines.extend([
-            f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{id:"minecraft:arrow"}}]}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow_arrow.{row}"}}\'}}',
-            f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{id:"minecraft:firework_rocket"}}]}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow_firework.{row}"}}\'}}',
-            f'{if_item} unless data storage tryashtar.shulker_preview:data item{{tag:{{ChargedProjectiles:[{{}}]}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow.{row}"}}\'}}'
+            f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{id:"minecraft:arrow"}}]}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow_arrow.{row}"}}\'}}',
+            f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{id:"minecraft:firework_rocket"}}]}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow_firework.{row}"}}\'}}',
+            f'{if_item} unless data storage tryashtar.shulker_preview:data item{{tag:{{ChargedProjectiles:[{{}}]}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow.{row}"}}\'}}'
             ])
       elif item in ["leather_helmet","leather_chestplate","leather_leggings","leather_boots","leather_horse_armor"]:
          dye_armor=item.replace("leather_","").replace("_armor","")
-         lines.append(f'{if_item} unless data storage tryashtar.shulker_preview:data item.tag.display.color run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{item}.{row}","color":"{color_hex(10511680)}"}}\'}}')
+         lines.append(f'{if_item} unless data storage tryashtar.shulker_preview:data item.tag.display.color run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{item}.{row}","color":"{color_hex(10511680)}"}}\'}}')
          lines.append(f'{if_item} if data storage tryashtar.shulker_preview:data item.tag.display.color run function tryashtar.shulker_preview:row_{row}/dye_armor/{dye_armor}')
          if item not in ("leather_chestplate","leather_horse_armor"):
-            lines.append(f'{if_item} run summon area_effect_cloud ~ ~0.02 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.{item}_overlay.{row}"}}\'}}')
+            lines.append(f'{if_item} run summon marker ~ ~0.02 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.{item}_overlay.{row}"}}\'}}')
       elif item in ("potion","splash_potion","lingering_potion"):
-         lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.potion_overlay.{row}","color":"{color_hex(16253176)}"}}]\'}}')
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.potion_overlay.{row}","color":"{color_hex(16253176)}"}}]\'}}')
          potion=True
       elif item=="firework_star":
-         lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.firework_star_overlay.{row}","color":"{color_hex(9079434)}"}}]\'}}')
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.firework_star_overlay.{row}","color":"{color_hex(9079434)}"}}]\'}}')
       elif item=="filled_map":
-         lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}}\'}}')
-         lines.append(f'{if_item} unless data storage tryashtar.shulker_preview:data item.tag.display.MapColor run summon area_effect_cloud ~ ~0.01 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.filled_map_markings.{row}","color":"#46402d"}}\'}}')
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}}\'}}')
+         lines.append(f'{if_item} unless data storage tryashtar.shulker_preview:data item.tag.display.MapColor run summon marker ~ ~0.01 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.overlay.filled_map_markings.{row}","color":"#46402d"}}\'}}')
          filledmap=True
       elif item=="tipped_arrow":
-         lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.tipped_arrow_head.{row}","color":"{color_hex(16253176)}"}}]\'}}')
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.item.{item}.{row}"}},", ",{{"translate":"tryashtar.shulker_preview.overlay.tipped_arrow_head.{row}","color":"{color_hex(16253176)}"}}]\'}}')
          arrow=True
       else:
-         lines.append(f'{if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.{itemtype}.{item}.{row}"}}\'}}')
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.{itemtype}.{item}.{row}"}}\'}}')
       if "banner" in item and "pattern" not in item:
          banner=True
       if item=="shield":
