@@ -1,38 +1,38 @@
 # return processed item to its original slot
-execute if score #slot shulker_preview matches 0 run item entity @s hotbar.0 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 1 run item entity @s hotbar.1 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 2 run item entity @s hotbar.2 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 3 run item entity @s hotbar.3 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 4 run item entity @s hotbar.4 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 5 run item entity @s hotbar.5 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 6 run item entity @s hotbar.6 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 7 run item entity @s hotbar.7 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 8 run item entity @s hotbar.8 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 9 run item entity @s inventory.0 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 10 run item entity @s inventory.1 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 11 run item entity @s inventory.2 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 12 run item entity @s inventory.3 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 13 run item entity @s inventory.4 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 14 run item entity @s inventory.5 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 15 run item entity @s inventory.6 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 16 run item entity @s inventory.7 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 17 run item entity @s inventory.8 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 18 run item entity @s inventory.9 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 19 run item entity @s inventory.10 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 20 run item entity @s inventory.11 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 21 run item entity @s inventory.12 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 22 run item entity @s inventory.13 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 23 run item entity @s inventory.14 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 24 run item entity @s inventory.15 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 25 run item entity @s inventory.16 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 26 run item entity @s inventory.17 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 27 run item entity @s inventory.18 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 28 run item entity @s inventory.19 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 29 run item entity @s inventory.20 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 30 run item entity @s inventory.21 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 31 run item entity @s inventory.22 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 32 run item entity @s inventory.23 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 33 run item entity @s inventory.24 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 34 run item entity @s inventory.25 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches 35 run item entity @s inventory.26 copy entity 0-1c9-c369-0-2669 weapon.mainhand
-execute if score #slot shulker_preview matches -106 run item entity @s weapon.offhand copy entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 0 run item replace entity @s hotbar.0 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 1 run item replace entity @s hotbar.1 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 2 run item replace entity @s hotbar.2 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 3 run item replace entity @s hotbar.3 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 4 run item replace entity @s hotbar.4 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 5 run item replace entity @s hotbar.5 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 6 run item replace entity @s hotbar.6 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 7 run item replace entity @s hotbar.7 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 8 run item replace entity @s hotbar.8 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 9 run item replace entity @s inventory.0 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 10 run item replace entity @s inventory.1 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 11 run item replace entity @s inventory.2 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 12 run item replace entity @s inventory.3 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 13 run item replace entity @s inventory.4 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 14 run item replace entity @s inventory.5 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 15 run item replace entity @s inventory.6 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 16 run item replace entity @s inventory.7 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 17 run item replace entity @s inventory.8 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 18 run item replace entity @s inventory.9 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 19 run item replace entity @s inventory.10 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 20 run item replace entity @s inventory.11 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 21 run item replace entity @s inventory.12 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 22 run item replace entity @s inventory.13 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 23 run item replace entity @s inventory.14 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 24 run item replace entity @s inventory.15 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 25 run item replace entity @s inventory.16 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 26 run item replace entity @s inventory.17 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 27 run item replace entity @s inventory.18 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 28 run item replace entity @s inventory.19 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 29 run item replace entity @s inventory.20 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 30 run item replace entity @s inventory.21 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 31 run item replace entity @s inventory.22 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 32 run item replace entity @s inventory.23 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 33 run item replace entity @s inventory.24 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 34 run item replace entity @s inventory.25 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches 35 run item replace entity @s inventory.26 from entity 0-1c9-c369-0-2669 weapon.mainhand
+execute if score #slot shulker_preview matches -106 run item replace entity @s weapon.offhand from entity 0-1c9-c369-0-2669 weapon.mainhand
