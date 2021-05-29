@@ -20,7 +20,7 @@ There is also a [Faithful x32 version of the resource pack](https://github.com/F
 
 ### FAQ
 * Does this work with Bukkit/Spigot/Paper?
-   * No. These server softwares break a vanilla command behavior this pack relies on, which I cannot work around. It causes all tooltips to be blank.
+   * Yes, in 1.16+. Of course, certain mods/plugins may interfere with the pack and prevent it from working.
 * Does this work with Optifine?
    * Yes.
 * Does this work with other resource packs?
