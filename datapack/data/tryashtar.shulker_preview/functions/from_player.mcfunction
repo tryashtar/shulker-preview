@@ -8,13 +8,13 @@ data modify block ~ 1 ~ Items[0] set from block ~ 1 ~ Items[0].tag.shulker_items
 function tryashtar.shulker_preview:analyze
 
 data modify block ~ 1 ~ Items[0].tag.display.Lore set value []
-data modify block ~ 1 ~ Items[0].tag.display.Lore append from block ~2 1 ~ Text1
-data modify block ~ 1 ~ Items[0].tag.display.Lore append from block ~2 1 ~ Text2
-data modify block ~ 1 ~ Items[0].tag.display.Lore append from block ~2 1 ~ Text3
-data modify block ~ 1 ~ Items[0].tag.display.Lore append from block ~2 1 ~ Text4
-data modify block ~ 1 ~ Items[0].tag.display.Lore append from block ~3 1 ~ Text1
-execute if score #total shulker_preview matches 1.. run data modify block ~ 1 ~ Items[0].tag.display.Lore append from block ~3 1 ~ Text2
-execute unless score #total shulker_preview matches 1.. run data modify block ~ 1 ~ Items[0].tag.display.Lore append value '""'
+data modify block ~ 1 ~ Items[0].tag.display.Lore append from entity @e[type=item,tag=row1,distance=0,limit=1] Item.tag.display.Lore[]
+data modify block ~ 1 ~ Items[0].tag.display.Lore append from entity @e[type=item,tag=row2,distance=0,limit=1] Item.tag.display.Lore[]
+data modify block ~ 1 ~ Items[0].tag.display.Lore append from entity @e[type=item,tag=row3,distance=0,limit=1] Item.tag.display.Lore[]
+data modify block ~ 1 ~ Items[0].tag.display.Lore append from entity @e[type=item,tag=row4,distance=0,limit=1] Item.tag.display.Lore[]
+data modify block ~ 1 ~ Items[0].tag.display.Lore append from entity @e[type=item,tag=row5,distance=0,limit=1] Item.tag.display.Lore[]
+data modify block ~ 1 ~ Items[0].tag.display.Lore append from entity @e[type=item,tag=row6,distance=0,limit=1] Item.tag.display.Lore[]
+kill @e[type=item,distance=0]
 
 data modify block ~ 1 ~ Items[0].tag.HideFlags set value 32
 data modify block ~ 1 ~ Items[0].tag.shulker_processed set value 1b

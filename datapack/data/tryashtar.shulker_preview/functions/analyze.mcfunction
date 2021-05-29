@@ -1,8 +1,9 @@
-# move items one by one to storage and process them
+# summon tooltip background
 execute if score #ender_header shulker_preview matches 1 run summon area_effect_cloud ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.ender_tooltip"}'}
 execute if score #ender_header shulker_preview matches 0 if data block ~ 1 ~ Items[0].tag.display.Name run summon area_effect_cloud ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip"}'}
 execute if score #ender_header shulker_preview matches 0 unless data block ~ 1 ~ Items[0].tag.display.Name run summon area_effect_cloud ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip_header"}'}
 
+# copy and analyze contents one by one
 data modify storage tryashtar:shulker_preview item set from block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:0b}]
 execute if data block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:0b}] positioned ~ 2 ~ run function tryashtar.shulker_preview:row_0/process_item
 execute unless data block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:0b}] run summon area_effect_cloud ~ 2 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.empty_slot"}'}
@@ -113,44 +114,56 @@ execute unless data block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:26b}] ru
 
 summon area_effect_cloud ~ 10.99 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.row_end"}'}
 summon area_effect_cloud ~ 19.99 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.row_end"}'}
-summon area_effect_cloud ~ 28.99 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.row_end"}'}
 
-# evaluate entities on the sign
+# get fallback data for tooltip
 summon item ~ ~ ~ {UUID:[I;0,29999977,0,9832],Item:{id:tnt,Count:1b}}
 
+# first item
 data modify entity 0-1c9-c369-0-2668 Item set from block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[0]
 execute store result score #amount shulker_preview run data get block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[0].Count
-execute if score #amount shulker_preview matches 1.. if data entity 0-1c9-c369-0-2668 Item.tag.display.Name run data modify block ~2 1 ~ Text1 set value '{"translate":"%1$s%418634357$s","with":[[{"nbt":"Item.tag.display.Name","entity":"0-1c9-c369-0-2668","interpret":true,"color":"gray","italic":false}," x",{"score":{"name":"#amount","objective":"shulker_preview"}}],{"font":"tryashtar.shulker_preview:preview","selector":"@e[type=area_effect_cloud,tag=tryashtar.shulker_preview,x=0,y=0,z=0,sort=nearest]","color":"white","italic":false}]}'
-execute if score #amount shulker_preview matches 1.. unless data entity 0-1c9-c369-0-2668 Item.tag.display.Name run data modify block ~2 1 ~ Text1 set value '{"translate":"%1$s%418634357$s","with":[[{"selector":"0-1c9-c369-0-2668","color":"gray","italic":false}," x",{"score":{"name":"#amount","objective":"shulker_preview"}}],{"font":"tryashtar.shulker_preview:preview","selector":"@e[type=area_effect_cloud,tag=tryashtar.shulker_preview,x=0,y=0,z=0,sort=nearest]","color":"white","italic":false}]}'
-execute if score #amount shulker_preview matches ..0 run data modify block ~2 1 ~ Text1 set value '{"translate":"%1$s%418634357$s","with":["",{"font":"tryashtar.shulker_preview:preview","selector":"@e[type=area_effect_cloud,tag=tryashtar.shulker_preview,x=0,y=0,z=0,sort=nearest]","color":"white","italic":false}]}'
+execute if score #amount shulker_preview matches 1.. if data entity 0-1c9-c369-0-2668 Item.tag.display.Name run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:first_row/named
+execute if score #amount shulker_preview matches 1.. unless data entity 0-1c9-c369-0-2668 Item.tag.display.Name run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:first_row/unnamed
+execute if score #amount shulker_preview matches ..0 run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:first_row/empty
+tag @e[type=item,tag=,distance=0] add row1
 
+# second item
 data modify entity 0-1c9-c369-0-2668 Item set from block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[1]
 execute store result score #amount shulker_preview run data get block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[1].Count
-execute if score #amount shulker_preview matches 1.. if data entity 0-1c9-c369-0-2668 Item.tag.display.Name run data modify block ~2 1 ~ Text2 set value '{"translate":"%1$s%418634357$s","with":[[{"nbt":"Item.tag.display.Name","entity":"0-1c9-c369-0-2668","interpret":true,"color":"gray","italic":false}," x",{"score":{"name":"#amount","objective":"shulker_preview"}}],{"font":"tryashtar.shulker_preview:preview","text":"\\uF82C\\uF82A\\uF827"}]}'
-execute if score #amount shulker_preview matches 1.. unless data entity 0-1c9-c369-0-2668 Item.tag.display.Name run data modify block ~2 1 ~ Text2 set value '{"translate":"%1$s%418634357$s","with":[[{"selector":"0-1c9-c369-0-2668","color":"gray","italic":false}," x",{"score":{"name":"#amount","objective":"shulker_preview"}}],{"font":"tryashtar.shulker_preview:preview","text":"\\uF82C\\uF82A\\uF827"}]}'
-execute if score #amount shulker_preview matches ..0 run data modify block ~2 1 ~ Text2 set value '{"translate":"%1$s%418634357$s","with":["",{"font":"tryashtar.shulker_preview:preview","text":"\\uF82C\\uF82A\\uF827"}]}'
+execute if score #amount shulker_preview matches 1.. if data entity 0-1c9-c369-0-2668 Item.tag.display.Name run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/named
+execute if score #amount shulker_preview matches 1.. unless data entity 0-1c9-c369-0-2668 Item.tag.display.Name run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/unnamed
+execute if score #amount shulker_preview matches ..0 run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/empty
+tag @e[type=item,tag=,distance=0] add row2
 
+# third item
 data modify entity 0-1c9-c369-0-2668 Item set from block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[2]
 execute store result score #amount shulker_preview run data get block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[2].Count
-execute if score #amount shulker_preview matches 1.. if data entity 0-1c9-c369-0-2668 Item.tag.display.Name run data modify block ~2 1 ~ Text3 set value '{"translate":"%1$s%418634357$s","with":[[{"nbt":"Item.tag.display.Name","entity":"0-1c9-c369-0-2668","interpret":true,"color":"gray","italic":false}," x",{"score":{"name":"#amount","objective":"shulker_preview"}}],""]}'
-execute if score #amount shulker_preview matches 1.. unless data entity 0-1c9-c369-0-2668 Item.tag.display.Name run data modify block ~2 1 ~ Text3 set value '{"translate":"%1$s%418634357$s","with":[[{"selector":"0-1c9-c369-0-2668","color":"gray","italic":false}," x",{"score":{"name":"#amount","objective":"shulker_preview"}}],""]}'
-execute if score #amount shulker_preview matches ..0 run data modify block ~2 1 ~ Text3 set value '""'
+execute if score #amount shulker_preview matches 1.. if data entity 0-1c9-c369-0-2668 Item.tag.display.Name run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/named
+execute if score #amount shulker_preview matches 1.. unless data entity 0-1c9-c369-0-2668 Item.tag.display.Name run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/unnamed
+execute if score #amount shulker_preview matches ..0 run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/empty
+tag @e[type=item,tag=,distance=0] add row3
 
+# fourth item
 data modify entity 0-1c9-c369-0-2668 Item set from block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[3]
 execute store result score #amount shulker_preview run data get block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[3].Count
-execute if score #amount shulker_preview matches 1.. if data entity 0-1c9-c369-0-2668 Item.tag.display.Name run data modify block ~2 1 ~ Text4 set value '{"translate":"%1$s%418634357$s","with":[[{"nbt":"Item.tag.display.Name","entity":"0-1c9-c369-0-2668","interpret":true,"color":"gray","italic":false}," x",{"score":{"name":"#amount","objective":"shulker_preview"}}],""]}'
-execute if score #amount shulker_preview matches 1.. unless data entity 0-1c9-c369-0-2668 Item.tag.display.Name run data modify block ~2 1 ~ Text4 set value '{"translate":"%1$s%418634357$s","with":[[{"selector":"0-1c9-c369-0-2668","color":"gray","italic":false}," x",{"score":{"name":"#amount","objective":"shulker_preview"}}],""]}'
-execute if score #amount shulker_preview matches ..0 run data modify block ~2 1 ~ Text4 set value '""'
+execute if score #amount shulker_preview matches 1.. if data entity 0-1c9-c369-0-2668 Item.tag.display.Name run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/named
+execute if score #amount shulker_preview matches 1.. unless data entity 0-1c9-c369-0-2668 Item.tag.display.Name run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/unnamed
+execute if score #amount shulker_preview matches ..0 run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/empty
+tag @e[type=item,tag=,distance=0] add row4
 
+# fifth item
 data modify entity 0-1c9-c369-0-2668 Item set from block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[4]
 execute store result score #amount shulker_preview run data get block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[4].Count
-execute if score #amount shulker_preview matches 1.. if data entity 0-1c9-c369-0-2668 Item.tag.display.Name run data modify block ~3 1 ~ Text1 set value '{"translate":"%1$s%418634357$s","with":[[{"nbt":"Item.tag.display.Name","entity":"0-1c9-c369-0-2668","interpret":true,"color":"gray","italic":false}," x",{"score":{"name":"#amount","objective":"shulker_preview"}}],""]}'
-execute if score #amount shulker_preview matches 1.. unless data entity 0-1c9-c369-0-2668 Item.tag.display.Name run data modify block ~3 1 ~ Text1 set value '{"translate":"%1$s%418634357$s","with":[[{"selector":"0-1c9-c369-0-2668","color":"gray","italic":false}," x",{"score":{"name":"#amount","objective":"shulker_preview"}}],""]}'
-execute if score #amount shulker_preview matches ..0 run data modify block ~3 1 ~ Text1 set value '""'
+execute if score #amount shulker_preview matches 1.. if data entity 0-1c9-c369-0-2668 Item.tag.display.Name run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/named
+execute if score #amount shulker_preview matches 1.. unless data entity 0-1c9-c369-0-2668 Item.tag.display.Name run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/unnamed
+execute if score #amount shulker_preview matches ..0 run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/empty
+tag @e[type=item,tag=,distance=0] add row5
 
+# additional items
 execute store result score #total shulker_preview run data get block ~ 1 ~ Items[0].tag.BlockEntityTag.Items
 scoreboard players remove #total shulker_preview 5
-execute if score #total shulker_preview matches 1.. run data modify block ~3 1 ~ Text2 set value '{"translate":"%1$s%418634357$s","with":[{"translate":"container.shulkerBox.more","color":"gray","italic":true,"with":[{"score":{"name":"#total","objective":"shulker_preview"}}]},""]}'
+execute if score #total shulker_preview matches 1.. run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/more
+execute unless score #total shulker_preview matches 1.. run loot spawn ~ ~ ~ loot tryashtar.shulker_preview:other_rows/empty
+tag @e[type=item,tag=,distance=0] add row6
 
 kill 0-1c9-c369-0-2668
 execute if score #ender_header shulker_preview matches 1 run data remove block ~ 1 ~ Items[0].tag.BlockEntityTag
