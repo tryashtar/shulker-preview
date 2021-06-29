@@ -50,6 +50,8 @@ Current 1.17 version
 + Now uses /item command instead of shulker trick in forceloaded chunk
 + Now uses new marker entity for marginally better network performance
 + Now uses "separator" text component feature
++ When Bukkit server is detected, switches to slower but fewer-character lore generation method
++ Detects when Bukkit mangles lore, and adds text to the tooltip notifying you
 
 Current 1.16 version
 + All 1.16 items
