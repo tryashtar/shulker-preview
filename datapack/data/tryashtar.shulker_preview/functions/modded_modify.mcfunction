@@ -36,3 +36,5 @@ execute store result score #more shulker_preview run data get storage tryashtar.
 scoreboard players remove #more shulker_preview 5
 execute if score #more shulker_preview matches 1.. run item modify entity 0-1c9-c369-0-2669 weapon.mainhand tryashtar.shulker_preview:modded/other_rows/more
 execute unless score #more shulker_preview matches 1.. run item modify entity 0-1c9-c369-0-2669 weapon.mainhand tryashtar.shulker_preview:modded/other_rows/empty
+
+execute store result entity 0-1c9-c369-0-2669 HandItems[0].tag.shulker_length int 1 run data get entity 0-1c9-c369-0-2669 HandItems[0].tag.display.Lore[0]
