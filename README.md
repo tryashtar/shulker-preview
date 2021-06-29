@@ -46,7 +46,7 @@ There is also a [Faithful x32 version of the resource pack](https://github.com/F
 Current 1.17 version
 + All 1.17 items
 + Unknown items show a missing texture instead of messing up the order
-+ New settings menu for toggling previews for shulker boxes, ender chests, and bundles
++ New settings menu for toggling previews for shulker boxes and ender chests
 + Now uses /item command instead of shulker trick in forceloaded chunk
 + Now uses new marker entity for marginally better network performance
 + Now uses "separator" text component feature
