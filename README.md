@@ -20,7 +20,7 @@ There is also a [Faithful x32 version of the resource pack](https://github.com/F
 
 ### FAQ
 * Does this work with Bukkit/Spigot/Paper?
-   * Yes, in 1.16+. Of course, certain mods/plugins may interfere with the pack and prevent it from working.
+   * No guarantees. I have experienced countless issues with these modded servers breaking vanilla behavior that this pack requires.
 * Does this work with Optifine?
    * Yes.
 * Does this work with other resource packs?
