@@ -29,7 +29,7 @@ There is also a [Faithful x32 version of the resource pack](https://github.com/F
 * What happens if players don't have the resource pack?
    * They will see the vanilla shulker box tooltip, though it may contain a few extra lines.
 * How do I disable/enable ender chest previews?
-   * In 1.17+: `/function tryashtar.shulker_preview:.config/show_settings`
+   * In 1.16+: `/function tryashtar.shulker_preview:.config/show_settings`
    * In earlier versions, there are two functions in `.meta`
 * How do I completely uninstall the pack?
    * After disabling the pack with `/datapack disable`, the following artifacts will remain and must be cleared manually:
@@ -46,12 +46,9 @@ There is also a [Faithful x32 version of the resource pack](https://github.com/F
 Current 1.17 version
 + All 1.17 items
 + Unknown items show a missing texture instead of messing up the order
-+ New settings menu for toggling previews for shulker boxes and ender chests
 + Now uses /item command instead of shulker trick in forceloaded chunk
 + Now uses new marker entity for marginally better network performance
 + Now uses "separator" text component feature
-+ When Bukkit server is detected, switches to slower but fewer-character lore generation method
-+ Detects when Bukkit mangles lore, and adds text to the tooltip notifying you
 
 Current 1.16 version
 + All 1.16 items
@@ -60,6 +57,9 @@ Current 1.16 version
 + Banners and shields show their pattern
 + Custom colored armor, potions, etc. show approximate colors
 + When ender chest previews are enabled, ender chests showing the same preview can stack
++ New settings menu for toggling previews for shulker boxes and ender chests
++ When Bukkit server is detected, switches to slower but fewer-character lore generation method
++ Detects when Bukkit mangles lore, and adds text to the tooltip notifying you
 
 Current 1.15 version
 + All 1.15 items
