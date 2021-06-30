@@ -15,6 +15,7 @@ data modify block ~ 1 ~ Items[0].tag.display.Lore append from entity @e[type=ite
 data modify block ~ 1 ~ Items[0].tag.display.Lore append from entity @e[type=item,tag=row5,distance=0,limit=1] Item.tag.display.Lore[]
 data modify block ~ 1 ~ Items[0].tag.display.Lore append from entity @e[type=item,tag=row6,distance=0,limit=1] Item.tag.display.Lore[]
 kill @e[type=item,distance=0]
+execute if score #modded shulker_preview matches 2 store result block ~ 1 ~ Items[0].tag.shulker_length int 1 run data get block ~ 1 ~ Items[0].tag.display.Lore[0]
 
 data modify block ~ 1 ~ Items[0].tag.HideFlags set value 32
 data modify block ~ 1 ~ Items[0].tag.shulker_processed set value 1b
