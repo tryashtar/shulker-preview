@@ -14,7 +14,7 @@ data modify storage tryashtar.shulker_preview:data items[0].Slot set value 0b
 data modify entity 0-1c9-c369-0-2669 HandItems[0] set from storage tryashtar.shulker_preview:data items[0]
 
 # get fallback data for tooltip
-summon item ~ ~ ~ {UUID:[I;0,29999977,0,9832],Item:{id:tnt,Count:1b}}
+summon item ~ 999999 ~ {UUID:[I;0,29999977,0,9832],Item:{id:tnt,Count:1b}}
 
 execute if score #modded shulker_preview matches 0 run function tryashtar.shulker_preview:vanilla_modify
 execute if score #modded shulker_preview matches 2 run function tryashtar.shulker_preview:modded_modify
