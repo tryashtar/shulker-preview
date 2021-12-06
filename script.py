@@ -341,9 +341,9 @@ def main():
       command += "]}"
       print(command)
 
-   shutil.make_archive("Shulker Preview Data Pack (1.17)", 'zip', "datapack")
-   shutil.make_archive("Shulker Preview Resource Pack (1.17)", 'zip', "resourcepack")
-   shutil.make_archive("Shulker Preview Dark Theme (1.17)", 'zip', "resourcepack_dark")
+   shutil.make_archive("Shulker Preview Data Pack (1.18)", 'zip', "datapack")
+   shutil.make_archive("Shulker Preview Resource Pack (1.18)", 'zip', "resourcepack")
+   shutil.make_archive("Shulker Preview Dark Theme (1.18)", 'zip', "resourcepack_dark")
 
 
 def unicode_escape(character):
