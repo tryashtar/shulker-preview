@@ -30,7 +30,7 @@ There is also a [Faithful x32 version of the resource pack](https://github.com/F
 * What happens if players don't have the resource pack?
    * They will see the vanilla shulker box tooltip, though it may contain a few extra lines.
 * How do I disable/enable ender chest previews?
-   * In 1.16+: `/function tryashtar.shulker_preview:.config/show_settings`
+   * In 1.16+: `/function tryashtar.shulker_preview:config/show_settings`
    * In earlier versions, there are two functions in `.meta`
 * How do I completely uninstall the pack?
    * After disabling the pack with `/datapack disable`, the following artifacts will remain and must be cleared manually:
