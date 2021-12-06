@@ -6,7 +6,7 @@ execute if score #version shulker_preview matches 2716.. if score #install shulk
 
 # check for resource pack equipped/success message
 scoreboard players add #install shulker_preview 0
-execute if score #install shulker_preview matches 0 run function tryashtar.shulker_preview:.meta/install
+execute if score #install shulker_preview matches 0 run function tryashtar.shulker_preview:meta/install
 
 # check for modded server
 scoreboard players add #modded shulker_preview 0
