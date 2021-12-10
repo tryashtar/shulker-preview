@@ -735,7 +735,7 @@ def process_item_lines(items, row):
       elif item == "crossbow":
          lines.extend([
             f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{id:"minecraft:firework_rocket"}}]}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow_firework.{row}"}}\'}}',
-            f'execute if data storage tryashtar.shulker_preview:data item.tag.ChargedProjectiles[0] unless data storage tryashtar.shulker_preview:data item{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{id:"minecraft:firework_rocket"}}]}}}} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow_arrow.{row}"}}\'}}',
+            f'execute if data storage tryashtar.shulker_preview:data item{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{}}]}}}} unless data storage tryashtar.shulker_preview:data item.tag.ChargedProjectiles[{{id:"minecraft:firework_rocket"}}] run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow_arrow.{row}"}}\'}}',
             f'{if_item} unless data storage tryashtar.shulker_preview:data item.tag.ChargedProjectiles[{{}}] run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow.{row}"}}\'}}'
             ])
       elif item == "light":
