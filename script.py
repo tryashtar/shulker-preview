@@ -7,9 +7,16 @@ import numpy
 import shutil
 from PIL import Image
 from collections import OrderedDict
-
 specials=["broken_elytra","crossbow_arrow","crossbow_firework"]
 def main():
+
+
+   shutil.make_archive("Shulker Preview Data Pack (1.15)", 'zip', "datapack")
+   shutil.make_archive("Shulker Preview Resource Pack (1.15)", 'zip', "resourcepack")
+   shutil.make_archive("Shulker Preview Dark Theme (1.15)", 'zip', "resourcepack_dark")
+   return
+   
+
    # load item textures from two sources
    print("Loading icons...")
    mcitems=load_items("D:/Minecraft/Java Storage/History/jar/assets/minecraft/textures/item", "../extra item images")
