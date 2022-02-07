@@ -2,6 +2,11 @@ execute store result score #slot shulker_preview run data get storage tryashtar:
 data remove storage tryashtar:shulker_preview items[0].Slot
 
 data remove storage tryashtar:shulker_preview items[0].tag.HideFlags
+data remove storage tryashtar:shulker_preview items[0].tag.display.Lore[-1]
+data remove storage tryashtar:shulker_preview items[0].tag.display.Lore[-1]
+data remove storage tryashtar:shulker_preview items[0].tag.display.Lore[-1]
+data remove storage tryashtar:shulker_preview items[0].tag.display.Lore[-1]
+data remove storage tryashtar:shulker_preview items[0].tag.display.Lore[-1]
 data modify storage tryashtar:shulker_preview items[0].tag.shulker_broken set value 1b
 
 data remove block ~ 1 ~ Items
