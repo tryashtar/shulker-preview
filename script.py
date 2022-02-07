@@ -324,13 +324,14 @@ def load_items(*args):
    return result
 
 def check_items(items):
-   registry=read_json("D:/Minecraft/Java Storage/History/reports/registries.json")["minecraft:item"]["entries"]
+   from urllib.request import urlopen
+   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/1.15-summary/registries/data.json').read()
+   registry=json.loads(data)["item"]
    for item in registry:
       name=item.replace("minecraft:","")
       if name not in items and name!="air":
          print(f"ITEM NOT SUPPORTED: {name}")
    for item in items:
-      name="minecraft:"+item
       if name not in registry and item not in specials:
          print(f"UNNECESSARY ITEM? {item}")
 
