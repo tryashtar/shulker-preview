@@ -38,6 +38,8 @@ def main():
       mcitems[blockitem]="block"
 
    check_items(list(mcitems.keys())+list(mcblocks.keys()))
+   remove_unsupported(mcitems)
+   remove_unsupported(mcblocks)
 
    mcitems=dict(sorted(mcitems.items()))
    mcblocks=dict(sorted(mcblocks.items()))
@@ -530,15 +532,21 @@ def load_items(*args):
    return result
 
 def check_items(items):
-   registry=read_json("D:/Minecraft/Java Storage/History/reports/registries.json")["minecraft:item"]["entries"]
+   from urllib.request import urlopen
+   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/1.18-summary/registries/data.json').read()
+   registry=json.loads(data)["item"]
    for item in registry:
-      name=item.replace("minecraft:","")
-      if name not in items and name!="air":
-         print(f"ITEM NOT SUPPORTED: {name}")
-   for item in items:
-      name="minecraft:"+item
-      if name not in registry and item not in specials:
+      if item not in items and item!="air":
+         print(f"ITEM NOT SUPPORTED: {item}")
+
+def remove_unsupported(items):
+   from urllib.request import urlopen
+   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/1.18-summary/registries/data.json').read()
+   registry=json.loads(data)["item"]
+   for item in list(items.keys()):
+      if item not in registry and item not in specials:
          print(f"UNNECESSARY ITEM? {item}")
+         del items[item]
 
 # item information
 durability_dict={"leather_helmet":55,"leather_chestplate":80,"leather_leggings":75,"leather_boots":65,"golden_helmet":77,"golden_chestplate":112,"golden_leggings":105,"golden_boots":91,"chainmail_helmet":165,"chainmail_chestplate":240,"chainmail_leggings":225,"chainmail_boots":195,"iron_helmet":165,"iron_chestplate":240,"iron_leggings":225,"iron_boots":195,"diamond_helmet":363,"diamond_chestplate":528,"diamond_leggings":495,"diamond_boots":429,"golden_axe":32,"golden_pickaxe":32,"golden_shovel":32,"golden_hoe":32,"golden_sword":32,"wooden_axe":59,"wooden_pickaxe":59,"wooden_shovel":59,"wooden_hoe":59,"wooden_sword":59,"stone_axe":131,"stone_pickaxe":131,"stone_shovel":131,"stone_hoe":131,"stone_sword":131,"iron_axe":250,"iron_pickaxe":250,"iron_shovel":250,"iron_hoe":250,"iron_sword":250,"diamond_axe":1561,"diamond_pickaxe":1561,"diamond_shovel":1561,"diamond_hoe":1561,"diamond_sword":1561,"fishing_rod":64,"flint_and_steel":64,"carrot_on_a_stick":25,"shears":238,"shield":336,"bow":384,"trident":250,"elytra":432,"crossbow":465,"warped_fungus_on_a_stick":100,"netherite_axe":2031,"netherite_sword":2031,"netherite_pickaxe":2031,"netherite_shovel":2031,"netherite_hoe":2031,"netherite_helmet":407,"netherite_chestplate":592,"netherite_leggings":555,"netherite_boots":481}
