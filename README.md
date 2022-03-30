@@ -1,21 +1,49 @@
-### Download
+### Downloads
 
-|Version|Links|
+|Version|Download|
 |---|---|
-|Minecraft 1.18|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.18/Shulker%20Preview%20Data%20Pack%20(1.18).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.18/Shulker%20Preview%20Resource%20Pack%20(1.18).zip)|
-|Minecraft 1.17|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.17/Shulker%20Preview%20Data%20Pack%20(1.17).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.17/Shulker%20Preview%20Resource%20Pack%20(1.17).zip)|
-|Minecraft 1.16|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Data%20Pack%20(1.16).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Resource%20Pack%20(1.16).zip)|
-|Minecraft 1.15|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Data%20Pack%20(1.15).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Resource%20Pack%20(1.15).zip)|
-|Minecraft 1.14.3|[Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Data%20Pack%20(1.14).zip)<br>[Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Resource%20Pack%20(1.14).zip)|
+|Minecraft 1.18|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.18/Shulker%20Preview%20Data%20Pack%20(1.18).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.18/Shulker%20Preview%20Resource%20Pack%20(1.18).zip)|
+|Minecraft 1.17|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.17/Shulker%20Preview%20Data%20Pack%20(1.17).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.17/Shulker%20Preview%20Resource%20Pack%20(1.17).zip)|
+|Minecraft 1.16|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Data%20Pack%20(1.16).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Resource%20Pack%20(1.16).zip)|
+|Minecraft 1.15|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Data%20Pack%20(1.15).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Resource%20Pack%20(1.15).zip)|
+|Minecraft 1.14.3|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Data%20Pack%20(1.14).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Resource%20Pack%20(1.14).zip)|
+
+---
 
 ### How to use
-1. Download the data pack and resource pack for your Minecraft version.
-2. Select your world in-game and click `Edit`, then `Open World Folder`.
-3. Drag the datapack zip from your `Downloads` folder to the `datapacks` folder in your world.
-4. Go to the resource packs menu and click `Open Resource Pack Folder`.
-5. Drag the resource pack zip from your `Downloads` folder to the resource packs folder.
-6. Equip the resource pack.
-7. Enter your world and enjoy!
+<ol>
+   <li>Download the data pack and resource pack for your Minecraft version.</li>
+   <li>
+      <details>
+         <summary><ins>Add the data pack to your world.</ins></summary>
+         <ul>
+            <li>Open your world's folder.</li>
+            <img src="https://i.imgur.com/4RE3CG9.png" height="60" alt="Select your world"/> <br/>
+            <img src="https://i.imgur.com/2Va0DRj.png" height="30" alt="Edit"/> <br/>
+            <img src="https://i.imgur.com/KtjQMXo.png" height="30" alt="Open World Folder"/> <br/>
+            <li>Drag the data pack zip from your <code>Downloads</code> folder to the <code>datapacks</code> folder in your world.</li>
+            <img src="https://i.imgur.com/alG9zB8.png" height="120"/> <br/>
+         </ul>
+      </details>
+   </li>
+   <li>
+      <details>
+         <summary><ins>Equip the resource pack.</ins></summary>
+         <ul>
+            <li>Go to the resource packs screen.</li>
+            <img src="https://i.imgur.com/ervUIn9.png" height="30" alt="Options..."/> <br/>
+            <img src="https://i.imgur.com/AotNu07.png" height="30" alt="Resource Packs..."/> <br/>
+            <li>Drag the resource pack zip from your <code>Downloads</code> folder onto the screen.</li>
+            <img src="https://i.imgur.com/9sTaNUQ.png" height="160" alt="Yes"/> <br/>
+            <li>Move the pack from <code>Available</code> to <code>Selected</code></li>
+            <img src="https://i.imgur.com/P5F8mqW.png" height="60" alt="Select the pack">
+         </ul>
+      </details>
+   </li>
+   <li>Enter your world and enjoy!</li>
+</ol>
+
+---
 
 ### FAQ
 * Does this work with Bukkit/Spigot/Paper?
@@ -42,12 +70,13 @@
 
 ### Changelog
 ```diff
+Current 1.18 version
++ All 1.18 items (all one of them)
+
 Current 1.17 version
 + All 1.17 items
 + Unknown items show a missing texture instead of messing up the order
-+ Now uses /item command instead of shulker trick in forceloaded chunk
-+ Now uses new marker entity for marginally better network performance
-+ Now uses "separator" text component feature
++ No longer requires forceloaded chunk
 
 Current 1.16 version
 + All 1.16 items
@@ -57,16 +86,17 @@ Current 1.16 version
 + Custom colored armor, potions, etc. show approximate colors
 + When ender chest previews are enabled, ender chests showing the same preview can stack
 + New settings menu for toggling previews for shulker boxes and ender chests
-+ When Bukkit server is detected, switches to slower but fewer-character lore generation method
-+ Detects when Bukkit mangles lore, and adds text to the tooltip notifying you
 
 Current 1.15 version
 + All 1.15 items
++ When Bukkit server is detected, switches to slower but fewer-character lore generation method
++ Detects when Bukkit mangles lore, and adds text to the tooltip notifying you
 
 Current 1.14 version
 + All 1.14 items
 + Option to preview ender chests
 + Optifine compatibility
++ No longer crashes on certain graphics cards
 + Show custom item name in tooltip
 + More accurate durability bars
 + Data pack no longer requires clicking forceload text
