@@ -25,15 +25,17 @@ def main():
    # a few renames
    rename_key(mcitems, "clock_00","clock")
    rename_key(mcitems, "compass_16","compass")
+   rename_key(mcitems, "recovery_compass_16","recovery_compass")
    rename_key(mcitems, "crossbow_standby","crossbow")
 
    # delete unnecessary textures
    delete_entries_regex(mcitems, r"^clock_\d\d$")
    delete_entries_regex(mcitems, r"^compass_\d\d$")
+   delete_entries_regex(mcitems, r"^recovery_compass_\d\d$")
    delete_entries_regex(mcitems, r"^(cross)?bow_pulling_\d$")
    delete_entries_regex(mcitems, r"^empty_armor_slot_")
    delete_entries(mcitems,["empty_armor_slot","fishing_rod_cast","ruby","crystallized_honey","spyglass_model"])
-   blockitems=["acacia_sapling","activator_rail","allium","azure_bluet","birch_sapling","black_stained_glass_pane","blue_orchid","blue_stained_glass_pane","brain_coral","brain_coral_fan","brown_mushroom","brown_stained_glass_pane","bubble_coral","bubble_coral_fan","cobweb","cornflower","crimson_fungus","crimson_roots","cyan_stained_glass_pane","dandelion","dark_oak_sapling","dead_brain_coral","dead_brain_coral_fan","dead_bubble_coral","dead_bubble_coral_fan","dead_bush","dead_fire_coral","dead_fire_coral_fan","dead_horn_coral","dead_horn_coral_fan","dead_tube_coral","dead_tube_coral_fan","detector_rail","fern","fire_coral","fire_coral_fan","glass_pane","grass","gray_stained_glass_pane","green_stained_glass_pane","horn_coral","horn_coral_fan","iron_bars","jungle_sapling","ladder","large_fern","lever","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lilac","lily_of_the_valley","lily_pad","lime_stained_glass_pane","magenta_stained_glass_pane","nether_sprouts","oak_sapling","orange_stained_glass_pane","orange_tulip","oxeye_daisy","peony","pink_stained_glass_pane","pink_tulip","poppy","powered_rail","purple_stained_glass_pane","rail","redstone_torch","red_mushroom","red_stained_glass_pane","red_tulip","rose_bush","soul_torch","spruce_sapling","sunflower","tall_grass","torch","tripwire_hook","tube_coral","tube_coral_fan","twisting_vines","vine","warped_fungus","warped_roots","weeping_vines","white_stained_glass_pane","white_tulip","wither_rose","yellow_stained_glass_pane","small_amethyst_bud","medium_amethyst_bud","large_amethyst_bud","amethyst_cluster","hanging_roots","glow_lichen"]
+   blockitems=["acacia_sapling","activator_rail","allium","azure_bluet","birch_sapling","black_stained_glass_pane","blue_orchid","blue_stained_glass_pane","brain_coral","brain_coral_fan","brown_mushroom","brown_stained_glass_pane","bubble_coral","bubble_coral_fan","cobweb","cornflower","crimson_fungus","crimson_roots","cyan_stained_glass_pane","dandelion","dark_oak_sapling","dead_brain_coral","dead_brain_coral_fan","dead_bubble_coral","dead_bubble_coral_fan","dead_bush","dead_fire_coral","dead_fire_coral_fan","dead_horn_coral","dead_horn_coral_fan","dead_tube_coral","dead_tube_coral_fan","detector_rail","fern","fire_coral","fire_coral_fan","glass_pane","grass","gray_stained_glass_pane","green_stained_glass_pane","horn_coral","horn_coral_fan","iron_bars","jungle_sapling","ladder","large_fern","lever","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lilac","lily_of_the_valley","lily_pad","lime_stained_glass_pane","magenta_stained_glass_pane","nether_sprouts","oak_sapling","orange_stained_glass_pane","orange_tulip","oxeye_daisy","peony","pink_stained_glass_pane","pink_tulip","poppy","powered_rail","purple_stained_glass_pane","rail","redstone_torch","red_mushroom","red_stained_glass_pane","red_tulip","rose_bush","soul_torch","spruce_sapling","sunflower","tall_grass","torch","tripwire_hook","tube_coral","tube_coral_fan","twisting_vines","vine","warped_fungus","warped_roots","weeping_vines","white_stained_glass_pane","white_tulip","wither_rose","yellow_stained_glass_pane","small_amethyst_bud","medium_amethyst_bud","large_amethyst_bud","amethyst_cluster","hanging_roots","glow_lichen","frogspawn","sculk_vein"]
    for blockitem in blockitems:
       mcitems[blockitem]="block"
 
@@ -343,9 +345,9 @@ def main():
       command += "]}"
       print(command)
 
-   shutil.make_archive("Shulker Preview Data Pack (1.18)", 'zip', "datapack")
-   shutil.make_archive("Shulker Preview Resource Pack (1.18)", 'zip', "resourcepack")
-   shutil.make_archive("Shulker Preview Dark Theme (1.18)", 'zip', "resourcepack_dark")
+   shutil.make_archive("Shulker Preview Data Pack (1.19)", 'zip', "datapack")
+   shutil.make_archive("Shulker Preview Resource Pack (1.19)", 'zip', "resourcepack")
+   shutil.make_archive("Shulker Preview Dark Theme (1.19)", 'zip', "resourcepack_dark")
 
 
 def unicode_escape(character):
@@ -446,7 +448,7 @@ def register_items(items, row, ascent, height, real_version):
       if "_spawn_egg" in item or item in reused_textures:
          continue
       location=item.replace("glass_pane","glass")
-      location={"large_fern":"large_fern_top","lilac":"lilac_top","peony":"peony_top","rose_bush":"rose_bush_top","sunflower":"sunflower_front","clock":"clock_00","compass":"compass_16","crossbow":"crossbow_standby","tall_grass":"tall_grass_top","tipped_arrow":"tipped_arrow_base","twisting_vines":"twisting_vines_plant","weeping_vines":"weeping_vines_plant"}.get(location,location)
+      location={"large_fern":"large_fern_top","lilac":"lilac_top","peony":"peony_top","rose_bush":"rose_bush_top","sunflower":"sunflower_front","clock":"clock_00","compass":"compass_16","recovery_compass":"recovery_compass_16","crossbow":"crossbow_standby","tall_grass":"tall_grass_top","tipped_arrow":"tipped_arrow_base","twisting_vines":"twisting_vines_plant","weeping_vines":"weeping_vines_plant"}.get(location,location)
       itype="block" if v=="block" else "item"
       thingtype="item"
       if item in ["tipped_arrow_head","spawn_egg_overlay","potion_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","firework_star_overlay","filled_map_markings"]:
@@ -533,7 +535,7 @@ def load_items(*args):
 
 def check_items(items):
    from urllib.request import urlopen
-   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/1.18-summary/registries/data.json').read()
+   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/22w15a-summary/registries/data.json').read()
    registry=json.loads(data)["item"]
    for item in registry:
       if item not in items and item!="air":
@@ -541,7 +543,7 @@ def check_items(items):
 
 def remove_unsupported(items):
    from urllib.request import urlopen
-   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/1.18-summary/registries/data.json').read()
+   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/22w15a-summary/registries/data.json').read()
    registry=json.loads(data)["item"]
    for item in list(items.keys()):
       if item not in registry and item not in specials:
@@ -635,6 +637,7 @@ banner_pattern_ids={
 }
 
 spawn_egg_colors={
+   "allay_spawn_egg": (56063, 44543),
    "axolotl_spawn_egg": (16499171, 10890612),
    "bat_spawn_egg": (4996656, 986895),
    "bee_spawn_egg": (15582019, 4400155),
@@ -652,6 +655,7 @@ spawn_egg_colors={
    "enderman_spawn_egg": (1447446, 0),
    "endermite_spawn_egg": (1447446, 7237230),
    "evoker_spawn_egg": (9804699, 1973274),
+   "frog_spawn_egg": (13661252, 0xFFC77C),
    "fox_spawn_egg": (14005919, 13396256),
    "ghast_spawn_egg": (16382457, 12369084),
    "glow_squid_spawn_egg": (611926, 8778172),
@@ -687,6 +691,7 @@ spawn_egg_colors={
    "squid_spawn_egg": (2243405, 7375001),
    "stray_spawn_egg": (6387319, 14543594),
    "strider_spawn_egg": (10236982, 5065037),
+   "tadpole_spawn_egg": (7164733, 1444352),
    "trader_llama_spawn_egg": (15377456, 4547222),
    "tropical_fish_spawn_egg": (15690005, 16775663),
    "turtle_spawn_egg": (15198183, 44975),
@@ -694,6 +699,7 @@ spawn_egg_colors={
    "villager_spawn_egg": (5651507, 12422002),
    "vindicator_spawn_egg": (9804699, 2580065),
    "wandering_trader_spawn_egg": (4547222, 15377456),
+   "warden_spawn_egg": (1001033, 3790560),
    "witch_spawn_egg": (3407872, 5349438),
    "wither_skeleton_spawn_egg": (1315860, 4672845),
    "wolf_spawn_egg": (14144467, 13545366),

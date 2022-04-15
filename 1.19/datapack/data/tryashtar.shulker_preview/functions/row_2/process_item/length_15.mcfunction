@@ -32,6 +32,7 @@ execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:melon"
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:paper"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.paper.2"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:peony"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.peony.2"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:poppy"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.poppy.2"}'}
+execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:sculk"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.sculk.2"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:scute"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.scute.2"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:stick"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.stick.2"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:stone"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.stone.2"}'}
