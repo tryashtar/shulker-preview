@@ -2,11 +2,11 @@
 
 |Version|Download|
 |---|---|
-|Minecraft 1.18|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.18/Shulker%20Preview%20Data%20Pack%20(1.18).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.18/Shulker%20Preview%20Resource%20Pack%20(1.18).zip)|
-|Minecraft 1.17|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.17/Shulker%20Preview%20Data%20Pack%20(1.17).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.17/Shulker%20Preview%20Resource%20Pack%20(1.17).zip)|
-|Minecraft 1.16|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Data%20Pack%20(1.16).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.16/Shulker%20Preview%20Resource%20Pack%20(1.16).zip)|
-|Minecraft 1.15|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Data%20Pack%20(1.15).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.15/Shulker%20Preview%20Resource%20Pack%20(1.15).zip)|
-|Minecraft 1.14.3|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Data%20Pack%20(1.14).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/1.14/Shulker%20Preview%20Resource%20Pack%20(1.14).zip)|
+|Minecraft 1.18|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/master/1.18/Shulker%20Preview%20Data%20Pack%20(1.18).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/master/1.18/Shulker%20Preview%20Resource%20Pack%20(1.18).zip)|
+|Minecraft 1.17|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/master/1.17/Shulker%20Preview%20Data%20Pack%20(1.17).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/master/1.17/Shulker%20Preview%20Resource%20Pack%20(1.17).zip)|
+|Minecraft 1.16|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/master/1.16/Shulker%20Preview%20Data%20Pack%20(1.16).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/master/1.16/Shulker%20Preview%20Resource%20Pack%20(1.16).zip)|
+|Minecraft 1.15|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/master/1.15/Shulker%20Preview%20Data%20Pack%20(1.15).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/master/1.15/Shulker%20Preview%20Resource%20Pack%20(1.15).zip)|
+|Minecraft 1.14.3|• [Data Pack](https://github.com/tryashtar/shulker-preview/raw/master/1.14/Shulker%20Preview%20Data%20Pack%20(1.14).zip)<br>• [Resource Pack](https://github.com/tryashtar/shulker-preview/raw/master/1.14/Shulker%20Preview%20Resource%20Pack%20(1.14).zip)|
 
 ---
 
