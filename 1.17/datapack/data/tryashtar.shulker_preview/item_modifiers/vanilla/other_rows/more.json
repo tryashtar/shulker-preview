@@ -1,0 +1,26 @@
+{
+   "function": "minecraft:set_lore",
+   "entity": "this",
+   "replace": false,
+   "lore": [
+      {
+         "translate": "%1$s%418634357$s",
+         "with": [
+            {
+               "translate": "container.shulkerBox.more",
+               "color": "gray",
+               "italic": true,
+               "with": [
+                  {
+                     "score": {
+                        "name": "#more",
+                        "objective": "shulker_preview"
+                     }
+                  }
+               ]
+            },
+            ""
+         ]
+      }
+   ]
+}

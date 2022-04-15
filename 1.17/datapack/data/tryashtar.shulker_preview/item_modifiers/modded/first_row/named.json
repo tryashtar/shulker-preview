@@ -1,0 +1,37 @@
+{
+   "function": "minecraft:set_lore",
+   "entity": "this",
+   "replace": true,
+   "lore": [
+      {
+         "translate": "%1$s%418634357$s",
+         "with": [
+            [
+               {
+                  "nbt": "Item.tag.display.Name",
+                  "entity": "0-1c9-c369-0-2668",
+                  "interpret": true,
+                  "color": "gray",
+                  "italic": false
+               },
+               " x",
+               {
+                  "score": {
+                     "name": "#amount",
+                     "objective": "shulker_preview"
+                  }
+               }
+            ],
+            {
+               "font": "tryashtar.shulker_preview:preview",
+               "nbt": "CustomName",
+               "entity": "@e[type=marker,tag=tryashtar.shulker_preview,x=0,y=0,z=0,sort=nearest]",
+               "interpret": true,
+               "separator": "",
+               "color": "white",
+               "italic": false
+            }
+         ]
+      }
+   ]
+}
