@@ -535,7 +535,7 @@ def load_items(*args):
 
 def check_items(items):
    from urllib.request import urlopen
-   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/22w15a-summary/registries/data.json').read()
+   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/1.19-pre3-summary/registries/data.json').read()
    registry=json.loads(data)["item"]
    for item in registry:
       if item not in items and item!="air":
@@ -543,7 +543,7 @@ def check_items(items):
 
 def remove_unsupported(items):
    from urllib.request import urlopen
-   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/22w15a-summary/registries/data.json').read()
+   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/1.19-pre3-summary/registries/data.json').read()
    registry=json.loads(data)["item"]
    for item in list(items.keys()):
       if item not in registry and item not in specials:
