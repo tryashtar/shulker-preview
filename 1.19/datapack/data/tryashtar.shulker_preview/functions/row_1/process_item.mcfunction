@@ -34,7 +34,7 @@ execute if score #length shulker_preview matches 43 run function tryashtar.shulk
 execute if score #length shulker_preview matches 44 run function tryashtar.shulker_preview:row_1/process_item/length_44
 
 # placeholder if item was not found
-execute unless entity @e[type=marker,tag=tryashtar.shulker_preview,distance=..0.0001] run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.missingno.1"}'}
+execute unless entity @e[type=marker,tag=tryashtar.shulker_preview,distance=..0.0001] run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.missingno.1"}'}
 
 # summon in count entity
 execute store result score #count shulker_preview run data get storage tryashtar.shulker_preview:data item.Count
