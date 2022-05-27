@@ -15,6 +15,10 @@ version = '1.19-pre3'
 
 def main():
    print('Loading Minecraft assets...')
+   # get the actual list of item IDs from Misode's generator
+   # there's no reliable place in the jar to get them,
+   # and while you can get them from the server reports,
+   # it would be a waste of time to find the server jar and generate them in this script
    data = urlopen(f'https://raw.githubusercontent.com/misode/mcmeta/{version}-summary/registries/data.json').read()
    item_registry = json.loads(data)["item"]
    jar_path = find_version_jar()
@@ -47,6 +51,7 @@ def main():
    # - all the overrides like light blocks
    # - generate test command
 
+# drawing an image as text with zero width requires multiple characters in the font
 class FontAbstraction:
    def __init__(self, rows):
       self.current_char = '\u0900'
@@ -58,6 +63,7 @@ class FontAbstraction:
          self.characters[i] = {}
          self.translations[i] = {}
 
+   # there are some ranges that Minecraft can't render, I have not fully determined what they are yet
    def next_char(self):
       i=ord(self.current_char)
       i+=1
@@ -65,6 +71,7 @@ class FontAbstraction:
          i=0x700
       return chr(i)
 
+   # give a texture, it will generate characters and translations for each row
    def add_texture(self, texture):
       if texture in self.textures:
          return
@@ -81,6 +88,8 @@ class FontAbstraction:
       return self.translations[row][texture]
 
 
+# use 'resource' to get the namespaced resource location
+# use 'file_path' to get the path relative to the pack root
 class Function:
    def __init__(self, resource, lines):
       self.resource = resource
@@ -89,6 +98,7 @@ class Function:
 
    def save(self, path):
       write_lines(self.lines, os.path.join(path, self.file_path))
+
 
 class Minecraft:
    def __init__(self, path, item_registry, data):
@@ -181,11 +191,14 @@ class Minecraft:
             print(f'Unhandled item {item}')
       return lines
 
+   # get model from resource location
    def get_model(self, resource):
       if resource in self.models:
          return self.models[resource]
       return self.load_model('assets/' + resource_to_path(resource, 'models', 'json'))
 
+   # get model from relative file path
+   # many models reference a common parent like 'block/block', this class caches and reuses those
    def load_model(self, path):
       resource = path_to_resource(path)
       if resource in self.models:
@@ -194,7 +207,7 @@ class Minecraft:
       model = Model(resource, data)
       self.models[resource] = model
       current_model = model
-      # extract and load overrides
+      # extract and load override references
       overrides = current_model.data.get('overrides')
       if overrides is not None:
          for o in overrides:
@@ -212,14 +225,16 @@ class Minecraft:
          parent_path = current_model.data.get('parent')
          if parent_path is not None:
             parent_path = 'assets/' + resource_to_path(parent_path, 'models', 'json')
+            # some parents are 'builtin' so aren't in the jar
             if parent_path in self.zip.namelist():
                parent = self.load_model(parent_path)
                model.parents.append(parent)
                current_model = parent
                continue
          break
-      # when referencing other textures, replace the reference
-      # when expecting a texture from a child model, just remove it
+      # if a texture reference is to an existing defined texture, reflect that
+      # otherwise, it means this is a template model whose children define it,
+      # and so it's safe to ignore since we don't process template models directly
       for k,v in list(model.textures.items()):
          if v.startswith('#'):
             if v[1:] in model.textures:
@@ -227,13 +242,16 @@ class Minecraft:
             else:
                del model.textures[k]
       for k,v in model.textures.items():
-         if not v.startswith('minecraft:'):
-            model.textures[k] = 'minecraft:'+v
+         model.textures[k] = add_namespace(v)
+      # keep a master copy of all referenced textures
       for v in model.textures.values():
          if v not in self.textures:
             self.textures.append(v)
       return model
 
+# can't initialize itself effectively because we don't want to load the same parent models every time
+# so instead the above class caches them and populates these fields
+# 'resource' is the namespaced resource location e.g. 'minecraft:item/apple'
 class Model:
    def __init__(self, resource, data):
       self.resource = resource
@@ -242,17 +260,17 @@ class Model:
       self.overrides = []
       self.textures = {}
 
+def add_namespace(rc):
+   if ':' in rc:
+      return rc
+   return 'minecraft:'+rc
+
 def remove_namespace(rc):
    try:
       colon = rc.index(':')
       return rc[colon+1:]
    except ValueError:
       return rc
-
-def add_namespace(rc):
-   if ':' in rc:
-      return rc
-   return 'minecraft:'+rc
 
 def resource_to_path(rc, folder, extension):
    try:
