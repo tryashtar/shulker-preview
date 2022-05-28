@@ -33,8 +33,6 @@ def main():
    shutil.make_archive("Shulker Preview Resource Pack (1.19)", 'zip', "resourcepack")
 
    # to restore:
-   # - durability
-   #   - still using texture grid for this, need a way to create chars/translations
    # - potion/arrow/map overlays
    #   - first generate the "normal" command if this item was not special at all
    #   - but instead of writing it, write a function that checks for the colors and replaces color in normal command with appropriate color
@@ -127,6 +125,7 @@ class FontAbstraction:
          {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": 23-64-8, "height": 8, "chars": split_3},
          {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": -32768, "height": -8, "chars": split_neg3}
       ]
+      # take stack numbers from ascii.png
       empty_row = "".join(['\u0000'] * 16)
       for i in range(0, self.rows):
          nums = "".join([self.next_char() for x in range(0, 10)])
@@ -186,6 +185,7 @@ class FontAbstraction:
             empty_row,
             empty_row
          ]})
+         # shadow has to be a separate translation so we can color it
          for j in range(1, 10):
             lang[f"tryashtar.shulker_preview.number.{j}.{i}"] = self.get_space(-4) + negs[j] + nums[j] + self.get_space(1)
             lang[f"tryashtar.shulker_preview.number_shadow.{j}.{i}"] = self.get_space(-3) + negs[j] + shadows[j]
@@ -194,6 +194,16 @@ class FontAbstraction:
             d2 = j % 10
             lang[f"tryashtar.shulker_preview.number.{j}.{i}"] = self.get_space(-7) + negs[d1] + negs[d2] + nums[d1] + nums[d2] + self.get_space(1)
             lang[f"tryashtar.shulker_preview.number_shadow.{j}.{i}"] = self.get_space(-6) + negs[d1] + negs[d2] + shadows[d1] + shadows[d2]
+         # durability
+         dura_chars = "".join([self.next_char() for x in range(0,14)])
+         font.append({"type": "bitmap", "file": "tryashtar.shulker_preview:durability.png", "ascent": -8 - (18 * i), "height": 2, "chars": [
+            dura_chars[0:5],
+            dura_chars[5:10],
+            dura_chars[10:15] + '\u0000'
+         ]})
+         for j in range(1, 15):
+            lang[f"tryashtar.shulker_preview.durability.{j}.{i}"] = self.get_space(-16) + dura_chars[j - 1] + self.get_space(2)
+
       # start by moving back a few pixels to fully cover the vanilla tooltip
       # then each row and negative in turn
       # then forward a few pixels, aligning the first item to draw with the first slot
@@ -418,6 +428,7 @@ def generate_functions(mc, font, path):
 
 def generate_item_lines(mc, items, row, font):
    lines = []
+   durability = False
    for item in items:
       if_item=f'execute if data storage tryashtar.shulker_preview:data item{{id:"{add_namespace(item)}"}}'
       model = mc.get_model(f'minecraft:item/{item}')
@@ -457,6 +468,15 @@ def generate_item_lines(mc, items, row, font):
          print(item)
       else:
          print(f'Unhandled item {item}')
+      dura = mc.data['durability'].get(item)
+      if dura is not None:
+         durability = True
+         lines.append(f'{if_item} run scoreboard players set #max shulker_preview {dura}')
+   if durability:
+      lines.extend([
+         f'execute store result score #durability shulker_preview run data get storage tryashtar.shulker_preview:data item.tag.Damage',
+         f'execute if data storage tryashtar.shulker_preview:data item.tag.Damage run function tryashtar.shulker_preview:row_{row}/overlay/durability'
+      ])
    return lines
 
 main()

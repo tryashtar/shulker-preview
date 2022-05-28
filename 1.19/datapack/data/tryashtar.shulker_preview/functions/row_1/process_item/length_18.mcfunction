@@ -3,10 +3,13 @@ execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:blue_d
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:campfire"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.campfire.1"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:cauldron"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.cauldron.1"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:charcoal"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.charcoal.1"}'}
+execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:crossbow"} run scoreboard players set #max shulker_preview 465
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:cyan_dye"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.cyan_dye.1"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:gray_dye"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.gray_dye.1"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:iron_axe"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.iron_axe.1"}'}
+execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:iron_axe"} run scoreboard players set #max shulker_preview 250
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:iron_hoe"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.iron_hoe.1"}'}
+execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:iron_hoe"} run scoreboard players set #max shulker_preview 250
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:lily_pad"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.lily_pad.1","color":"#71c35c"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:lime_dye"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.lime_dye.1"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:minecart"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.minecart.1"}'}
@@ -24,3 +27,5 @@ execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:repeat
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:seagrass"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.seagrass.1"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:snowball"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.snowball.1"}'}
 execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:spyglass"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.spyglass.1"}'}
+execute store result score #durability shulker_preview run data get storage tryashtar.shulker_preview:data item.tag.Damage
+execute if data storage tryashtar.shulker_preview:data item.tag.Damage run function tryashtar.shulker_preview:row_1/overlay/durability
