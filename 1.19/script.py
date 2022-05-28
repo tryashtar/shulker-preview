@@ -33,8 +33,6 @@ def main():
    shutil.make_archive("Shulker Preview Resource Pack (1.19)", 'zip', "resourcepack")
 
    # to restore:
-   # - numbers
-   #   - create from actual textures and draw including shadows
    # - durability
    #   - still using texture grid for this, need a way to create chars/translations
    # - potion/arrow/map overlays
@@ -129,6 +127,73 @@ class FontAbstraction:
          {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": 23-64-8, "height": 8, "chars": split_3},
          {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": -32768, "height": -8, "chars": split_neg3}
       ]
+      empty_row = "".join(['\u0000'] * 16)
+      for i in range(0, self.rows):
+         nums = "".join([self.next_char() for x in range(0, 10)])
+         shadows = "".join([self.next_char() for x in range(0, 10)])
+         negs = "".join([self.next_char() for x in range(0, 10)])
+         font.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -(18 * i) - 4, "height": 8, "chars": [
+            empty_row,
+            empty_row,
+            empty_row,
+            nums + "\u0000\u0000\u0000\u0000\u0000\u0000",
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row
+         ]})
+         font.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -(18 * i) - 5, "height": 8, "chars": [
+            empty_row,
+            empty_row,
+            empty_row,
+            shadows + "\u0000\u0000\u0000\u0000\u0000\u0000",
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row
+         ]})
+         font.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -32768, "height": -8, "chars": [
+            empty_row,
+            empty_row,
+            empty_row,
+            negs + "\u0000\u0000\u0000\u0000\u0000\u0000",
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row,
+            empty_row
+         ]})
+         for j in range(1, 10):
+            lang[f"tryashtar.shulker_preview.number.{j}.{i}"] = self.get_space(-6) + negs[j] + nums[j] + self.get_space(0)
+            lang[f"tryashtar.shulker_preview.number_shadow.{j}.{i}"] = self.get_space(-5) + negs[j] + shadows[j]
+         for j in range(10, 65):
+            d1 = j // 10
+            d2 = j % 10
+            lang[f"tryashtar.shulker_preview.number.{j}.{i}"] = self.get_space(-9) + negs[d1] + negs[d2] + nums[d1] + nums[d2] + self.get_space(0)
+            lang[f"tryashtar.shulker_preview.number_shadow.{j}.{i}"] = self.get_space(-8) + negs[d1] + negs[d2] + shadows[d1] + shadows[d2]
       # start by moving back 6 pixels to fully cover the vanilla tooltip
       # then each row and negative in turn
       # then forward a few pixels, aligning the first item to draw with the first slot
@@ -317,7 +382,7 @@ def generate_functions(mc, font, path):
       count = Function(f'{fn_start}/overlay/count', ['# create an entity that draws item counts'])
       for i in range(2, 65):
          n = str(i) if i < 64 else f"{i}.."
-         count.lines.append(f'execute if score #count shulker_preview matches {n} run summon marker ~ ~0.9 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.number.{i}.{row}"}}\'}}')
+         count.lines.append(f'execute if score #count shulker_preview matches {n} run summon marker ~ ~0.9 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.number_shadow.{i}.{row}","color":"#3e3e3e"}},{{"translate":"tryashtar.shulker_preview.number.{i}.{row}","color":"white"}}]\'}}')
       count.save(path)
       process_item.lines.extend([
          '',
