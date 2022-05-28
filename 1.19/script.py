@@ -24,22 +24,16 @@ def main():
    jar_path = find_version_jar()
    mc = Minecraft(jar_path, item_registry, read_json('data.json'))
    font = FontAbstraction(3)
-   font.add_texture('tryashtar.shulker_preview:missingno')
+   font.add_texture('tryashtar.shulker_preview:missingno', 5, 16)
    print('Generating functions...')
-   mc.generate_functions(
-      font,
-      'datapack'
-   )
+   generate_functions(mc, font, 'datapack')
+   font.save('resourcepack')
    shutil.make_archive("Shulker Preview Data Pack (1.19)", 'zip', "datapack")
    shutil.make_archive("Shulker Preview Resource Pack (1.19)", 'zip', "resourcepack")
 
    # to restore:
-   # - write font and lang json files
-   #   - negative spaces should be created when needed
    # - numbers
    #   - create from actual textures and draw including shadows
-   # - tooltip preview
-   #   - possibly create from existing textures
    # - durability
    #   - still using texture grid for this, need a way to create chars/translations
    #   - how to reference function if it's created in generate_functions but used in generate_item_lines?
@@ -56,8 +50,10 @@ class FontAbstraction:
    def __init__(self, rows):
       self.current_char = '\u0900'
       self.characters = {}
+      self.negatives = {}
       self.translations = {}
-      self.textures = []
+      self.textures = {}
+      self.spaces = {}
       self.rows = rows
       for i in range(0, self.rows):
          self.characters[i] = {}
@@ -65,28 +61,68 @@ class FontAbstraction:
 
    # there are some ranges that Minecraft can't render, I have not fully determined what they are yet
    def next_char(self):
-      i=ord(self.current_char)
-      i+=1
-      if i>=0x600 and i<=0x6ff:
-         i=0x700
-      return chr(i)
+      i = ord(self.current_char)
+      i += 1
+      if i >= 0x600 and i <= 0x6ff:
+         i = 0x700
+      self.current_char = chr(i)
+      return self.current_char
 
    # give a texture, it will generate characters and translations for each row
-   def add_texture(self, texture):
+   def add_texture(self, texture, ascent, height):
       if texture in self.textures:
          return
-      self.textures.append(texture)
+      self.textures[texture] = {'ascent': ascent, 'height': height}
       for i in range(0, self.rows):
          self.characters[i][texture] = self.next_char()
          translation = remove_namespace(texture).replace('/', '.')
          self.translations[i][texture] = f'tryashtar.shulker_preview.{translation}.{i}'
-
-   def get_character(self, texture, row):
-      return self.characters[row][texture]
+      self.negatives[texture] = self.next_char()
 
    def get_translation(self, texture, row):
       return self.translations[row][texture]
 
+   def get_space(self, size):
+      if size not in self.spaces:
+         self.spaces[size] = self.next_char()
+      return self.spaces[size]
+
+   def save(self, path):
+      lang = {"%1$s%418634357$s":"%2$s"}
+      # create the tooltip characters
+      # the tooltip is made by slicing the vanilla texture into rows and assembling them
+      tooltip_neg = self.next_char()
+      tooltip_1 = self.next_char()
+      tooltip_2 = self.next_char()
+      tooltip_3 = self.next_char()
+      split_2 = ['\u0000'] * 32
+      split_3 = ['\u0000'] * 32
+      split_2[8] = tooltip_2
+      split_3[20] = tooltip_3
+      font = [
+         # negative version, used to bring the cursor back to draw the next row
+         {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": -32768, "height": -260, "chars": [tooltip_neg]},
+         # top: the first two rows of slots and most of the third
+         # we can only slice by whole numbers, and a slice any larger would be too big
+         {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": 23, "height": 64, "chars": [tooltip_1, "\u0000", "\u0000", "\u0000"]},
+         # middle: the rest of the third row
+         {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": 23-64, "height": 8, "chars": split_2},
+         # bottom: the very bottom of the tooltip texture
+         {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": 23-64-8, "height": 8, "chars": split_3}
+      ]
+      # start by moving back 6 pixels to fully cover the vanilla tooltip
+      # then each row and negative in turn
+      # then forward 7 pixels, aligning the first item to draw with the first slot
+      lang["tryashtar.shulker_preview.shulker_tooltip"] = self.get_space(-6) + tooltip_1 + tooltip_neg + tooltip_2 + tooltip_neg + tooltip_3 + tooltip_neg + self.get_space(7)
+      for s, ch in self.spaces.items():
+         font.append({"type": "bitmap", "file": "tryashtar.shulker_preview:pixel.png", "ascent": -32768, "height": s, "chars": [ch]})
+      for t, data in self.textures.items():
+         for i in range(0, self.rows):
+            lang[self.translations[i][t]] = self.characters[i][t] + self.negatives[t]
+            font.append({"type": "bitmap", "file": t + '.png', "ascent": data['ascent'] - (18 * i), "height": data['height'], "chars": [self.characters[i][t]]})
+         font.append({"type": "bitmap", "file": t + '.png', "ascent": -32768, "height": -data['height'], "chars": [self.negatives[t]]})
+      write_json(lang, os.path.join(path, 'assets/tryashtar.shulker_preview/lang/en_us.json'))
+      write_json({"providers":font}, os.path.join(path, 'assets/tryashtar.shulker_preview/font/preview.json'))
 
 # use 'resource' to get the namespaced resource location
 # use 'file_path' to get the path relative to the pack root
@@ -117,79 +153,6 @@ class Minecraft:
          if length not in self.length_dict:
             self.length_dict[length] = []
          self.length_dict[length].append(item)
-
-   def generate_functions(self, font, path):
-      for row in range(0, font.rows):
-         process_item = Function(f'tryashtar.shulker_preview:row_{row}/process_item', [
-            '# get the length of this item and call the appropriate function',
-            'execute store result score #length shulker_preview run data get storage tryashtar.shulker_preview:data item.id'
-         ])
-         lengths = list(self.length_dict.keys())
-         lengths.sort()
-         for length in range(0,100):
-            subfunction = Function(f'tryashtar.shulker_preview:row_{row}/process_item/length_{length}', [])
-            if length in lengths:
-               process_item.lines.append(f'execute if score #length shulker_preview matches {length} run function {subfunction.resource}')
-               subfunction.lines.extend(self.generate_item_lines(self.length_dict[length], row, font))
-               subfunction.save(path)
-            else:
-               fpath = os.path.join(path, subfunction.file_path)
-               if os.path.exists(fpath):
-                  os.remove(fpath)
-         count = Function(f'tryashtar.shulker_preview:row_{row}/overlay/count', ['# create an entity that draws item counts'])
-         for i in range(2, 65):
-            n = str(i) if i < 64 else f"{i}.."
-            count.lines.append(f'execute if score #count shulker_preview matches {n} run summon marker ~ ~0.9 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.number.{i}.{row}"}}\'}}')
-         count.save(path)
-         process_item.lines.extend([
-            '',
-            '# placeholder if item was not found',
-            f'execute unless entity @e[type=marker,tag=tryashtar.shulker_preview,distance=..0.0001] run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"{font.get_translation("tryashtar.shulker_preview:missingno", row)}"}}\'}}',
-            '',
-            '# summon in count entity',
-            'execute store result score #count shulker_preview run data get storage tryashtar.shulker_preview:data item.Count',
-            f'execute if score #count shulker_preview matches 2.. run function {count.resource}'
-         ])
-         process_item.save(path)
-
-   def generate_item_lines(self, items, row, font):
-      lines = []
-      for item in items:
-         if_item=f'execute if data storage tryashtar.shulker_preview:data item{{id:"{add_namespace(item)}"}}'
-         model = self.get_model(f'minecraft:item/{item}')
-         if len(model.overrides) > 0:
-            if item in []:
-               pass
-            else:
-               print(f'Unhandled item {item}')
-            # must be hardcoded
-            pass
-         elif any(x.resource == 'minecraft:item/generated' for x in model.parents):
-            # this is a normal layered item, generate as such
-            name = []
-            for i in range(0, 99):
-               texture = model.textures.get(f'layer{i}')
-               if texture is None:
-                  break
-               font.add_texture(texture)
-               component = {"translate":font.get_translation(texture, row)}
-               hardcoded = self.hardcoded_tints.get(f'layer{i}', {}).get(item)
-               if hardcoded is not None:
-                  component["color"] = hardcoded
-               # prevent color from bleeding across components
-               elif i > 0 and name[0] != "" and name[0].get("color") is not None:
-                  name.insert(0, "")
-               name.append(component)
-            if len(name) == 1:
-               name = json.dumps(name[0], separators=(',', ':'))
-            else:
-               name = json.dumps(name, separators=(',', ':'))
-            lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{name}\'}}')
-         elif any(x.resource == 'minecraft:block/block' for x in model.parents):
-            print(item)
-         else:
-            print(f'Unhandled item {item}')
-      return lines
 
    # get model from resource location
    def get_model(self, resource):
@@ -308,5 +271,80 @@ def write_lines(lines, path):
 
 def color_hex(int_color):
    return "#"+format(int_color,'06x')
+
+def generate_functions(mc, font, path):
+   for row in range(0, font.rows):
+      process_item = Function(f'tryashtar.shulker_preview:row_{row}/process_item', [
+         '# get the length of this item and call the appropriate function',
+         'execute store result score #length shulker_preview run data get storage tryashtar.shulker_preview:data item.id'
+      ])
+      lengths = list(mc.length_dict.keys())
+      lengths.sort()
+      for length in range(0,100):
+         subfunction = Function(f'tryashtar.shulker_preview:row_{row}/process_item/length_{length}', [])
+         if length in lengths:
+            process_item.lines.append(f'execute if score #length shulker_preview matches {length} run function {subfunction.resource}')
+            subfunction.lines.extend(generate_item_lines(mc, mc.length_dict[length], row, font))
+            subfunction.save(path)
+         else:
+            fpath = os.path.join(path, subfunction.file_path)
+            if os.path.exists(fpath):
+               os.remove(fpath)
+      count = Function(f'tryashtar.shulker_preview:row_{row}/overlay/count', ['# create an entity that draws item counts'])
+      for i in range(2, 65):
+         n = str(i) if i < 64 else f"{i}.."
+         count.lines.append(f'execute if score #count shulker_preview matches {n} run summon marker ~ ~0.9 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.number.{i}.{row}"}}\'}}')
+      count.save(path)
+      process_item.lines.extend([
+         '',
+         '# placeholder if item was not found',
+         f'execute unless entity @e[type=marker,tag=tryashtar.shulker_preview,distance=..0.0001] run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"{font.get_translation("tryashtar.shulker_preview:missingno", row)}"}}\'}}',
+         '',
+         '# summon in count entity',
+         'execute store result score #count shulker_preview run data get storage tryashtar.shulker_preview:data item.Count',
+         f'execute if score #count shulker_preview matches 2.. run function {count.resource}'
+      ])
+      process_item.save(path)
+
+def generate_item_lines(mc, items, row, font):
+   lines = []
+   for item in items:
+      if_item=f'execute if data storage tryashtar.shulker_preview:data item{{id:"{add_namespace(item)}"}}'
+      model = mc.get_model(f'minecraft:item/{item}')
+      if len(model.overrides) > 0:
+         if item in []:
+            pass
+         else:
+            print(f'Unhandled item {item}')
+         # must be hardcoded
+         pass
+      elif any(x.resource == 'minecraft:item/generated' for x in model.parents):
+         # this is a normal layered item, generate as such
+         name = []
+         for i in range(0, 99):
+            texture = model.textures.get(f'layer{i}')
+            if texture is None:
+               break
+            font.add_texture(texture, 5, 16)
+            component = {"translate":font.get_translation(texture, row)}
+            hardcoded = mc.hardcoded_tints.get(f'layer{i}', {}).get(item)
+            if hardcoded is not None:
+               component["color"] = hardcoded
+            # prevent color from bleeding across components
+            elif i > 0 and name[0] != "" and name[0].get("color") is not None:
+               name.insert(0, "")
+            name.append(component)
+         if len(name) == 0:
+            print(f'{item} has no layers?')
+         elif len(name) == 1:
+            name = json.dumps(name[0], separators=(',', ':'))
+         else:
+            name = json.dumps(name, separators=(',', ':'))
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{name}\'}}')
+      elif any(x.resource == 'minecraft:block/block' for x in model.parents):
+         print(item)
+      else:
+         print(f'Unhandled item {item}')
+   return lines
 
 main()
