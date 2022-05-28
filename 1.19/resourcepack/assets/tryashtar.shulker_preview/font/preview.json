@@ -3,17 +3,20 @@
       {
          "type": "bitmap",
          "file": "minecraft:gui/container/shulker_box.png",
-         "ascent": -32768,
-         "height": -260,
+         "ascent": 23,
+         "height": 64,
          "chars": [
-            "\u0fc5"
+            "\u0fc5",
+            "\u0000",
+            "\u0000",
+            "\u0000"
          ]
       },
       {
          "type": "bitmap",
          "file": "minecraft:gui/container/shulker_box.png",
-         "ascent": 23,
-         "height": 64,
+         "ascent": -32768,
+         "height": -64,
          "chars": [
             "\u0fc6",
             "\u0000",
@@ -36,6 +39,46 @@
             "\u0000",
             "\u0000",
             "\u0fc7",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:gui/container/shulker_box.png",
+         "ascent": -32768,
+         "height": -8,
+         "chars": [
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0fc8",
             "\u0000",
             "\u0000",
             "\u0000",
@@ -87,7 +130,7 @@
             "\u0000",
             "\u0000",
             "\u0000",
-            "\u0fc8",
+            "\u0fc9",
             "\u0000",
             "\u0000",
             "\u0000",
@@ -103,20 +146,42 @@
       },
       {
          "type": "bitmap",
-         "file": "tryashtar.shulker_preview:pixel.png",
+         "file": "minecraft:gui/container/shulker_box.png",
          "ascent": -32768,
-         "height": -6,
+         "height": -8,
          "chars": [
-            "\u0fc9"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "tryashtar.shulker_preview:pixel.png",
-         "ascent": -32768,
-         "height": 7,
-         "chars": [
-            "\u0fca"
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0fca",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000",
+            "\u0000"
          ]
       },
       {
@@ -15705,6 +15770,69 @@
          "height": -16,
          "chars": [
             "\u0fc4"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "tryashtar.shulker_preview:space.png",
+         "ascent": -32768,
+         "height": -6,
+         "chars": [
+            "\u0fcb"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "tryashtar.shulker_preview:space.png",
+         "ascent": -32768,
+         "height": -5,
+         "chars": [
+            "\u0fcc"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "tryashtar.shulker_preview:space.png",
+         "ascent": -32768,
+         "height": 4,
+         "chars": [
+            "\u0fcd"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "tryashtar.shulker_preview:space.png",
+         "ascent": -32768,
+         "height": 17,
+         "chars": [
+            "\u0fce"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "tryashtar.shulker_preview:space.png",
+         "ascent": -32768,
+         "height": -20,
+         "chars": [
+            "\u0fcf"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "tryashtar.shulker_preview:space.png",
+         "ascent": -32768,
+         "height": -164,
+         "chars": [
+            "\u0fd0"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "tryashtar.shulker_preview:space.png",
+         "ascent": -32768,
+         "height": 14,
+         "chars": [
+            "\u0fd1"
          ]
       }
    ]
