@@ -187,28 +187,29 @@ class FontAbstraction:
             empty_row
          ]})
          for j in range(1, 10):
-            lang[f"tryashtar.shulker_preview.number.{j}.{i}"] = self.get_space(-6) + negs[j] + nums[j] + self.get_space(0)
-            lang[f"tryashtar.shulker_preview.number_shadow.{j}.{i}"] = self.get_space(-5) + negs[j] + shadows[j]
+            lang[f"tryashtar.shulker_preview.number.{j}.{i}"] = self.get_space(-4) + negs[j] + nums[j] + self.get_space(1)
+            lang[f"tryashtar.shulker_preview.number_shadow.{j}.{i}"] = self.get_space(-3) + negs[j] + shadows[j]
          for j in range(10, 65):
             d1 = j // 10
             d2 = j % 10
-            lang[f"tryashtar.shulker_preview.number.{j}.{i}"] = self.get_space(-9) + negs[d1] + negs[d2] + nums[d1] + nums[d2] + self.get_space(0)
-            lang[f"tryashtar.shulker_preview.number_shadow.{j}.{i}"] = self.get_space(-8) + negs[d1] + negs[d2] + shadows[d1] + shadows[d2]
-      # start by moving back 6 pixels to fully cover the vanilla tooltip
+            lang[f"tryashtar.shulker_preview.number.{j}.{i}"] = self.get_space(-7) + negs[d1] + negs[d2] + nums[d1] + nums[d2] + self.get_space(1)
+            lang[f"tryashtar.shulker_preview.number_shadow.{j}.{i}"] = self.get_space(-6) + negs[d1] + negs[d2] + shadows[d1] + shadows[d2]
+      # start by moving back a few pixels to fully cover the vanilla tooltip
       # then each row and negative in turn
       # then forward a few pixels, aligning the first item to draw with the first slot
-      lang["tryashtar.shulker_preview.shulker_tooltip"] = self.get_space(-6) + tooltip_1 + tooltip_neg1 + self.get_space(-5) + tooltip_2 + tooltip_neg2 + self.get_space(-5) + tooltip_3 + tooltip_neg3 + self.get_space(4)
+      lang["tryashtar.shulker_preview.shulker_tooltip"] = self.get_space(-4) + tooltip_1 + tooltip_neg1 + self.get_space(-3) + tooltip_2 + tooltip_neg2 + self.get_space(-3) + tooltip_3 + tooltip_neg3 + self.get_space(5)
       lang["tryashtar.shulker_preview.shulker_tooltip_header"] = lang["tryashtar.shulker_preview.shulker_tooltip"]
-      lang["tryashtar.shulker_preview.empty_slot"] = self.get_space(17)
-      lang["tryashtar.shulker_preview.overlay"] = self.get_space(-20)
-      lang["tryashtar.shulker_preview.row_end"] = self.get_space(-164)
+      lang["tryashtar.shulker_preview.empty_slot"] = self.get_space(18)
+      lang["tryashtar.shulker_preview.overlay"] = self.get_space(-18)
+      lang["tryashtar.shulker_preview.row_end"] = self.get_space(-162)
       for t, data in self.textures.items():
          for i in range(0, self.rows):
-            lang[self.translations[i][t]] = self.characters[i][t] + self.negatives[t] + self.get_space(14)
+            lang[self.translations[i][t]] = self.characters[i][t] + self.negatives[t] + self.get_space(15)
             font.append({"type": "bitmap", "file": t + '.png', "ascent": data['ascent'] - (18 * i), "height": data['height'], "chars": [self.characters[i][t]]})
          font.append({"type": "bitmap", "file": t + '.png', "ascent": -32768, "height": -data['height'], "chars": [self.negatives[t]]})
       for s, ch in self.spaces.items():
-         font.append({"type": "bitmap", "file": "tryashtar.shulker_preview:space.png", "ascent": -32768, "height": s, "chars": [ch]})
+         h = s - 2 if s < 0 else s - 1
+         font.append({"type": "bitmap", "file": "tryashtar.shulker_preview:space.png", "ascent": -32768, "height": h, "chars": [ch]})
       write_json(lang, os.path.join(path, 'assets/tryashtar.shulker_preview/lang/en_us.json'))
       write_json({"providers":font}, os.path.join(path, 'assets/tryashtar.shulker_preview/font/preview.json'))
 
