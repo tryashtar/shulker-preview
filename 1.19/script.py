@@ -426,17 +426,21 @@ def generate_item_lines(mc, items, row, font):
    lines = []
    durability = False
    for item in items:
+      handled = False
       if_item=f'execute if data storage tryashtar.shulker_preview:data item{{id:"{add_namespace(item)}"}}'
       model = mc.get_model(f'minecraft:item/{item}')
       if len(model.overrides) > 0:
-         if item in []:
+         # these items have overrides but should always look the same
+         if item in ['bow', 'clock', 'compass', 'goat_horn', 'fishing_rod', 'recovery_compass']:
             pass
          else:
+            # must be hardcoded
             print(f'Unhandled item {item}')
-         # must be hardcoded
+            handled = True
          pass
-      elif any(x.resource == 'minecraft:item/generated' for x in model.parents):
+      if not handled and any(x.resource == 'minecraft:item/generated' for x in model.parents):
          # this is a normal layered item, generate as such
+         handled = True
          name = []
          for i in range(0, 99):
             texture = model.textures.get(f'layer{i}')
@@ -460,9 +464,11 @@ def generate_item_lines(mc, items, row, font):
          else:
             name = json.dumps(name, separators=(',', ':'))
          lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{name}\'}}')
-      elif any(x.resource == 'minecraft:block/block' for x in model.parents):
-         print(item)
-      else:
+      if not handled and any(x.resource == 'minecraft:block/cube_all' for x in model.parents):
+         texture = model.textures.get('all')
+         font.add_texture(texture, 5, 16)
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"{font.get_translation(texture, row)}","color":"#0007fc"}}\'}}')
+      if not handled:
          print(f'Unhandled item {item}')
       dura = mc.data['durability'].get(item)
       if dura is not None:

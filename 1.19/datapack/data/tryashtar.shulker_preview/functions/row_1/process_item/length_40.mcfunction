@@ -1,0 +1,1 @@
+execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:infested_chiseled_stone_bricks"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.block.chiseled_stone_bricks.1","color":"#0007fc"}'}
