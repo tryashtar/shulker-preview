@@ -50,7 +50,7 @@ bool handleIntersection(vec2 intersection, vec2 flip, vec4 uvMinMax, vec3 normal
         intersection = flip - (flip * 2. - 1.) * intersection;
         vec2 UV = mix(uvMinMax.xy, uvMinMax.zw, intersection);
         fragColor = texture(Sampler0, UV);
-        fragColor.rgb *= dot(normal, vec3(166., 255., 102.)/255.);
+        fragColor.rgb *= dot(normal, vec3(102., 255., 166.)/255.);
         if (fragColor.a < 0.1)
             discard;
         return true;
@@ -167,10 +167,10 @@ bool custom_block(int modelID, vec3 rd, vec3 ro) {
 void main() {
     if (modelID != -1) {
         // Get ray properties (ray direction, ray origin)
-        vec3 rd = normalize(vec3(-1));
+        vec3 rd = normalize(vec3(-1, -0.804, -1));
         vec3 localX = normalize(cross(vec3(0.0, 1.0, 0.0), rd));
         vec3 localY = normalize(cross(rd, localX));
-        vec3 ro = (-localX * screenPos.x + localY * screenPos.y) / 1.2;
+        vec3 ro = (-localX * screenPos.x + localY * screenPos.y);
 
         // Calculate ray plane intersections
         if (modelID / 8 < tints.length()) {

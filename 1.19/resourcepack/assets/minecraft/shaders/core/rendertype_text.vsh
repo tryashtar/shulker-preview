@@ -31,8 +31,8 @@ vec2[] corners = vec2[](
     vec2( 1.0, 1.0)
 );
 
-const float size = 0;
-const vec2 offset = vec2(0);
+const float size = 4;
+const vec2 offset = vec2(-2, -1);
 
 void main() {
 
