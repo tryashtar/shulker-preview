@@ -42,14 +42,8 @@ def main():
    #   - just like the other one, generate "normal" command but insert a place to colorize layer0
    # - all the overrides like light blocks
    # - generate test command
-   # - slice ender chest tooltip
    # - sort output files again
-   # - shader version of resource pack:
-   #   - copy item name to one of the empty lore rows, with color that shader uses to push it upward
-   #   - second %s makes it visible only in this pack
-   # - non-shader version of resource pack:
-   #   - still use custom textures for tooltips
-   #   - old grid method for blocks
+   # - leather chestplates are bugged because vanilla overlay is invisible
 
 # drawing an image as text with zero width requires multiple characters in the font
 class FontAbstraction:
@@ -95,36 +89,42 @@ class FontAbstraction:
 
    def save(self, path):
       lang = {"%1$s%418634357$s":"%2$s"}
+      font = []
       # create the tooltip characters
       # the tooltip is made by slicing the vanilla texture into rows and assembling them
-      tooltip_1 = self.next_char()
-      tooltip_neg1 = self.next_char()
-      tooltip_2 = self.next_char()
-      tooltip_neg2 = self.next_char()
-      tooltip_3 = self.next_char()
-      tooltip_neg3 = self.next_char()
-      split_2 = ['\u0000'] * 32
-      split_neg2 = ['\u0000'] * 32
-      split_3 = ['\u0000'] * 32
-      split_neg3 = ['\u0000'] * 32
-      split_2[8] = tooltip_2
-      split_neg2[8] = tooltip_neg2
-      split_3[20] = tooltip_3
-      split_neg3[20] = tooltip_neg3
-      font = [
-         # top: the first two rows of slots and most of the third
-         # we can only slice by whole numbers, and a slice any larger would be too big
-         {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": 23, "height": 64, "chars": [tooltip_1, "\u0000", "\u0000", "\u0000"]},
-         # negative version, used to bring the cursor back to draw the next row
-         # in theory we could reuse this for each row, but it breaks if the slices are different widths
-         {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": -32768, "height": -64, "chars": [tooltip_neg1, "\u0000", "\u0000", "\u0000"]},
-         # middle: the rest of the third row
-         {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": 23-64, "height": 8, "chars": split_2},
-         {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": -32768, "height": -8, "chars": split_neg2},
-         # bottom: the very bottom of the tooltip texture
-         {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": 23-64-8, "height": 8, "chars": split_3},
-         {"type": "bitmap", "file": "minecraft:gui/container/shulker_box.png", "ascent": -32768, "height": -8, "chars": split_neg3}
-      ]
+      for tex, tip, bottom in [('shulker_box', 'shulker', 20), ('generic_54', 'ender', 27)]:
+         tooltip_1 = self.next_char()
+         tooltip_neg1 = self.next_char()
+         tooltip_2 = self.next_char()
+         tooltip_neg2 = self.next_char()
+         tooltip_3 = self.next_char()
+         tooltip_neg3 = self.next_char()
+         split_2 = ['\u0000'] * 32
+         split_neg2 = ['\u0000'] * 32
+         split_3 = ['\u0000'] * 32
+         split_neg3 = ['\u0000'] * 32
+         split_2[8] = tooltip_2
+         split_neg2[8] = tooltip_neg2
+         split_3[bottom] = tooltip_3
+         split_neg3[bottom] = tooltip_neg3
+         font.extend([
+            # top: the first two rows of slots and most of the third
+            # we can only slice by whole numbers, and a slice any larger would be too big
+            {"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": 23, "height": 64, "chars": [tooltip_1, "\u0000", "\u0000", "\u0000"]},
+            # negative version, used to bring the cursor back to draw the next row
+            # in theory we could reuse this for each row, but it breaks if the slices are different widths
+            {"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": -32768, "height": -64, "chars": [tooltip_neg1, "\u0000", "\u0000", "\u0000"]},
+            # middle: the rest of the third row
+            {"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": 23-64, "height": 8, "chars": split_2},
+            {"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": -32768, "height": -8, "chars": split_neg2},
+            # bottom: the very bottom of the tooltip texture
+            {"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": 23-64-7, "height": 8, "chars": split_3},
+            {"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": -32768, "height": -8, "chars": split_neg3}
+         ])
+         # start by moving back a few pixels to fully cover the vanilla tooltip
+         # then each row and negative in turn
+         # then forward a few pixels, aligning the first item to draw with the first slot
+         lang[f"tryashtar.shulker_preview.{tip}_tooltip"] = self.get_space(-4) + tooltip_1 + tooltip_neg1 + self.get_space(-3) + tooltip_2 + tooltip_neg2 + self.get_space(-3) + tooltip_3 + tooltip_neg3 + self.get_space(5)
       # take stack numbers from ascii.png
       empty_row = "".join(['\u0000'] * 16)
       for i in range(0, self.rows):
@@ -204,11 +204,6 @@ class FontAbstraction:
          for j in range(1, 15):
             lang[f"tryashtar.shulker_preview.durability.{j}.{i}"] = self.get_space(-16) + dura_chars[j - 1] + self.get_space(2)
 
-      # start by moving back a few pixels to fully cover the vanilla tooltip
-      # then each row and negative in turn
-      # then forward a few pixels, aligning the first item to draw with the first slot
-      lang["tryashtar.shulker_preview.shulker_tooltip"] = self.get_space(-4) + tooltip_1 + tooltip_neg1 + self.get_space(-3) + tooltip_2 + tooltip_neg2 + self.get_space(-3) + tooltip_3 + tooltip_neg3 + self.get_space(5)
-      lang["tryashtar.shulker_preview.shulker_tooltip_header"] = lang["tryashtar.shulker_preview.shulker_tooltip"]
       lang["tryashtar.shulker_preview.empty_slot"] = self.get_space(18)
       lang["tryashtar.shulker_preview.overlay"] = self.get_space(-18)
       lang["tryashtar.shulker_preview.row_end"] = self.get_space(-162)
@@ -217,6 +212,7 @@ class FontAbstraction:
             lang[self.translations[i][t]] = self.characters[i][t] + self.negatives[t] + self.get_space(15)
             font.append({"type": "bitmap", "file": t + '.png', "ascent": data['ascent'] - (18 * i), "height": data['height'], "chars": [self.characters[i][t]]})
          font.append({"type": "bitmap", "file": t + '.png', "ascent": -32768, "height": -data['height'], "chars": [self.negatives[t]]})
+      # I'd prefer to use a space provider, but stuff draws in the wrong order without this method
       for s, ch in self.spaces.items():
          h = s - 2 if s < 0 else s - 1
          font.append({"type": "bitmap", "file": "tryashtar.shulker_preview:space.png", "ascent": -32768, "height": h, "chars": [ch]})

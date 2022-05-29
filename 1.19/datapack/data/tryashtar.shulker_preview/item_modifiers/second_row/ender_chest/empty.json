@@ -1,0 +1,18 @@
+{
+   "function": "minecraft:set_lore",
+   "entity": "this",
+   "replace": false,
+   "lore": [
+      {
+         "translate": "%1$s%418634357$s",
+         "with": [
+            "",
+            {
+               "translate": "container.enderchest",
+               "color": "#3f3f3d",
+               "italic": false
+            }
+         ]
+      }
+   ]
+}

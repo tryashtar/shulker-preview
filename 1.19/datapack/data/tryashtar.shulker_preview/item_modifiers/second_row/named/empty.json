@@ -1,0 +1,20 @@
+{
+   "function": "minecraft:set_lore",
+   "entity": "this",
+   "replace": false,
+   "lore": [
+      {
+         "translate": "%1$s%418634357$s",
+         "with": [
+            "",
+            {
+               "storage": "tryashtar.shulker_preview:data",
+               "nbt": "items[0].tag.display.Name",
+               "interpret": true,
+               "color": "#3f3f3d",
+               "italic": false
+            }
+         ]
+      }
+   ]
+}

@@ -1,7 +1,7 @@
 # summon tooltip background
-execute if score #header_type shulker_preview matches 0 if data storage tryashtar.shulker_preview:data items[0].tag.display.Name run summon marker ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip"}'}
-execute if score #header_type shulker_preview matches 0 unless data storage tryashtar.shulker_preview:data items[0].tag.display.Name run summon marker ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip_header"}'}
-execute if score #header_type shulker_preview matches 1 run summon marker ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.ender_tooltip"}'}
+data modify storage tryashtar.shulker_preview:data id set from storage tryashtar.shulker_preview:data items[0].id
+execute unless data storage tryashtar.shulker_preview:data {id:"minecraft:ender_chest"} run summon marker ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip"}'}
+execute if data storage tryashtar.shulker_preview:data {id:"minecraft:ender_chest"} run summon marker ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.ender_tooltip"}'}
 
 # copy and analyze contents one by one
 function tryashtar.shulker_preview:shulker_box/analyze
