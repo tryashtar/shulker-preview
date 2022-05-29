@@ -91,13 +91,13 @@ bool cuboid(int faces, vec3 rd, vec3 ro, vec3 from, vec3 to, vec4 uvX, int rotX,
     }
     // x
     float tX = (to.x - ro.x)/rd.x;
-    if ((faces >> 1 & 1) == 1 && handleIntersection(((rd * tX + ro).zy - from.zy)/size.zy, vec2(1.0, 1.0), mapUV(uvX, uvRange), vec3(1.0, 0.0, 0.0), rotX)) {
+    if ((faces >> 2 & 1) == 1 && handleIntersection(((rd * tX + ro).zy - from.zy)/size.zy, vec2(1.0, 1.0), mapUV(uvX, uvRange), vec3(1.0, 0.0, 0.0), rotX)) {
         t = tX;
         return true;
     }
     // z
     float tZ = (to.z - ro.z)/rd.z;
-    if ((faces >> 2 & 1) == 1 && handleIntersection(((rd * tZ + ro).xy - from.xy)/size.xy, vec2(0.0, 1.0), mapUV(uvZ, uvRange), vec3(0.0, 0.0, 1.0), rotZ)) {
+    if ((faces >> 1 & 1) == 1 && handleIntersection(((rd * tZ + ro).xy - from.xy)/size.xy, vec2(0.0, 1.0), mapUV(uvZ, uvRange), vec3(0.0, 0.0, 1.0), rotZ)) {
         t = tZ;
         return true;
     }
@@ -167,7 +167,7 @@ bool custom_block(int modelID, vec3 rd, vec3 ro) {
 void main() {
     if (modelID != -1) {
         // Get ray properties (ray direction, ray origin)
-        vec3 rd = normalize(vec3(-1, -0.804, -1));
+        vec3 rd = normalize(vec3(-0.6123, -0.5, -0.6123));
         vec3 localX = normalize(cross(vec3(0.0, 1.0, 0.0), rd));
         vec3 localY = normalize(cross(rd, localX));
         vec3 ro = (-localX * screenPos.x + localY * screenPos.y);

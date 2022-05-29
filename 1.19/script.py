@@ -43,7 +43,8 @@ def main():
    # - all the overrides like light blocks
    # - generate test command
    # - sort output files again
-   # - leather chestplates are bugged because vanilla overlay is invisible
+   # - bug: leather chestplate bad offset because vanilla overlay is invisible
+   # - bug: animated blocks like sea lanterns are wrong
 
 # drawing an image as text with zero width requires multiple characters in the font
 class FontAbstraction:
@@ -324,11 +325,9 @@ def add_namespace(rc):
    return 'minecraft:'+rc
 
 def remove_namespace(rc):
-   try:
-      colon = rc.index(':')
-      return rc[colon+1:]
-   except ValueError:
-      return rc
+   if ':' in rc:
+      return rc[rc.index(':')+1:]
+   return rc
 
 def resource_to_path(rc, folder, extension):
    try:
@@ -464,10 +463,26 @@ def generate_item_lines(mc, items, row, font):
          else:
             name = json.dumps(name, separators=(',', ':'))
          lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{name}\'}}')
-      if not handled and any(x.resource == 'minecraft:block/cube_all' for x in model.parents):
-         texture = model.textures.get('all')
-         font.add_texture(texture, 5, 16)
-         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"{font.get_translation(texture, row)}","color":"#0007fc"}}\'}}')
+      if not handled and any(x.resource == 'minecraft:block/cube' for x in model.parents):
+         up = model.textures.get('up')
+         east = model.textures.get('east')
+         north = model.textures.get('north')
+         if up is not None and east is not None and north is not None:
+            font.add_texture(up, 5, 16)
+            font.add_texture(east, 5, 16)
+            font.add_texture(north, 5, 16)
+            if up == east and up == north:
+               # same texture on all sides
+               lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"{font.get_translation(up, row)}","color":"#0007fc"}}\'}}')
+            elif east == north:
+               lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"{font.get_translation(east, row)}","color":"#0006fc"}},{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"{font.get_translation(up, row)}","color":"#0001fc"}}]\'}}')
+            elif up == north:
+               lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"{font.get_translation(up, row)}","color":"#0005fc"}},{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"{font.get_translation(east, row)}","color":"#0002fc"}}]\'}}')
+            elif up == east:
+               lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"{font.get_translation(up, row)}","color":"#0003fc"}},{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"{font.get_translation(north, row)}","color":"#0004fc"}}]\'}}')
+            else:
+               lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"{font.get_translation(up, row)}","color":"#0001fc"}},{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"{font.get_translation(east, row)}","color":"#0002fc"}},{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"{font.get_translation(north, row)}","color":"#0004fc"}}]\'}}')
+            handled = True
       if not handled:
          print(f'Unhandled item {item}')
       dura = mc.data['durability'].get(item)
