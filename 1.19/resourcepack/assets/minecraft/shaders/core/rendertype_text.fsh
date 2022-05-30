@@ -121,18 +121,21 @@ bool block_cube(int modelID, int faces, vec3 rd, vec3 ro) {
 
 
 // custom blocks start
+// from minecraft:block/cube
 bool block_1(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
     bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     return cube0;
 }
+// from minecraft:block/snow_height2
 bool block_2(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
     bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec4(0.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 14.0, 16.0, 16.0), 0, uvRange, t);
     return cube0;
 }
+// from minecraft:block/template_anvil
 bool block_3(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -142,6 +145,7 @@ bool block_3(int faces, vec3 rd, vec3 ro) {
     bool cube3 = cuboid(faces, rd, ro, vec3(3.0, 10.0, 0.0), vec3(13.0, 16.0, 16.0), vec4(16.0, 0.0, 10.0, 16.0), 0, vec4(3.0, 0.0, 13.0, 16.0), 0, vec4(3.0, 0.0, 13.0, 6.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3;
 }
+// from minecraft:block/template_azalea
 bool block_4(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -154,6 +158,7 @@ bool block_4(int faces, vec3 rd, vec3 ro) {
     bool cube6 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.1), vec3(8.0, 15.9, 15.9), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6;
 }
+// from minecraft:block/beacon
 bool block_5(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -162,6 +167,7 @@ bool block_5(int faces, vec3 rd, vec3 ro) {
     bool cube2 = cuboid(faces, rd, ro, vec3(3.0, 3.0, 3.0), vec3(13.0, 14.0, 13.0), vec4(3.0, 2.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 2.0, 13.0, 13.0), 0, uvRange, t);
     return cube0 || cube1 || cube2;
 }
+// from minecraft:block/cactus
 bool block_6(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -170,6 +176,7 @@ bool block_6(int faces, vec3 rd, vec3 ro) {
     bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 0.0), vec3(15.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     return cube0 || cube1 || cube2;
 }
+// from minecraft:block/end_rod
 bool block_7(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -177,6 +184,7 @@ bool block_7(int faces, vec3 rd, vec3 ro) {
     bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 1.0, 7.0), vec3(9.0, 16.0, 9.0), vec4(0.0, 0.0, 2.0, 15.0), 0, vec4(2.0, 0.0, 4.0, 2.0), 0, vec4(0.0, 0.0, 2.0, 15.0), 0, uvRange, t);
     return cube0 || cube1;
 }
+// from minecraft:block/lectern
 bool block_8(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -185,24 +193,28 @@ bool block_8(int faces, vec3 rd, vec3 ro) {
     bool cube2 = cuboid(faces, rd, ro, vec3(0.0125, 12.0, 3.0), vec3(15.9875, 16.0, 16.0), vec4(0.0, 4.0, 13.0, 8.0), 0, vec4(0.0, 1.0, 16.0, 14.0), 0, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, t);
     return cube0 || cube1 || cube2;
 }
+// from minecraft:block/template_farmland
 bool block_9(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
     bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(0.0, 1.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 16.0), 0, uvRange, t);
     return cube0;
 }
+// from minecraft:block/slab
 bool block_10(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
     bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, t);
     return cube0;
 }
+// from minecraft:block/observer
 bool block_11(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
     bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     return cube0;
 }
+// from minecraft:block/composter
 bool block_12(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -213,6 +225,7 @@ bool block_12(int faces, vec3 rd, vec3 ro) {
     bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4;
 }
+// from minecraft:block/fence_inventory
 bool block_13(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -226,6 +239,7 @@ bool block_13(int faces, vec3 rd, vec3 ro) {
     bool cube7 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 16.0), vec3(9.0, 9.0, 18.0), vec4(14.0, 7.0, 16.0, 10.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
+// from minecraft:block/wall_inventory
 bool block_14(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -233,6 +247,7 @@ bool block_14(int faces, vec3 rd, vec3 ro) {
     bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 0.0), vec3(11.0, 13.0, 16.0), vec4(0.0, 3.0, 16.0, 16.0), 0, vec4(5.0, 0.0, 11.0, 16.0), 0, vec4(5.0, 3.0, 11.0, 16.0), 0, uvRange, t);
     return cube0 || cube1;
 }
+// from minecraft:block/dragon_egg
 bool block_15(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -246,6 +261,7 @@ bool block_15(int faces, vec3 rd, vec3 ro) {
     bool cube7 = cuboid(faces, rd, ro, vec3(3.0, 0.0, 3.0), vec3(13.0, 1.0, 13.0), vec4(3.0, 0.0, 13.0, 1.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 0.0, 13.0, 1.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
+// from minecraft:block/grindstone
 bool block_16(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -256,12 +272,14 @@ bool block_16(int faces, vec3 rd, vec3 ro) {
     bool cube4 = cuboid(faces, rd, ro, vec3(4.0, 4.0, 2.0), vec3(12.0, 16.0, 14.0), vec4(0.0, 0.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4;
 }
+// from minecraft:block/button_inventory
 bool block_17(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
     bool cube0 = cuboid(faces, rd, ro, vec3(5.0, 6.0, 6.0), vec3(11.0, 10.0, 10.0), vec4(6.0, 12.0, 10.0, 16.0), 0, vec4(5.0, 10.0, 11.0, 6.0), 0, vec4(5.0, 12.0, 11.0, 16.0), 0, uvRange, t);
     return cube0;
 }
+// from minecraft:block/stairs
 bool block_18(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -269,12 +287,14 @@ bool block_18(int faces, vec3 rd, vec3 ro) {
     bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 8.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 8.0), 0, vec4(8.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, uvRange, t);
     return cube0 || cube1;
 }
+// from minecraft:block/carpet
 bool block_19(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
     bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 1.0, 16.0), vec4(0.0, 15.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 15.0, 16.0, 16.0), 0, uvRange, t);
     return cube0;
 }
+// from minecraft:block/grass_block
 bool block_20(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -282,6 +302,7 @@ bool block_20(int faces, vec3 rd, vec3 ro) {
     bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     return cube0 || cube1;
 }
+// from minecraft:block/honey_block
 bool block_21(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -289,6 +310,7 @@ bool block_21(int faces, vec3 rd, vec3 ro) {
     bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 1.0, 1.0), vec3(15.0, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, uvRange, t);
     return cube0 || cube1;
 }
+// from minecraft:block/scaffolding_stable
 bool block_22(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -303,6 +325,7 @@ bool block_22(int faces, vec3 rd, vec3 ro) {
     bool cube8 = cuboid(faces, rd, ro, vec3(0.0, 14.0, 2.0), vec3(2.0, 16.0, 14.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7 || cube8;
 }
+// from minecraft:block/slime_block
 bool block_23(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -310,6 +333,7 @@ bool block_23(int faces, vec3 rd, vec3 ro) {
     bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     return cube0 || cube1;
 }
+// from minecraft:block/stonecutter
 bool block_24(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -317,6 +341,7 @@ bool block_24(int faces, vec3 rd, vec3 ro) {
     bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 8.0), vec3(15.0, 16.0, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(1.0, 9.0, 15.0, 16.0), 0, uvRange, t);
     return cube0 || cube1;
 }
+// from minecraft:block/big_dripleaf
 bool block_25(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -328,6 +353,7 @@ bool block_25(int faces, vec3 rd, vec3 ro) {
     bool cube5 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5;
 }
+// from minecraft:block/chorus_plant
 bool block_26(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -340,12 +366,14 @@ bool block_26(int faces, vec3 rd, vec3 ro) {
     bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 2.0), vec3(14.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6;
 }
+// from minecraft:block/template_trapdoor_bottom
 bool block_27(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
     bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 3.0, 16.0), vec4(0.0, 16.0, 16.0, 13.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 13.0), 0, uvRange, t);
     return cube0;
 }
+// from minecraft:block/sculk_sensor
 bool block_28(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -356,6 +384,7 @@ bool block_28(int faces, vec3 rd, vec3 ro) {
     bool cube4 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 13.0), vec3(7.0, 16.0, 13.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4;
 }
+// from minecraft:block/template_chorus_flower
 bool block_29(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -367,6 +396,7 @@ bool block_29(int faces, vec3 rd, vec3 ro) {
     bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 16.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5;
 }
+// from minecraft:block/lightning_rod
 bool block_30(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -374,6 +404,7 @@ bool block_30(int faces, vec3 rd, vec3 ro) {
     bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 0.0, 7.0), vec3(9.0, 12.0, 9.0), vec4(0.0, 4.0, 2.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 4.0, 2.0, 16.0), 0, uvRange, t);
     return cube0 || cube1;
 }
+// from minecraft:block/spore_blossom
 bool block_31(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -384,12 +415,14 @@ bool block_31(int faces, vec3 rd, vec3 ro) {
     bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 15.7, -8.0), vec3(16.0, 15.7, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4;
 }
+// from minecraft:block/template_orientable_trapdoor_bottom
 bool block_32(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
     bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 3.0, 16.0), vec4(0.0, 0.0, 16.0, 3.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 3.0), 0, uvRange, t);
     return cube0;
 }
+// from minecraft:block/mangrove_roots
 bool block_33(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -403,6 +436,7 @@ bool block_33(int faces, vec3 rd, vec3 ro) {
     bool cube7 = cuboid(faces, rd, ro, vec3(15.998, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
+// from minecraft:block/template_fence_gate
 bool block_34(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -416,6 +450,7 @@ bool block_34(int faces, vec3 rd, vec3 ro) {
     bool cube7 = cuboid(faces, rd, ro, vec3(10.0, 12.0, 7.0), vec3(14.0, 15.0, 9.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(10.0, 1.0, 14.0, 4.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
+// from minecraft:block/template_sculk_shrieker
 bool block_35(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -428,6 +463,7 @@ bool block_35(int faces, vec3 rd, vec3 ro) {
     bool cube6 = cuboid(faces, rd, ro, vec3(1.02, 8.0, 1.0), vec3(1.02, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6;
 }
+// from minecraft:block/small_dripleaf_top
 bool block_36(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
@@ -441,30 +477,35 @@ bool block_36(int faces, vec3 rd, vec3 ro) {
     bool cube7 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, t);
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
+// from minecraft:block/dried_kelp_block
 bool block_37(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
     bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     return cube0;
 }
+// from minecraft:block/enchanting_table
 bool block_38(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
     bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 12.0, 16.0), vec4(0.0, 4.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 4.0, 16.0, 16.0), 0, uvRange, t);
     return cube0;
 }
+// from minecraft:block/end_portal_frame
 bool block_39(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
     bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 13.0, 16.0), vec4(0.0, 3.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 3.0, 16.0, 16.0), 0, uvRange, t);
     return cube0;
 }
+// from minecraft:block/template_daylight_detector
 bool block_40(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
     bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 6.0, 16.0), vec4(0.0, 10.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 10.0, 16.0, 16.0), 0, uvRange, t);
     return cube0;
 }
+// from minecraft:block/pressure_plate_up
 bool block_41(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;

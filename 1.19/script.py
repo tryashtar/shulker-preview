@@ -442,6 +442,7 @@ def generate_shader(mc, path):
             if len(model.cubes) == 0:
                continue
             output.extend([
+               f'// from {model.resource}',
                f'bool block_{i}(int faces, vec3 rd, vec3 ro) {{',
                '    vec4 uvRange = getUV();',
                '    float t;'
@@ -578,7 +579,7 @@ def generate_item_lines(mc, items, row, font):
                name = json.dumps(name, separators=(',', ':'))
             lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{name}\'}}')
             handled = True
-      if not handled:
+      if not handled and len(model.cubes) > 0:
          for unique_id, unique_model in enumerate(mc.unique_models):
             if model.same_as(unique_model):
                break
