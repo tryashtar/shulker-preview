@@ -553,7 +553,6 @@ def generate_item_lines(mc, items, row, font):
          pass
       if not handled and any(x.resource == 'minecraft:item/generated' for x in model.parents):
          # this is a normal layered item, generate as such
-         handled = True
          name = []
          for i in range(0, 99):
             texture = model.textures.get(f'layer{i}')
@@ -572,11 +571,13 @@ def generate_item_lines(mc, items, row, font):
             name.append(component)
          if len(name) == 0:
             print(f'{item} has no layers?')
-         elif len(name) == 1:
-            name = json.dumps(name[0], separators=(',', ':'))
          else:
-            name = json.dumps(name, separators=(',', ':'))
-         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{name}\'}}')
+            if len(name) == 1:
+               name = json.dumps(name[0], separators=(',', ':'))
+            else:
+               name = json.dumps(name, separators=(',', ':'))
+            lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{name}\'}}')
+            handled = True
       if not handled:
          for unique_id, unique_model in enumerate(mc.unique_models):
             if model.same_as(unique_model):
@@ -599,12 +600,13 @@ def generate_item_lines(mc, items, row, font):
                name.append({"translate":font.get_translation(t, row),"color":render_color(unique_id, bitfield)})
          if len(name) == 0:
             print(f'{item} has no textures on cube {i}?')
-         elif len(name) == 1:
-            name = json.dumps(name[0], separators=(',', ':'))
          else:
-            name = json.dumps(name, separators=(',', ':'))
-         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{name}\'}}')
-         handled = True
+            if len(name) == 1:
+               name = json.dumps(name[0], separators=(',', ':'))
+            else:
+               name = json.dumps(name, separators=(',', ':'))
+            lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{name}\'}}')
+            handled = True
       if not handled:
          print(f'Unhandled item {item}')
       dura = mc.data['durability'].get(item)
