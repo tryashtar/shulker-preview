@@ -23,7 +23,7 @@ def main():
    item_registry = json.loads(data)["item"]
    item_registry.remove('air')
    jar_path = find_version_jar()
-   mc = Minecraft(jar_path, item_registry, read_json('data.json'))
+   mc = Minecraft(jar_path, item_registry, read_json('data.json'), 'fake_models')
    font = FontAbstraction(3)
    font.add_texture('tryashtar.shulker_preview:missingno', 5, 16)
    print('Generating functions...')
@@ -51,6 +51,7 @@ def main():
    # - if a block has multiple cubes whose textures in a direction differ from each other (e.g. beacons), we can't draw all cubes at once
    # - blocks like glazed terracotta have rotation on certain cubes
    # - need to bring back tint for blocks (from hardcoded_tints), a couple bits in color should suffice
+   # - some blocks like lectern have rotated elements
 
 # drawing an image as text with zero width requires multiple characters in the font
 class FontAbstraction:
@@ -239,7 +240,7 @@ class Function:
 
 
 class Minecraft:
-   def __init__(self, path, item_registry, data):
+   def __init__(self, path, item_registry, data, fake_models):
       self.zip = zipfile.ZipFile(path, 'r')
       self.models = {}
       self.unique_models = []
@@ -247,6 +248,7 @@ class Minecraft:
       self.items = item_registry
       self.length_dict = {}
       self.data = data
+      self.fake_models = fake_models
       for k,v in self.data['spawn_eggs'].items():
          self.data['hardcoded_tints']['layer0'][k] = color_hex(v[0])
          self.data['hardcoded_tints']['layer1'][k] = color_hex(v[1])
@@ -257,19 +259,27 @@ class Minecraft:
             self.length_dict[length] = []
          self.length_dict[length].append(item)
 
-   # get model from resource location
-   def get_model(self, resource):
+   # get model from item name
+   def get_model(self, item):
+      fake = os.path.join(self.fake_models, item + '.json')
+      if os.path.exists(fake):
+         with open(fake) as f:
+            return self.load_model_data(f'fake:{item}', json.load(f))
+      resource = f'minecraft:item/{item}'
       if resource in self.models:
          return self.models[resource]
       return self.load_model('assets/' + resource_to_path(resource, 'models', 'json'))
 
-   # get model from relative file path
+   # get model from relative file path in the jar
    # many models reference a common parent like 'block/block', this class caches and reuses those
    def load_model(self, path):
       resource = path_to_resource(path)
       if resource in self.models:
          return self.models[resource]
       data = json.loads(self.zip.read(path).decode('utf-8'))
+      return self.load_model_data(resource, data)
+
+   def load_model_data(self, resource, data):
       model = Model(resource, data)
       self.models[resource] = model
       current_model = model
@@ -346,14 +356,17 @@ class Cube:
       self.max = data['to']
       self.up_uv = data['faces'].get('up',{}).get('uv', [0, 0, 16, 16])
       self.up_tx = data['faces'].get('up',{}).get('texture')
+      self.up_rot = data['faces'].get('up',{}).get('rotation', 0)
       if self.up_tx is not None:
          self.up_tx = self.up_tx[1:]
       self.north_uv = data['faces'].get('north',{}).get('uv', [0, 0, 16, 16])
       self.north_tx = data['faces'].get('north',{}).get('texture')
+      self.north_rot = data['faces'].get('north',{}).get('rotation', 0)
       if self.north_tx is not None:
          self.north_tx = self.north_tx[1:]
       self.east_uv = data['faces'].get('east',{}).get('uv', [0, 0, 16, 16])
       self.east_tx = data['faces'].get('east',{}).get('texture')
+      self.east_rot = data['faces'].get('east',{}).get('rotation', 0)
       if self.east_tx is not None:
          self.east_tx = self.east_tx[1:]
 
@@ -367,6 +380,12 @@ class Cube:
       if self.north_uv != other.north_uv:
          return False
       if self.east_uv != other.east_uv:
+         return False
+      if self.up_rot != other.up_rot:
+         return False
+      if self.north_rot != other.north_rot:
+         return False
+      if self.east_rot != other.east_rot:
          return False
       return True
 
@@ -449,14 +468,21 @@ def generate_shader(mc, path):
                f'// from {model.resource}',
                f'bool block_{i}(int faces, vec3 rd, vec3 ro) {{',
                '    vec4 uvRange = getUV();',
-               '    float t;'
+               '    float minT = 99999999;',
+               '    float t;',
+               '    vec4 postCol;'
             ])
             for j, cube in enumerate(model.cubes):
                output.extend([
-                  f'    bool cube{j} = cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec4({comma_sep_float(cube.east_uv)}), 0, vec4({comma_sep_float(cube.up_uv)}), 0, vec4({comma_sep_float(cube.north_uv)}), 0, uvRange, t);'
+                  f'    bool cube{j} = cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec4({comma_sep_float(cube.north_uv)}), {cube.north_rot}, vec4({comma_sep_float(cube.up_uv)}), {cube.up_rot}, vec4({comma_sep_float(cube.east_uv)}), {cube.east_rot}, uvRange, t);',
+                  f'    if (cube{j} && t < minT) {{',
+                  '        minT = t;',
+                  '        postCol = fragColor;',
+                  '    }'
                ])
             all_cubes = " || ".join(map(lambda x: f'cube{x}', range(len(model.cubes))))
             output.extend([
+               '    fragColor = postCol;',
                f'    return {all_cubes};',
                '}'
             ])
@@ -544,7 +570,7 @@ def generate_item_lines(mc, items, row, font):
    for item in items:
       handled = False
       if_item=f'execute if data storage tryashtar.shulker_preview:data item{{id:"{add_namespace(item)}"}}'
-      model = mc.get_model(f'minecraft:item/{item}')
+      model = mc.get_model(item)
       if len(model.overrides) > 0:
          used_predicates = get_used_predicates(model.data['overrides'])
          irrelevant = ['pulling', 'pull', 'time', 'angle', 'tooting', 'cast']

@@ -20,6 +20,21 @@
       "layer1": {
          "firework_star": "#8a8a8a",
          "filled_map": "#46402d"
+      },
+      "overlay": {
+         "grass_block": "#7bbd6b"
+      },
+      "top": {
+         "grass_block": "#7bbd6b"
+      },
+      "all": {
+         "spruce_leaves": "#619961",
+         "birch_leaves": "#80a755",
+         "oak_leaves": "#48b518",
+         "jungle_leaves": "#48b518",
+         "acacia_leaves": "#48b518",
+         "dark_oak_leaves": "#48b518",
+         "mangrove_leaves": "#48b518"
       }
    },
    "spawn_eggs": {
