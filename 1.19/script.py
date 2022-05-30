@@ -28,6 +28,8 @@ def main():
    font.add_texture('tryashtar.shulker_preview:missingno', 5, 16)
    print('Generating functions...')
    generate_functions(mc, font, 'datapack')
+   print('Generating shader...')
+   generate_shader(mc, 'resourcepack')
    font.save('resourcepack')
    shutil.make_archive("Shulker Preview Data Pack (1.19)", 'zip', "datapack")
    shutil.make_archive("Shulker Preview Resource Pack (1.19)", 'zip', "resourcepack")
@@ -236,6 +238,7 @@ class Minecraft:
    def __init__(self, path, item_registry, data):
       self.zip = zipfile.ZipFile(path, 'r')
       self.models = {}
+      self.unique_models = []
       self.textures = []
       self.items = item_registry
       self.length_dict = {}
@@ -280,6 +283,9 @@ class Minecraft:
             for k,v in textures.items():
                if k not in model.textures:
                   model.textures[k] = v
+         elements = current_model.data.get('elements')
+         if elements is not None and len(model.cubes) == 0:
+            model.cubes.extend(map(lambda x: Cube(x), elements))
          # find the parent and copy to hierarchy
          parent_path = current_model.data.get('parent')
          if parent_path is not None:
@@ -306,6 +312,8 @@ class Minecraft:
       for v in model.textures.values():
          if v not in self.textures:
             self.textures.append(v)
+      if all(not model.same_as(x) for x in self.unique_models):
+         self.unique_models.append(model)
       return model
 
 # can't initialize itself effectively because we don't want to load the same parent models every time
@@ -318,6 +326,45 @@ class Model:
       self.parents = []
       self.overrides = []
       self.textures = {}
+      self.cubes = []
+
+   def same_as(self, other):
+      if len(self.cubes) != len(other.cubes):
+         return False
+      for i in range(len(self.cubes)):
+         if not self.cubes[i].same_as(other.cubes[i]):
+            return False
+      return True
+
+class Cube:
+   def __init__(self, data):
+      self.min = data['from']
+      self.max = data['to']
+      self.up_uv = data['faces'].get('up',{}).get('uv', [0, 0, 16, 16])
+      self.up_tx = data['faces'].get('up',{}).get('texture')
+      if self.up_tx is not None:
+         self.up_tx = self.up_tx[1:]
+      self.north_uv = data['faces'].get('north',{}).get('uv', [0, 0, 16, 16])
+      self.north_tx = data['faces'].get('north',{}).get('texture')
+      if self.north_tx is not None:
+         self.north_tx = self.north_tx[1:]
+      self.east_uv = data['faces'].get('east',{}).get('uv', [0, 0, 16, 16])
+      self.east_tx = data['faces'].get('east',{}).get('texture')
+      if self.east_tx is not None:
+         self.east_tx = self.east_tx[1:]
+
+   def same_as(self, other):
+      if self.min != other.min:
+         return False
+      if self.max != other.max:
+         return False
+      if self.up_uv != other.up_uv:
+         return False
+      if self.north_uv != other.north_uv:
+         return False
+      if self.east_uv != other.east_uv:
+         return False
+      return True
 
 def add_namespace(rc):
    if ':' in rc:
@@ -365,6 +412,68 @@ def write_lines(lines, path):
 
 def color_hex(int_color):
    return "#"+format(int_color,'06x')
+
+def get_used_predicates(overrides):
+   p = []
+   for o in overrides:
+      for k in o['predicate']:
+         if k not in p:
+            p.append(k)
+   return p
+
+def comma_sep_float(lst):
+   return ", ".join(map(lambda x: str(float(x)), lst))
+
+def generate_shader(mc, path):
+   filepath = os.path.join(path, 'assets/minecraft/shaders/core/rendertype_text.fsh')
+   with open(filepath) as file:
+      lines = file.readlines()
+      lines = [line.rstrip() for line in lines]
+   output = []
+   reading = True
+   for line in lines:
+      if line == '// custom blocks end':
+         reading = True
+      if reading:
+         output.append(line)
+      if line == '// custom blocks start':
+         reading = False
+         for i, model in enumerate(mc.unique_models):
+            if len(model.cubes) == 0:
+               continue
+            output.extend([
+               f'bool block_{i}(int faces, vec3 rd, vec3 ro) {{',
+               '    vec4 uvRange = getUV();',
+               '    float t;'
+            ])
+            for j, cube in enumerate(model.cubes):
+               output.extend([
+                  f'    bool cube{j} = cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec4({comma_sep_float(cube.east_uv)}), 0, vec4({comma_sep_float(cube.up_uv)}), 0, vec4({comma_sep_float(cube.north_uv)}), 0, uvRange, t);'
+               ])
+            all_cubes = " || ".join(map(lambda x: f'cube{x}', range(len(model.cubes))))
+            output.extend([
+               f'    return {all_cubes};',
+               '}'
+            ])
+         output.extend([
+            'bool custom_block(int modelID, int faces, vec3 rd, vec3 ro) {',
+            '    switch (modelID) {'
+         ])
+         for i, model in enumerate(mc.unique_models):
+            if len(model.cubes) == 0:
+               continue
+            output.extend([
+               f'        case {i}:',
+               f'            return block_{i}(faces, rd, ro);',
+            ])
+         output.extend([
+            '    }',
+            '    return false;',
+            '}',
+         ])
+   with open(filepath, 'w') as file:
+      output = [x + '\n' for x in output]
+      file.writelines(output)
 
 def generate_functions(mc, font, path):
    for row in range(0, font.rows):
@@ -421,6 +530,9 @@ def generate_functions(mc, font, path):
          durability.lines.append(text)
       durability.save(path)
 
+def render_color(model_id, faces_bitfield):
+   return f'#{format(model_id, "02x")}{format(faces_bitfield, "02x")}fc'
+
 def generate_item_lines(mc, items, row, font):
    lines = []
    durability = False
@@ -429,8 +541,10 @@ def generate_item_lines(mc, items, row, font):
       if_item=f'execute if data storage tryashtar.shulker_preview:data item{{id:"{add_namespace(item)}"}}'
       model = mc.get_model(f'minecraft:item/{item}')
       if len(model.overrides) > 0:
+         used_predicates = get_used_predicates(model.data['overrides'])
+         irrelevant = ['pulling', 'pull', 'time', 'angle', 'tooting', 'cast']
          # these items have overrides but should always look the same
-         if item in ['bow', 'clock', 'compass', 'goat_horn', 'fishing_rod', 'recovery_compass']:
+         if all(x in irrelevant for x in used_predicates):
             pass
          else:
             # must be hardcoded
@@ -463,26 +577,34 @@ def generate_item_lines(mc, items, row, font):
          else:
             name = json.dumps(name, separators=(',', ':'))
          lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{name}\'}}')
-      if not handled and any(x.resource == 'minecraft:block/cube' for x in model.parents):
-         up = model.textures.get('up')
-         east = model.textures.get('east')
-         north = model.textures.get('north')
-         if up is not None and east is not None and north is not None:
-            font.add_texture(up, 5, 16)
-            font.add_texture(east, 5, 16)
-            font.add_texture(north, 5, 16)
-            if up == east and up == north:
-               # same texture on all sides
-               lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"{font.get_translation(up, row)}","color":"#0007fc"}}\'}}')
-            elif east == north:
-               lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"{font.get_translation(east, row)}","color":"#0006fc"}},{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"{font.get_translation(up, row)}","color":"#0001fc"}}]\'}}')
-            elif up == north:
-               lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"{font.get_translation(up, row)}","color":"#0005fc"}},{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"{font.get_translation(east, row)}","color":"#0002fc"}}]\'}}')
-            elif up == east:
-               lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"{font.get_translation(up, row)}","color":"#0003fc"}},{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"{font.get_translation(north, row)}","color":"#0004fc"}}]\'}}')
-            else:
-               lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"{font.get_translation(up, row)}","color":"#0001fc"}},{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"{font.get_translation(east, row)}","color":"#0002fc"}},{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"{font.get_translation(north, row)}","color":"#0004fc"}}]\'}}')
-            handled = True
+      if not handled:
+         for unique_id, unique_model in enumerate(mc.unique_models):
+            if model.same_as(unique_model):
+               break
+         name = []
+         for i, cube in enumerate(model.cubes):
+            up = model.textures.get(unique_model.cubes[i].up_tx)
+            east = model.textures.get(unique_model.cubes[i].east_tx)
+            north = model.textures.get(unique_model.cubes[i].north_tx)
+            unique_textures = list(set([up, east, north]))
+            if None in unique_textures:
+               unique_textures.remove(None)
+            unique_textures.sort()
+            for t in unique_textures:
+               bitfield = (1 if up == t else 0) + (2 if east == t else 0) + (4 if north == t else 0)
+               color = render_color(unique_id, bitfield)
+               font.add_texture(t, 5, 16)
+               if len(name) > 0:
+                  name.append({"translate":"tryashtar.shulker_preview.overlay"})
+               name.append({"translate":font.get_translation(t, row),"color":render_color(unique_id, bitfield)})
+         if len(name) == 0:
+            print(f'{item} has no textures on cube {i}?')
+         elif len(name) == 1:
+            name = json.dumps(name[0], separators=(',', ':'))
+         else:
+            name = json.dumps(name, separators=(',', ':'))
+         lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{name}\'}}')
+         handled = True
       if not handled:
          print(f'Unhandled item {item}')
       dura = mc.data['durability'].get(item)

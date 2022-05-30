@@ -19,6 +19,7 @@ out vec4 vertexColor;
 out vec2 texCoord0;
 
 flat out int modelID;
+flat out int faces;
 out vec2 screenPos;
 out vec3 cornerTex1;
 out vec3 cornerTex2;
@@ -40,8 +41,10 @@ void main() {
 
     // Get the selected model's ID into one number
     modelID = -1;
+    faces = -1;
     if (int(Color.b * 255.) == 0xfc) {
-        modelID = int((Color.r * 256. + Color.g) * 255.);
+        modelID = int(Color.r * 255.);
+        faces = int(Color.g * 255.);
         pos.xy += offset + size * (vec2(1.0, -1.0) * corners[gl_VertexID % 4]*.5 + .5);
     }
 

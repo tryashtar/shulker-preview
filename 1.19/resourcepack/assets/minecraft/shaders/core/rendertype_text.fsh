@@ -14,6 +14,7 @@ in vec4 vertexColor;
 in vec2 texCoord0;
 
 flat in int modelID;
+flat in int faces;
 in vec2 screenPos;
 in vec3 cornerTex1;
 in vec3 cornerTex2;
@@ -110,59 +111,454 @@ vec3[] tints = vec3[](
     vec3( 96., 151.,  96.)
 );
 
-bool block_cube(int modelID, vec3 rd, vec3 ro) {
+bool block_cube(int modelID, int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
-    bool hit = cuboid(modelID, rd, ro, vec3(0.0), vec3(16.0), vec4(0, 0, 16, 16), 0, vec4(0, 0, 16, 16), 0, vec4(0, 0, 16, 16), 0, uvRange, t);
+    bool hit = cuboid(faces, rd, ro, vec3(0.0), vec3(16.0), vec4(0, 0, 16, 16), 0, vec4(0, 0, 16, 16), 0, vec4(0, 0, 16, 16), 0, uvRange, t);
     fragColor.rgb *= tints[(modelID / 8)] / 255.;
     return hit;
 }
 
-bool block_slab(vec3 rd, vec3 ro) {
+
+// custom blocks start
+bool block_1(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float t;
-    return cuboid(7, rd, ro, vec3(0.0), vec3(16.0, 8.0, 16.0), vec4(0, 0, 16, 8), 0, vec4(0, 0, 16, 16), 0, vec4(0, 0, 16, 8), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0;
 }
-
-bool block_fence(vec3 rd, vec3 ro) {
+bool block_2(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
-    float postT;
-    bool hitPost = cuboid( // left post
-        7, rd, ro, 
-        vec3(6.0, 0.0, 0.0), vec3(10.0, 16.0, 4.0), // from, to
-        vec4(0, 0, 4, 16), 0, vec4(6, 0, 10, 4), 270, vec4(6, 0, 10, 16), 0, // east UV, up UV, north UV
-        uvRange, postT) || cuboid( // right post
-        7, rd, ro, 
-        vec3(6.0, 0.0, 12.0), vec3(10.0, 16.0, 16.0),
-        vec4(12, 0, 16, 16), 0, vec4(6, 12, 10, 16), 270, vec4(6, 0, 10, 16), 0,
-        uvRange, postT);
-    vec4 postCol = fragColor;
-    float barT;
-    bool hitBar = cuboid( // top bar
-        7, rd, ro,
-        vec3(7.0, 13.0, -2.0), vec3(9.0, 15.0, 18.0),
-        vec4(0, 1, 16, 3), 0, vec4(7, 0, 9, 16), 270, vec4(7, 1, 9, 3), 0,
-        uvRange, barT) || cuboid( // bottom bar
-        7, rd, ro,
-        vec3(7, 5, -2), vec3(9, 7, 18),
-        vec4(0, 9, 16, 11), 0, vec4(7, 0, 9, 16), 270, vec4(7, 9, 9, 11), 0,
-        uvRange, barT);
-    if (hitPost && hitBar) {
-        if (postT < barT)
-            fragColor = postCol;
-    }
-    return hitPost || hitBar;
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec4(0.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 14.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0;
 }
-
-bool custom_block(int modelID, vec3 rd, vec3 ro) {
+bool block_3(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 4.0, 14.0), vec4(4.0, 2.0, 0.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 12.0, 14.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(4.0, 4.0, 3.0), vec3(12.0, 5.0, 13.0), vec4(5.0, 3.0, 4.0, 13.0), 0, vec4(4.0, 3.0, 12.0, 13.0), 0, vec4(4.0, 11.0, 12.0, 12.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 5.0, 4.0), vec3(10.0, 10.0, 12.0), vec4(10.0, 4.0, 5.0, 12.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(6.0, 6.0, 10.0, 11.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(3.0, 10.0, 0.0), vec3(13.0, 16.0, 16.0), vec4(16.0, 0.0, 10.0, 16.0), 0, vec4(3.0, 0.0, 13.0, 16.0), 0, vec4(3.0, 0.0, 13.0, 6.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3;
+}
+bool block_4(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 16.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(16.0, 16.0, 0.01), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 11.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 15.99), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 11.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(0.01, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 11.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(15.99, 5.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 11.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(0.1, 0.0, 8.0), vec3(15.9, 15.9, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.1), vec3(8.0, 15.9, 15.9), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6;
+}
+bool block_5(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 0.1, 2.0), vec3(14.0, 3.0, 14.0), vec4(2.0, 13.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 13.0, 14.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(3.0, 3.0, 3.0), vec3(13.0, 14.0, 13.0), vec4(3.0, 2.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 2.0, 13.0, 13.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2;
+}
+bool block_6(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 1.0), vec3(16.0, 16.0, 15.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 0.0), vec3(15.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2;
+}
+bool block_7(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 6.0), vec3(10.0, 1.0, 10.0), vec4(2.0, 6.0, 6.0, 7.0), 0, vec4(2.0, 2.0, 6.0, 6.0), 0, vec4(2.0, 6.0, 6.0, 7.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 1.0, 7.0), vec3(9.0, 16.0, 9.0), vec4(0.0, 0.0, 2.0, 15.0), 0, vec4(2.0, 0.0, 4.0, 2.0), 0, vec4(0.0, 0.0, 2.0, 15.0), 0, uvRange, t);
+    return cube0 || cube1;
+}
+bool block_8(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec4(0.0, 6.0, 16.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 14.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(4.0, 2.0, 4.0), vec3(12.0, 15.0, 12.0), vec4(2.0, 16.0, 15.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 13.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0125, 12.0, 3.0), vec3(15.9875, 16.0, 16.0), vec4(0.0, 4.0, 13.0, 8.0), 0, vec4(0.0, 1.0, 16.0, 14.0), 0, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2;
+}
+bool block_9(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(0.0, 1.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0;
+}
+bool block_10(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0;
+}
+bool block_11(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0;
+}
+bool block_12(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4;
+}
+bool block_13(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 0.0), vec3(10.0, 16.0, 4.0), vec4(0.0, 0.0, 4.0, 16.0), 0, vec4(6.0, 0.0, 10.0, 4.0), 0, vec4(6.0, 0.0, 10.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 12.0), vec3(10.0, 16.0, 16.0), vec4(12.0, 0.0, 16.0, 16.0), 0, vec4(6.0, 12.0, 10.0, 16.0), 0, vec4(6.0, 0.0, 10.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 0.0), vec3(9.0, 15.0, 16.0), vec4(0.0, 1.0, 16.0, 4.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(7.0, 12.0, -2.0), vec3(9.0, 15.0, 0.0), vec4(0.0, 1.0, 2.0, 4.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 16.0), vec3(9.0, 15.0, 18.0), vec4(14.0, 1.0, 16.0, 4.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 0.0), vec3(9.0, 9.0, 16.0), vec4(0.0, 7.0, 16.0, 10.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(7.0, 6.0, -2.0), vec3(9.0, 9.0, 0.0), vec4(0.0, 7.0, 2.0, 10.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, t);
+    bool cube7 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 16.0), vec3(9.0, 9.0, 18.0), vec4(14.0, 7.0, 16.0, 10.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
+}
+bool block_14(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 16.0, 12.0), vec4(4.0, 0.0, 12.0, 16.0), 0, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(4.0, 0.0, 12.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 0.0), vec3(11.0, 13.0, 16.0), vec4(0.0, 3.0, 16.0, 16.0), 0, vec4(5.0, 0.0, 11.0, 16.0), 0, vec4(5.0, 3.0, 11.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1;
+}
+bool block_15(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 15.0, 6.0), vec3(10.0, 16.0, 10.0), vec4(6.0, 15.0, 10.0, 16.0), 0, vec4(6.0, 6.0, 10.0, 10.0), 0, vec4(6.0, 15.0, 10.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 14.0, 5.0), vec3(11.0, 15.0, 11.0), vec4(5.0, 14.0, 11.0, 15.0), 0, vec4(5.0, 5.0, 11.0, 11.0), 0, vec4(5.0, 14.0, 11.0, 15.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(5.0, 13.0, 5.0), vec3(11.0, 14.0, 11.0), vec4(4.0, 13.0, 12.0, 14.0), 0, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(4.0, 13.0, 12.0, 14.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(3.0, 11.0, 3.0), vec3(13.0, 13.0, 13.0), vec4(3.0, 11.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 11.0, 13.0, 13.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 8.0, 2.0), vec3(14.0, 11.0, 14.0), vec4(2.0, 8.0, 14.0, 11.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 8.0, 14.0, 11.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(1.0, 3.0, 1.0), vec3(15.0, 8.0, 15.0), vec4(1.0, 3.0, 15.0, 8.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 3.0, 15.0, 8.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 1.0, 2.0), vec3(14.0, 3.0, 14.0), vec4(2.0, 1.0, 14.0, 3.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 1.0, 14.0, 3.0), 0, uvRange, t);
+    bool cube7 = cuboid(faces, rd, ro, vec3(3.0, 0.0, 3.0), vec3(13.0, 1.0, 13.0), vec4(3.0, 0.0, 13.0, 1.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 0.0, 13.0, 1.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
+}
+bool block_16(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(12.0, 0.0, 6.0), vec3(14.0, 7.0, 10.0), vec4(10.0, 16.0, 6.0, 9.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 9.0, 4.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 6.0), vec3(4.0, 7.0, 10.0), vec4(10.0, 16.0, 6.0, 9.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(12.0, 9.0, 14.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(12.0, 7.0, 5.0), vec3(14.0, 13.0, 11.0), vec4(0.0, 0.0, 6.0, 6.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 7.0, 5.0), vec3(4.0, 13.0, 11.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(4.0, 4.0, 2.0), vec3(12.0, 16.0, 14.0), vec4(0.0, 0.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4;
+}
+bool block_17(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(5.0, 6.0, 6.0), vec3(11.0, 10.0, 10.0), vec4(6.0, 12.0, 10.0, 16.0), 0, vec4(5.0, 10.0, 11.0, 6.0), 0, vec4(5.0, 12.0, 11.0, 16.0), 0, uvRange, t);
+    return cube0;
+}
+bool block_18(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 8.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 8.0), 0, vec4(8.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, uvRange, t);
+    return cube0 || cube1;
+}
+bool block_19(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 1.0, 16.0), vec4(0.0, 15.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 15.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0;
+}
+bool block_20(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1;
+}
+bool block_21(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 1.0, 1.0), vec3(15.0, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, uvRange, t);
+    return cube0 || cube1;
+}
+bool block_22(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 15.99, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 2.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 14.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 14.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 2.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 2.0, 2.0), 0, uvRange, t);
+    bool cube7 = cuboid(faces, rd, ro, vec3(14.0, 14.0, 2.0), vec3(16.0, 16.0, 14.0), vec4(14.0, 0.0, 2.0, 2.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube8 = cuboid(faces, rd, ro, vec3(0.0, 14.0, 2.0), vec3(2.0, 16.0, 14.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7 || cube8;
+}
+bool block_23(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(3.0, 3.0, 3.0), vec3(13.0, 13.0, 13.0), vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1;
+}
+bool block_24(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 9.0, 16.0), vec4(0.0, 7.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 7.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 8.0), vec3(15.0, 16.0, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(1.0, 9.0, 15.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1;
+}
+bool block_25(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 15.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(16.0, 15.0, 0.002), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(0.002, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(15.998, 11.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5;
+}
+bool block_26(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 2.0), vec3(14.0, 16.0, 14.0), vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 2.0, 14.0), vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 2.0), vec3(14.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6;
+}
+bool block_27(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 3.0, 16.0), vec4(0.0, 16.0, 16.0, 13.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 13.0), 0, uvRange, t);
+    return cube0;
+}
+bool block_28(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 3.0), vec3(7.0, 16.0, 3.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 3.0), vec3(17.0, 16.0, 3.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 13.0), vec3(17.0, 16.0, 13.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 13.0), vec3(7.0, 16.0, 13.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4;
+}
+bool block_29(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 2.0), vec3(14.0, 16.0, 14.0), vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5;
+}
+bool block_30(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 12.0, 6.0), vec3(10.0, 16.0, 10.0), vec4(0.0, 0.0, 4.0, 4.0), 0, vec4(4.0, 4.0, 0.0, 0.0), 0, vec4(0.0, 0.0, 4.0, 4.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 0.0, 7.0), vec3(9.0, 12.0, 9.0), vec4(0.0, 4.0, 2.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 4.0, 2.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1;
+}
+bool block_31(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(1.0, 15.9, 1.0), vec3(15.0, 15.9, 15.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 15.7, 0.0), vec3(24.0, 15.7, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(-8.0, 15.7, 0.0), vec3(8.0, 15.7, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 15.7, 8.0), vec3(16.0, 15.7, 24.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(16.0, 16.0, 0.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 15.7, -8.0), vec3(16.0, 15.7, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4;
+}
+bool block_32(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 3.0, 16.0), vec4(0.0, 0.0, 16.0, 3.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 3.0), 0, uvRange, t);
+    return cube0;
+}
+bool block_33(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 8.0), vec3(16.0, 16.0, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.0), vec3(8.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 15.998, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 0.002, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 0.002), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 15.998), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 16.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(0.002, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube7 = cuboid(faces, rd, ro, vec3(15.998, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
+}
+bool block_34(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 7.0), vec3(2.0, 16.0, 9.0), vec4(7.0, 0.0, 9.0, 11.0), 0, vec4(0.0, 7.0, 2.0, 9.0), 0, vec4(0.0, 0.0, 2.0, 11.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(14.0, 5.0, 7.0), vec3(16.0, 16.0, 9.0), vec4(7.0, 0.0, 9.0, 11.0), 0, vec4(14.0, 7.0, 16.0, 9.0), 0, vec4(14.0, 0.0, 16.0, 11.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 6.0, 7.0), vec3(8.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 10.0), 0, vec4(6.0, 7.0, 8.0, 9.0), 0, vec4(6.0, 1.0, 8.0, 10.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(8.0, 6.0, 7.0), vec3(10.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 10.0), 0, vec4(8.0, 7.0, 10.0, 9.0), 0, vec4(8.0, 1.0, 10.0, 10.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 6.0, 7.0), vec3(6.0, 9.0, 9.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(2.0, 7.0, 6.0, 10.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 12.0, 7.0), vec3(6.0, 15.0, 9.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(2.0, 1.0, 6.0, 4.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(10.0, 6.0, 7.0), vec3(14.0, 9.0, 9.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(10.0, 7.0, 14.0, 10.0), 0, uvRange, t);
+    bool cube7 = cuboid(faces, rd, ro, vec3(10.0, 12.0, 7.0), vec3(14.0, 15.0, 9.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(10.0, 1.0, 14.0, 4.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
+}
+bool block_35(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.0), vec3(15.0, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 14.98, 1.0), vec3(15.0, 14.98, 15.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 14.98), vec3(15.0, 15.0, 14.98), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.02), vec3(15.0, 15.0, 1.02), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(14.98, 8.0, 1.0), vec3(14.98, 15.0, 15.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(1.02, 8.0, 1.0), vec3(1.02, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6;
+}
+bool block_36(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 2.99, 8.0), vec3(15.0, 2.99, 15.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 8.0, 0.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.0), vec3(8.0, 8.0, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 12.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(8.0, 2.0, 8.0), vec3(15.0, 3.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(1.0, 7.0, 1.01), vec3(8.0, 8.0, 8.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(1.0, 11.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, t);
+    bool cube7 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, t);
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
+}
+bool block_37(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0;
+}
+bool block_38(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 12.0, 16.0), vec4(0.0, 4.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 4.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0;
+}
+bool block_39(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 13.0, 16.0), vec4(0.0, 3.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 3.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0;
+}
+bool block_40(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 6.0, 16.0), vec4(0.0, 10.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 10.0, 16.0, 16.0), 0, uvRange, t);
+    return cube0;
+}
+bool block_41(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float t;
+    bool cube0 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 1.0), vec3(15.0, 1.0, 15.0), vec4(1.0, 15.0, 15.0, 16.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 15.0, 15.0, 16.0), 0, uvRange, t);
+    return cube0;
+}
+bool custom_block(int modelID, int faces, vec3 rd, vec3 ro) {
     switch (modelID) {
-        case 24: // Fence model
-            return block_fence(rd, ro);
+        case 1:
+            return block_1(faces, rd, ro);
+        case 2:
+            return block_2(faces, rd, ro);
+        case 3:
+            return block_3(faces, rd, ro);
+        case 4:
+            return block_4(faces, rd, ro);
+        case 5:
+            return block_5(faces, rd, ro);
+        case 6:
+            return block_6(faces, rd, ro);
+        case 7:
+            return block_7(faces, rd, ro);
+        case 8:
+            return block_8(faces, rd, ro);
+        case 9:
+            return block_9(faces, rd, ro);
+        case 10:
+            return block_10(faces, rd, ro);
+        case 11:
+            return block_11(faces, rd, ro);
+        case 12:
+            return block_12(faces, rd, ro);
+        case 13:
+            return block_13(faces, rd, ro);
+        case 14:
+            return block_14(faces, rd, ro);
+        case 15:
+            return block_15(faces, rd, ro);
+        case 16:
+            return block_16(faces, rd, ro);
+        case 17:
+            return block_17(faces, rd, ro);
+        case 18:
+            return block_18(faces, rd, ro);
+        case 19:
+            return block_19(faces, rd, ro);
+        case 20:
+            return block_20(faces, rd, ro);
+        case 21:
+            return block_21(faces, rd, ro);
+        case 22:
+            return block_22(faces, rd, ro);
+        case 23:
+            return block_23(faces, rd, ro);
+        case 24:
+            return block_24(faces, rd, ro);
         case 25:
-            return block_slab(rd, ro);
+            return block_25(faces, rd, ro);
+        case 26:
+            return block_26(faces, rd, ro);
+        case 27:
+            return block_27(faces, rd, ro);
+        case 28:
+            return block_28(faces, rd, ro);
+        case 29:
+            return block_29(faces, rd, ro);
+        case 30:
+            return block_30(faces, rd, ro);
+        case 31:
+            return block_31(faces, rd, ro);
+        case 32:
+            return block_32(faces, rd, ro);
+        case 33:
+            return block_33(faces, rd, ro);
+        case 34:
+            return block_34(faces, rd, ro);
+        case 35:
+            return block_35(faces, rd, ro);
+        case 36:
+            return block_36(faces, rd, ro);
+        case 37:
+            return block_37(faces, rd, ro);
+        case 38:
+            return block_38(faces, rd, ro);
+        case 39:
+            return block_39(faces, rd, ro);
+        case 40:
+            return block_40(faces, rd, ro);
+        case 41:
+            return block_41(faces, rd, ro);
     }
     return false;
 }
+// custom blocks end
 
 void main() {
     if (modelID != -1) {
@@ -171,13 +567,7 @@ void main() {
         vec3 localX = normalize(cross(vec3(0.0, 1.0, 0.0), rd));
         vec3 localY = normalize(cross(rd, localX));
         vec3 ro = (-localX * screenPos.x + localY * screenPos.y);
-
-        // Calculate ray plane intersections
-        if (modelID / 8 < tints.length()) {
-            if (block_cube(modelID, rd, ro)) return;
-            else discard;
-        }
-        if (custom_block(modelID, rd, ro)) return;
+        if (custom_block(modelID, faces, rd, ro)) return;
         else discard;
     }
     vec4 color = texture(Sampler0, texCoord0) * vertexColor * ColorModulator;
