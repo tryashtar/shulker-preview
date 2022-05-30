@@ -44,9 +44,13 @@ def main():
    #   - just like the other one, generate "normal" command but insert a place to colorize layer0
    # - all the overrides like light blocks
    # - generate test command
-   # - sort output files again
+   # others:
    # - bug: leather chestplate bad offset because vanilla overlay is invisible
    # - bug: animated blocks like sea lanterns are wrong
+   # - blocks like stairs have non-default rotation in GUI, we need to find all unique rotations, assign them an ID, and dedicate a few bits in the color code to this data
+   # - if a block has multiple cubes whose textures in a direction differ from each other (e.g. beacons), we can't draw all cubes at once
+   # - blocks like glazed terracotta have rotation on certain cubes
+   # - need to bring back tint for blocks (from hardcoded_tints), a couple bits in color should suffice
 
 # drawing an image as text with zero width requires multiple characters in the font
 class FontAbstraction:
@@ -128,6 +132,9 @@ class FontAbstraction:
          # then each row and negative in turn
          # then forward a few pixels, aligning the first item to draw with the first slot
          lang[f"tryashtar.shulker_preview.{tip}_tooltip"] = self.get_space(-4) + tooltip_1 + tooltip_neg1 + self.get_space(-3) + tooltip_2 + tooltip_neg2 + self.get_space(-3) + tooltip_3 + tooltip_neg3 + self.get_space(5)
+      lang["tryashtar.shulker_preview.empty_slot"] = self.get_space(18)
+      lang["tryashtar.shulker_preview.overlay"] = self.get_space(-18)
+      lang["tryashtar.shulker_preview.row_end"] = self.get_space(-162)
       # take stack numbers from ascii.png
       empty_row = "".join(['\u0000'] * 16)
       for i in range(0, self.rows):
@@ -207,10 +214,7 @@ class FontAbstraction:
          for j in range(1, 15):
             lang[f"tryashtar.shulker_preview.durability.{j}.{i}"] = self.get_space(-16) + dura_chars[j - 1] + self.get_space(2)
 
-      lang["tryashtar.shulker_preview.empty_slot"] = self.get_space(18)
-      lang["tryashtar.shulker_preview.overlay"] = self.get_space(-18)
-      lang["tryashtar.shulker_preview.row_end"] = self.get_space(-162)
-      for t, data in self.textures.items():
+      for t, data in sorted(self.textures.items(), key=lambda x: x[0]):
          for i in range(0, self.rows):
             lang[self.translations[i][t]] = self.characters[i][t] + self.negatives[t] + self.get_space(15)
             font.append({"type": "bitmap", "file": t + '.png', "ascent": data['ascent'] - (18 * i), "height": data['height'], "chars": [self.characters[i][t]]})
@@ -585,9 +589,9 @@ def generate_item_lines(mc, items, row, font):
                break
          name = []
          for i, cube in enumerate(model.cubes):
-            up = model.textures.get(unique_model.cubes[i].up_tx)
-            east = model.textures.get(unique_model.cubes[i].east_tx)
-            north = model.textures.get(unique_model.cubes[i].north_tx)
+            up = model.textures.get(cube.up_tx)
+            east = model.textures.get(cube.east_tx)
+            north = model.textures.get(cube.north_tx)
             unique_textures = list(set([up, east, north]))
             if None in unique_textures:
                unique_textures.remove(None)
@@ -599,9 +603,7 @@ def generate_item_lines(mc, items, row, font):
                if len(name) > 0:
                   name.append({"translate":"tryashtar.shulker_preview.overlay"})
                name.append({"translate":font.get_translation(t, row),"color":render_color(unique_id, bitfield)})
-         if len(name) == 0:
-            print(f'{item} has no textures on cube {i}?')
-         else:
+         if len(name) > 0:
             if len(name) == 1:
                name = json.dumps(name[0], separators=(',', ':'))
             else:
