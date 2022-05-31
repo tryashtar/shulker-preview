@@ -80,6 +80,9 @@ def print_test_command(items):
       command += "]}"
       print(command)
 
+# most of the fake models are identically shaped, differently colored blocks like beds and shulker boxes
+# we could use parenting in theory, but it's more accurate to parent to the item model for each instead
+# so this just uses one 'master' fake model of each kind and generates all the others
 def update_fakes(path, data):
    for name, alts in data:
       with open(os.path.join(path, name + '.json')) as f:
@@ -275,6 +278,8 @@ class FontAbstraction:
             lang[self.translations[i][t]] = self.characters[i][t] + self.negatives[t] + self.get_space(15)
             font.append({"type": "bitmap", "file": t + '.png', "ascent": data['ascent'] - (18 * i), "height": data['height'], "chars": [self.characters[i][t]]})
          font.append({"type": "bitmap", "file": t + '.png', "ascent": -32768, "height": -data['height'], "chars": [self.negatives[t]]})
+      # block textures must be separate because their providers have zero height
+      # this allows the shader to display at the proper proportion for non-square textures
       for t, data in sorted(self.block_textures.items(), key=lambda x: x[0]):
          for i in range(0, self.rows):
             lang[self.block_translations[i][t]] = self.block_characters[i][t] + self.get_space(17)
@@ -320,6 +325,7 @@ class Minecraft:
 
    # get model from item name
    def get_model(self, item):
+      # fake models handle block entities that don't have any model data in the file, but can be recreated
       fake = os.path.join(self.fake_models, item + '.json')
       if os.path.exists(fake):
          with open(fake) as f:
@@ -409,6 +415,7 @@ class Model:
             return False
       return True
 
+# the shader only needs to render three faces
 class Cube:
    def __init__(self, data):
       self.min = data['from']
@@ -669,12 +676,14 @@ def generate_item_lines(mc, items, row, font):
             lines.append(f'{if_item} run data modify storage tryashtar.shulker_preview:data results[-1] set value \'{name}\'')
             handled = True
       if not handled and len(model.cubes) > 0:
+         # this is a block or something that has model elements, the shader will render it
          for unique_id, unique_model in enumerate(mc.unique_models):
             if model.same_as(unique_model):
                break
          name = []
          unique_textures = list(set(model.textures.values()))
          unique_textures.sort()
+         # we can only render one texture at a time, have to stack overlays for separate textures
          for t in unique_textures:
             bitfield = 0
             if any([model.textures.get(x.up_tx) == t for x in model.cubes]):
