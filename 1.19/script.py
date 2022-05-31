@@ -548,6 +548,10 @@ def generate_functions(mc, font, path):
    for row in range(0, font.rows):
       fn_start = f'tryashtar.shulker_preview:row_{row}'
       process_item = Function(f'{fn_start}/process_item', [
+         '# placeholder if item was not found',
+         '# gets overwritten when applicable',
+         f'data modify storage tryashtar.shulker_preview:data results append value \'{{"translate":"{font.get_translation("tryashtar.shulker_preview:missingno", row)}"}}\'',
+         '',
          '# get the length of this item and call the appropriate function',
          'execute store result score #length shulker_preview run data get storage tryashtar.shulker_preview:data item.id'
       ])
@@ -566,12 +570,9 @@ def generate_functions(mc, font, path):
       count = Function(f'{fn_start}/overlay/count', ['# create an entity that draws item counts'])
       for i in range(2, 65):
          n = str(i) if i < 64 else f"{i}.."
-         count.lines.append(f'execute if score #count shulker_preview matches {n} run summon marker ~ ~0.9 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'[{{"translate":"tryashtar.shulker_preview.number_shadow.{i}.{row}","color":"#3e3e3e"}},{{"translate":"tryashtar.shulker_preview.number.{i}.{row}","color":"white"}}]\'}}')
+         count.lines.append(f'execute if score #count shulker_preview matches {n} run data modify storage tryashtar.shulker_preview:data results append value \'[{{"translate":"tryashtar.shulker_preview.number_shadow.{i}.{row}","color":"#3e3e3e"}},{{"translate":"tryashtar.shulker_preview.number.{i}.{row}","color":"white"}}]\'')
       count.save(path)
       process_item.lines.extend([
-         '',
-         '# placeholder if item was not found',
-         f'execute unless entity @e[type=marker,tag=tryashtar.shulker_preview,distance=..0.0001] run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"{font.get_translation("tryashtar.shulker_preview:missingno", row)}"}}\'}}',
          '',
          '# summon in count entity',
          'execute store result score #count shulker_preview run data get storage tryashtar.shulker_preview:data item.Count',
@@ -595,7 +596,7 @@ def generate_functions(mc, font, path):
             text += f'1..{upper}'
          else:
             text += f'{lower}..{upper}'
-         text += f' run summon marker ~ ~0.8 ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.durability.{i}.{row}"}}\'}}'
+         text += f' run data modify storage tryashtar.shulker_preview:data results append value \'{{"translate":"tryashtar.shulker_preview.durability.{i}.{row}"}}\''
          durability.lines.append(text)
       durability.save(path)
 
@@ -645,7 +646,7 @@ def generate_item_lines(mc, items, row, font):
                name = json.dumps(name[0], separators=(',', ':'))
             else:
                name = json.dumps(name, separators=(',', ':'))
-            lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{name}\'}}')
+            lines.append(f'{if_item} run data modify storage tryashtar.shulker_preview:data results[-1] set value \'{name}\'')
             handled = True
       if not handled and len(model.cubes) > 0:
          for unique_id, unique_model in enumerate(mc.unique_models):
@@ -674,7 +675,7 @@ def generate_item_lines(mc, items, row, font):
                name = json.dumps(name[0], separators=(',', ':'))
             else:
                name = json.dumps(name, separators=(',', ':'))
-            lines.append(f'{if_item} run summon marker ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{name}\'}}')
+            lines.append(f'{if_item} run data modify storage tryashtar.shulker_preview:data results[-1] set value \'{name}\'')
             handled = True
       if not handled:
          print(f'Unhandled item {item}')

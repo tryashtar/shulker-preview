@@ -1,3 +1,7 @@
+# placeholder if item was not found
+# gets overwritten when applicable
+data modify storage tryashtar.shulker_preview:data results append value '{"translate":"tryashtar.shulker_preview.missingno.1"}'
+
 # get the length of this item and call the appropriate function
 execute store result score #length shulker_preview run data get storage tryashtar.shulker_preview:data item.id
 execute if score #length shulker_preview matches 13 run function tryashtar.shulker_preview:row_1/process_item/length_13
@@ -32,9 +36,6 @@ execute if score #length shulker_preview matches 41 run function tryashtar.shulk
 execute if score #length shulker_preview matches 42 run function tryashtar.shulker_preview:row_1/process_item/length_42
 execute if score #length shulker_preview matches 43 run function tryashtar.shulker_preview:row_1/process_item/length_43
 execute if score #length shulker_preview matches 44 run function tryashtar.shulker_preview:row_1/process_item/length_44
-
-# placeholder if item was not found
-execute unless entity @e[type=marker,tag=tryashtar.shulker_preview,distance=..0.0001] run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.missingno.1"}'}
 
 # summon in count entity
 execute store result score #count shulker_preview run data get storage tryashtar.shulker_preview:data item.Count

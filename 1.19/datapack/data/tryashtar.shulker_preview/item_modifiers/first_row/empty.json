@@ -9,7 +9,9 @@
             "",
             {
                "font": "tryashtar.shulker_preview:preview",
-               "selector": "@e[type=marker,tag=tryashtar.shulker_preview,x=0,y=0,z=0,sort=nearest]",
+               "storage": "tryashtar.shulker_preview:data",
+               "nbt": "results[]",
+               "interpret": true,
                "separator": "",
                "color": "white",
                "italic": false
