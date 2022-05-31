@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:item/zombie_head",
+  "textures": {
+    "all": "minecraft:entity/zombie/zombie"
+  },
+  "elements": [
+    {
+      "from": [4, 0, 4],
+      "to": [12, 8, 12],
+      "faces": {
+        "north": {"uv": [2, 2, 4, 4], "texture": "#all"},
+        "east": {"uv": [0, 2, 2, 4], "texture": "#all"},
+        "south": {"uv": [6, 2, 8, 4], "texture": "#all"},
+        "west": {"uv": [4, 2, 6, 4], "texture": "#all"},
+        "up": {"uv": [4, 2, 2, 0], "texture": "#all"},
+        "down": {"uv": [6, 0, 4, 2], "texture": "#all"}
+      }
+    },
+    {
+      "from": [3.5, -0.5, 3.5],
+      "to": [12.5, 8.5, 12.5],
+      "faces": {
+        "north": {"uv": [10, 2, 12, 4], "texture": "#all"},
+        "east": {"uv": [8, 2, 10, 4], "texture": "#all"},
+        "south": {"uv": [14, 2, 16, 4], "texture": "#all"},
+        "west": {"uv": [12, 2, 14, 4], "texture": "#all"},
+        "up": {"uv": [12, 2, 10, 0], "texture": "#all"},
+        "down": {"uv": [14, 0, 12, 2], "texture": "#all"}
+      }
+    }
+  ]
+}

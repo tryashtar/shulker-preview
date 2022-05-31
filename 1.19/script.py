@@ -23,6 +23,8 @@ def main():
    item_registry = json.loads(data)["item"]
    item_registry.remove('air')
    jar_path = find_version_jar()
+   data_json = read_json('data.json')
+   update_fakes('fake_models', data_json['fakes'].items())
    mc = Minecraft(jar_path, item_registry, read_json('data.json'), 'fake_models')
    font = FontAbstraction(3)
    font.add_texture('tryashtar.shulker_preview:missingno', 5, 16)
@@ -52,6 +54,17 @@ def main():
    # - blocks like glazed terracotta have rotation on certain cubes
    # - need to bring back tint for blocks (from hardcoded_tints), a couple bits in color should suffice
    # - some blocks like lectern have rotated elements
+
+def update_fakes(path, data):
+   for name, alts in data:
+      with open(os.path.join(path, name + '.json')) as f:
+         text = f.read()
+      for alt, specs in alts.items():
+         changed = text
+         for find, replace in specs.items():
+            changed = changed.replace(find, replace)
+         with open(os.path.join(path, alt + '.json'), 'w') as f:
+            f.write(changed)
 
 # drawing an image as text with zero width requires multiple characters in the font
 class FontAbstraction:
@@ -354,17 +367,17 @@ class Cube:
    def __init__(self, data):
       self.min = data['from']
       self.max = data['to']
-      self.up_uv = data['faces'].get('up',{}).get('uv', [0, 0, 16, 16])
+      self.up_uv = data['faces'].get('up',{}).get('uv', [self.min[0], self.min[2], self.max[0], self.max[2]])
       self.up_tx = data['faces'].get('up',{}).get('texture')
       self.up_rot = data['faces'].get('up',{}).get('rotation', 0)
       if self.up_tx is not None:
          self.up_tx = self.up_tx[1:]
-      self.north_uv = data['faces'].get('north',{}).get('uv', [0, 0, 16, 16])
+      self.north_uv = data['faces'].get('north',{}).get('uv', [16.0 - self.max[0], 16.0 - self.max[1], 16.0 - self.min[0], 16.0 - self.min[1]])
       self.north_tx = data['faces'].get('north',{}).get('texture')
       self.north_rot = data['faces'].get('north',{}).get('rotation', 0)
       if self.north_tx is not None:
          self.north_tx = self.north_tx[1:]
-      self.east_uv = data['faces'].get('east',{}).get('uv', [0, 0, 16, 16])
+      self.east_uv = data['faces'].get('east',{}).get('uv', [16.0 - self.max[2], 16.0 - self.max[1], 16.0 - self.min[2], 16.0 - self.min[1]])
       self.east_tx = data['faces'].get('east',{}).get('texture')
       self.east_rot = data['faces'].get('east',{}).get('rotation', 0)
       if self.east_tx is not None:
@@ -474,7 +487,7 @@ def generate_shader(mc, path):
             ])
             for j, cube in enumerate(model.cubes):
                output.extend([
-                  f'    bool cube{j} = cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec4({comma_sep_float(cube.north_uv)}), {cube.north_rot}, vec4({comma_sep_float(cube.up_uv)}), {cube.up_rot}, vec4({comma_sep_float(cube.east_uv)}), {cube.east_rot}, uvRange, t);',
+                  f'    bool cube{j} = cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec4({comma_sep_float(cube.east_uv)}), {cube.east_rot}, vec4({comma_sep_float(cube.up_uv)}), {cube.up_rot}, vec4({comma_sep_float(cube.north_uv)}), {cube.north_rot}, uvRange, t);',
                   f'    if (cube{j} && t < minT) {{',
                   '        minT = t;',
                   '        postCol = fragColor;',

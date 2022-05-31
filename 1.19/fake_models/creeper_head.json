@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:item/creeper_head",
+  "textures": {
+    "all": "minecraft:entity/creeper/creeper"
+  },
+  "elements": [
+    {
+      "from": [4, 0, 4],
+      "to": [12, 8, 12],
+      "faces": {
+        "north": {"uv": [2, 4, 4, 8], "texture": "#all"},
+        "east": {"uv": [0, 4, 2, 8], "texture": "#all"},
+        "south": {"uv": [6, 4, 8, 8], "texture": "#all"},
+        "west": {"uv": [4, 4, 6, 8], "texture": "#all"},
+        "up": {"uv": [4, 4, 2, 0], "texture": "#all"},
+        "down": {"uv": [6, 0, 4, 4], "texture": "#all"}
+      }
+    },
+    {
+      "from": [3.5, -0.5, 3.5],
+      "to": [12.5, 8.5, 12.5],
+      "faces": {
+        "north": {"uv": [10, 4, 12, 8], "texture": "#all"},
+        "east": {"uv": [8, 4, 10, 8], "texture": "#all"},
+        "south": {"uv": [14, 4, 16, 8], "texture": "#all"},
+        "west": {"uv": [12, 4, 14, 8], "texture": "#all"},
+        "up": {"uv": [12, 4, 10, 0], "texture": "#all"},
+        "down": {"uv": [14, 0, 12, 4], "texture": "#all"}
+      }
+    }
+  ]
+}

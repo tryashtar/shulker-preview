@@ -155,22 +155,22 @@ bool block_3(int faces, vec3 rd, vec3 ro) {
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 4.0, 14.0), vec4(2.0, 12.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 180, vec4(4.0, 2.0, 0.0, 14.0), 270, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 4.0, 14.0), vec4(4.0, 2.0, 0.0, 14.0), 270, vec4(2.0, 2.0, 14.0, 14.0), 180, vec4(2.0, 12.0, 14.0, 16.0), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(4.0, 4.0, 3.0), vec3(12.0, 5.0, 13.0), vec4(4.0, 11.0, 12.0, 12.0), 0, vec4(4.0, 3.0, 12.0, 13.0), 180, vec4(5.0, 3.0, 4.0, 13.0), 270, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(4.0, 4.0, 3.0), vec3(12.0, 5.0, 13.0), vec4(5.0, 3.0, 4.0, 13.0), 270, vec4(4.0, 3.0, 12.0, 13.0), 180, vec4(4.0, 11.0, 12.0, 12.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 5.0, 4.0), vec3(10.0, 10.0, 12.0), vec4(6.0, 6.0, 10.0, 11.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(10.0, 4.0, 5.0, 12.0), 270, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 5.0, 4.0), vec3(10.0, 10.0, 12.0), vec4(10.0, 4.0, 5.0, 12.0), 270, vec4(6.0, 4.0, 10.0, 12.0), 0, vec4(6.0, 6.0, 10.0, 11.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(3.0, 10.0, 0.0), vec3(13.0, 16.0, 16.0), vec4(3.0, 0.0, 13.0, 6.0), 0, vec4(3.0, 0.0, 13.0, 16.0), 180, vec4(16.0, 0.0, 10.0, 16.0), 270, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(3.0, 10.0, 0.0), vec3(13.0, 16.0, 16.0), vec4(16.0, 0.0, 10.0, 16.0), 270, vec4(3.0, 0.0, 13.0, 16.0), 180, vec4(3.0, 0.0, 13.0, 6.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -184,17 +184,17 @@ bool block_4(int faces, vec3 rd, vec3 ro) {
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(7.0, 7.0, 0.0), vec3(9.0, 11.0, 1.0), vec4(1.5, 1.25, 1.0, 0.25), 0, vec4(1.25, 0.25, 0.75, 0.0), 0, vec4(1.0, 1.25, 0.75, 0.25), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(7.0, 7.0, 0.0), vec3(9.0, 11.0, 1.0), vec4(1.0, 1.25, 0.75, 0.25), 0, vec4(1.25, 0.25, 0.75, 0.0), 0, vec4(1.5, 1.25, 1.0, 0.25), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 1.0), vec3(15.0, 14.0, 15.0), vec4(14.0, 4.75, 10.5, 3.5), 0, vec4(10.5, 0.0, 7.0, 3.5), 0, vec4(10.5, 4.75, 7.0, 3.5), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 1.0), vec3(15.0, 14.0, 15.0), vec4(10.5, 4.75, 7.0, 3.5), 0, vec4(10.5, 0.0, 7.0, 3.5), 0, vec4(14.0, 4.75, 10.5, 3.5), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 1.0), vec3(15.0, 10.0, 15.0), vec4(14.0, 10.75, 10.5, 8.25), 0, vec4(10.5, 4.75, 7.0, 8.25), 0, vec4(10.5, 10.75, 7.0, 8.25), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 1.0), vec3(15.0, 10.0, 15.0), vec4(10.5, 10.75, 7.0, 8.25), 0, vec4(10.5, 4.75, 7.0, 8.25), 0, vec4(14.0, 10.75, 10.5, 8.25), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -208,37 +208,37 @@ bool block_5(int faces, vec3 rd, vec3 ro) {
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 16.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 16.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.0), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(16.0, 16.0, 0.01), vec4(0.0, 0.0, 16.0, 11.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(16.0, 16.0, 0.01), vec4(15.99, 0.0, 16.0, 11.0), 0, vec4(0.0, 0.0, 16.0, 0.01), 0, vec4(0.0, 0.0, 16.0, 11.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 15.99), vec3(16.0, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 11.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 15.99), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, vec4(0.0, 15.99, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 11.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(0.01, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 11.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(0.01, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 11.0), 0, vec4(0.0, 0.0, 0.01, 16.0), 0, vec4(15.99, 0.0, 16.0, 11.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(15.99, 5.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 11.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(15.99, 5.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 11.0), 0, vec4(15.99, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(0.1, 0.0, 8.0), vec3(15.9, 15.9, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(0.1, 0.0, 8.0), vec3(15.9, 15.9, 8.0), vec4(8.0, 0.09999999999999964, 8.0, 16.0), 0, vec4(0.1, 8.0, 15.9, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     if (cube5 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.1), vec3(8.0, 15.9, 15.9), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.1), vec3(8.0, 15.9, 15.9), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.1, 8.0, 15.9), 0, vec4(8.0, 0.09999999999999964, 8.0, 16.0), 0, uvRange, t);
     if (cube6 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -281,12 +281,12 @@ bool block_7(int faces, vec3 rd, vec3 ro) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 1.0), vec3(16.0, 16.0, 15.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 1.0), vec3(16.0, 16.0, 15.0), vec4(1.0, 0.0, 15.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 15.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 0.0), vec3(15.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 0.0), vec3(15.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(1.0, 0.0, 15.0, 16.0), 0, vec4(1.0, 0.0, 15.0, 16.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -300,7 +300,21 @@ bool block_8(int faces, vec3 rd, vec3 ro) {
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 90, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    if (cube0 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    fragColor = postCol;
+    return cube0;
+}
+// from fake:conduit
+bool block_9(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float minT = 99999999;
+    float t;
+    vec4 postCol;
+    bool cube0 = cuboid(faces, rd, ro, vec3(5.0, 5.0, 5.0), vec3(11.0, 11.0, 11.0), vec4(9.0, 12.0, 6.0, 6.0), 0, vec4(6.0, 6.0, 9.0, 0.0), 0, vec4(6.0, 12.0, 3.0, 6.0), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -309,7 +323,7 @@ bool block_8(int faces, vec3 rd, vec3 ro) {
     return cube0;
 }
 // from minecraft:block/end_rod
-bool block_9(int faces, vec3 rd, vec3 ro) {
+bool block_10(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -328,22 +342,22 @@ bool block_9(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1;
 }
 // from minecraft:block/lectern
-bool block_10(int faces, vec3 rd, vec3 ro) {
+bool block_11(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec4(0.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 180, vec4(0.0, 6.0, 16.0, 8.0), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec4(0.0, 6.0, 16.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 180, vec4(0.0, 14.0, 16.0, 16.0), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(4.0, 2.0, 4.0), vec3(12.0, 15.0, 12.0), vec4(0.0, 0.0, 8.0, 13.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 16.0, 15.0, 8.0), 90, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(4.0, 2.0, 4.0), vec3(12.0, 15.0, 12.0), vec4(2.0, 16.0, 15.0, 8.0), 90, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 13.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0125, 12.0, 3.0), vec3(15.9875, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 4.0), 0, vec4(0.0, 1.0, 16.0, 14.0), 180, vec4(0.0, 4.0, 13.0, 8.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0125, 12.0, 3.0), vec3(15.9875, 16.0, 16.0), vec4(0.0, 4.0, 13.0, 8.0), 0, vec4(0.0, 1.0, 16.0, 14.0), 180, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -351,8 +365,47 @@ bool block_10(int faces, vec3 rd, vec3 ro) {
     fragColor = postCol;
     return cube0 || cube1 || cube2;
 }
+// from fake:red_bed
+bool block_12(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float minT = 99999999;
+    float t;
+    vec4 postCol;
+    bool cube0 = cuboid(faces, rd, ro, vec3(13.0, 0.0, 0.0), vec3(16.0, 3.0, 3.0), vec4(12.5, 5.25, 13.25, 6.0), 0, vec4(13.25, 4.5, 14.0, 5.25), 0, vec4(13.25, 5.25, 14.0, 6.0), 0, uvRange, t);
+    if (cube0 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 3.0, 16.0), vec3(16.0, 9.0, 32.0), vec4(5.5, 7.0, 7.0, 11.0), 90, vec4(1.5, 7.0, 5.5, 11.0), 0, vec4(0.0, 7.0, 16.0, 13.0), 0, uvRange, t);
+    if (cube1 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube2 = cuboid(faces, rd, ro, vec3(13.0, 0.0, 29.0), vec3(16.0, 3.0, 32.0), vec4(13.25, 3.75, 14.0, 4.5), 0, vec4(13.25, 3.0, 14.0, 3.75), 270, vec4(14.0, 3.75, 14.75, 4.5), 0, uvRange, t);
+    if (cube2 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 29.0), vec3(3.0, 3.0, 32.0), vec4(14.0, 0.75, 14.75, 1.5), 0, vec4(13.25, 0.0, 14.0, 0.75), 180, vec4(14.75, 0.75, 15.5, 1.5), 0, uvRange, t);
+    if (cube3 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 3.0, 0.0), vec3(16.0, 9.0, 16.0), vec4(5.5, 1.5, 7.0, 5.5), 90, vec4(1.5, 1.5, 5.5, 5.5), 0, vec4(1.5, 0.0, 5.5, 1.5), 180, uvRange, t);
+    if (cube4 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube5 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(3.0, 3.0, 3.0), vec4(14.75, 2.25, 15.5, 3.0), 0, vec4(13.25, 1.5, 14.0, 2.25), 90, vec4(12.5, 2.25, 13.25, 3.0), 0, uvRange, t);
+    if (cube5 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    fragColor = postCol;
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5;
+}
 // from minecraft:block/template_farmland
-bool block_11(int faces, vec3 rd, vec3 ro) {
+bool block_13(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -366,7 +419,7 @@ bool block_11(int faces, vec3 rd, vec3 ro) {
     return cube0;
 }
 // from minecraft:block/slab
-bool block_12(int faces, vec3 rd, vec3 ro) {
+bool block_14(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -380,7 +433,7 @@ bool block_12(int faces, vec3 rd, vec3 ro) {
     return cube0;
 }
 // from minecraft:block/observer
-bool block_13(int faces, vec3 rd, vec3 ro) {
+bool block_15(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -394,32 +447,32 @@ bool block_13(int faces, vec3 rd, vec3 ro) {
     return cube0;
 }
 // from minecraft:block/composter
-bool block_14(int faces, vec3 rd, vec3 ro) {
+bool block_16(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec4(0.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 14.0, 16.0, 16.0), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -428,47 +481,47 @@ bool block_14(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1 || cube2 || cube3 || cube4;
 }
 // from minecraft:block/fence_inventory
-bool block_15(int faces, vec3 rd, vec3 ro) {
+bool block_17(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 0.0), vec3(10.0, 16.0, 4.0), vec4(6.0, 0.0, 10.0, 16.0), 0, vec4(6.0, 0.0, 10.0, 4.0), 0, vec4(0.0, 0.0, 4.0, 16.0), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 0.0), vec3(10.0, 16.0, 4.0), vec4(0.0, 0.0, 4.0, 16.0), 0, vec4(6.0, 0.0, 10.0, 4.0), 0, vec4(6.0, 0.0, 10.0, 16.0), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 12.0), vec3(10.0, 16.0, 16.0), vec4(6.0, 0.0, 10.0, 16.0), 0, vec4(6.0, 12.0, 10.0, 16.0), 0, vec4(12.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 12.0), vec3(10.0, 16.0, 16.0), vec4(12.0, 0.0, 16.0, 16.0), 0, vec4(6.0, 12.0, 10.0, 16.0), 0, vec4(6.0, 0.0, 10.0, 16.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 0.0), vec3(9.0, 15.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 4.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 0.0), vec3(9.0, 15.0, 16.0), vec4(0.0, 1.0, 16.0, 4.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(7.0, 12.0, -2.0), vec3(9.0, 15.0, 0.0), vec4(7.0, 1.0, 9.0, 4.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(0.0, 1.0, 2.0, 4.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(7.0, 12.0, -2.0), vec3(9.0, 15.0, 0.0), vec4(0.0, 1.0, 2.0, 4.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 16.0), vec3(9.0, 15.0, 18.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(14.0, 1.0, 16.0, 4.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 16.0), vec3(9.0, 15.0, 18.0), vec4(14.0, 1.0, 16.0, 4.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 0.0), vec3(9.0, 9.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(0.0, 7.0, 16.0, 10.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 0.0), vec3(9.0, 9.0, 16.0), vec4(0.0, 7.0, 16.0, 10.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, t);
     if (cube5 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(7.0, 6.0, -2.0), vec3(9.0, 9.0, 0.0), vec4(7.0, 7.0, 9.0, 10.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(0.0, 7.0, 2.0, 10.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(7.0, 6.0, -2.0), vec3(9.0, 9.0, 0.0), vec4(0.0, 7.0, 2.0, 10.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, t);
     if (cube6 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 16.0), vec3(9.0, 9.0, 18.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(14.0, 7.0, 16.0, 10.0), 0, uvRange, t);
+    bool cube7 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 16.0), vec3(9.0, 9.0, 18.0), vec4(14.0, 7.0, 16.0, 10.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, t);
     if (cube7 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -477,7 +530,7 @@ bool block_15(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
 // from minecraft:block/wall_inventory
-bool block_16(int faces, vec3 rd, vec3 ro) {
+bool block_18(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -487,7 +540,7 @@ bool block_16(int faces, vec3 rd, vec3 ro) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 0.0), vec3(11.0, 13.0, 16.0), vec4(5.0, 3.0, 11.0, 16.0), 0, vec4(5.0, 0.0, 11.0, 16.0), 0, vec4(0.0, 3.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 0.0), vec3(11.0, 13.0, 16.0), vec4(0.0, 3.0, 16.0, 16.0), 0, vec4(5.0, 0.0, 11.0, 16.0), 0, vec4(5.0, 3.0, 11.0, 16.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -496,7 +549,7 @@ bool block_16(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1;
 }
 // from minecraft:block/dragon_egg
-bool block_17(int faces, vec3 rd, vec3 ro) {
+bool block_19(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -545,32 +598,32 @@ bool block_17(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
 // from minecraft:block/grindstone
-bool block_18(int faces, vec3 rd, vec3 ro) {
+bool block_20(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(12.0, 0.0, 6.0), vec3(14.0, 7.0, 10.0), vec4(2.0, 9.0, 4.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(10.0, 16.0, 6.0, 9.0), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(12.0, 0.0, 6.0), vec3(14.0, 7.0, 10.0), vec4(10.0, 16.0, 6.0, 9.0), 0, vec4(12.0, 6.0, 14.0, 10.0), 0, vec4(2.0, 9.0, 4.0, 16.0), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 6.0), vec3(4.0, 7.0, 10.0), vec4(12.0, 9.0, 14.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(10.0, 16.0, 6.0, 9.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 6.0), vec3(4.0, 7.0, 10.0), vec4(10.0, 16.0, 6.0, 9.0), 0, vec4(2.0, 6.0, 4.0, 10.0), 0, vec4(12.0, 9.0, 14.0, 16.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(12.0, 7.0, 5.0), vec3(14.0, 13.0, 11.0), vec4(6.0, 0.0, 8.0, 6.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(0.0, 0.0, 6.0, 6.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(12.0, 7.0, 5.0), vec3(14.0, 13.0, 11.0), vec4(0.0, 0.0, 6.0, 6.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 7.0, 5.0), vec3(4.0, 13.0, 11.0), vec4(6.0, 0.0, 8.0, 6.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 7.0, 5.0), vec3(4.0, 13.0, 11.0), vec4(5.0, 3.0, 11.0, 9.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(4.0, 4.0, 2.0), vec3(12.0, 16.0, 14.0), vec4(0.0, 0.0, 8.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, vec4(0.0, 0.0, 12.0, 12.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(4.0, 4.0, 2.0), vec3(12.0, 16.0, 14.0), vec4(0.0, 0.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -579,12 +632,12 @@ bool block_18(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1 || cube2 || cube3 || cube4;
 }
 // from minecraft:block/button_inventory
-bool block_19(int faces, vec3 rd, vec3 ro) {
+bool block_21(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(5.0, 6.0, 6.0), vec3(11.0, 10.0, 10.0), vec4(5.0, 12.0, 11.0, 16.0), 0, vec4(5.0, 10.0, 11.0, 6.0), 0, vec4(6.0, 12.0, 10.0, 16.0), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(5.0, 6.0, 6.0), vec3(11.0, 10.0, 10.0), vec4(6.0, 12.0, 10.0, 16.0), 0, vec4(5.0, 10.0, 11.0, 6.0), 0, vec4(5.0, 12.0, 11.0, 16.0), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -593,7 +646,7 @@ bool block_19(int faces, vec3 rd, vec3 ro) {
     return cube0;
 }
 // from minecraft:block/stairs
-bool block_20(int faces, vec3 rd, vec3 ro) {
+bool block_22(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -603,7 +656,7 @@ bool block_20(int faces, vec3 rd, vec3 ro) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 8.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 8.0, 8.0), 0, vec4(8.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 8.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 8.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 8.0), 0, vec4(8.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -611,8 +664,32 @@ bool block_20(int faces, vec3 rd, vec3 ro) {
     fragColor = postCol;
     return cube0 || cube1;
 }
+// from fake:red_banner
+bool block_23(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float minT = 99999999;
+    float t;
+    vec4 postCol;
+    bool cube0 = cuboid(faces, rd, ro, vec3(7.33333, 0.0, 7.33333), vec3(8.66666, 28.0, 8.66666), vec4(11.0, 0.5, 11.5, 11.0), 0, vec4(11.5, 0.0, 12.0, 0.5), 0, vec4(11.5, 0.5, 12.0, 11.0), 0, uvRange, t);
+    if (cube0 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.33333, 28.0, 7.33333), vec3(14.66667, 29.33333, 8.66667), vec4(0.0, 11.0, 0.5, 11.5), 0, vec4(5.5, 11.0, 0.5, 10.5), 0, vec4(6.0, 11.0, 11.0, 11.5), 0, uvRange, t);
+    if (cube1 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.33333, 2.66667, 6.33333), vec3(14.66667, 29.33333, 7.33333), vec4(0.0, 0.25, 0.25, 10.25), 0, vec4(5.25, 0.0, 0.25, 0.25), 0, vec4(0.25, 0.25, 5.25, 10.25), 0, uvRange, t);
+    if (cube2 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    fragColor = postCol;
+    return cube0 || cube1 || cube2;
+}
 // from minecraft:block/carpet
-bool block_21(int faces, vec3 rd, vec3 ro) {
+bool block_24(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -625,8 +702,52 @@ bool block_21(int faces, vec3 rd, vec3 ro) {
     fragColor = postCol;
     return cube0;
 }
+// from fake:dragon_head
+bool block_25(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float minT = 99999999;
+    float t;
+    vec4 postCol;
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 4.0, -14.0), vec3(14.0, 9.0, 2.0), vec4(11.0, 3.75, 12.0, 4.0625), 0, vec4(12.75, 3.75, 12.0, 2.75), 0, vec4(12.0, 3.75, 12.75, 4.0625), 0, uvRange, t);
+    if (cube0 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(7.0, 2.875, 8.0, 3.875), 0, vec4(9.0, 2.875, 8.0, 1.875), 0, vec4(8.0, 2.875, 9.0, 3.875), 0, uvRange, t);
+    if (cube1 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube2 = cuboid(faces, rd, ro, vec3(11.0, 16.0, 6.0), vec3(13.0, 20.0, 12.0), vec4(0.875, 0.375, 0.5, 0.625), 0, vec4(0.375, 0.375, 0.5, 0.0), 0, vec4(0.5, 0.375, 0.375, 0.625), 0, uvRange, t);
+    if (cube2 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube3 = cuboid(faces, rd, ro, vec3(11.0, 9.0, -12.0), vec3(13.0, 11.0, -8.0), vec4(7.625, 0.25, 7.375, 0.375), 0, vec4(7.25, 0.25, 7.375, 0.0), 0, vec4(7.375, 0.25, 7.25, 0.375), 0, uvRange, t);
+    if (cube3 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube4 = cuboid(faces, rd, ro, vec3(3.0, 16.0, 6.0), vec3(5.0, 20.0, 12.0), vec4(0.0, 0.375, 0.375, 0.625), 0, vec4(0.5, 0.375, 0.375, 0.0), 0, vec4(0.375, 0.375, 0.5, 0.625), 0, uvRange, t);
+    if (cube4 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube5 = cuboid(faces, rd, ro, vec3(3.0, 9.0, -12.0), vec3(5.0, 11.0, -8.0), vec4(7.0, 0.25, 7.25, 0.375), 0, vec4(7.375, 0.25, 7.25, 0.0), 0, vec4(7.25, 0.25, 7.375, 0.375), 0, uvRange, t);
+    if (cube5 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 0.0, -14.0), vec3(14.0, 4.0, 2.0), vec4(11.0, 5.0625, 12.0, 5.3125), 0, vec4(12.75, 5.0625, 12.0, 4.0625), 0, vec4(12.0, 5.0625, 12.75, 5.3125), 0, uvRange, t);
+    if (cube6 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    fragColor = postCol;
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6;
+}
 // from minecraft:block/grass_block
-bool block_22(int faces, vec3 rd, vec3 ro) {
+bool block_26(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -645,7 +766,7 @@ bool block_22(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1;
 }
 // from minecraft:block/honey_block
-bool block_23(int faces, vec3 rd, vec3 ro) {
+bool block_27(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -663,53 +784,72 @@ bool block_23(int faces, vec3 rd, vec3 ro) {
     fragColor = postCol;
     return cube0 || cube1;
 }
-// from minecraft:block/scaffolding_stable
-bool block_24(int faces, vec3 rd, vec3 ro) {
+// from fake:player_head
+bool block_28(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 15.99, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 8.0, 12.0), vec4(0.0, 2.0, 2.0, 4.0), 0, vec4(4.0, 2.0, 2.0, 0.0), 0, vec4(2.0, 2.0, 4.0, 4.0), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 2.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(3.5, -0.5, 3.5), vec3(12.5, 8.5, 12.5), vec4(8.0, 2.0, 10.0, 4.0), 0, vec4(12.0, 2.0, 10.0, 0.0), 0, vec4(10.0, 2.0, 12.0, 4.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 14.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    fragColor = postCol;
+    return cube0 || cube1;
+}
+// from minecraft:block/scaffolding_stable
+bool block_29(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float minT = 99999999;
+    float t;
+    vec4 postCol;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 15.99, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 0.009999999999999787), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.009999999999999787), 0, uvRange, t);
+    if (cube0 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    if (cube1 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 14.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(0.0, 14.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 14.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 14.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 2.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, t);
     if (cube5 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(14.0, 0.0, 2.0, 2.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(14.0, 0.0, 2.0, 2.0), 0, uvRange, t);
     if (cube6 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(14.0, 14.0, 2.0), vec3(16.0, 16.0, 14.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 2.0, 2.0), 0, uvRange, t);
+    bool cube7 = cuboid(faces, rd, ro, vec3(14.0, 14.0, 2.0), vec3(16.0, 16.0, 14.0), vec4(14.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, uvRange, t);
     if (cube7 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube8 = cuboid(faces, rd, ro, vec3(0.0, 14.0, 2.0), vec3(2.0, 16.0, 14.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube8 = cuboid(faces, rd, ro, vec3(0.0, 14.0, 2.0), vec3(2.0, 16.0, 14.0), vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, uvRange, t);
     if (cube8 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -717,8 +857,27 @@ bool block_24(int faces, vec3 rd, vec3 ro) {
     fragColor = postCol;
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7 || cube8;
 }
+// from fake:shulker_box
+bool block_30(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float minT = 99999999;
+    float t;
+    vec4 postCol;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 4.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(8.0, 4.0, 12.0, 7.0), 0, vec4(4.0, 0.0, 8.0, 4.0), 0, vec4(12.0, 4.0, 16.0, 7.0), 0, uvRange, t);
+    if (cube0 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(8.0, 11.0, 12.0, 13.0), 0, vec4(4.0, 7.0, 8.0, 11.0), 0, vec4(12.0, 11.0, 16.0, 13.0), 0, uvRange, t);
+    if (cube1 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    fragColor = postCol;
+    return cube0 || cube1;
+}
 // from minecraft:block/slime_block
-bool block_25(int faces, vec3 rd, vec3 ro) {
+bool block_31(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -737,7 +896,7 @@ bool block_25(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1;
 }
 // from minecraft:block/stonecutter
-bool block_26(int faces, vec3 rd, vec3 ro) {
+bool block_32(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -747,7 +906,7 @@ bool block_26(int faces, vec3 rd, vec3 ro) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 8.0), vec3(15.0, 16.0, 8.0), vec4(1.0, 9.0, 15.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 8.0), vec3(15.0, 16.0, 8.0), vec4(8.0, 0.0, 8.0, 7.0), 0, vec4(1.0, 8.0, 15.0, 8.0), 0, vec4(1.0, 9.0, 15.0, 16.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -756,37 +915,37 @@ bool block_26(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1;
 }
 // from minecraft:block/big_dripleaf
-bool block_27(int faces, vec3 rd, vec3 ro) {
+bool block_33(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 15.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 15.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(0.0, 1.0, 16.0, 1.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 1.0), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(16.0, 15.0, 0.002), vec4(0.0, 0.0, 16.0, 4.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(16.0, 15.0, 0.002), vec4(15.998, 1.0, 16.0, 5.0), 0, vec4(0.0, 0.0, 16.0, 0.002), 0, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(0.002, 15.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 4.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(0.002, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 1.0, 16.0, 5.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(15.998, 11.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 4.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(15.998, 11.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 0.002000000000000668, 5.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(3.0, 0.0, 14.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(3.0, 0.0, 14.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, t);
     if (cube5 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -795,7 +954,7 @@ bool block_27(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5;
 }
 // from minecraft:block/chorus_plant
-bool block_28(int faces, vec3 rd, vec3 ro) {
+bool block_34(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -805,27 +964,27 @@ bool block_28(int faces, vec3 rd, vec3 ro) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 2.0, 14.0), vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 2.0, 14.0), vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, uvRange, t);
     if (cube5 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -838,8 +997,27 @@ bool block_28(int faces, vec3 rd, vec3 ro) {
     fragColor = postCol;
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6;
 }
+// from fake:creeper_head
+bool block_35(int faces, vec3 rd, vec3 ro) {
+    vec4 uvRange = getUV();
+    float minT = 99999999;
+    float t;
+    vec4 postCol;
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 8.0, 12.0), vec4(0.0, 4.0, 2.0, 8.0), 0, vec4(4.0, 4.0, 2.0, 0.0), 0, vec4(2.0, 4.0, 4.0, 8.0), 0, uvRange, t);
+    if (cube0 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    bool cube1 = cuboid(faces, rd, ro, vec3(3.5, -0.5, 3.5), vec3(12.5, 8.5, 12.5), vec4(8.0, 4.0, 10.0, 8.0), 0, vec4(12.0, 4.0, 10.0, 0.0), 0, vec4(10.0, 4.0, 12.0, 8.0), 0, uvRange, t);
+    if (cube1 && t < minT) {
+        minT = t;
+        postCol = fragColor;
+    }
+    fragColor = postCol;
+    return cube0 || cube1;
+}
 // from minecraft:block/template_trapdoor_bottom
-bool block_29(int faces, vec3 rd, vec3 ro) {
+bool block_36(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -853,7 +1031,7 @@ bool block_29(int faces, vec3 rd, vec3 ro) {
     return cube0;
 }
 // from minecraft:block/sculk_sensor
-bool block_30(int faces, vec3 rd, vec3 ro) {
+bool block_37(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -863,22 +1041,22 @@ bool block_30(int faces, vec3 rd, vec3 ro) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 3.0), vec3(7.0, 16.0, 3.0), vec4(4.0, 8.0, 12.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 3.0), vec3(7.0, 16.0, 3.0), vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(-1.0, 3.0, 7.0, 3.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 3.0), vec3(17.0, 16.0, 3.0), vec4(12.0, 8.0, 4.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 3.0), vec3(17.0, 16.0, 3.0), vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(9.0, 3.0, 17.0, 3.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 13.0), vec3(17.0, 16.0, 13.0), vec4(12.0, 8.0, 4.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 13.0), vec3(17.0, 16.0, 13.0), vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(9.0, 13.0, 17.0, 13.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 13.0), vec3(7.0, 16.0, 13.0), vec4(4.0, 8.0, 12.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 13.0), vec3(7.0, 16.0, 13.0), vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(-1.0, 13.0, 7.0, 13.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -887,7 +1065,7 @@ bool block_30(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1 || cube2 || cube3 || cube4;
 }
 // from minecraft:block/template_chorus_flower
-bool block_31(int faces, vec3 rd, vec3 ro) {
+bool block_38(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -897,22 +1075,22 @@ bool block_31(int faces, vec3 rd, vec3 ro) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -926,7 +1104,7 @@ bool block_31(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5;
 }
 // from minecraft:block/lightning_rod
-bool block_32(int faces, vec3 rd, vec3 ro) {
+bool block_39(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -936,7 +1114,7 @@ bool block_32(int faces, vec3 rd, vec3 ro) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 0.0, 7.0), vec3(9.0, 12.0, 9.0), vec4(0.0, 4.0, 2.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 4.0, 2.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 0.0, 7.0), vec3(9.0, 12.0, 9.0), vec4(0.0, 4.0, 2.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 9.0), 0, vec4(0.0, 4.0, 2.0, 16.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -945,32 +1123,32 @@ bool block_32(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1;
 }
 // from minecraft:block/spore_blossom
-bool block_33(int faces, vec3 rd, vec3 ro) {
+bool block_40(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(1.0, 15.9, 1.0), vec3(15.0, 15.9, 15.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(1.0, 15.9, 1.0), vec3(15.0, 15.9, 15.0), vec4(1.0, 0.09999999999999964, 15.0, 0.09999999999999964), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 0.09999999999999964, 15.0, 0.09999999999999964), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 15.7, 0.0), vec3(24.0, 15.7, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 15.7, 0.0), vec3(24.0, 15.7, 16.0), vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(-8.0, 15.7, 0.0), vec3(8.0, 15.7, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 270, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(-8.0, 15.7, 0.0), vec3(8.0, 15.7, 16.0), vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 270, vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 15.7, 8.0), vec3(16.0, 15.7, 24.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(16.0, 16.0, 0.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 15.7, 8.0), vec3(16.0, 15.7, 24.0), vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, vec4(16.0, 16.0, 0.0, 0.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 15.7, -8.0), vec3(16.0, 15.7, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 15.7, -8.0), vec3(16.0, 15.7, 8.0), vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -979,7 +1157,7 @@ bool block_33(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1 || cube2 || cube3 || cube4;
 }
 // from minecraft:block/template_orientable_trapdoor_bottom
-bool block_34(int faces, vec3 rd, vec3 ro) {
+bool block_41(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -993,47 +1171,47 @@ bool block_34(int faces, vec3 rd, vec3 ro) {
     return cube0;
 }
 // from minecraft:block/mangrove_roots
-bool block_35(int faces, vec3 rd, vec3 ro) {
+bool block_42(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 8.0), vec3(16.0, 16.0, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 8.0), vec3(16.0, 16.0, 8.0), vec4(8.0, 0.0, 8.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.0), vec3(8.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.0), vec3(8.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 15.998, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 15.998, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 0.002, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 0.002, 16.0), vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 0.002), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 0.002), vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 15.998), vec3(16.0, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 15.998), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 16.0), 0, uvRange, t);
     if (cube5 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(0.002, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 16.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(0.002, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, uvRange, t);
     if (cube6 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(15.998, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube7 = cuboid(faces, rd, ro, vec3(15.998, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, uvRange, t);
     if (cube7 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -1042,47 +1220,47 @@ bool block_35(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
 // from minecraft:block/template_fence_gate
-bool block_36(int faces, vec3 rd, vec3 ro) {
+bool block_43(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 7.0), vec3(2.0, 16.0, 9.0), vec4(0.0, 0.0, 2.0, 11.0), 0, vec4(0.0, 7.0, 2.0, 9.0), 0, vec4(7.0, 0.0, 9.0, 11.0), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 7.0), vec3(2.0, 16.0, 9.0), vec4(7.0, 0.0, 9.0, 11.0), 0, vec4(0.0, 7.0, 2.0, 9.0), 0, vec4(0.0, 0.0, 2.0, 11.0), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(14.0, 5.0, 7.0), vec3(16.0, 16.0, 9.0), vec4(14.0, 0.0, 16.0, 11.0), 0, vec4(14.0, 7.0, 16.0, 9.0), 0, vec4(7.0, 0.0, 9.0, 11.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(14.0, 5.0, 7.0), vec3(16.0, 16.0, 9.0), vec4(7.0, 0.0, 9.0, 11.0), 0, vec4(14.0, 7.0, 16.0, 9.0), 0, vec4(14.0, 0.0, 16.0, 11.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 6.0, 7.0), vec3(8.0, 15.0, 9.0), vec4(6.0, 1.0, 8.0, 10.0), 0, vec4(6.0, 7.0, 8.0, 9.0), 0, vec4(7.0, 1.0, 9.0, 10.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 6.0, 7.0), vec3(8.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 10.0), 0, vec4(6.0, 7.0, 8.0, 9.0), 0, vec4(6.0, 1.0, 8.0, 10.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(8.0, 6.0, 7.0), vec3(10.0, 15.0, 9.0), vec4(8.0, 1.0, 10.0, 10.0), 0, vec4(8.0, 7.0, 10.0, 9.0), 0, vec4(7.0, 1.0, 9.0, 10.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(8.0, 6.0, 7.0), vec3(10.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 10.0), 0, vec4(8.0, 7.0, 10.0, 9.0), 0, vec4(8.0, 1.0, 10.0, 10.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 6.0, 7.0), vec3(6.0, 9.0, 9.0), vec4(2.0, 7.0, 6.0, 10.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 6.0, 7.0), vec3(6.0, 9.0, 9.0), vec4(7.0, 7.0, 9.0, 10.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(2.0, 7.0, 6.0, 10.0), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 12.0, 7.0), vec3(6.0, 15.0, 9.0), vec4(2.0, 1.0, 6.0, 4.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 12.0, 7.0), vec3(6.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 4.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(2.0, 1.0, 6.0, 4.0), 0, uvRange, t);
     if (cube5 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(10.0, 6.0, 7.0), vec3(14.0, 9.0, 9.0), vec4(10.0, 7.0, 14.0, 10.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(10.0, 6.0, 7.0), vec3(14.0, 9.0, 9.0), vec4(7.0, 7.0, 9.0, 10.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(10.0, 7.0, 14.0, 10.0), 0, uvRange, t);
     if (cube6 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(10.0, 12.0, 7.0), vec3(14.0, 15.0, 9.0), vec4(10.0, 1.0, 14.0, 4.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube7 = cuboid(faces, rd, ro, vec3(10.0, 12.0, 7.0), vec3(14.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 4.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(10.0, 1.0, 14.0, 4.0), 0, uvRange, t);
     if (cube7 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -1091,7 +1269,7 @@ bool block_36(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
 // from minecraft:block/template_sculk_shrieker
-bool block_37(int faces, vec3 rd, vec3 ro) {
+bool block_44(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -1106,27 +1284,27 @@ bool block_37(int faces, vec3 rd, vec3 ro) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 14.98, 1.0), vec3(15.0, 14.98, 15.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 14.98, 1.0), vec3(15.0, 14.98, 15.0), vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 14.98), vec3(15.0, 15.0, 14.98), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 14.98), vec3(15.0, 15.0, 14.98), vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, vec4(1.0, 14.98, 15.0, 14.98), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.02), vec3(15.0, 15.0, 1.02), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.02), vec3(15.0, 15.0, 1.02), vec4(14.98, 1.0, 14.98, 8.0), 0, vec4(1.0, 1.02, 15.0, 1.02), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(14.98, 8.0, 1.0), vec3(14.98, 15.0, 15.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(14.98, 8.0, 1.0), vec3(14.98, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(14.98, 1.0, 14.98, 15.0), 0, vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, uvRange, t);
     if (cube5 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(1.02, 8.0, 1.0), vec3(1.02, 15.0, 15.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(1.02, 8.0, 1.0), vec3(1.02, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(1.02, 1.0, 1.02, 15.0), 0, vec4(14.98, 1.0, 14.98, 8.0), 0, uvRange, t);
     if (cube6 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -1135,47 +1313,47 @@ bool block_37(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6;
 }
 // from minecraft:block/small_dripleaf_top
-bool block_38(int faces, vec3 rd, vec3 ro) {
+bool block_45(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 2.99, 8.0), vec3(15.0, 2.99, 15.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 8.0, 0.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 2.99, 8.0), vec3(15.0, 2.99, 15.0), vec4(1.0, 13.01, 8.0, 13.01), 0, vec4(8.0, 8.0, 0.0, 0.0), 0, vec4(1.0, 13.01, 8.0, 13.01), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.0), vec3(8.0, 8.0, 8.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.0), vec3(8.0, 8.0, 8.0), vec4(8.0, 8.0, 15.0, 8.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, vec4(8.0, 8.0, 15.0, 8.0), 0, uvRange, t);
     if (cube1 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 12.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 270, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 12.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(1.0, 4.0, 8.0, 4.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 270, vec4(8.0, 4.0, 15.0, 4.0), 0, uvRange, t);
     if (cube2 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(8.0, 2.0, 8.0), vec3(15.0, 3.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t);
+    bool cube3 = cuboid(faces, rd, ro, vec3(8.0, 2.0, 8.0), vec3(15.0, 3.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(8.0, 8.0, 15.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t);
     if (cube3 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(1.0, 7.0, 1.01), vec3(8.0, 8.0, 8.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t);
+    bool cube4 = cuboid(faces, rd, ro, vec3(1.0, 7.0, 1.01), vec3(8.0, 8.0, 8.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 1.01, 8.0, 8.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t);
     if (cube4 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(1.0, 11.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t);
+    bool cube5 = cuboid(faces, rd, ro, vec3(1.0, 11.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 8.0, 8.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t);
     if (cube5 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(4.0, 0.0, 12.0, 14.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube6 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, t);
     if (cube6 && t < minT) {
         minT = t;
         postCol = fragColor;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(4.0, 0.0, 12.0, 14.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
+    bool cube7 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, t);
     if (cube7 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -1184,12 +1362,12 @@ bool block_38(int faces, vec3 rd, vec3 ro) {
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
 // from minecraft:block/dried_kelp_block
-bool block_39(int faces, vec3 rd, vec3 ro) {
+bool block_46(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 16.0), 0, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -1198,7 +1376,7 @@ bool block_39(int faces, vec3 rd, vec3 ro) {
     return cube0;
 }
 // from minecraft:block/enchanting_table
-bool block_40(int faces, vec3 rd, vec3 ro) {
+bool block_47(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -1212,7 +1390,7 @@ bool block_40(int faces, vec3 rd, vec3 ro) {
     return cube0;
 }
 // from minecraft:block/end_portal_frame
-bool block_41(int faces, vec3 rd, vec3 ro) {
+bool block_48(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -1226,7 +1404,7 @@ bool block_41(int faces, vec3 rd, vec3 ro) {
     return cube0;
 }
 // from minecraft:block/template_daylight_detector
-bool block_42(int faces, vec3 rd, vec3 ro) {
+bool block_49(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -1240,7 +1418,7 @@ bool block_42(int faces, vec3 rd, vec3 ro) {
     return cube0;
 }
 // from minecraft:block/pressure_plate_up
-bool block_43(int faces, vec3 rd, vec3 ro) {
+bool block_50(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
@@ -1254,12 +1432,12 @@ bool block_43(int faces, vec3 rd, vec3 ro) {
     return cube0;
 }
 // from minecraft:block/template_glazed_terracotta
-bool block_44(int faces, vec3 rd, vec3 ro) {
+bool block_51(int faces, vec3 rd, vec3 ro) {
     vec4 uvRange = getUV();
     float minT = 99999999;
     float t;
     vec4 postCol;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 90, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 180, uvRange, t);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 180, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, uvRange, t);
     if (cube0 && t < minT) {
         minT = t;
         postCol = fragColor;
@@ -1357,6 +1535,20 @@ bool custom_block(int modelID, int faces, vec3 rd, vec3 ro) {
             return block_43(faces, rd, ro);
         case 44:
             return block_44(faces, rd, ro);
+        case 45:
+            return block_45(faces, rd, ro);
+        case 46:
+            return block_46(faces, rd, ro);
+        case 47:
+            return block_47(faces, rd, ro);
+        case 48:
+            return block_48(faces, rd, ro);
+        case 49:
+            return block_49(faces, rd, ro);
+        case 50:
+            return block_50(faces, rd, ro);
+        case 51:
+            return block_51(faces, rd, ro);
     }
     return false;
 }

@@ -1,4 +1,207 @@
 {
+   "fakes": {
+      "skeleton_skull": {
+         "wither_skeleton_skull": {
+            "minecraft:item/skeleton_skull": "minecraft:item/wither_skeleton_skull",
+            "minecraft:entity/skeleton/skeleton": "minecraft:entity/skeleton/wither_skeleton"
+         },
+         "creeper_head": {
+            "minecraft:item/skeleton_skull": "minecraft:item/creeper_head",
+            "minecraft:entity/skeleton/skeleton": "minecraft:entity/creeper/creeper"
+         }
+      },
+      "zombie_head": {
+         "player_head": {
+            "minecraft:item/zombie_head": "minecraft:item/player_head",
+            "minecraft:entity/zombie/zombie": "minecraft:entity/steve"
+         }
+      },
+      "white_banner": {
+         "black_banner": {
+            "minecraft:item/white_banner": "minecraft:item/black_banner"
+         },
+         "blue_banner": {
+            "minecraft:item/white_banner": "minecraft:item/blue_banner"
+         },
+         "brown_banner": {
+            "minecraft:item/white_banner": "minecraft:item/brown_banner"
+         },
+         "cyan_banner": {
+            "minecraft:item/white_banner": "minecraft:item/cyan_banner"
+         },
+         "gray_banner": {
+            "minecraft:item/white_banner": "minecraft:item/gray_banner"
+         },
+         "green_banner": {
+            "minecraft:item/white_banner": "minecraft:item/green_banner"
+         },
+         "light_blue_banner": {
+            "minecraft:item/white_banner": "minecraft:item/light_blue_banner"
+         },
+         "light_gray_banner": {
+            "minecraft:item/white_banner": "minecraft:item/light_gray_banner"
+         },
+         "lime_banner": {
+            "minecraft:item/white_banner": "minecraft:item/lime_banner"
+         },
+         "magenta_banner": {
+            "minecraft:item/white_banner": "minecraft:item/magenta_banner"
+         },
+         "orange_banner": {
+            "minecraft:item/white_banner": "minecraft:item/orange_banner"
+         },
+         "pink_banner": {
+            "minecraft:item/white_banner": "minecraft:item/pink_banner"
+         },
+         "purple_banner": {
+            "minecraft:item/white_banner": "minecraft:item/purple_banner"
+         },
+         "red_banner": {
+            "minecraft:item/red_banner": "minecraft:item/red_banner"
+         },
+         "yellow_banner": {
+            "minecraft:item/white_banner": "minecraft:item/yellow_banner"
+         }
+      },
+      "red_bed": {
+         "black_bed": {
+            "minecraft:item/red_bed": "minecraft:item/black_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/black"
+         },
+         "blue_bed": {
+            "minecraft:item/red_bed": "minecraft:item/blue_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/blue"
+         },
+         "brown_bed": {
+            "minecraft:item/red_bed": "minecraft:item/brown_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/brown"
+         },
+         "cyan_bed": {
+            "minecraft:item/red_bed": "minecraft:item/cyan_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/cyan"
+         },
+         "gray_bed": {
+            "minecraft:item/red_bed": "minecraft:item/gray_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/gray"
+         },
+         "green_bed": {
+            "minecraft:item/red_bed": "minecraft:item/green_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/green"
+         },
+         "light_blue_bed": {
+            "minecraft:item/red_bed": "minecraft:item/light_blue_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/light_blue"
+         },
+         "light_gray_bed": {
+            "minecraft:item/red_bed": "minecraft:item/light_gray_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/light_gray"
+         },
+         "lime_bed": {
+            "minecraft:item/red_bed": "minecraft:item/lime_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/lime"
+         },
+         "magenta_bed": {
+            "minecraft:item/red_bed": "minecraft:item/magenta_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/magenta"
+         },
+         "orange_bed": {
+            "minecraft:item/red_bed": "minecraft:item/orange_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/orange"
+         },
+         "pink_bed": {
+            "minecraft:item/red_bed": "minecraft:item/pink_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/pink"
+         },
+         "purple_bed": {
+            "minecraft:item/red_bed": "minecraft:item/purple_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/purple"
+         },
+         "white_bed": {
+            "minecraft:item/red_bed": "minecraft:item/white_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/white"
+         },
+         "yellow_bed": {
+            "minecraft:item/red_bed": "minecraft:item/yellow_bed",
+            "minecraft:entity/bed/red": "minecraft:entity/bed/yellow"
+         }
+      },
+      "chest": {
+         "trapped_chest": {
+            "minecraft:item/chest": "minecraft:item/trapped_chest",
+            "entity/chest/normal": "entity/chest/trapped"
+         },
+         "ender_chest": {
+            "minecraft:item/chest": "minecraft:item/ender_chest",
+            "entity/chest/normal": "entity/chest/ender"
+         }
+      },
+      "shulker_box": {
+         "black_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/black_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_black"
+         },
+         "blue_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/blue_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_blue"
+         },
+         "brown_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/brown_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_brown"
+         },
+         "cyan_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/cyan_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_cyan"
+         },
+         "gray_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/gray_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_gray"
+         },
+         "green_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/green_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_green"
+         },
+         "light_blue_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/light_blue_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_light_blue"
+         },
+         "light_gray_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/light_gray_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_light_gray"
+         },
+         "lime_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/lime_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_lime"
+         },
+         "magenta_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/magenta_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_magenta"
+         },
+         "orange_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/orange_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_orange"
+         },
+         "pink_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/pink_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_pink"
+         },
+         "purple_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/purple_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_purple"
+         },
+         "red_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/red_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_red"
+         },
+         "white_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/white_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_white"
+         },
+         "yellow_shulker_box": {
+            "minecraft:item/shulker_box": "minecraft:item/yellow_shulker_box",
+            "minecraft:entity/shulker/shulker": "minecraft:entity/shulker/shulker_yellow"
+         }
+      }
+   },
    "hardcoded_tints": {
       "layer0": {
          "vine": "#48b518",
