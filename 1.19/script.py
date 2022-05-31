@@ -99,6 +99,7 @@ class FontAbstraction:
       self.negatives = {}
       self.translations = {}
       self.textures = {}
+      self.block_textures = {}
       self.spaces = {}
       self.rows = rows
       for i in range(0, self.rows):
@@ -121,9 +122,18 @@ class FontAbstraction:
       self.textures[texture] = {'ascent': ascent, 'height': height}
       for i in range(0, self.rows):
          self.characters[i][texture] = self.next_char()
-         translation = remove_namespace(texture).replace('/', '.')
-         self.translations[i][texture] = f'tryashtar.shulker_preview.{translation}.{i}'
+         translation = remove_namespace(texture).replace('item/','').replace('block/','').replace('/', '.')
+         self.translations[i][texture] = f'tryashtar.shulker_preview.item.{translation}.{i}'
       self.negatives[texture] = self.next_char()
+
+   def add_block_texture(self, texture, ascent):
+      if texture in self.block_textures:
+         return
+      self.block_textures[texture] = {'ascent': ascent}
+      for i in range(0, self.rows):
+         self.characters[i][texture] = self.next_char()
+         translation = remove_namespace(texture).replace('item/','').replace('block/','').replace('/', '.')
+         self.translations[i][texture] = f'tryashtar.shulker_preview.block.{translation}.{i}'
 
    def get_translation(self, texture, row):
       return self.translations[row][texture]
@@ -258,6 +268,10 @@ class FontAbstraction:
             lang[self.translations[i][t]] = self.characters[i][t] + self.negatives[t] + self.get_space(15)
             font.append({"type": "bitmap", "file": t + '.png', "ascent": data['ascent'] - (18 * i), "height": data['height'], "chars": [self.characters[i][t]]})
          font.append({"type": "bitmap", "file": t + '.png', "ascent": -32768, "height": -data['height'], "chars": [self.negatives[t]]})
+      for t, data in sorted(self.block_textures.items(), key=lambda x: x[0]):
+         for i in range(0, self.rows):
+            lang[self.translations[i][t]] = self.characters[i][t] + self.get_space(17)
+            font.append({"type": "bitmap", "file": t + '.png', "ascent": data['ascent'] - (18 * i), "height": 0, "chars": [self.characters[i][t]]})
       # I'd prefer to use a space provider, but stuff draws in the wrong order without this method
       for s, ch in self.spaces.items():
          h = s - 2 if s < 0 else s - 1
@@ -665,7 +679,7 @@ def generate_item_lines(mc, items, row, font):
             # unique_textures includes e.g. bottom faces, so skip if not visible
             if bitfield > 0:
                color = render_color(unique_id, bitfield)
-               font.add_texture(t, 5, 16)
+               font.add_block_texture(t, 0)
                if len(name) > 0:
                   name.append({"translate":"tryashtar.shulker_preview.overlay"})
                name.append({"translate":font.get_translation(t, row),"color":render_color(unique_id, bitfield)})

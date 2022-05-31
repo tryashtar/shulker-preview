@@ -1,6 +1,6 @@
 # placeholder if item was not found
 # gets overwritten when applicable
-data modify storage tryashtar.shulker_preview:data results append value '{"translate":"tryashtar.shulker_preview.missingno.0"}'
+data modify storage tryashtar.shulker_preview:data results append value '{"translate":"tryashtar.shulker_preview.item.missingno.0"}'
 
 # get the length of this item and call the appropriate function
 execute store result score #length shulker_preview run data get storage tryashtar.shulker_preview:data item.id
