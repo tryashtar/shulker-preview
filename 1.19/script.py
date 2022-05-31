@@ -35,6 +35,7 @@ def main():
    font.save('resourcepack')
    shutil.make_archive("Shulker Preview Data Pack (1.19)", 'zip', "datapack")
    shutil.make_archive("Shulker Preview Resource Pack (1.19)", 'zip', "resourcepack")
+   print_test_command(item_registry)
 
    # to restore:
    # - potion/arrow/map overlays
@@ -45,7 +46,6 @@ def main():
    # - dyed armor color
    #   - just like the other one, generate "normal" command but insert a place to colorize layer0
    # - all the overrides like light blocks
-   # - generate test command
    # others:
    # - bug: leather chestplate bad offset because vanilla overlay is invisible
    # - bug: animated blocks like sea lanterns are wrong
@@ -54,6 +54,31 @@ def main():
    # - blocks like glazed terracotta have rotation on certain cubes
    # - need to bring back tint for blocks (from hardcoded_tints), a couple bits in color should suffice
    # - some blocks like lectern have rotated elements
+
+def print_test_command(items):
+   index = 0
+   while index < len(items):
+      boxes = 0
+      boxslot = 0
+      command = "setblock ~ ~1 ~ chest{Items:["
+      while index < len(items) and len(command) < 32000:
+         item = items[index]
+         if boxslot == 0:
+            command += f'{{id:shulker_box,Count:1b,Slot:{boxes}b,tag:{{BlockEntityTag:{{Items:['
+            boxes += 1
+         command += f'{{id:"minecraft:{item}",Count:1b,Slot:{boxslot}b}},'
+         index += 1
+         boxslot +=1
+         if boxslot >= 27:
+            boxslot = 0
+         if boxslot == 0:
+            command += "]}}},"
+            if boxes >= 27:
+               break
+      if boxslot != 0:
+         command += "]}}},"
+      command += "]}"
+      print(command)
 
 def update_fakes(path, data):
    for name, alts in data:
