@@ -652,16 +652,18 @@ def generate_item_lines(mc, items, row, font):
             if model.same_as(unique_model):
                break
          name = []
-         for i, cube in enumerate(model.cubes):
-            up = model.textures.get(cube.up_tx)
-            east = model.textures.get(cube.east_tx)
-            north = model.textures.get(cube.north_tx)
-            unique_textures = list(set([up, east, north]))
-            if None in unique_textures:
-               unique_textures.remove(None)
-            unique_textures.sort()
-            for t in unique_textures:
-               bitfield = (1 if up == t else 0) + (2 if east == t else 0) + (4 if north == t else 0)
+         unique_textures = list(set(model.textures.values()))
+         unique_textures.sort()
+         for t in unique_textures:
+            bitfield = 0
+            if any([model.textures.get(x.up_tx) == t for x in model.cubes]):
+               bitfield += 1
+            if any([model.textures.get(x.east_tx) == t for x in model.cubes]):
+               bitfield += 2
+            if any([model.textures.get(x.north_tx) == t for x in model.cubes]):
+               bitfield += 4
+            # unique_textures includes e.g. bottom faces, so skip if not visible
+            if bitfield > 0:
                color = render_color(unique_id, bitfield)
                font.add_texture(t, 5, 16)
                if len(name) > 0:
