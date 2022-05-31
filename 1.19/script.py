@@ -11,7 +11,7 @@ from collections import OrderedDict
 from urllib.request import urlopen
 
 minecraft_dir = '%appdata%\\.minecraft'
-version = '1.19-pre3'
+version = '1.19-pre4'
 
 def main():
    print('Loading Minecraft assets...')
@@ -504,28 +504,27 @@ def generate_shader(mc, path):
                continue
             output.extend([
                f'// from {model.resource}',
-               f'bool block_{i}(int faces, vec3 rd, vec3 ro) {{',
+               f'bool block_{i}(int faces, vec3 rd, vec3 ro, out vec4 outCol) {{',
                '    vec4 uvRange = getUV();',
-               '    float minT = 99999999;',
+               '    float minT = 99999999.0;',
                '    float t;',
-               '    vec4 postCol;'
+               '    vec4 col;'
             ])
             for j, cube in enumerate(model.cubes):
                output.extend([
-                  f'    bool cube{j} = cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec4({comma_sep_float(cube.east_uv)}), {cube.east_rot}, vec4({comma_sep_float(cube.up_uv)}), {cube.up_rot}, vec4({comma_sep_float(cube.north_uv)}), {cube.north_rot}, uvRange, t);',
+                  f'    bool cube{j} = cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec4({comma_sep_float(cube.east_uv)}), {cube.east_rot}, vec4({comma_sep_float(cube.up_uv)}), {cube.up_rot}, vec4({comma_sep_float(cube.north_uv)}), {cube.north_rot}, uvRange, t, col);',
                   f'    if (cube{j} && t < minT) {{',
                   '        minT = t;',
-                  '        postCol = fragColor;',
+                  '        outCol = col;',
                   '    }'
                ])
             all_cubes = " || ".join(map(lambda x: f'cube{x}', range(len(model.cubes))))
             output.extend([
-               '    fragColor = postCol;',
                f'    return {all_cubes};',
                '}'
             ])
          output.extend([
-            'bool custom_block(int modelID, int faces, vec3 rd, vec3 ro) {',
+            'bool custom_block(int modelID, int faces, vec3 rd, vec3 ro, out vec4 outCol) {',
             '    switch (modelID) {'
          ])
          for i, model in enumerate(mc.unique_models):
@@ -533,7 +532,7 @@ def generate_shader(mc, path):
                continue
             output.extend([
                f'        case {i}:',
-               f'            return block_{i}(faces, rd, ro);',
+               f'            return block_{i}(faces, rd, ro, outCol);',
             ])
          output.extend([
             '    }',
