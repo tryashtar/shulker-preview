@@ -1,7 +1,6 @@
 #version 150
 
 #moj_import <fog.glsl>
-#define PI 3.14159
 
 uniform sampler2D Sampler0;
 
@@ -23,6 +22,8 @@ flat in vec3 cornerTex3;
 
 out vec4 fragColor;
 
+#define PI 3.14159
+
 mat3 rotate(float x, float y) {
     x *= PI / 180.;
     y *= PI / 180.;
@@ -39,11 +40,18 @@ mat3 rotate(float x, float y) {
 
 void getProperties(vec2 uv, float xRot, float yRot, out vec3 rd, out vec3 ro, out mat3 normalMat, out vec4 uvRange) {
     mat3 local = rotate(xRot, yRot);
-    rd = local[2];//normalize(vec3(-0.6123, -0.5, -0.6123));
-    vec3 localX = local[0];//normalize(cross(vec3(0.0, 1.0, 0.0), rd));
-    vec3 localY = local[1];//normalize(cross(rd, localX));
+    rd = local[2];
+    vec3 localX = local[0];
+    vec3 localY = local[1];
     ro = 0.5 + (localX * uv.x + localY * uv.y);
-    uvRange = vec4(0, 0, 1, 1);
+
+    vec2 cornerUV1 = cornerTex1.xy / cornerTex1.z;
+    vec2 cornerUV2 = cornerTex2.xy / cornerTex2.z;
+    vec2 cornerUV3 = cornerTex3.xy / cornerTex3.z;
+    vec2 minUV = min(cornerUV1, min(cornerUV2, cornerUV3));
+    vec2 maxUV = max(cornerUV1, max(cornerUV2, cornerUV3));
+    uvRange = vec4(minUV, maxUV);
+
     normalMat = rotate(30.,225.)*transpose(local);
 }
 
@@ -67,7 +75,7 @@ bool handleIntersection(vec2 intersection, vec2 flip, vec4 uvMinMax, vec3 normal
         intersection = flip - (flip * 2. - 1.) * intersection;
         vec2 UV = mix(uvMinMax.xy, uvMinMax.zw, intersection);
         outCol = texture(Sampler0, UV);
-        outCol.rgb *= max(0.4, dot(normal, vec3(102., 255., 166.)/255.));
+        outCol.rgb *= max(0.4, dot(normal, vec3(166., 255., 102.)/255.));
         return outCol.a > 0.1;
     }
     return false;
@@ -77,10 +85,27 @@ vec4 mapUV(vec4 uv, vec4 minmax) {
     return mix(minmax.xyxy, minmax.zwzw, uv.xyzw / 16.0);
 }
 
+/**
+ * Calculates the ray-plane intersection with an axis-aligned cuboid and writes to `fragColor`.
+ * faces: A bitmap to determine which faces are rendered.
+ *        bit 0: Render face pointing towards Y-axis (up)
+ *        bit 1: Render face pointing towards X-axis (east)
+ *        bit 2: Render face pointing towards Z-axis (north)
+ * rd: The direction that the ray points in.
+ * ro: The origin of the ray.
+ * from: The same as `from` in an item model.
+ * to: The same as `to` in an item model.
+ * uvX: The same as `uv` in an item model for the face pointing towards X-axis (east)
+ * uvY: The same as `uv` in an item model for the face pointing towards Y-axis (up)
+ * uvZ: The same as `uv` in an item model for the face pointing towards Z-axis (north)
+ * uvRange: Value returned by getUV()
+ * t: The depth at which the cuboid is hit. Only written to if an intersection occurs.
+ * This method returns whether an intersection occurred.
+**/
 bool cuboid(int faces, vec3 rd, vec3 ro, vec3 from, vec3 to, vec4 uvX, int rotX, vec4 uvY, int rotY, vec4 uvZ, int rotZ, vec4 uvRange, mat3 normalMat, out float t, out vec4 outCol) {
     from /= 16.0;
     to /= 16.0;
-    vec2 flipX = vec2(0.0, 0.0);
+    vec2 flipX = vec2(0.0, 1.0);
     vec2 flipY = vec2(1.0, 1.0);
     vec2 flipZ = vec2(0.0, 1.0);
     vec3 sgn = step(-rd, vec3(0.)) * 2. - 1.;
@@ -105,7 +130,7 @@ bool cuboid(int faces, vec3 rd, vec3 ro, vec3 from, vec3 to, vec4 uvX, int rotX,
     vec3 size = to - from;
     // y
     float tY = (to.y - ro.y)/rd.y;
-    if ((faces      & 1) == 1 && handleIntersection(((rd * tY + ro).xz - from.xz)/size.xz, flipY, mapUV(uvY, uvRange), normalMat[1], (rotY + 90) % 360, outCol)) {
+    if ((faces      & 1) == 1 && handleIntersection(((rd * tY + ro).xz - from.xz)/size.xz, flipY, mapUV(uvY, uvRange), normalMat[1], rotY, outCol)) {
         t = tY;
         return true;
     }
@@ -1379,160 +1404,160 @@ bool block_75(int faces, vec2 uv, out vec4 outCol) {
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 180, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, uvRange, normalMat, t, outCol);
 }
-bool custom_block(int modelID, int faces, vec2 uv, out vec4 outCol) {
+bool custom_block(int modelID, int faces, out vec4 outCol) {
     switch (modelID) {
         case 0:
-            return block_0(faces, uv, outCol);
+            return block_0(faces, screenPos, outCol);
         case 1:
-            return block_1(faces, uv, outCol);
+            return block_1(faces, screenPos, outCol);
         case 2:
-            return block_2(faces, uv, outCol);
+            return block_2(faces, screenPos, outCol);
         case 3:
-            return block_3(faces, uv, outCol);
+            return block_3(faces, screenPos, outCol);
         case 4:
-            return block_4(faces, uv, outCol);
+            return block_4(faces, screenPos, outCol);
         case 5:
-            return block_5(faces, uv, outCol);
+            return block_5(faces, screenPos, outCol);
         case 6:
-            return block_6(faces, uv, outCol);
+            return block_6(faces, screenPos, outCol);
         case 7:
-            return block_7(faces, uv, outCol);
+            return block_7(faces, screenPos, outCol);
         case 8:
-            return block_8(faces, uv, outCol);
+            return block_8(faces, screenPos, outCol);
         case 9:
-            return block_9(faces, uv, outCol);
+            return block_9(faces, screenPos, outCol);
         case 10:
-            return block_10(faces, uv, outCol);
+            return block_10(faces, screenPos, outCol);
         case 11:
-            return block_11(faces, uv, outCol);
+            return block_11(faces, screenPos, outCol);
         case 12:
-            return block_12(faces, uv, outCol);
+            return block_12(faces, screenPos, outCol);
         case 13:
-            return block_13(faces, uv, outCol);
+            return block_13(faces, screenPos, outCol);
         case 14:
-            return block_14(faces, uv, outCol);
+            return block_14(faces, screenPos, outCol);
         case 15:
-            return block_15(faces, uv, outCol);
+            return block_15(faces, screenPos, outCol);
         case 16:
-            return block_16(faces, uv, outCol);
+            return block_16(faces, screenPos, outCol);
         case 17:
-            return block_17(faces, uv, outCol);
+            return block_17(faces, screenPos, outCol);
         case 18:
-            return block_18(faces, uv, outCol);
+            return block_18(faces, screenPos, outCol);
         case 19:
-            return block_19(faces, uv, outCol);
+            return block_19(faces, screenPos, outCol);
         case 20:
-            return block_20(faces, uv, outCol);
+            return block_20(faces, screenPos, outCol);
         case 21:
-            return block_21(faces, uv, outCol);
+            return block_21(faces, screenPos, outCol);
         case 22:
-            return block_22(faces, uv, outCol);
+            return block_22(faces, screenPos, outCol);
         case 23:
-            return block_23(faces, uv, outCol);
+            return block_23(faces, screenPos, outCol);
         case 24:
-            return block_24(faces, uv, outCol);
+            return block_24(faces, screenPos, outCol);
         case 25:
-            return block_25(faces, uv, outCol);
+            return block_25(faces, screenPos, outCol);
         case 26:
-            return block_26(faces, uv, outCol);
+            return block_26(faces, screenPos, outCol);
         case 27:
-            return block_27(faces, uv, outCol);
+            return block_27(faces, screenPos, outCol);
         case 28:
-            return block_28(faces, uv, outCol);
+            return block_28(faces, screenPos, outCol);
         case 29:
-            return block_29(faces, uv, outCol);
+            return block_29(faces, screenPos, outCol);
         case 30:
-            return block_30(faces, uv, outCol);
+            return block_30(faces, screenPos, outCol);
         case 31:
-            return block_31(faces, uv, outCol);
+            return block_31(faces, screenPos, outCol);
         case 32:
-            return block_32(faces, uv, outCol);
+            return block_32(faces, screenPos, outCol);
         case 33:
-            return block_33(faces, uv, outCol);
+            return block_33(faces, screenPos, outCol);
         case 34:
-            return block_34(faces, uv, outCol);
+            return block_34(faces, screenPos, outCol);
         case 35:
-            return block_35(faces, uv, outCol);
+            return block_35(faces, screenPos, outCol);
         case 36:
-            return block_36(faces, uv, outCol);
+            return block_36(faces, screenPos, outCol);
         case 37:
-            return block_37(faces, uv, outCol);
+            return block_37(faces, screenPos, outCol);
         case 38:
-            return block_38(faces, uv, outCol);
+            return block_38(faces, screenPos, outCol);
         case 39:
-            return block_39(faces, uv, outCol);
+            return block_39(faces, screenPos, outCol);
         case 40:
-            return block_40(faces, uv, outCol);
+            return block_40(faces, screenPos, outCol);
         case 41:
-            return block_41(faces, uv, outCol);
+            return block_41(faces, screenPos, outCol);
         case 42:
-            return block_42(faces, uv, outCol);
+            return block_42(faces, screenPos, outCol);
         case 43:
-            return block_43(faces, uv, outCol);
+            return block_43(faces, screenPos, outCol);
         case 44:
-            return block_44(faces, uv, outCol);
+            return block_44(faces, screenPos, outCol);
         case 45:
-            return block_45(faces, uv, outCol);
+            return block_45(faces, screenPos, outCol);
         case 46:
-            return block_46(faces, uv, outCol);
+            return block_46(faces, screenPos, outCol);
         case 47:
-            return block_47(faces, uv, outCol);
+            return block_47(faces, screenPos, outCol);
         case 48:
-            return block_48(faces, uv, outCol);
+            return block_48(faces, screenPos, outCol);
         case 49:
-            return block_49(faces, uv, outCol);
+            return block_49(faces, screenPos, outCol);
         case 50:
-            return block_50(faces, uv, outCol);
+            return block_50(faces, screenPos, outCol);
         case 51:
-            return block_51(faces, uv, outCol);
+            return block_51(faces, screenPos, outCol);
         case 52:
-            return block_52(faces, uv, outCol);
+            return block_52(faces, screenPos, outCol);
         case 53:
-            return block_53(faces, uv, outCol);
+            return block_53(faces, screenPos, outCol);
         case 54:
-            return block_54(faces, uv, outCol);
+            return block_54(faces, screenPos, outCol);
         case 55:
-            return block_55(faces, uv, outCol);
+            return block_55(faces, screenPos, outCol);
         case 56:
-            return block_56(faces, uv, outCol);
+            return block_56(faces, screenPos, outCol);
         case 57:
-            return block_57(faces, uv, outCol);
+            return block_57(faces, screenPos, outCol);
         case 58:
-            return block_58(faces, uv, outCol);
+            return block_58(faces, screenPos, outCol);
         case 59:
-            return block_59(faces, uv, outCol);
+            return block_59(faces, screenPos, outCol);
         case 60:
-            return block_60(faces, uv, outCol);
+            return block_60(faces, screenPos, outCol);
         case 61:
-            return block_61(faces, uv, outCol);
+            return block_61(faces, screenPos, outCol);
         case 62:
-            return block_62(faces, uv, outCol);
+            return block_62(faces, screenPos, outCol);
         case 63:
-            return block_63(faces, uv, outCol);
+            return block_63(faces, screenPos, outCol);
         case 64:
-            return block_64(faces, uv, outCol);
+            return block_64(faces, screenPos, outCol);
         case 65:
-            return block_65(faces, uv, outCol);
+            return block_65(faces, screenPos, outCol);
         case 66:
-            return block_66(faces, uv, outCol);
+            return block_66(faces, screenPos, outCol);
         case 67:
-            return block_67(faces, uv, outCol);
+            return block_67(faces, screenPos, outCol);
         case 68:
-            return block_68(faces, uv, outCol);
+            return block_68(faces, screenPos, outCol);
         case 69:
-            return block_69(faces, uv, outCol);
+            return block_69(faces, screenPos, outCol);
         case 70:
-            return block_70(faces, uv, outCol);
+            return block_70(faces, screenPos, outCol);
         case 71:
-            return block_71(faces, uv, outCol);
+            return block_71(faces, screenPos, outCol);
         case 72:
-            return block_72(faces, uv, outCol);
+            return block_72(faces, screenPos, outCol);
         case 73:
-            return block_73(faces, uv, outCol);
+            return block_73(faces, screenPos, outCol);
         case 74:
-            return block_74(faces, uv, outCol);
+            return block_74(faces, screenPos, outCol);
         case 75:
-            return block_75(faces, uv, outCol);
+            return block_75(faces, screenPos, outCol);
     }
     return false;
 }
@@ -1540,14 +1565,7 @@ bool custom_block(int modelID, int faces, vec2 uv, out vec4 outCol) {
 
 void main() {
     if (modelID != -1) {
-        // Time varying pixel color
-        vec3 col = vec3(0);
-        vec4 blockCol;
-        if (custom_block(modelID, faces, screenPos, blockCol)) {
-            col = blockCol.rgb;
-            fragColor = vec4(col,1.0);
-            return;
-        }
+        if (custom_block(modelID, faces, fragColor)) return;
         else discard;
     }
     vec4 color = texture(Sampler0, texCoord0) * vertexColor * ColorModulator;

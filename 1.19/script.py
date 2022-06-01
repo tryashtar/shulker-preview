@@ -11,7 +11,7 @@ from collections import OrderedDict
 from urllib.request import urlopen
 
 minecraft_dir = '%appdata%\\.minecraft'
-version = '1.19-pre4'
+version = '1.19-pre5'
 
 def main():
    print('Loading Minecraft assets...')
@@ -580,7 +580,7 @@ def generate_shader(mc, path):
       if line == '// custom blocks start':
          reading = False
          after = [
-            'bool custom_block(int modelID, int faces, vec2 uv, out vec4 outCol) {',
+            'bool custom_block(int modelID, int faces, out vec4 outCol) {',
             '    switch (modelID) {'
          ]
          for u in mc.unique_cubesets:
@@ -592,7 +592,7 @@ def generate_shader(mc, path):
                continue
             after.extend([
                f'        case {i}:',
-               f'            return block_{i}(faces, uv, outCol);',
+               f'            return block_{i}(faces, screenPos, outCol);',
             ])
             output.extend([
                f'// from {model.resource}',
