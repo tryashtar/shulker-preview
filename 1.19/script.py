@@ -307,7 +307,8 @@ class Minecraft:
    def __init__(self, path, item_registry, data, fake_models):
       self.zip = zipfile.ZipFile(path, 'r')
       self.models = {}
-      self.unique_models = []
+      self.unique_cubeset_id = 0
+      self.unique_cubesets = []
       self.textures = []
       self.items = item_registry
       self.length_dict = {}
@@ -365,6 +366,7 @@ class Minecraft:
          elements = current_model.data.get('elements')
          if elements is not None and len(model.cubes) == 0:
             model.cubes.extend(map(lambda x: Cube(x), elements))
+            model.cubes_from = current_model
          # find the parent and copy to hierarchy
          parent_path = current_model.data.get('parent')
          if parent_path is not None:
@@ -391,9 +393,24 @@ class Minecraft:
       for v in model.textures.values():
          if v not in self.textures:
             self.textures.append(v)
-      if all(not model.same_as(x) for x in self.unique_models):
-         self.unique_models.append(model)
       return model
+
+   def get_unique_cubesets(self, model):
+      results = []
+      sets = model.decompose()
+      for s in sets:
+         found = False
+         for p in self.unique_cubesets:
+            if cubes_same_as(s, p['cubes']):
+               found = True
+               results.append(p)
+               break
+         if not found:
+            new = {'id': self.unique_cubeset_id, 'model': model.cubes_from, 'cubes': s}
+            self.unique_cubesets.append(new)
+            self.unique_cubeset_id += 1
+            results.append(new)
+      return results
 
 # can't initialize itself effectively because we don't want to load the same parent models every time
 # so instead the above class caches them and populates these fields
@@ -406,14 +423,35 @@ class Model:
       self.overrides = []
       self.textures = {}
       self.cubes = []
+      self.cubes_from = None
 
-   def same_as(self, other):
-      if len(self.cubes) != len(other.cubes):
+   def decompose(self):
+      cube_sets = []
+      for c in self.cubes:
+         found = False
+         for s in cube_sets:
+            if ((c.up_tx is None or self.textures.get(c.up_tx) == self.textures.get(s[0].up_tx))
+            and (c.north_tx is None or self.textures.get(c.north_tx) == self.textures.get(s[0].north_tx))
+            and (c.east_tx is None or self.textures.get(c.east_tx) == self.textures.get(s[0].east_tx))):
+               s.append(c)
+               found = True
+               break
+         if not found:
+            cube_sets.append([c])
+      return cube_sets
+
+def find_same_cube(cube, cubes):
+   for c in cubes:
+      if c.same_as(cube):
+         return c
+
+def cubes_same_as(s1, s2):
+   if len(s1) != len(s2):
+      return False
+   for i in range(len(s1)):
+      if not s1[i].same_as(s2[i]):
          return False
-      for i in range(len(self.cubes)):
-         if not self.cubes[i].same_as(other.cubes[i]):
-            return False
-      return True
+   return True
 
 # the shader only needs to render three faces
 class Cube:
@@ -527,9 +565,20 @@ def generate_shader(mc, path):
          output.append(line)
       if line == '// custom blocks start':
          reading = False
-         for i, model in enumerate(mc.unique_models):
-            if len(model.cubes) == 0:
+         after = [
+            'bool custom_block(int modelID, int faces, vec3 rd, vec3 ro, out vec4 outCol) {',
+            '    switch (modelID) {'
+         ]
+         for u in mc.unique_cubesets:
+            i = u['id']
+            cubes = u['cubes']
+            model = u['model']
+            if len(cubes) == 0:
                continue
+            after.extend([
+               f'        case {i}:',
+               f'            return block_{i}(faces, rd, ro, outCol);',
+            ])
             output.extend([
                f'// from {model.resource}',
                f'bool block_{i}(int faces, vec3 rd, vec3 ro, out vec4 outCol) {{',
@@ -538,7 +587,7 @@ def generate_shader(mc, path):
                '    float t;',
                '    vec4 col;'
             ])
-            for j, cube in enumerate(model.cubes):
+            for j, cube in enumerate(cubes):
                output.extend([
                   f'    bool cube{j} = cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec4({comma_sep_float(cube.east_uv)}), {cube.east_rot}, vec4({comma_sep_float(cube.up_uv)}), {cube.up_rot}, vec4({comma_sep_float(cube.north_uv)}), {cube.north_rot}, uvRange, t, col);',
                   f'    if (cube{j} && t < minT) {{',
@@ -546,27 +595,17 @@ def generate_shader(mc, path):
                   '        outCol = col;',
                   '    }'
                ])
-            all_cubes = " || ".join(map(lambda x: f'cube{x}', range(len(model.cubes))))
+            all_cubes = " || ".join(map(lambda x: f'cube{x}', range(len(cubes))))
             output.extend([
                f'    return {all_cubes};',
                '}'
             ])
-         output.extend([
-            'bool custom_block(int modelID, int faces, vec3 rd, vec3 ro, out vec4 outCol) {',
-            '    switch (modelID) {'
-         ])
-         for i, model in enumerate(mc.unique_models):
-            if len(model.cubes) == 0:
-               continue
-            output.extend([
-               f'        case {i}:',
-               f'            return block_{i}(faces, rd, ro, outCol);',
-            ])
-         output.extend([
+         after.extend([
             '    }',
             '    return false;',
             '}',
          ])
+         output.extend(after)
    with open(filepath, 'w') as file:
       output = [x + '\n' for x in output]
       file.writelines(output)
@@ -677,28 +716,27 @@ def generate_item_lines(mc, items, row, font):
             handled = True
       if not handled and len(model.cubes) > 0:
          # this is a block or something that has model elements, the shader will render it
-         for unique_id, unique_model in enumerate(mc.unique_models):
-            if model.same_as(unique_model):
-               break
+         sets = mc.get_unique_cubesets(model)
          name = []
          unique_textures = list(set(model.textures.values()))
          unique_textures.sort()
          # we can only render one texture at a time, have to stack overlays for separate textures
-         for t in unique_textures:
-            bitfield = 0
-            if any([model.textures.get(x.up_tx) == t for x in model.cubes]):
-               bitfield += 1
-            if any([model.textures.get(x.east_tx) == t for x in model.cubes]):
-               bitfield += 2
-            if any([model.textures.get(x.north_tx) == t for x in model.cubes]):
-               bitfield += 4
-            # unique_textures includes e.g. bottom faces, so skip if not visible
-            if bitfield > 0:
-               color = render_color(unique_id, bitfield)
-               font.add_block_texture(t, 0)
-               if len(name) > 0:
-                  name.append({"translate":"tryashtar.shulker_preview.overlay"})
-               name.append({"translate":font.get_block_translation(t, row),"color":render_color(unique_id, bitfield)})
+         for s in sets:
+            for t in unique_textures:
+               bitfield = 0
+               if any([model.textures.get(find_same_cube(x, model.cubes).up_tx) == t for x in s['cubes']]):
+                  bitfield += 1
+               if any([model.textures.get(find_same_cube(x, model.cubes).north_tx) == t for x in s['cubes']]):
+                  bitfield += 2
+               if any([model.textures.get(find_same_cube(x, model.cubes).east_tx) == t for x in s['cubes']]):
+                  bitfield += 4
+               # unique_textures includes e.g. bottom faces, so skip if not visible
+               if bitfield > 0:
+                  color = render_color(s['id'], bitfield)
+                  font.add_block_texture(t, 0)
+                  if len(name) > 0:
+                     name.append({"translate":"tryashtar.shulker_preview.overlay"})
+                  name.append({"translate":font.get_block_translation(t, row),"color":color})
          if len(name) > 0:
             if len(name) == 1:
                name = json.dumps(name[0], separators=(',', ':'))

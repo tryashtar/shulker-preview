@@ -112,7 +112,7 @@ vec3[] tints = vec3[](
 
 // custom blocks start
 // from minecraft:block/cube
-bool block_1(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_0(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -125,7 +125,7 @@ bool block_1(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/snow_height2
-bool block_2(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_1(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -138,7 +138,7 @@ bool block_2(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/template_anvil
-bool block_3(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_2(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -158,12 +158,20 @@ bool block_3(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(3.0, 10.0, 0.0), vec3(13.0, 16.0, 16.0), vec4(16.0, 0.0, 10.0, 16.0), 270, vec4(3.0, 0.0, 13.0, 16.0), 180, vec4(3.0, 0.0, 13.0, 6.0), 0, uvRange, t, col);
-    if (cube3 && t < minT) {
+    return cube0 || cube1 || cube2;
+}
+// from minecraft:block/template_anvil
+bool block_3(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(3.0, 10.0, 0.0), vec3(13.0, 16.0, 16.0), vec4(16.0, 0.0, 10.0, 16.0), 270, vec4(3.0, 0.0, 13.0, 16.0), 180, vec4(3.0, 0.0, 13.0, 6.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    return cube0 || cube1 || cube2 || cube3;
+    return cube0;
 }
 // from fake:chest
 bool block_4(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
@@ -171,17 +179,17 @@ bool block_4(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     float minT = 99999999.0;
     float t;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(7.0, 7.0, 0.0), vec3(9.0, 11.0, 1.0), vec4(1.0, 1.25, 0.75, 0.25), 0, vec4(1.25, 0.25, 0.75, 0.0), 0, vec4(1.5, 1.25, 1.0, 0.25), 0, uvRange, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 1.0), vec3(15.0, 14.0, 15.0), vec4(10.5, 4.75, 7.0, 3.5), 0, vec4(10.5, 0.0, 7.0, 3.5), 0, vec4(14.0, 4.75, 10.5, 3.5), 0, uvRange, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 1.0), vec3(15.0, 14.0, 15.0), vec4(10.5, 4.75, 7.0, 3.5), 0, vec4(10.5, 0.0, 7.0, 3.5), 0, vec4(14.0, 4.75, 10.5, 3.5), 0, uvRange, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 1.0), vec3(15.0, 10.0, 15.0), vec4(10.5, 10.75, 7.0, 8.25), 0, vec4(10.5, 4.75, 7.0, 8.25), 0, vec4(14.0, 10.75, 10.5, 8.25), 0, uvRange, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 1.0), vec3(15.0, 10.0, 15.0), vec4(10.5, 10.75, 7.0, 8.25), 0, vec4(10.5, 4.75, 7.0, 8.25), 0, vec4(14.0, 10.75, 10.5, 8.25), 0, uvRange, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(7.0, 7.0, 0.0), vec3(9.0, 11.0, 1.0), vec4(1.0, 1.25, 0.75, 0.25), 0, vec4(1.25, 0.25, 0.75, 0.0), 0, vec4(1.5, 1.25, 1.0, 0.25), 0, uvRange, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
@@ -199,86 +207,124 @@ bool block_5(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(16.0, 16.0, 0.01), vec4(15.99, 0.0, 16.0, 11.0), 0, vec4(0.0, 0.0, 16.0, 0.01), 0, vec4(0.0, 0.0, 16.0, 11.0), 0, uvRange, t, col);
-    if (cube1 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 15.99), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, vec4(0.0, 15.99, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 11.0), 0, uvRange, t, col);
-    if (cube2 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(0.01, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 11.0), 0, vec4(0.0, 0.0, 0.01, 16.0), 0, vec4(15.99, 0.0, 16.0, 11.0), 0, uvRange, t, col);
-    if (cube3 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    bool cube4 = cuboid(faces, rd, ro, vec3(15.99, 5.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 11.0), 0, vec4(15.99, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, uvRange, t, col);
-    if (cube4 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    bool cube5 = cuboid(faces, rd, ro, vec3(0.1, 0.0, 8.0), vec3(15.9, 15.9, 8.0), vec4(8.0, 0.09999999999999964, 8.0, 16.0), 0, vec4(0.1, 8.0, 15.9, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
-    if (cube5 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    bool cube6 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.1), vec3(8.0, 15.9, 15.9), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.1, 8.0, 15.9), 0, vec4(8.0, 0.09999999999999964, 8.0, 16.0), 0, uvRange, t, col);
-    if (cube6 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6;
+    return cube0;
 }
-// from minecraft:block/beacon
+// from minecraft:block/template_azalea
 bool block_6(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(16.0, 16.0, 0.01), vec4(15.99, 0.0, 16.0, 11.0), 0, vec4(0.0, 0.0, 16.0, 0.01), 0, vec4(0.0, 0.0, 16.0, 11.0), 0, uvRange, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 0.1, 2.0), vec3(14.0, 3.0, 14.0), vec4(2.0, 13.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 13.0, 14.0, 16.0), 0, uvRange, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 15.99), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, vec4(0.0, 15.99, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 11.0), 0, uvRange, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(3.0, 3.0, 3.0), vec3(13.0, 14.0, 13.0), vec4(3.0, 2.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 2.0, 13.0, 13.0), 0, uvRange, t, col);
-    if (cube2 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    return cube0 || cube1 || cube2;
+    return cube0 || cube1;
 }
-// from minecraft:block/cactus
+// from minecraft:block/template_azalea
 bool block_7(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(0.01, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 11.0), 0, vec4(0.0, 0.0, 0.01, 16.0), 0, vec4(15.99, 0.0, 16.0, 11.0), 0, uvRange, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 1.0), vec3(16.0, 16.0, 15.0), vec4(1.0, 0.0, 15.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 15.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(15.99, 5.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 11.0), 0, vec4(15.99, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, uvRange, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 0.0), vec3(15.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(1.0, 0.0, 15.0, 16.0), 0, vec4(1.0, 0.0, 15.0, 16.0), 0, uvRange, t, col);
-    if (cube2 && t < minT) {
+    return cube0 || cube1;
+}
+// from minecraft:block/template_azalea
+bool block_8(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.1, 0.0, 8.0), vec3(15.9, 15.9, 8.0), vec4(8.0, 0.09999999999999964, 8.0, 16.0), 0, vec4(0.1, 8.0, 15.9, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    return cube0 || cube1 || cube2;
+    return cube0;
+}
+// from minecraft:block/template_azalea
+bool block_9(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.1), vec3(8.0, 15.9, 15.9), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.1, 8.0, 15.9), 0, vec4(8.0, 0.09999999999999964, 8.0, 16.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
+        minT = t;
+        outCol = col;
+    }
+    return cube0;
+}
+// from minecraft:block/beacon
+bool block_10(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 0.1, 2.0), vec3(14.0, 3.0, 14.0), vec4(2.0, 13.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 13.0, 14.0, 16.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
+        minT = t;
+        outCol = col;
+    }
+    return cube0;
+}
+// from minecraft:block/beacon
+bool block_11(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(3.0, 3.0, 3.0), vec3(13.0, 14.0, 13.0), vec4(3.0, 2.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 2.0, 13.0, 13.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
+        minT = t;
+        outCol = col;
+    }
+    return cube0;
+}
+// from minecraft:block/cactus
+bool block_12(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 1.0), vec3(16.0, 16.0, 15.0), vec4(1.0, 0.0, 15.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 15.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
+        minT = t;
+        outCol = col;
+    }
+    return cube0;
+}
+// from minecraft:block/cactus
+bool block_13(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 0.0), vec3(15.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(1.0, 0.0, 15.0, 16.0), 0, vec4(1.0, 0.0, 15.0, 16.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
+        minT = t;
+        outCol = col;
+    }
+    return cube0;
 }
 // from minecraft:block/cube_directional
-bool block_8(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_14(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -291,7 +337,7 @@ bool block_8(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from fake:conduit
-bool block_9(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_15(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -304,7 +350,7 @@ bool block_9(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/end_rod
-bool block_10(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_16(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -322,7 +368,7 @@ bool block_10(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1;
 }
 // from minecraft:block/lectern
-bool block_11(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_17(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -332,20 +378,36 @@ bool block_11(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(4.0, 2.0, 4.0), vec3(12.0, 15.0, 12.0), vec4(2.0, 16.0, 15.0, 8.0), 90, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 13.0), 0, uvRange, t, col);
-    if (cube1 && t < minT) {
+    return cube0;
+}
+// from minecraft:block/lectern
+bool block_18(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 2.0, 4.0), vec3(12.0, 15.0, 12.0), vec4(2.0, 16.0, 15.0, 8.0), 90, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 13.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0125, 12.0, 3.0), vec3(15.9875, 16.0, 16.0), vec4(0.0, 4.0, 13.0, 8.0), 0, vec4(0.0, 1.0, 16.0, 14.0), 180, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, t, col);
-    if (cube2 && t < minT) {
+    return cube0;
+}
+// from minecraft:block/lectern
+bool block_19(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0125, 12.0, 3.0), vec3(15.9875, 16.0, 16.0), vec4(0.0, 4.0, 13.0, 8.0), 0, vec4(0.0, 1.0, 16.0, 14.0), 180, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    return cube0 || cube1 || cube2;
+    return cube0;
 }
 // from fake:red_bed
-bool block_12(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_20(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -383,7 +445,7 @@ bool block_12(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5;
 }
 // from minecraft:block/template_farmland
-bool block_13(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_21(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -396,7 +458,7 @@ bool block_13(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/slab
-bool block_14(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_22(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -409,7 +471,7 @@ bool block_14(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/observer
-bool block_15(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_23(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -422,40 +484,35 @@ bool block_15(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/composter
-bool block_16(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_24(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec4(0.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 14.0, 16.0, 16.0), 0, uvRange, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, t, col);
-    if (cube4 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    return cube0 || cube1 || cube2 || cube3 || cube4;
+    return cube0 || cube1 || cube2 || cube3;
 }
 // from minecraft:block/fence_inventory
-bool block_17(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_25(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -503,7 +560,7 @@ bool block_17(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
 // from minecraft:block/wall_inventory
-bool block_18(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_26(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -521,7 +578,7 @@ bool block_18(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1;
 }
 // from minecraft:block/dragon_egg
-bool block_19(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_27(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -569,7 +626,7 @@ bool block_19(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
 // from minecraft:block/grindstone
-bool block_20(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_28(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -584,25 +641,41 @@ bool block_20(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(12.0, 7.0, 5.0), vec3(14.0, 13.0, 11.0), vec4(0.0, 0.0, 6.0, 6.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, t, col);
-    if (cube2 && t < minT) {
+    return cube0 || cube1;
+}
+// from minecraft:block/grindstone
+bool block_29(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(12.0, 7.0, 5.0), vec3(14.0, 13.0, 11.0), vec4(0.0, 0.0, 6.0, 6.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 7.0, 5.0), vec3(4.0, 13.0, 11.0), vec4(5.0, 3.0, 11.0, 9.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, t, col);
-    if (cube3 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 7.0, 5.0), vec3(4.0, 13.0, 11.0), vec4(5.0, 3.0, 11.0, 9.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(4.0, 4.0, 2.0), vec3(12.0, 16.0, 14.0), vec4(0.0, 0.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, uvRange, t, col);
-    if (cube4 && t < minT) {
+    return cube0 || cube1;
+}
+// from minecraft:block/grindstone
+bool block_30(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 4.0, 2.0), vec3(12.0, 16.0, 14.0), vec4(0.0, 0.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    return cube0 || cube1 || cube2 || cube3 || cube4;
+    return cube0;
 }
 // from minecraft:block/button_inventory
-bool block_21(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_31(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -615,7 +688,7 @@ bool block_21(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/stairs
-bool block_22(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_32(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -633,7 +706,7 @@ bool block_22(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1;
 }
 // from fake:red_banner
-bool block_23(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_33(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -656,7 +729,7 @@ bool block_23(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1 || cube2;
 }
 // from minecraft:block/carpet
-bool block_24(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_34(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -669,7 +742,7 @@ bool block_24(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from fake:dragon_head
-bool block_25(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_35(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -711,44 +784,21 @@ bool block_25(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     }
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6;
 }
-// from minecraft:block/grass_block
-bool block_26(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
-    vec4 uvRange = getUV();
-    float minT = 99999999.0;
-    float t;
-    vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
-    if (cube0 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
-    if (cube1 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    return cube0 || cube1;
-}
 // from minecraft:block/honey_block
-bool block_27(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_36(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(1.0, 1.0, 1.0), vec3(15.0, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, uvRange, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 1.0, 1.0), vec3(15.0, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, uvRange, t, col);
-    if (cube1 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    return cube0 || cube1;
+    return cube0;
 }
 // from fake:player_head
-bool block_28(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_37(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -766,7 +816,7 @@ bool block_28(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1;
 }
 // from minecraft:block/scaffolding_stable
-bool block_29(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_38(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -776,50 +826,58 @@ bool block_29(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
+    return cube0;
+}
+// from minecraft:block/scaffolding_stable
+bool block_39(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
+        minT = t;
+        outCol = col;
+    }
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 14.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(0.0, 14.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 14.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(0.0, 14.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 14.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 14.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, t, col);
+    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, t, col);
     if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, t, col);
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(14.0, 0.0, 2.0, 2.0), 0, uvRange, t, col);
     if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(14.0, 0.0, 2.0, 2.0), 0, uvRange, t, col);
+    bool cube6 = cuboid(faces, rd, ro, vec3(14.0, 14.0, 2.0), vec3(16.0, 16.0, 14.0), vec4(14.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, uvRange, t, col);
     if (cube6 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(14.0, 14.0, 2.0), vec3(16.0, 16.0, 14.0), vec4(14.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, uvRange, t, col);
+    bool cube7 = cuboid(faces, rd, ro, vec3(0.0, 14.0, 2.0), vec3(2.0, 16.0, 14.0), vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, uvRange, t, col);
     if (cube7 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube8 = cuboid(faces, rd, ro, vec3(0.0, 14.0, 2.0), vec3(2.0, 16.0, 14.0), vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, uvRange, t, col);
-    if (cube8 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7 || cube8;
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
 // from fake:shulker_box
-bool block_30(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_40(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -837,7 +895,7 @@ bool block_30(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1;
 }
 // from minecraft:block/slime_block
-bool block_31(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_41(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -855,7 +913,7 @@ bool block_31(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1;
 }
 // from minecraft:block/stonecutter
-bool block_32(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_42(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -865,15 +923,23 @@ bool block_32(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 8.0), vec3(15.0, 16.0, 8.0), vec4(8.0, 0.0, 8.0, 7.0), 0, vec4(1.0, 8.0, 15.0, 8.0), 0, vec4(1.0, 9.0, 15.0, 16.0), 0, uvRange, t, col);
-    if (cube1 && t < minT) {
+    return cube0;
+}
+// from minecraft:block/stonecutter
+bool block_43(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 8.0), vec3(15.0, 16.0, 8.0), vec4(8.0, 0.0, 8.0, 7.0), 0, vec4(1.0, 8.0, 15.0, 8.0), 0, vec4(1.0, 9.0, 15.0, 16.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    return cube0 || cube1;
+    return cube0;
 }
 // from minecraft:block/big_dripleaf
-bool block_33(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_44(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -883,35 +949,59 @@ bool block_33(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(16.0, 15.0, 0.002), vec4(15.998, 1.0, 16.0, 5.0), 0, vec4(0.0, 0.0, 16.0, 0.002), 0, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, t, col);
+    return cube0;
+}
+// from minecraft:block/big_dripleaf
+bool block_45(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(16.0, 15.0, 0.002), vec4(15.998, 1.0, 16.0, 5.0), 0, vec4(0.0, 0.0, 16.0, 0.002), 0, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
+        minT = t;
+        outCol = col;
+    }
+    return cube0;
+}
+// from minecraft:block/big_dripleaf
+bool block_46(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(0.002, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 1.0, 16.0, 5.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
+        minT = t;
+        outCol = col;
+    }
+    bool cube1 = cuboid(faces, rd, ro, vec3(15.998, 11.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 0.002000000000000668, 5.0), 0, uvRange, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(0.002, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 1.0, 16.0, 5.0), 0, uvRange, t, col);
-    if (cube2 && t < minT) {
+    return cube0 || cube1;
+}
+// from minecraft:block/big_dripleaf
+bool block_47(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(15.998, 11.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 0.002000000000000668, 5.0), 0, uvRange, t, col);
-    if (cube3 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, t, col);
-    if (cube4 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    bool cube5 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, t, col);
-    if (cube5 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5;
+    return cube0 || cube1;
 }
 // from minecraft:block/chorus_plant
-bool block_34(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_48(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -954,7 +1044,7 @@ bool block_34(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6;
 }
 // from fake:creeper_head
-bool block_35(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_49(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -972,7 +1062,7 @@ bool block_35(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1;
 }
 // from minecraft:block/template_trapdoor_bottom
-bool block_36(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_50(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -985,40 +1075,35 @@ bool block_36(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/sculk_sensor
-bool block_37(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_51(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 3.0), vec3(7.0, 16.0, 3.0), vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(-1.0, 3.0, 7.0, 3.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 3.0), vec3(7.0, 16.0, 3.0), vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(-1.0, 3.0, 7.0, 3.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 3.0), vec3(17.0, 16.0, 3.0), vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(9.0, 3.0, 17.0, 3.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 3.0), vec3(17.0, 16.0, 3.0), vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(9.0, 3.0, 17.0, 3.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 13.0), vec3(17.0, 16.0, 13.0), vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(9.0, 13.0, 17.0, 13.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 13.0), vec3(17.0, 16.0, 13.0), vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(9.0, 13.0, 17.0, 13.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 13.0), vec3(7.0, 16.0, 13.0), vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(-1.0, 13.0, 7.0, 13.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 13.0), vec3(7.0, 16.0, 13.0), vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(-1.0, 13.0, 7.0, 13.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, t, col);
-    if (cube4 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    return cube0 || cube1 || cube2 || cube3 || cube4;
+    return cube0 || cube1 || cube2 || cube3;
 }
 // from minecraft:block/template_chorus_flower
-bool block_38(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_52(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1028,35 +1113,67 @@ bool block_38(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, t, col);
+    return cube0;
+}
+// from minecraft:block/template_chorus_flower
+bool block_53(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
+        minT = t;
+        outCol = col;
+    }
+    return cube0;
+}
+// from minecraft:block/template_chorus_flower
+bool block_54(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
+        minT = t;
+        outCol = col;
+    }
+    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t, col);
-    if (cube2 && t < minT) {
+    return cube0 || cube1;
+}
+// from minecraft:block/template_chorus_flower
+bool block_55(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, t, col);
-    if (cube3 && t < minT) {
+    return cube0;
+}
+// from minecraft:block/template_chorus_flower
+bool block_56(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 16.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, t, col);
-    if (cube4 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 16.0), 0, uvRange, t, col);
-    if (cube5 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5;
+    return cube0;
 }
 // from minecraft:block/lightning_rod
-bool block_39(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_57(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1074,7 +1191,7 @@ bool block_39(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1;
 }
 // from minecraft:block/spore_blossom
-bool block_40(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_58(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1084,30 +1201,38 @@ bool block_40(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 15.7, 0.0), vec3(24.0, 15.7, 16.0), vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, uvRange, t, col);
+    return cube0;
+}
+// from minecraft:block/spore_blossom
+bool block_59(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 15.7, 0.0), vec3(24.0, 15.7, 16.0), vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
+        minT = t;
+        outCol = col;
+    }
+    bool cube1 = cuboid(faces, rd, ro, vec3(-8.0, 15.7, 0.0), vec3(8.0, 15.7, 16.0), vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 270, vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, uvRange, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(-8.0, 15.7, 0.0), vec3(8.0, 15.7, 16.0), vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 270, vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, uvRange, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 15.7, 8.0), vec3(16.0, 15.7, 24.0), vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, vec4(16.0, 16.0, 0.0, 0.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 15.7, 8.0), vec3(16.0, 15.7, 24.0), vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, vec4(16.0, 16.0, 0.0, 0.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 15.7, -8.0), vec3(16.0, 15.7, 8.0), vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 15.7, -8.0), vec3(16.0, 15.7, 8.0), vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, t, col);
-    if (cube4 && t < minT) {
-        minT = t;
-        outCol = col;
-    }
-    return cube0 || cube1 || cube2 || cube3 || cube4;
+    return cube0 || cube1 || cube2 || cube3;
 }
 // from minecraft:block/template_orientable_trapdoor_bottom
-bool block_41(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_60(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1120,7 +1245,7 @@ bool block_41(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/mangrove_roots
-bool block_42(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_61(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1130,45 +1255,61 @@ bool block_42(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.0), vec3(8.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, uvRange, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 0.002), vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 15.998, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, uvRange, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 15.998), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 16.0), 0, uvRange, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 0.002, 16.0), vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, uvRange, t, col);
-    if (cube3 && t < minT) {
+    return cube0 || cube1 || cube2;
+}
+// from minecraft:block/mangrove_roots
+bool block_62(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.0), vec3(8.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 0.002), vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, t, col);
-    if (cube4 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(0.002, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, uvRange, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 15.998), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 16.0), 0, uvRange, t, col);
-    if (cube5 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(15.998, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, uvRange, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(0.002, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, uvRange, t, col);
-    if (cube6 && t < minT) {
+    return cube0 || cube1 || cube2;
+}
+// from minecraft:block/mangrove_roots
+bool block_63(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 15.998, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(15.998, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, uvRange, t, col);
-    if (cube7 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 0.002, 16.0), vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, uvRange, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
+    return cube0 || cube1;
 }
 // from minecraft:block/template_fence_gate
-bool block_43(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_64(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1216,7 +1357,7 @@ bool block_43(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
 }
 // from minecraft:block/template_sculk_shrieker
-bool block_44(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_65(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1226,40 +1367,48 @@ bool block_44(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.0), vec3(15.0, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 14.98, 1.0), vec3(15.0, 14.98, 15.0), vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, uvRange, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 14.98, 1.0), vec3(15.0, 14.98, 15.0), vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, uvRange, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 14.98), vec3(15.0, 15.0, 14.98), vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, vec4(1.0, 14.98, 15.0, 14.98), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 14.98), vec3(15.0, 15.0, 14.98), vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, vec4(1.0, 14.98, 15.0, 14.98), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.02), vec3(15.0, 15.0, 1.02), vec4(14.98, 1.0, 14.98, 8.0), 0, vec4(1.0, 1.02, 15.0, 1.02), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.02), vec3(15.0, 15.0, 1.02), vec4(14.98, 1.0, 14.98, 8.0), 0, vec4(1.0, 1.02, 15.0, 1.02), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, t, col);
+    bool cube4 = cuboid(faces, rd, ro, vec3(14.98, 8.0, 1.0), vec3(14.98, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(14.98, 1.0, 14.98, 15.0), 0, vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, uvRange, t, col);
     if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(14.98, 8.0, 1.0), vec3(14.98, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(14.98, 1.0, 14.98, 15.0), 0, vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, uvRange, t, col);
+    bool cube5 = cuboid(faces, rd, ro, vec3(1.02, 8.0, 1.0), vec3(1.02, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(1.02, 1.0, 1.02, 15.0), 0, vec4(14.98, 1.0, 14.98, 8.0), 0, uvRange, t, col);
     if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(1.02, 8.0, 1.0), vec3(1.02, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(1.02, 1.0, 1.02, 15.0), 0, vec4(14.98, 1.0, 14.98, 8.0), 0, uvRange, t, col);
-    if (cube6 && t < minT) {
+    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5;
+}
+// from minecraft:block/template_sculk_shrieker
+bool block_66(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.0), vec3(15.0, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6;
+    return cube0;
 }
 // from minecraft:block/small_dripleaf_top
-bool block_45(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_67(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1279,35 +1428,51 @@ bool block_45(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(8.0, 2.0, 8.0), vec3(15.0, 3.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(8.0, 8.0, 15.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t, col);
-    if (cube3 && t < minT) {
+    return cube0 || cube1 || cube2;
+}
+// from minecraft:block/small_dripleaf_top
+bool block_68(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 2.0, 8.0), vec3(15.0, 3.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(8.0, 8.0, 15.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(1.0, 7.0, 1.01), vec3(8.0, 8.0, 8.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 1.01, 8.0, 8.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t, col);
-    if (cube4 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 7.0, 1.01), vec3(8.0, 8.0, 8.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 1.01, 8.0, 8.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(1.0, 11.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 8.0, 8.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t, col);
-    if (cube5 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 11.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 8.0, 8.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, t, col);
-    if (cube6 && t < minT) {
+    return cube0 || cube1 || cube2;
+}
+// from minecraft:block/small_dripleaf_top
+bool block_69(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+    vec4 uvRange = getUV();
+    float minT = 99999999.0;
+    float t;
+    vec4 col;
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, t, col);
-    if (cube7 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    return cube0 || cube1 || cube2 || cube3 || cube4 || cube5 || cube6 || cube7;
+    return cube0 || cube1;
 }
 // from minecraft:block/dried_kelp_block
-bool block_46(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_70(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1320,7 +1485,7 @@ bool block_46(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/enchanting_table
-bool block_47(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_71(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1333,7 +1498,7 @@ bool block_47(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/end_portal_frame
-bool block_48(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_72(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1346,7 +1511,7 @@ bool block_48(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/template_daylight_detector
-bool block_49(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_73(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1359,7 +1524,7 @@ bool block_49(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/pressure_plate_up
-bool block_50(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_74(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1372,7 +1537,7 @@ bool block_50(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     return cube0;
 }
 // from minecraft:block/template_glazed_terracotta
-bool block_51(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
+bool block_75(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     vec4 uvRange = getUV();
     float minT = 99999999.0;
     float t;
@@ -1386,6 +1551,8 @@ bool block_51(int faces, vec3 rd, vec3 ro, out vec4 outCol) {
 }
 bool custom_block(int modelID, int faces, vec3 rd, vec3 ro, out vec4 outCol) {
     switch (modelID) {
+        case 0:
+            return block_0(faces, rd, ro, outCol);
         case 1:
             return block_1(faces, rd, ro, outCol);
         case 2:
@@ -1488,6 +1655,54 @@ bool custom_block(int modelID, int faces, vec3 rd, vec3 ro, out vec4 outCol) {
             return block_50(faces, rd, ro, outCol);
         case 51:
             return block_51(faces, rd, ro, outCol);
+        case 52:
+            return block_52(faces, rd, ro, outCol);
+        case 53:
+            return block_53(faces, rd, ro, outCol);
+        case 54:
+            return block_54(faces, rd, ro, outCol);
+        case 55:
+            return block_55(faces, rd, ro, outCol);
+        case 56:
+            return block_56(faces, rd, ro, outCol);
+        case 57:
+            return block_57(faces, rd, ro, outCol);
+        case 58:
+            return block_58(faces, rd, ro, outCol);
+        case 59:
+            return block_59(faces, rd, ro, outCol);
+        case 60:
+            return block_60(faces, rd, ro, outCol);
+        case 61:
+            return block_61(faces, rd, ro, outCol);
+        case 62:
+            return block_62(faces, rd, ro, outCol);
+        case 63:
+            return block_63(faces, rd, ro, outCol);
+        case 64:
+            return block_64(faces, rd, ro, outCol);
+        case 65:
+            return block_65(faces, rd, ro, outCol);
+        case 66:
+            return block_66(faces, rd, ro, outCol);
+        case 67:
+            return block_67(faces, rd, ro, outCol);
+        case 68:
+            return block_68(faces, rd, ro, outCol);
+        case 69:
+            return block_69(faces, rd, ro, outCol);
+        case 70:
+            return block_70(faces, rd, ro, outCol);
+        case 71:
+            return block_71(faces, rd, ro, outCol);
+        case 72:
+            return block_72(faces, rd, ro, outCol);
+        case 73:
+            return block_73(faces, rd, ro, outCol);
+        case 74:
+            return block_74(faces, rd, ro, outCol);
+        case 75:
+            return block_75(faces, rd, ro, outCol);
     }
     return false;
 }

@@ -1,1 +1,1 @@
-execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:waxed_weathered_cut_copper_stairs"} run data modify storage tryashtar.shulker_preview:data results[-1] set value '{"translate":"tryashtar.shulker_preview.block.weathered_cut_copper.1","color":"#1607fc"}'
+execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:waxed_weathered_cut_copper_stairs"} run data modify storage tryashtar.shulker_preview:data results[-1] set value '{"translate":"tryashtar.shulker_preview.block.weathered_cut_copper.1","color":"#2007fc"}'
