@@ -589,7 +589,7 @@ def generate_shader(mc, path):
             ])
             for j, cube in enumerate(cubes):
                output.extend([
-                  f'    bool cube{j} = cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec4({comma_sep_float(cube.east_uv)}), {cube.east_rot}, vec4({comma_sep_float(cube.up_uv)}), {cube.up_rot}, vec4({comma_sep_float(cube.north_uv)}), {cube.north_rot}, uvRange, t, col);',
+                  f'    bool cube{j} = cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec4({comma_sep_float(cube.north_uv)}), {cube.north_rot}, vec4({comma_sep_float(cube.up_uv)}), {cube.up_rot}, vec4({comma_sep_float(cube.east_uv)}), {cube.east_rot}, uvRange, t, col);',
                   f'    if (cube{j} && t < minT) {{',
                   '        minT = t;',
                   '        outCol = col;',
