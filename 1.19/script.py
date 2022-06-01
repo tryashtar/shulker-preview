@@ -367,6 +367,9 @@ class Minecraft:
          if elements is not None and len(model.cubes) == 0:
             model.cubes.extend(map(lambda x: Cube(x), elements))
             model.cubes_from = current_model
+         gui = current_model.data.get('display', {}).get('gui', {}).get('rotation')
+         if gui is not None and len(model.display) == 0:
+            model.display.extend(gui)
          # find the parent and copy to hierarchy
          parent_path = current_model.data.get('parent')
          if parent_path is not None:
@@ -401,12 +404,12 @@ class Minecraft:
       for s in sets:
          found = False
          for p in self.unique_cubesets:
-            if cubes_same_as(s, p['cubes']):
+            if p['rotation'] == model.display and cubes_same_as(s, p['cubes']):
                found = True
                results.append(p)
                break
          if not found:
-            new = {'id': self.unique_cubeset_id, 'model': model.cubes_from, 'cubes': s}
+            new = {'id': self.unique_cubeset_id, 'model': model.cubes_from, 'cubes': s, 'rotation': model.display}
             self.unique_cubesets.append(new)
             self.unique_cubeset_id += 1
             results.append(new)
@@ -423,6 +426,7 @@ class Model:
       self.overrides = []
       self.textures = {}
       self.cubes = []
+      self.display = []
       self.cubes_from = None
 
    def decompose(self):
@@ -430,9 +434,9 @@ class Model:
       for c in self.cubes:
          found = False
          for s in cube_sets:
-            if ((c.up_tx is None or self.textures.get(c.up_tx) == self.textures.get(s[0].up_tx))
-            and (c.north_tx is None or self.textures.get(c.north_tx) == self.textures.get(s[0].north_tx))
-            and (c.east_tx is None or self.textures.get(c.east_tx) == self.textures.get(s[0].east_tx))):
+            if ((c.faces['up'].tx is None or self.textures.get(c.faces['up'].tx) == self.textures.get(s[0].faces['up'].tx))
+            and (c.faces['north'].tx is None or self.textures.get(c.faces['north'].tx) == self.textures.get(s[0].faces['north'].tx))
+            and (c.faces['east'].tx is None or self.textures.get(c.faces['east'].tx) == self.textures.get(s[0].faces['east'].tx))):
                s.append(c)
                found = True
                break
@@ -453,45 +457,55 @@ def cubes_same_as(s1, s2):
          return False
    return True
 
-# the shader only needs to render three faces
+class Face:
+   def __init__(self, uv, tx, rot):
+      self.uv = uv
+      self.tx = tx
+      self.rot = rot
+
 class Cube:
    def __init__(self, data):
       self.min = data['from']
       self.max = data['to']
-      self.up_uv = data['faces'].get('up',{}).get('uv', [self.min[0], self.min[2], self.max[0], self.max[2]])
-      self.up_tx = data['faces'].get('up',{}).get('texture')
-      self.up_rot = data['faces'].get('up',{}).get('rotation', 0)
-      if self.up_tx is not None:
-         self.up_tx = self.up_tx[1:]
-      self.north_uv = data['faces'].get('north',{}).get('uv', [16.0 - self.max[0], 16.0 - self.max[1], 16.0 - self.min[0], 16.0 - self.min[1]])
-      self.north_tx = data['faces'].get('north',{}).get('texture')
-      self.north_rot = data['faces'].get('north',{}).get('rotation', 0)
-      if self.north_tx is not None:
-         self.north_tx = self.north_tx[1:]
-      self.east_uv = data['faces'].get('east',{}).get('uv', [16.0 - self.max[2], 16.0 - self.max[1], 16.0 - self.min[2], 16.0 - self.min[1]])
-      self.east_tx = data['faces'].get('east',{}).get('texture')
-      self.east_rot = data['faces'].get('east',{}).get('rotation', 0)
-      if self.east_tx is not None:
-         self.east_tx = self.east_tx[1:]
+      self.faces = {}
+      for d in directions():
+         face = data['faces'].get(d, {})
+         uv = face.get('uv', self.default_uv(d))
+         tx = face.get('texture')
+         # trim off leading '#'
+         if tx is not None:
+            tx = tx[1:]
+         rot = face.get('rotation', 0)
+         self.faces[d] = Face(uv, tx, rot)
+
+   def default_uv(self, dir):
+      if dir == 'up':
+         return [self.min[0], self.min[2], self.max[0], self.max[2]]
+      if dir == 'north':
+         return [16.0 - self.max[0], 16.0 - self.max[1], 16.0 - self.min[0], 16.0 - self.min[1]]
+      if dir == 'east':
+         return [16.0 - self.max[2], 16.0 - self.max[1], 16.0 - self.min[2], 16.0 - self.min[1]]
+      if dir == 'down':
+         return [self.min[0], 16.0 - self.max[2], self.max[0], 16.0 - self.min[2]]
+      if dir == 'south':
+         return [self.min[0], 16.0 - self.max[1], self.max[0], 16.0 - self.min[1]]
+      if dir == 'west':
+         return [self.min[2], 16.0 - self.max[1], self.max[2], 16.0 - self.min[1]]
 
    def same_as(self, other):
       if self.min != other.min:
          return False
       if self.max != other.max:
          return False
-      if self.up_uv != other.up_uv:
-         return False
-      if self.north_uv != other.north_uv:
-         return False
-      if self.east_uv != other.east_uv:
-         return False
-      if self.up_rot != other.up_rot:
-         return False
-      if self.north_rot != other.north_rot:
-         return False
-      if self.east_rot != other.east_rot:
-         return False
+      for d in directions():
+         if self.faces[d].uv != other.faces[d].uv:
+            return False
+         if self.faces[d].rot != other.faces[d].rot:
+            return False
       return True
+
+def directions():
+   return ['north', 'south', 'east', 'west', 'up', 'down']
 
 def add_namespace(rc):
    if ':' in rc:
@@ -566,40 +580,53 @@ def generate_shader(mc, path):
       if line == '// custom blocks start':
          reading = False
          after = [
-            'bool custom_block(int modelID, int faces, vec3 rd, vec3 ro, out vec4 outCol) {',
+            'bool custom_block(int modelID, int faces, vec2 uv, out vec4 outCol) {',
             '    switch (modelID) {'
          ]
          for u in mc.unique_cubesets:
             i = u['id']
             cubes = u['cubes']
             model = u['model']
+            display = u['rotation']
             if len(cubes) == 0:
                continue
             after.extend([
                f'        case {i}:',
-               f'            return block_{i}(faces, rd, ro, outCol);',
+               f'            return block_{i}(faces, uv, outCol);',
             ])
             output.extend([
                f'// from {model.resource}',
-               f'bool block_{i}(int faces, vec3 rd, vec3 ro, out vec4 outCol) {{',
-               '    vec4 uvRange = getUV();',
-               '    float minT = 99999999.0;',
-               '    float t;',
-               '    vec4 col;'
+               f'bool block_{i}(int faces, vec2 uv, out vec4 outCol) {{',
+               f'    float xRot = {display[0]};',
+               f'    float yRot = {display[1]};',
+               '    vec3 rd, ro; mat3 normalMat; vec4 uvRange;',
+               '    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);',
+               '    float t;'
             ])
-            for j, cube in enumerate(cubes):
+            if len(cubes) == 1:
+               oc = 'outCol'
+            else:
+               oc = 'col'
                output.extend([
-                  f'    bool cube{j} = cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec4({comma_sep_float(cube.north_uv)}), {cube.north_rot}, vec4({comma_sep_float(cube.up_uv)}), {cube.up_rot}, vec4({comma_sep_float(cube.east_uv)}), {cube.east_rot}, uvRange, t, col);',
-                  f'    if (cube{j} && t < minT) {{',
-                  '        minT = t;',
-                  '        outCol = col;',
-                  '    }'
+                  '    float minT = 99999999.0;',
+                  '    vec4 col;'
                ])
-            all_cubes = " || ".join(map(lambda x: f'cube{x}', range(len(cubes))))
-            output.extend([
-               f'    return {all_cubes};',
-               '}'
-            ])
+            for j, cube in enumerate(cubes):
+               line = f'cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec4({comma_sep_float(cube.faces["east"].uv)}), {cube.faces["east"].rot}, vec4({comma_sep_float(cube.faces["up"].uv)}), {cube.faces["up"].rot}, vec4({comma_sep_float(cube.faces["north"].uv)}), {cube.faces["north"].rot}, uvRange, normalMat, t, {oc});'
+               if len(cubes) == 1:
+                  output.append(f'    return {line}')
+               else:
+                  output.extend([
+                     f'    bool cube{j} = {line}'
+                     f'    if (cube{j} && t < minT) {{',
+                     '        minT = t;',
+                     '        outCol = col;',
+                     '    }'
+                  ])
+            if len(cubes) > 1:
+               all_cubes = " || ".join(map(lambda x: f'cube{x}', range(len(cubes))))
+               output.append(f'    return {all_cubes};')
+            output.append('}')
          after.extend([
             '    }',
             '    return false;',
@@ -722,13 +749,14 @@ def generate_item_lines(mc, items, row, font):
          unique_textures.sort()
          # we can only render one texture at a time, have to stack overlays for separate textures
          for s in sets:
+            matching_cubes = [find_same_cube(x, model.cubes) for x in s['cubes']]
             for t in unique_textures:
                bitfield = 0
-               if any([model.textures.get(find_same_cube(x, model.cubes).up_tx) == t for x in s['cubes']]):
+               if any([model.textures.get(x.faces['up'].tx) == t for x in matching_cubes]):
                   bitfield += 1
-               if any([model.textures.get(find_same_cube(x, model.cubes).north_tx) == t for x in s['cubes']]):
+               if any([model.textures.get(x.faces['north'].tx) == t for x in matching_cubes]):
                   bitfield += 2
-               if any([model.textures.get(find_same_cube(x, model.cubes).east_tx) == t for x in s['cubes']]):
+               if any([model.textures.get(x.faces['east'].tx) == t for x in matching_cubes]):
                   bitfield += 4
                # unique_textures includes e.g. bottom faces, so skip if not visible
                if bitfield > 0:
