@@ -364,9 +364,13 @@ class Minecraft:
          if elements is not None and len(model.cubes) == 0:
             model.cubes.extend(map(lambda x: Cube(x), elements))
             model.cubes_from = current_model
-         gui = current_model.data.get('display', {}).get('gui', {}).get('rotation')
-         if gui is not None and len(model.display) == 0:
-            model.display.extend(gui)
+         gui = current_model.data.get('display', {}).get('gui')
+         if gui is not None and model.display == {}:
+            model.display = {
+               'rotation': gui.get('rotation', [0, 0, 0]),
+               'scale': gui.get('scale', [0, 0, 0]),
+               'translation': gui.get('translation', [0, 0, 0])
+            }
          # find the parent and copy to hierarchy
          parent_path = current_model.data.get('parent')
          if parent_path is not None:
@@ -401,12 +405,12 @@ class Minecraft:
       for s in sets:
          found = False
          for p in self.unique_cubesets:
-            if p['rotation'] == model.display and cubes_same_as(s, p['cubes']):
+            if p['display'] == model.display and cubes_same_as(s, p['cubes']):
                found = True
                results.append(p)
                break
          if not found:
-            new = {'id': self.unique_cubeset_id, 'model': model.cubes_from, 'cubes': s, 'rotation': model.display}
+            new = {'id': self.unique_cubeset_id, 'model': model.cubes_from, 'cubes': s, 'display': model.display}
             self.unique_cubesets.append(new)
             self.unique_cubeset_id += 1
             results.append(new)
@@ -423,7 +427,7 @@ class Model:
       self.overrides = []
       self.textures = {}
       self.cubes = []
-      self.display = []
+      self.display = {}
       self.cubes_from = None
 
    def decompose(self):
@@ -464,6 +468,7 @@ class Cube:
    def __init__(self, data):
       self.min = data['from']
       self.max = data['to']
+      self.rotation = data.get('rotation')
       self.faces = {}
       for d in directions():
          face = data['faces'].get(d, {})
@@ -601,7 +606,10 @@ def generate_shader(mc, path):
             i = u['id']
             cubes = u['cubes']
             model = u['model']
-            display = u['rotation']
+            display = u['display']
+            display_rotation = display['rotation']
+            display_scale = display['scale']
+            display_translation = display['translation']
             if len(cubes) == 0:
                continue
             after.extend([
@@ -611,11 +619,13 @@ def generate_shader(mc, path):
             output.extend([
                f'// from {model.resource}',
                f'bool block_{i}(int faces, vec2 uv, out vec4 outCol) {{',
-               f'    float xRot = {display[0]};',
-               f'    float yRot = {display[1]};',
+               f'    float xRot = {float(display_rotation[0])};',
+               f'    float yRot = {float(display_rotation[1])};',
+               f'    vec3 scale = vec3({comma_sep_float(display_scale)});',
+               f'    vec3 translation = vec3({comma_sep_float(display_translation)});',
                '    int aspectX = 1, aspectY = 1, frametime = 10;',
                '    vec3 rd, ro; mat3 normalMat; vec4 uvRange;',
-               '    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);',
+               '    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);',
                '    float t;'
             ])
             if len(cubes) == 1:
@@ -627,7 +637,13 @@ def generate_shader(mc, path):
                   '    vec4 col;'
                ])
             for j, cube in enumerate(cubes):
-               line = f'cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec4({comma_sep_float(cube.faces["east"].uv)}), {cube.faces["east"].rot}, vec4({comma_sep_float(cube.faces["up"].uv)}), {cube.faces["up"].rot}, vec4({comma_sep_float(cube.faces["north"].uv)}), {cube.faces["north"].rot}, uvRange, normalMat, t, {oc});'
+               if cube.rotation:
+                  cubeRotOrigin = comma_sep_float(cube.rotation['origin'])
+                  cubeRotAngle = float(cube.rotation['angle'])
+                  cubeRotAxis = 'xyz'.find(cube.rotation['axis'])
+               else:
+                  cubeRotOrigin, cubeRotAngle, cubeRotAxis = "0.", 0.0, -1
+               line = f'cuboid(faces, rd, ro, vec3({comma_sep_float(cube.min)}), vec3({comma_sep_float(cube.max)}), vec3({cubeRotOrigin}), {cubeRotAngle}, {cubeRotAxis}, vec4({comma_sep_float(cube.faces["east"].uv)}), {cube.faces["east"].rot}, vec4({comma_sep_float(cube.faces["up"].uv)}), {cube.faces["up"].rot}, vec4({comma_sep_float(cube.faces["north"].uv)}), {cube.faces["north"].rot}, uvRange, normalMat, t, {oc});'
                if len(cubes) == 1:
                   output.append(f'    return {line}')
                else:

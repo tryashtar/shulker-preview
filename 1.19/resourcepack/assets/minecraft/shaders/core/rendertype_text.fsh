@@ -40,12 +40,12 @@ mat3 rotate(float x, float y) {
     );
 }
 
-void getProperties(vec2 uv, int aspectX, int aspectY, int frametime, float xRot, float yRot, out vec3 rd, out vec3 ro, out mat3 normalMat, out vec4 uvRange) {
+void getProperties(vec2 uv, int aspectX, int aspectY, int frametime, float xRot, float yRot, vec3 scale, vec3 translation, out vec3 rd, out vec3 ro, out mat3 normalMat, out vec4 uvRange) {
     mat3 local = rotate(xRot, yRot);
     rd = local[2];
     vec3 localX = local[0];
     vec3 localY = local[1];
-    ro = 0.5 + (localX * uv.x + localY * uv.y);
+    ro = 0.625*(0.5 + (localX * uv.x + localY * uv.y)) / scale - translation/16.;
 
     vec2 cornerUV1 = cornerTex1.xy / cornerTex1.z;
     vec2 cornerUV2 = cornerTex2.xy / cornerTex2.z;
@@ -115,7 +115,24 @@ vec4 mapUV(vec4 uv, vec4 minmax) {
  * t: The depth at which the cuboid is hit. Only written to if an intersection occurs.
  * This method returns whether an intersection occurred.
 **/
-bool cuboid(int faces, vec3 rd, vec3 ro, vec3 from, vec3 to, vec4 uvX, int rotX, vec4 uvY, int rotY, vec4 uvZ, int rotZ, vec4 uvRange, mat3 normalMat, out float t, out vec4 outCol) {
+bool cuboid(int faces, vec3 rd, vec3 ro, vec3 from, vec3 to, vec3 cubeRotOrigin, float cubeRotAngle, int cubeRotAxis, vec4 uvX, int rotX, vec4 uvY, int rotY, vec4 uvZ, int rotZ, vec4 uvRange, mat3 normalMat, out float t, out vec4 outCol) {
+    if (cubeRotAxis != -1) {
+        cubeRotOrigin = cubeRotOrigin / 16.0;
+        cubeRotOrigin.y += 0.5;
+        cubeRotAngle *= PI / 180.;
+        float c = cos(cubeRotAngle), s = sin(cubeRotAngle);
+        mat2 cubeRotMat = mat2(c, s, -s, c);
+        if (cubeRotAxis == 0) {
+            rd.yz = cubeRotMat * rd.yz;
+            ro.yz = cubeRotMat * (ro.yz - cubeRotOrigin.yz) + cubeRotOrigin.yz;
+        } else if (cubeRotAxis == 1) {
+            rd.xz = cubeRotMat * rd.xz;
+            ro.xz = cubeRotMat * (ro.xz - cubeRotOrigin.xz) + cubeRotOrigin.xz;
+        } else {
+            rd.xy = cubeRotMat * rd.xy;
+            ro.xy = cubeRotMat * (ro.xy - cubeRotOrigin.xy) + cubeRotOrigin.xy;
+        }
+    }
     from /= 16.0;
     to /= 16.0;
     vec2 flipX = vec2(0.0, 1.0);
@@ -151,45 +168,51 @@ bool cuboid(int faces, vec3 rd, vec3 ro, vec3 from, vec3 to, vec4 uvX, int rotX,
 // custom blocks start
 // from minecraft:block/cube
 bool block_0(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/snow_height2
 bool block_1(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec4(0.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 14.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 14.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/template_anvil
 bool block_2(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 4.0, 14.0), vec4(4.0, 2.0, 0.0, 14.0), 270, vec4(2.0, 2.0, 14.0, 14.0), 180, vec4(2.0, 12.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 4.0, 14.0), vec3(0.), 0.0, -1, vec4(4.0, 2.0, 0.0, 14.0), 270, vec4(2.0, 2.0, 14.0, 14.0), 180, vec4(2.0, 12.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(4.0, 4.0, 3.0), vec3(12.0, 5.0, 13.0), vec4(5.0, 3.0, 4.0, 13.0), 270, vec4(4.0, 3.0, 12.0, 13.0), 180, vec4(4.0, 11.0, 12.0, 12.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(4.0, 4.0, 3.0), vec3(12.0, 5.0, 13.0), vec3(0.), 0.0, -1, vec4(5.0, 3.0, 4.0, 13.0), 270, vec4(4.0, 3.0, 12.0, 13.0), 180, vec4(4.0, 11.0, 12.0, 12.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 5.0, 4.0), vec3(10.0, 10.0, 12.0), vec4(10.0, 4.0, 5.0, 12.0), 270, vec4(6.0, 4.0, 10.0, 12.0), 0, vec4(6.0, 6.0, 10.0, 11.0), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 5.0, 4.0), vec3(10.0, 10.0, 12.0), vec3(0.), 0.0, -1, vec4(10.0, 4.0, 5.0, 12.0), 270, vec4(6.0, 4.0, 10.0, 12.0), 0, vec4(6.0, 6.0, 10.0, 11.0), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
@@ -198,35 +221,39 @@ bool block_2(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/template_anvil
 bool block_3(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(3.0, 10.0, 0.0), vec3(13.0, 16.0, 16.0), vec4(16.0, 0.0, 10.0, 16.0), 270, vec4(3.0, 0.0, 13.0, 16.0), 180, vec4(3.0, 0.0, 13.0, 6.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(3.0, 10.0, 0.0), vec3(13.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(16.0, 0.0, 10.0, 16.0), 270, vec4(3.0, 0.0, 13.0, 16.0), 180, vec4(3.0, 0.0, 13.0, 6.0), 0, uvRange, normalMat, t, outCol);
 }
 // from fake:chest
 bool block_4(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 45;
+    float xRot = 30.0;
+    float yRot = 45.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 1.0), vec3(15.0, 14.0, 15.0), vec4(10.5, 4.75, 7.0, 3.5), 0, vec4(10.5, 0.0, 7.0, 3.5), 0, vec4(14.0, 4.75, 10.5, 3.5), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 1.0), vec3(15.0, 14.0, 15.0), vec3(0.), 0.0, -1, vec4(10.5, 4.75, 7.0, 3.5), 0, vec4(10.5, 0.0, 7.0, 3.5), 0, vec4(14.0, 4.75, 10.5, 3.5), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 1.0), vec3(15.0, 10.0, 15.0), vec4(10.5, 10.75, 7.0, 8.25), 0, vec4(10.5, 4.75, 7.0, 8.25), 0, vec4(14.0, 10.75, 10.5, 8.25), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 1.0), vec3(15.0, 10.0, 15.0), vec3(0.), 0.0, -1, vec4(10.5, 10.75, 7.0, 8.25), 0, vec4(10.5, 4.75, 7.0, 8.25), 0, vec4(14.0, 10.75, 10.5, 8.25), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(7.0, 7.0, 0.0), vec3(9.0, 11.0, 1.0), vec4(1.0, 1.25, 0.75, 0.25), 0, vec4(1.25, 0.25, 0.75, 0.0), 0, vec4(1.5, 1.25, 1.0, 0.25), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(7.0, 7.0, 0.0), vec3(9.0, 11.0, 1.0), vec3(0.), 0.0, -1, vec4(1.0, 1.25, 0.75, 0.25), 0, vec4(1.25, 0.25, 0.75, 0.0), 0, vec4(1.5, 1.25, 1.0, 0.25), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
@@ -235,30 +262,34 @@ bool block_4(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/template_azalea
 bool block_5(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 16.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 16.0, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/template_azalea
 bool block_6(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(16.0, 16.0, 0.01), vec4(15.99, 0.0, 16.0, 11.0), 0, vec4(0.0, 0.0, 16.0, 0.01), 0, vec4(0.0, 0.0, 16.0, 11.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(16.0, 16.0, 0.01), vec3(0.), 0.0, -1, vec4(15.99, 0.0, 16.0, 11.0), 0, vec4(0.0, 0.0, 16.0, 0.01), 0, vec4(0.0, 0.0, 16.0, 11.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 15.99), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, vec4(0.0, 15.99, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 11.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 15.99), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, vec4(0.0, 15.99, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 11.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -267,20 +298,22 @@ bool block_6(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/template_azalea
 bool block_7(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(0.01, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 11.0), 0, vec4(0.0, 0.0, 0.01, 16.0), 0, vec4(15.99, 0.0, 16.0, 11.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(0.01, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(16.0, 0.0, 0.0, 11.0), 0, vec4(0.0, 0.0, 0.01, 16.0), 0, vec4(15.99, 0.0, 16.0, 11.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(15.99, 5.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 11.0), 0, vec4(15.99, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(15.99, 5.0, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 11.0), 0, vec4(15.99, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -289,100 +322,118 @@ bool block_7(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/template_azalea
 bool block_8(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.1, 0.0, 8.0), vec3(15.9, 15.9, 8.0), vec4(8.0, 0.09999999999999964, 8.0, 16.0), 0, vec4(0.1, 8.0, 15.9, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.1, 0.0, 8.0), vec3(15.9, 15.9, 8.0), vec3(8.0, 8.0, 8.0), 45.0, 1, vec4(8.0, 0.09999999999999964, 8.0, 16.0), 0, vec4(0.1, 8.0, 15.9, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/template_azalea
 bool block_9(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.1), vec3(8.0, 15.9, 15.9), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.1, 8.0, 15.9), 0, vec4(8.0, 0.09999999999999964, 8.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.1), vec3(8.0, 15.9, 15.9), vec3(8.0, 8.0, 8.0), 45.0, 1, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.1, 8.0, 15.9), 0, vec4(8.0, 0.09999999999999964, 8.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/beacon
 bool block_10(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(2.0, 0.1, 2.0), vec3(14.0, 3.0, 14.0), vec4(2.0, 13.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 13.0, 14.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(2.0, 0.1, 2.0), vec3(14.0, 3.0, 14.0), vec3(0.), 0.0, -1, vec4(2.0, 13.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 13.0, 14.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/beacon
 bool block_11(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(3.0, 3.0, 3.0), vec3(13.0, 14.0, 13.0), vec4(3.0, 2.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 2.0, 13.0, 13.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(3.0, 3.0, 3.0), vec3(13.0, 14.0, 13.0), vec3(0.), 0.0, -1, vec4(3.0, 2.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 2.0, 13.0, 13.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/cactus
 bool block_12(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 1.0), vec3(16.0, 16.0, 15.0), vec4(1.0, 0.0, 15.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 15.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 1.0), vec3(16.0, 16.0, 15.0), vec3(0.), 0.0, -1, vec4(1.0, 0.0, 15.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 15.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/cactus
 bool block_13(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(1.0, 0.0, 0.0), vec3(15.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(1.0, 0.0, 15.0, 16.0), 0, vec4(1.0, 0.0, 15.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(1.0, 0.0, 0.0), vec3(15.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(1.0, 0.0, 15.0, 16.0), 0, vec4(1.0, 0.0, 15.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/cube_directional
 bool block_14(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 90, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 16.0), 90, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from fake:conduit
 bool block_15(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 45;
+    float xRot = 30.0;
+    float yRot = 45.0;
+    vec3 scale = vec3(1.0, 1.0, 1.0);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(5.0, 5.0, 5.0), vec3(11.0, 11.0, 11.0), vec4(9.0, 12.0, 6.0, 6.0), 0, vec4(6.0, 6.0, 9.0, 0.0), 0, vec4(6.0, 12.0, 3.0, 6.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(5.0, 5.0, 5.0), vec3(11.0, 11.0, 11.0), vec3(0.), 0.0, -1, vec4(9.0, 12.0, 6.0, 6.0), 0, vec4(6.0, 6.0, 9.0, 0.0), 0, vec4(6.0, 12.0, 3.0, 6.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/end_rod
 bool block_16(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 6.0), vec3(10.0, 1.0, 10.0), vec4(2.0, 6.0, 6.0, 7.0), 0, vec4(2.0, 2.0, 6.0, 6.0), 0, vec4(2.0, 6.0, 6.0, 7.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 6.0), vec3(10.0, 1.0, 10.0), vec3(0.), 0.0, -1, vec4(2.0, 6.0, 6.0, 7.0), 0, vec4(2.0, 2.0, 6.0, 6.0), 0, vec4(2.0, 6.0, 6.0, 7.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 1.0, 7.0), vec3(9.0, 16.0, 9.0), vec4(0.0, 0.0, 2.0, 15.0), 0, vec4(2.0, 0.0, 4.0, 2.0), 0, vec4(0.0, 0.0, 2.0, 15.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 1.0, 7.0), vec3(9.0, 16.0, 9.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 2.0, 15.0), 0, vec4(2.0, 0.0, 4.0, 2.0), 0, vec4(0.0, 0.0, 2.0, 15.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -391,70 +442,78 @@ bool block_16(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/lectern
 bool block_17(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec4(0.0, 6.0, 16.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 180, vec4(0.0, 14.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 6.0, 16.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 180, vec4(0.0, 14.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/lectern
 bool block_18(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(4.0, 2.0, 4.0), vec3(12.0, 15.0, 12.0), vec4(2.0, 16.0, 15.0, 8.0), 90, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 13.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(4.0, 2.0, 4.0), vec3(12.0, 15.0, 12.0), vec3(0.), 0.0, -1, vec4(2.0, 16.0, 15.0, 8.0), 90, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 13.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/lectern
 bool block_19(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0125, 12.0, 3.0), vec3(15.9875, 16.0, 16.0), vec4(0.0, 4.0, 13.0, 8.0), 0, vec4(0.0, 1.0, 16.0, 14.0), 180, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0125, 12.0, 3.0), vec3(15.9875, 16.0, 16.0), vec3(8.0, 8.0, 8.0), -22.5, 0, vec4(0.0, 4.0, 13.0, 8.0), 0, vec4(0.0, 1.0, 16.0, 14.0), 180, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, normalMat, t, outCol);
 }
 // from fake:red_bed
 bool block_20(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 160;
+    float xRot = 30.0;
+    float yRot = 160.0;
+    vec3 scale = vec3(0.5325, 0.5325, 0.5325);
+    vec3 translation = vec3(2.0, 3.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(13.0, 0.0, 0.0), vec3(16.0, 3.0, 3.0), vec4(12.5, 5.25, 13.25, 6.0), 0, vec4(13.25, 4.5, 14.0, 5.25), 0, vec4(13.25, 5.25, 14.0, 6.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(13.0, 0.0, 0.0), vec3(16.0, 3.0, 3.0), vec3(0.), 0.0, -1, vec4(12.5, 5.25, 13.25, 6.0), 0, vec4(13.25, 4.5, 14.0, 5.25), 0, vec4(13.25, 5.25, 14.0, 6.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 3.0, 16.0), vec3(16.0, 9.0, 32.0), vec4(5.5, 7.0, 7.0, 11.0), 90, vec4(1.5, 7.0, 5.5, 11.0), 0, vec4(0.0, 7.0, 16.0, 13.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 3.0, 16.0), vec3(16.0, 9.0, 32.0), vec3(0.), 0.0, -1, vec4(5.5, 7.0, 7.0, 11.0), 90, vec4(1.5, 7.0, 5.5, 11.0), 0, vec4(0.0, 7.0, 16.0, 13.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(13.0, 0.0, 29.0), vec3(16.0, 3.0, 32.0), vec4(13.25, 3.75, 14.0, 4.5), 0, vec4(13.25, 3.0, 14.0, 3.75), 270, vec4(14.0, 3.75, 14.75, 4.5), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(13.0, 0.0, 29.0), vec3(16.0, 3.0, 32.0), vec3(0.), 0.0, -1, vec4(13.25, 3.75, 14.0, 4.5), 0, vec4(13.25, 3.0, 14.0, 3.75), 270, vec4(14.0, 3.75, 14.75, 4.5), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 29.0), vec3(3.0, 3.0, 32.0), vec4(14.0, 0.75, 14.75, 1.5), 0, vec4(13.25, 0.0, 14.0, 0.75), 180, vec4(14.75, 0.75, 15.5, 1.5), 0, uvRange, normalMat, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 29.0), vec3(3.0, 3.0, 32.0), vec3(0.), 0.0, -1, vec4(14.0, 0.75, 14.75, 1.5), 0, vec4(13.25, 0.0, 14.0, 0.75), 180, vec4(14.75, 0.75, 15.5, 1.5), 0, uvRange, normalMat, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 3.0, 0.0), vec3(16.0, 9.0, 16.0), vec4(5.5, 1.5, 7.0, 5.5), 90, vec4(1.5, 1.5, 5.5, 5.5), 0, vec4(1.5, 0.0, 5.5, 1.5), 180, uvRange, normalMat, t, col);
+    bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 3.0, 0.0), vec3(16.0, 9.0, 16.0), vec3(0.), 0.0, -1, vec4(5.5, 1.5, 7.0, 5.5), 90, vec4(1.5, 1.5, 5.5, 5.5), 0, vec4(1.5, 0.0, 5.5, 1.5), 180, uvRange, normalMat, t, col);
     if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(3.0, 3.0, 3.0), vec4(14.75, 2.25, 15.5, 3.0), 0, vec4(13.25, 1.5, 14.0, 2.25), 90, vec4(12.5, 2.25, 13.25, 3.0), 0, uvRange, normalMat, t, col);
+    bool cube5 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(3.0, 3.0, 3.0), vec3(0.), 0.0, -1, vec4(14.75, 2.25, 15.5, 3.0), 0, vec4(13.25, 1.5, 14.0, 2.25), 90, vec4(12.5, 2.25, 13.25, 3.0), 0, uvRange, normalMat, t, col);
     if (cube5 && t < minT) {
         minT = t;
         outCol = col;
@@ -463,60 +522,68 @@ bool block_20(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/template_farmland
 bool block_21(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(0.0, 1.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 15.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 1.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/slab
 bool block_22(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/observer
 bool block_23(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/composter
 bool block_24(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 0.0), vec3(14.0, 16.0, 2.0), vec3(0.), 0.0, -1, vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 14.0), vec3(14.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
@@ -525,50 +592,52 @@ bool block_24(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/fence_inventory
 bool block_25(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 135;
+    float xRot = 30.0;
+    float yRot = 135.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 0.0), vec3(10.0, 16.0, 4.0), vec4(0.0, 0.0, 4.0, 16.0), 0, vec4(6.0, 0.0, 10.0, 4.0), 0, vec4(6.0, 0.0, 10.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 0.0), vec3(10.0, 16.0, 4.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 4.0, 16.0), 0, vec4(6.0, 0.0, 10.0, 4.0), 0, vec4(6.0, 0.0, 10.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 12.0), vec3(10.0, 16.0, 16.0), vec4(12.0, 0.0, 16.0, 16.0), 0, vec4(6.0, 12.0, 10.0, 16.0), 0, vec4(6.0, 0.0, 10.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 12.0), vec3(10.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(12.0, 0.0, 16.0, 16.0), 0, vec4(6.0, 12.0, 10.0, 16.0), 0, vec4(6.0, 0.0, 10.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 0.0), vec3(9.0, 15.0, 16.0), vec4(0.0, 1.0, 16.0, 4.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 0.0), vec3(9.0, 15.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 1.0, 16.0, 4.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(7.0, 12.0, -2.0), vec3(9.0, 15.0, 0.0), vec4(0.0, 1.0, 2.0, 4.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, normalMat, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(7.0, 12.0, -2.0), vec3(9.0, 15.0, 0.0), vec3(0.), 0.0, -1, vec4(0.0, 1.0, 2.0, 4.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, normalMat, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 16.0), vec3(9.0, 15.0, 18.0), vec4(14.0, 1.0, 16.0, 4.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, normalMat, t, col);
+    bool cube4 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 16.0), vec3(9.0, 15.0, 18.0), vec3(0.), 0.0, -1, vec4(14.0, 1.0, 16.0, 4.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, normalMat, t, col);
     if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 0.0), vec3(9.0, 9.0, 16.0), vec4(0.0, 7.0, 16.0, 10.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, normalMat, t, col);
+    bool cube5 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 0.0), vec3(9.0, 9.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 7.0, 16.0, 10.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, normalMat, t, col);
     if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(7.0, 6.0, -2.0), vec3(9.0, 9.0, 0.0), vec4(0.0, 7.0, 2.0, 10.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, normalMat, t, col);
+    bool cube6 = cuboid(faces, rd, ro, vec3(7.0, 6.0, -2.0), vec3(9.0, 9.0, 0.0), vec3(0.), 0.0, -1, vec4(0.0, 7.0, 2.0, 10.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, normalMat, t, col);
     if (cube6 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 16.0), vec3(9.0, 9.0, 18.0), vec4(14.0, 7.0, 16.0, 10.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, normalMat, t, col);
+    bool cube7 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 16.0), vec3(9.0, 9.0, 18.0), vec3(0.), 0.0, -1, vec4(14.0, 7.0, 16.0, 10.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, normalMat, t, col);
     if (cube7 && t < minT) {
         minT = t;
         outCol = col;
@@ -577,20 +646,22 @@ bool block_25(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/wall_inventory
 bool block_26(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 135;
+    float xRot = 30.0;
+    float yRot = 135.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 16.0, 12.0), vec4(4.0, 0.0, 12.0, 16.0), 0, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(4.0, 0.0, 12.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 16.0, 12.0), vec3(0.), 0.0, -1, vec4(4.0, 0.0, 12.0, 16.0), 0, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(4.0, 0.0, 12.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 0.0), vec3(11.0, 13.0, 16.0), vec4(0.0, 3.0, 16.0, 16.0), 0, vec4(5.0, 0.0, 11.0, 16.0), 0, vec4(5.0, 3.0, 11.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 0.0), vec3(11.0, 13.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 3.0, 16.0, 16.0), 0, vec4(5.0, 0.0, 11.0, 16.0), 0, vec4(5.0, 3.0, 11.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -599,50 +670,52 @@ bool block_26(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/dragon_egg
 bool block_27(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 15.0, 6.0), vec3(10.0, 16.0, 10.0), vec4(6.0, 15.0, 10.0, 16.0), 0, vec4(6.0, 6.0, 10.0, 10.0), 0, vec4(6.0, 15.0, 10.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 15.0, 6.0), vec3(10.0, 16.0, 10.0), vec3(0.), 0.0, -1, vec4(6.0, 15.0, 10.0, 16.0), 0, vec4(6.0, 6.0, 10.0, 10.0), 0, vec4(6.0, 15.0, 10.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 14.0, 5.0), vec3(11.0, 15.0, 11.0), vec4(5.0, 14.0, 11.0, 15.0), 0, vec4(5.0, 5.0, 11.0, 11.0), 0, vec4(5.0, 14.0, 11.0, 15.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 14.0, 5.0), vec3(11.0, 15.0, 11.0), vec3(0.), 0.0, -1, vec4(5.0, 14.0, 11.0, 15.0), 0, vec4(5.0, 5.0, 11.0, 11.0), 0, vec4(5.0, 14.0, 11.0, 15.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(5.0, 13.0, 5.0), vec3(11.0, 14.0, 11.0), vec4(4.0, 13.0, 12.0, 14.0), 0, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(4.0, 13.0, 12.0, 14.0), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(5.0, 13.0, 5.0), vec3(11.0, 14.0, 11.0), vec3(0.), 0.0, -1, vec4(4.0, 13.0, 12.0, 14.0), 0, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(4.0, 13.0, 12.0, 14.0), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(3.0, 11.0, 3.0), vec3(13.0, 13.0, 13.0), vec4(3.0, 11.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 11.0, 13.0, 13.0), 0, uvRange, normalMat, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(3.0, 11.0, 3.0), vec3(13.0, 13.0, 13.0), vec3(0.), 0.0, -1, vec4(3.0, 11.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 11.0, 13.0, 13.0), 0, uvRange, normalMat, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 8.0, 2.0), vec3(14.0, 11.0, 14.0), vec4(2.0, 8.0, 14.0, 11.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 8.0, 14.0, 11.0), 0, uvRange, normalMat, t, col);
+    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 8.0, 2.0), vec3(14.0, 11.0, 14.0), vec3(0.), 0.0, -1, vec4(2.0, 8.0, 14.0, 11.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 8.0, 14.0, 11.0), 0, uvRange, normalMat, t, col);
     if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(1.0, 3.0, 1.0), vec3(15.0, 8.0, 15.0), vec4(1.0, 3.0, 15.0, 8.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 3.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);
+    bool cube5 = cuboid(faces, rd, ro, vec3(1.0, 3.0, 1.0), vec3(15.0, 8.0, 15.0), vec3(0.), 0.0, -1, vec4(1.0, 3.0, 15.0, 8.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 3.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);
     if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 1.0, 2.0), vec3(14.0, 3.0, 14.0), vec4(2.0, 1.0, 14.0, 3.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 1.0, 14.0, 3.0), 0, uvRange, normalMat, t, col);
+    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 1.0, 2.0), vec3(14.0, 3.0, 14.0), vec3(0.), 0.0, -1, vec4(2.0, 1.0, 14.0, 3.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 1.0, 14.0, 3.0), 0, uvRange, normalMat, t, col);
     if (cube6 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(3.0, 0.0, 3.0), vec3(13.0, 1.0, 13.0), vec4(3.0, 0.0, 13.0, 1.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 0.0, 13.0, 1.0), 0, uvRange, normalMat, t, col);
+    bool cube7 = cuboid(faces, rd, ro, vec3(3.0, 0.0, 3.0), vec3(13.0, 1.0, 13.0), vec3(0.), 0.0, -1, vec4(3.0, 0.0, 13.0, 1.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 0.0, 13.0, 1.0), 0, uvRange, normalMat, t, col);
     if (cube7 && t < minT) {
         minT = t;
         outCol = col;
@@ -651,20 +724,22 @@ bool block_27(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/grindstone
 bool block_28(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(12.0, 0.0, 6.0), vec3(14.0, 7.0, 10.0), vec4(10.0, 16.0, 6.0, 9.0), 0, vec4(12.0, 6.0, 14.0, 10.0), 0, vec4(2.0, 9.0, 4.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(12.0, 0.0, 6.0), vec3(14.0, 7.0, 10.0), vec3(0.), 0.0, -1, vec4(10.0, 16.0, 6.0, 9.0), 0, vec4(12.0, 6.0, 14.0, 10.0), 0, vec4(2.0, 9.0, 4.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 6.0), vec3(4.0, 7.0, 10.0), vec4(10.0, 16.0, 6.0, 9.0), 0, vec4(2.0, 6.0, 4.0, 10.0), 0, vec4(12.0, 9.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 6.0), vec3(4.0, 7.0, 10.0), vec3(0.), 0.0, -1, vec4(10.0, 16.0, 6.0, 9.0), 0, vec4(2.0, 6.0, 4.0, 10.0), 0, vec4(12.0, 9.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -673,20 +748,22 @@ bool block_28(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/grindstone
 bool block_29(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(12.0, 7.0, 5.0), vec3(14.0, 13.0, 11.0), vec4(0.0, 0.0, 6.0, 6.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(12.0, 7.0, 5.0), vec3(14.0, 13.0, 11.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 6.0, 6.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 7.0, 5.0), vec3(4.0, 13.0, 11.0), vec4(5.0, 3.0, 11.0, 9.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 7.0, 5.0), vec3(4.0, 13.0, 11.0), vec3(0.), 0.0, -1, vec4(5.0, 3.0, 11.0, 9.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -695,40 +772,46 @@ bool block_29(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/grindstone
 bool block_30(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(4.0, 4.0, 2.0), vec3(12.0, 16.0, 14.0), vec4(0.0, 0.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(4.0, 4.0, 2.0), vec3(12.0, 16.0, 14.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/button_inventory
 bool block_31(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(5.0, 6.0, 6.0), vec3(11.0, 10.0, 10.0), vec4(6.0, 12.0, 10.0, 16.0), 0, vec4(5.0, 10.0, 11.0, 6.0), 0, vec4(5.0, 12.0, 11.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(5.0, 6.0, 6.0), vec3(11.0, 10.0, 10.0), vec3(0.), 0.0, -1, vec4(6.0, 12.0, 10.0, 16.0), 0, vec4(5.0, 10.0, 11.0, 6.0), 0, vec4(5.0, 12.0, 11.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/stairs
 bool block_32(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 135;
+    float xRot = 30.0;
+    float yRot = 135.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 8.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 8.0), 0, vec4(8.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 8.0, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 8.0), 0, vec4(8.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -737,25 +820,27 @@ bool block_32(int faces, vec2 uv, out vec4 outCol) {
 }
 // from fake:red_banner
 bool block_33(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 20;
+    float xRot = 30.0;
+    float yRot = 20.0;
+    vec3 scale = vec3(0.5325, 0.5325, 0.5325);
+    vec3 translation = vec3(0.0, -3.25, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(7.33333, 0.0, 7.33333), vec3(8.66666, 28.0, 8.66666), vec4(11.0, 0.5, 11.5, 11.0), 0, vec4(11.5, 0.0, 12.0, 0.5), 0, vec4(11.5, 0.5, 12.0, 11.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(7.33333, 0.0, 7.33333), vec3(8.66666, 28.0, 8.66666), vec3(0.), 0.0, -1, vec4(11.0, 0.5, 11.5, 11.0), 0, vec4(11.5, 0.0, 12.0, 0.5), 0, vec4(11.5, 0.5, 12.0, 11.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.33333, 28.0, 7.33333), vec3(14.66667, 29.33333, 8.66667), vec4(0.0, 11.0, 0.5, 11.5), 0, vec4(5.5, 11.0, 0.5, 10.5), 0, vec4(6.0, 11.0, 11.0, 11.5), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.33333, 28.0, 7.33333), vec3(14.66667, 29.33333, 8.66667), vec3(0.), 0.0, -1, vec4(0.0, 11.0, 0.5, 11.5), 0, vec4(5.5, 11.0, 0.5, 10.5), 0, vec4(6.0, 11.0, 11.0, 11.5), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.33333, 2.66667, 6.33333), vec3(14.66667, 29.33333, 7.33333), vec4(0.0, 0.25, 0.25, 10.25), 0, vec4(5.25, 0.0, 0.25, 0.25), 0, vec4(0.25, 0.25, 5.25, 10.25), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.33333, 2.66667, 6.33333), vec3(14.66667, 29.33333, 7.33333), vec3(0.), 0.0, -1, vec4(0.0, 0.25, 0.25, 10.25), 0, vec4(5.25, 0.0, 0.25, 0.25), 0, vec4(0.25, 0.25, 5.25, 10.25), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
@@ -764,55 +849,59 @@ bool block_33(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/carpet
 bool block_34(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 1.0, 16.0), vec4(0.0, 15.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 15.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 1.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 15.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 15.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from fake:dragon_head
 bool block_35(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 45;
+    float xRot = 30.0;
+    float yRot = 45.0;
+    vec3 scale = vec3(0.6, 0.6, 0.6);
+    vec3 translation = vec3(-2.0, 2.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 4.0, -14.0), vec3(14.0, 9.0, 2.0), vec4(11.0, 3.75, 12.0, 4.0625), 0, vec4(12.75, 3.75, 12.0, 2.75), 0, vec4(12.0, 3.75, 12.75, 4.0625), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 4.0, -14.0), vec3(14.0, 9.0, 2.0), vec3(0.), 0.0, -1, vec4(11.0, 3.75, 12.0, 4.0625), 0, vec4(12.75, 3.75, 12.0, 2.75), 0, vec4(12.0, 3.75, 12.75, 4.0625), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(7.0, 2.875, 8.0, 3.875), 0, vec4(9.0, 2.875, 8.0, 1.875), 0, vec4(8.0, 2.875, 9.0, 3.875), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(7.0, 2.875, 8.0, 3.875), 0, vec4(9.0, 2.875, 8.0, 1.875), 0, vec4(8.0, 2.875, 9.0, 3.875), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(11.0, 16.0, 6.0), vec3(13.0, 20.0, 12.0), vec4(0.875, 0.375, 0.5, 0.625), 0, vec4(0.375, 0.375, 0.5, 0.0), 0, vec4(0.5, 0.375, 0.375, 0.625), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(11.0, 16.0, 6.0), vec3(13.0, 20.0, 12.0), vec3(0.), 0.0, -1, vec4(0.875, 0.375, 0.5, 0.625), 0, vec4(0.375, 0.375, 0.5, 0.0), 0, vec4(0.5, 0.375, 0.375, 0.625), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(11.0, 9.0, -12.0), vec3(13.0, 11.0, -8.0), vec4(7.625, 0.25, 7.375, 0.375), 0, vec4(7.25, 0.25, 7.375, 0.0), 0, vec4(7.375, 0.25, 7.25, 0.375), 0, uvRange, normalMat, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(11.0, 9.0, -12.0), vec3(13.0, 11.0, -8.0), vec3(0.), 0.0, -1, vec4(7.625, 0.25, 7.375, 0.375), 0, vec4(7.25, 0.25, 7.375, 0.0), 0, vec4(7.375, 0.25, 7.25, 0.375), 0, uvRange, normalMat, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(3.0, 16.0, 6.0), vec3(5.0, 20.0, 12.0), vec4(0.0, 0.375, 0.375, 0.625), 0, vec4(0.5, 0.375, 0.375, 0.0), 0, vec4(0.375, 0.375, 0.5, 0.625), 0, uvRange, normalMat, t, col);
+    bool cube4 = cuboid(faces, rd, ro, vec3(3.0, 16.0, 6.0), vec3(5.0, 20.0, 12.0), vec3(0.), 0.0, -1, vec4(0.0, 0.375, 0.375, 0.625), 0, vec4(0.5, 0.375, 0.375, 0.0), 0, vec4(0.375, 0.375, 0.5, 0.625), 0, uvRange, normalMat, t, col);
     if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(3.0, 9.0, -12.0), vec3(5.0, 11.0, -8.0), vec4(7.0, 0.25, 7.25, 0.375), 0, vec4(7.375, 0.25, 7.25, 0.0), 0, vec4(7.25, 0.25, 7.375, 0.375), 0, uvRange, normalMat, t, col);
+    bool cube5 = cuboid(faces, rd, ro, vec3(3.0, 9.0, -12.0), vec3(5.0, 11.0, -8.0), vec3(0.), 0.0, -1, vec4(7.0, 0.25, 7.25, 0.375), 0, vec4(7.375, 0.25, 7.25, 0.0), 0, vec4(7.25, 0.25, 7.375, 0.375), 0, uvRange, normalMat, t, col);
     if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 0.0, -14.0), vec3(14.0, 4.0, 2.0), vec4(11.0, 5.0625, 12.0, 5.3125), 0, vec4(12.75, 5.0625, 12.0, 4.0625), 0, vec4(12.0, 5.0625, 12.75, 5.3125), 0, uvRange, normalMat, t, col);
+    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 0.0, -14.0), vec3(14.0, 4.0, 2.0), vec3(0.0, 8.0, 0.0), -22.5, 0, vec4(11.0, 5.0625, 12.0, 5.3125), 0, vec4(12.75, 5.0625, 12.0, 4.0625), 0, vec4(12.0, 5.0625, 12.75, 5.3125), 0, uvRange, normalMat, t, col);
     if (cube6 && t < minT) {
         minT = t;
         outCol = col;
@@ -821,30 +910,34 @@ bool block_35(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/honey_block
 bool block_36(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(1.0, 1.0, 1.0), vec3(15.0, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(1.0, 1.0, 1.0), vec3(15.0, 15.0, 15.0), vec3(0.), 0.0, -1, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, uvRange, normalMat, t, outCol);
 }
 // from fake:player_head
 bool block_37(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 45;
+    float xRot = 30.0;
+    float yRot = 45.0;
+    vec3 scale = vec3(1.0, 1.0, 1.0);
+    vec3 translation = vec3(0.0, 3.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 8.0, 12.0), vec4(0.0, 2.0, 2.0, 4.0), 0, vec4(4.0, 2.0, 2.0, 0.0), 0, vec4(2.0, 2.0, 4.0, 4.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 8.0, 12.0), vec3(0.), 0.0, -1, vec4(0.0, 2.0, 2.0, 4.0), 0, vec4(4.0, 2.0, 2.0, 0.0), 0, vec4(2.0, 2.0, 4.0, 4.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(3.5, -0.5, 3.5), vec3(12.5, 8.5, 12.5), vec4(8.0, 2.0, 10.0, 4.0), 0, vec4(12.0, 2.0, 10.0, 0.0), 0, vec4(10.0, 2.0, 12.0, 4.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(3.5, -0.5, 3.5), vec3(12.5, 8.5, 12.5), vec3(0.), 0.0, -1, vec4(8.0, 2.0, 10.0, 4.0), 0, vec4(12.0, 2.0, 10.0, 0.0), 0, vec4(10.0, 2.0, 12.0, 4.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -853,60 +946,64 @@ bool block_37(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/scaffolding_stable
 bool block_38(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 15.99, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 0.009999999999999787), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.009999999999999787), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 15.99, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 0.009999999999999787), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.009999999999999787), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/scaffolding_stable
 bool block_39(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 2.0), vec3(0.), 0.0, -1, vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 14.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(0.0, 14.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 14.0), vec3(2.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(0.0, 14.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 14.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 14.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 2.0), vec3(0.), 0.0, -1, vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, normalMat, t, col);
+    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 0.0), vec3(14.0, 16.0, 2.0), vec3(0.), 0.0, -1, vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, normalMat, t, col);
     if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(14.0, 0.0, 2.0, 2.0), 0, uvRange, normalMat, t, col);
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 14.0), vec3(14.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(14.0, 0.0, 2.0, 2.0), 0, uvRange, normalMat, t, col);
     if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(14.0, 14.0, 2.0), vec3(16.0, 16.0, 14.0), vec4(14.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, uvRange, normalMat, t, col);
+    bool cube6 = cuboid(faces, rd, ro, vec3(14.0, 14.0, 2.0), vec3(16.0, 16.0, 14.0), vec3(0.), 0.0, -1, vec4(14.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, uvRange, normalMat, t, col);
     if (cube6 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(0.0, 14.0, 2.0), vec3(2.0, 16.0, 14.0), vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, uvRange, normalMat, t, col);
+    bool cube7 = cuboid(faces, rd, ro, vec3(0.0, 14.0, 2.0), vec3(2.0, 16.0, 14.0), vec3(0.), 0.0, -1, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, uvRange, normalMat, t, col);
     if (cube7 && t < minT) {
         minT = t;
         outCol = col;
@@ -915,20 +1012,22 @@ bool block_39(int faces, vec2 uv, out vec4 outCol) {
 }
 // from fake:shulker_box
 bool block_40(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 45;
+    float xRot = 30.0;
+    float yRot = 45.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 4.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(8.0, 4.0, 12.0, 7.0), 0, vec4(4.0, 0.0, 8.0, 4.0), 0, vec4(12.0, 4.0, 16.0, 7.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 4.0, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(8.0, 4.0, 12.0, 7.0), 0, vec4(4.0, 0.0, 8.0, 4.0), 0, vec4(12.0, 4.0, 16.0, 7.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(8.0, 11.0, 12.0, 13.0), 0, vec4(4.0, 7.0, 8.0, 11.0), 0, vec4(12.0, 11.0, 16.0, 13.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec3(0.), 0.0, -1, vec4(8.0, 11.0, 12.0, 13.0), 0, vec4(4.0, 7.0, 8.0, 11.0), 0, vec4(12.0, 11.0, 16.0, 13.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -937,20 +1036,22 @@ bool block_40(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/slime_block
 bool block_41(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(3.0, 3.0, 3.0), vec3(13.0, 13.0, 13.0), vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(3.0, 3.0, 3.0), vec3(13.0, 13.0, 13.0), vec3(0.), 0.0, -1, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -959,60 +1060,70 @@ bool block_41(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/stonecutter
 bool block_42(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 9.0, 16.0), vec4(0.0, 7.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 7.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 9.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 7.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 7.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/stonecutter
 bool block_43(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(1.0, 9.0, 8.0), vec3(15.0, 16.0, 8.0), vec4(8.0, 0.0, 8.0, 7.0), 0, vec4(1.0, 8.0, 15.0, 8.0), 0, vec4(1.0, 9.0, 15.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(1.0, 9.0, 8.0), vec3(15.0, 16.0, 8.0), vec3(0.), 0.0, -1, vec4(8.0, 0.0, 8.0, 7.0), 0, vec4(1.0, 8.0, 15.0, 8.0), 0, vec4(1.0, 9.0, 15.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/big_dripleaf
 bool block_44(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, -2.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 15.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(0.0, 1.0, 16.0, 1.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 1.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 15.0, 0.0), vec3(16.0, 15.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 1.0, 16.0, 1.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 1.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/big_dripleaf
 bool block_45(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, -2.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(16.0, 15.0, 0.002), vec4(15.998, 1.0, 16.0, 5.0), 0, vec4(0.0, 0.0, 16.0, 0.002), 0, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(16.0, 15.0, 0.002), vec3(0.), 0.0, -1, vec4(15.998, 1.0, 16.0, 5.0), 0, vec4(0.0, 0.0, 16.0, 0.002), 0, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/big_dripleaf
 bool block_46(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, -2.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(0.002, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 1.0, 16.0, 5.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(0.002, 15.0, 16.0), vec3(0.), 0.0, -1, vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 1.0, 16.0, 5.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(15.998, 11.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 0.002000000000000668, 5.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(15.998, 11.0, 0.0), vec3(16.0, 15.0, 16.0), vec3(0.), 0.0, -1, vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 0.002000000000000668, 5.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -1021,20 +1132,22 @@ bool block_46(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/big_dripleaf
 bool block_47(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, -2.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec3(8.0, 8.0, 12.0), 45.0, 1, vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec3(8.0, 8.0, 12.0), -45.0, 1, vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -1043,45 +1156,47 @@ bool block_47(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/chorus_plant
 bool block_48(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 2.0), vec3(14.0, 16.0, 14.0), vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 2.0), vec3(14.0, 16.0, 14.0), vec3(0.), 0.0, -1, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec3(0.), 0.0, -1, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec3(0.), 0.0, -1, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, normalMat, t, col);
+    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec3(0.), 0.0, -1, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, normalMat, t, col);
     if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 2.0, 14.0), vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 2.0, 14.0), vec3(0.), 0.0, -1, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 2.0), vec3(14.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
+    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 2.0), vec3(14.0, 14.0, 14.0), vec3(0.), 0.0, -1, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
     if (cube6 && t < minT) {
         minT = t;
         outCol = col;
@@ -1090,20 +1205,22 @@ bool block_48(int faces, vec2 uv, out vec4 outCol) {
 }
 // from fake:creeper_head
 bool block_49(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 45;
+    float xRot = 30.0;
+    float yRot = 45.0;
+    vec3 scale = vec3(1.0, 1.0, 1.0);
+    vec3 translation = vec3(0.0, 3.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 8.0, 12.0), vec4(0.0, 4.0, 2.0, 8.0), 0, vec4(4.0, 4.0, 2.0, 0.0), 0, vec4(2.0, 4.0, 4.0, 8.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 8.0, 12.0), vec3(0.), 0.0, -1, vec4(0.0, 4.0, 2.0, 8.0), 0, vec4(4.0, 4.0, 2.0, 0.0), 0, vec4(2.0, 4.0, 4.0, 8.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(3.5, -0.5, 3.5), vec3(12.5, 8.5, 12.5), vec4(8.0, 4.0, 10.0, 8.0), 0, vec4(12.0, 4.0, 10.0, 0.0), 0, vec4(10.0, 4.0, 12.0, 8.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(3.5, -0.5, 3.5), vec3(12.5, 8.5, 12.5), vec3(0.), 0.0, -1, vec4(8.0, 4.0, 10.0, 8.0), 0, vec4(12.0, 4.0, 10.0, 0.0), 0, vec4(10.0, 4.0, 12.0, 8.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -1112,40 +1229,44 @@ bool block_49(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/template_trapdoor_bottom
 bool block_50(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 3.0, 16.0), vec4(0.0, 16.0, 16.0, 13.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 13.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 3.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 16.0, 16.0, 13.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 13.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/sculk_sensor
 bool block_51(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 3.0), vec3(7.0, 16.0, 3.0), vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(-1.0, 3.0, 7.0, 3.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 3.0), vec3(7.0, 16.0, 3.0), vec3(3.0, 12.0, 3.0), 45.0, 1, vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(-1.0, 3.0, 7.0, 3.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 3.0), vec3(17.0, 16.0, 3.0), vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(9.0, 3.0, 17.0, 3.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 3.0), vec3(17.0, 16.0, 3.0), vec3(13.0, 12.0, 3.0), -45.0, 1, vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(9.0, 3.0, 17.0, 3.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 13.0), vec3(17.0, 16.0, 13.0), vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(9.0, 13.0, 17.0, 13.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 13.0), vec3(17.0, 16.0, 13.0), vec3(13.0, 12.0, 13.0), 45.0, 1, vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(9.0, 13.0, 17.0, 13.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 13.0), vec3(7.0, 16.0, 13.0), vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(-1.0, 13.0, 7.0, 13.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 13.0), vec3(7.0, 16.0, 13.0), vec3(3.0, 12.0, 13.0), -45.0, 1, vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(-1.0, 13.0, 7.0, 13.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
@@ -1154,40 +1275,46 @@ bool block_51(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/template_chorus_flower
 bool block_52(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(2.0, 14.0, 2.0), vec3(14.0, 16.0, 14.0), vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(2.0, 14.0, 2.0), vec3(14.0, 16.0, 14.0), vec3(0.), 0.0, -1, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/template_chorus_flower
 bool block_53(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec3(0.), 0.0, -1, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/template_chorus_flower
 bool block_54(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec3(0.), 0.0, -1, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -1196,40 +1323,46 @@ bool block_54(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/template_chorus_flower
 bool block_55(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec3(0.), 0.0, -1, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/template_chorus_flower
 bool block_56(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 14.0, 14.0), vec3(0.), 0.0, -1, vec4(2.0, 2.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/lightning_rod
 bool block_57(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 12.0, 6.0), vec3(10.0, 16.0, 10.0), vec4(0.0, 0.0, 4.0, 4.0), 0, vec4(4.0, 4.0, 0.0, 0.0), 0, vec4(0.0, 0.0, 4.0, 4.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 12.0, 6.0), vec3(10.0, 16.0, 10.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 4.0, 4.0), 0, vec4(4.0, 4.0, 0.0, 0.0), 0, vec4(0.0, 0.0, 4.0, 4.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 0.0, 7.0), vec3(9.0, 12.0, 9.0), vec4(0.0, 4.0, 2.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 9.0), 0, vec4(0.0, 4.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 0.0, 7.0), vec3(9.0, 12.0, 9.0), vec3(0.), 0.0, -1, vec4(0.0, 4.0, 2.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 9.0), 0, vec4(0.0, 4.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -1238,40 +1371,44 @@ bool block_57(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/spore_blossom
 bool block_58(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(1.0, 15.9, 1.0), vec3(15.0, 15.9, 15.0), vec4(1.0, 0.09999999999999964, 15.0, 0.09999999999999964), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 0.09999999999999964, 15.0, 0.09999999999999964), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(1.0, 15.9, 1.0), vec3(15.0, 15.9, 15.0), vec3(0.), 0.0, -1, vec4(1.0, 0.09999999999999964, 15.0, 0.09999999999999964), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 0.09999999999999964, 15.0, 0.09999999999999964), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/spore_blossom
 bool block_59(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 15.7, 0.0), vec3(24.0, 15.7, 16.0), vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 15.7, 0.0), vec3(24.0, 15.7, 16.0), vec3(8.0, 16.0, 0.0), -22.5, 2, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(-8.0, 15.7, 0.0), vec3(8.0, 15.7, 16.0), vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 270, vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(-8.0, 15.7, 0.0), vec3(8.0, 15.7, 16.0), vec3(8.0, 16.0, 0.0), 22.5, 2, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 270, vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 15.7, 8.0), vec3(16.0, 15.7, 24.0), vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, vec4(16.0, 16.0, 0.0, 0.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 15.7, 8.0), vec3(16.0, 15.7, 24.0), vec3(0.0, 16.0, 8.0), 22.5, 0, vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, vec4(16.0, 16.0, 0.0, 0.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 15.7, -8.0), vec3(16.0, 15.7, 8.0), vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 15.7, -8.0), vec3(16.0, 15.7, 8.0), vec3(0.0, 16.0, 8.0), -22.5, 0, vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
@@ -1280,35 +1417,39 @@ bool block_59(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/template_orientable_trapdoor_bottom
 bool block_60(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 3.0, 16.0), vec4(0.0, 0.0, 16.0, 3.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 3.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 3.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 3.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 3.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/mangrove_roots
 bool block_61(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 8.0), vec3(16.0, 16.0, 8.0), vec4(8.0, 0.0, 8.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 8.0), vec3(16.0, 16.0, 8.0), vec3(0.), 0.0, -1, vec4(8.0, 0.0, 8.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 0.002), vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 0.002), vec3(0.), 0.0, -1, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 15.998), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 15.998), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
@@ -1317,25 +1458,27 @@ bool block_61(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/mangrove_roots
 bool block_62(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.0), vec3(8.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.0), vec3(8.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(0.002, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(0.002, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(15.998, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(15.998, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
@@ -1344,20 +1487,22 @@ bool block_62(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/mangrove_roots
 bool block_63(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 15.998, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 15.998, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 0.002, 16.0), vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 0.002, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -1366,50 +1511,52 @@ bool block_63(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/template_fence_gate
 bool block_64(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 45;
+    float xRot = 30.0;
+    float yRot = 45.0;
+    vec3 scale = vec3(0.8, 0.8, 0.8);
+    vec3 translation = vec3(0.0, -1.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 7.0), vec3(2.0, 16.0, 9.0), vec4(7.0, 0.0, 9.0, 11.0), 0, vec4(0.0, 7.0, 2.0, 9.0), 0, vec4(0.0, 0.0, 2.0, 11.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 7.0), vec3(2.0, 16.0, 9.0), vec3(0.), 0.0, -1, vec4(7.0, 0.0, 9.0, 11.0), 0, vec4(0.0, 7.0, 2.0, 9.0), 0, vec4(0.0, 0.0, 2.0, 11.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(14.0, 5.0, 7.0), vec3(16.0, 16.0, 9.0), vec4(7.0, 0.0, 9.0, 11.0), 0, vec4(14.0, 7.0, 16.0, 9.0), 0, vec4(14.0, 0.0, 16.0, 11.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(14.0, 5.0, 7.0), vec3(16.0, 16.0, 9.0), vec3(0.), 0.0, -1, vec4(7.0, 0.0, 9.0, 11.0), 0, vec4(14.0, 7.0, 16.0, 9.0), 0, vec4(14.0, 0.0, 16.0, 11.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 6.0, 7.0), vec3(8.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 10.0), 0, vec4(6.0, 7.0, 8.0, 9.0), 0, vec4(6.0, 1.0, 8.0, 10.0), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 6.0, 7.0), vec3(8.0, 15.0, 9.0), vec3(0.), 0.0, -1, vec4(7.0, 1.0, 9.0, 10.0), 0, vec4(6.0, 7.0, 8.0, 9.0), 0, vec4(6.0, 1.0, 8.0, 10.0), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(8.0, 6.0, 7.0), vec3(10.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 10.0), 0, vec4(8.0, 7.0, 10.0, 9.0), 0, vec4(8.0, 1.0, 10.0, 10.0), 0, uvRange, normalMat, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(8.0, 6.0, 7.0), vec3(10.0, 15.0, 9.0), vec3(0.), 0.0, -1, vec4(7.0, 1.0, 9.0, 10.0), 0, vec4(8.0, 7.0, 10.0, 9.0), 0, vec4(8.0, 1.0, 10.0, 10.0), 0, uvRange, normalMat, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 6.0, 7.0), vec3(6.0, 9.0, 9.0), vec4(7.0, 7.0, 9.0, 10.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(2.0, 7.0, 6.0, 10.0), 0, uvRange, normalMat, t, col);
+    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 6.0, 7.0), vec3(6.0, 9.0, 9.0), vec3(0.), 0.0, -1, vec4(7.0, 7.0, 9.0, 10.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(2.0, 7.0, 6.0, 10.0), 0, uvRange, normalMat, t, col);
     if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 12.0, 7.0), vec3(6.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 4.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(2.0, 1.0, 6.0, 4.0), 0, uvRange, normalMat, t, col);
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 12.0, 7.0), vec3(6.0, 15.0, 9.0), vec3(0.), 0.0, -1, vec4(7.0, 1.0, 9.0, 4.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(2.0, 1.0, 6.0, 4.0), 0, uvRange, normalMat, t, col);
     if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(10.0, 6.0, 7.0), vec3(14.0, 9.0, 9.0), vec4(7.0, 7.0, 9.0, 10.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(10.0, 7.0, 14.0, 10.0), 0, uvRange, normalMat, t, col);
+    bool cube6 = cuboid(faces, rd, ro, vec3(10.0, 6.0, 7.0), vec3(14.0, 9.0, 9.0), vec3(0.), 0.0, -1, vec4(7.0, 7.0, 9.0, 10.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(10.0, 7.0, 14.0, 10.0), 0, uvRange, normalMat, t, col);
     if (cube6 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(10.0, 12.0, 7.0), vec3(14.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 4.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(10.0, 1.0, 14.0, 4.0), 0, uvRange, normalMat, t, col);
+    bool cube7 = cuboid(faces, rd, ro, vec3(10.0, 12.0, 7.0), vec3(14.0, 15.0, 9.0), vec3(0.), 0.0, -1, vec4(7.0, 1.0, 9.0, 4.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(10.0, 1.0, 14.0, 4.0), 0, uvRange, normalMat, t, col);
     if (cube7 && t < minT) {
         minT = t;
         outCol = col;
@@ -1418,40 +1565,42 @@ bool block_64(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/template_sculk_shrieker
 bool block_65(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 14.98, 1.0), vec3(15.0, 14.98, 15.0), vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 14.98, 1.0), vec3(15.0, 14.98, 15.0), vec3(0.), 0.0, -1, vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 14.98), vec3(15.0, 15.0, 14.98), vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, vec4(1.0, 14.98, 15.0, 14.98), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 14.98), vec3(15.0, 15.0, 14.98), vec3(0.), 0.0, -1, vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, vec4(1.0, 14.98, 15.0, 14.98), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.02), vec3(15.0, 15.0, 1.02), vec4(14.98, 1.0, 14.98, 8.0), 0, vec4(1.0, 1.02, 15.0, 1.02), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);
+    bool cube3 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.02), vec3(15.0, 15.0, 1.02), vec3(0.), 0.0, -1, vec4(14.98, 1.0, 14.98, 8.0), 0, vec4(1.0, 1.02, 15.0, 1.02), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);
     if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(14.98, 8.0, 1.0), vec3(14.98, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(14.98, 1.0, 14.98, 15.0), 0, vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, uvRange, normalMat, t, col);
+    bool cube4 = cuboid(faces, rd, ro, vec3(14.98, 8.0, 1.0), vec3(14.98, 15.0, 15.0), vec3(0.), 0.0, -1, vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(14.98, 1.0, 14.98, 15.0), 0, vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, uvRange, normalMat, t, col);
     if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(1.02, 8.0, 1.0), vec3(1.02, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(1.02, 1.0, 1.02, 15.0), 0, vec4(14.98, 1.0, 14.98, 8.0), 0, uvRange, normalMat, t, col);
+    bool cube5 = cuboid(faces, rd, ro, vec3(1.02, 8.0, 1.0), vec3(1.02, 15.0, 15.0), vec3(0.), 0.0, -1, vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(1.02, 1.0, 1.02, 15.0), 0, vec4(14.98, 1.0, 14.98, 8.0), 0, uvRange, normalMat, t, col);
     if (cube5 && t < minT) {
         minT = t;
         outCol = col;
@@ -1460,35 +1609,39 @@ bool block_65(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/template_sculk_shrieker
 bool block_66(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.0), vec3(15.0, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.0), vec3(15.0, 15.0, 15.0), vec3(0.), 0.0, -1, vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/small_dripleaf_top
 bool block_67(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 2.99, 8.0), vec3(15.0, 2.99, 15.0), vec4(1.0, 13.01, 8.0, 13.01), 0, vec4(8.0, 8.0, 0.0, 0.0), 0, vec4(1.0, 13.01, 8.0, 13.01), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 2.99, 8.0), vec3(15.0, 2.99, 15.0), vec3(0.), 0.0, -1, vec4(1.0, 13.01, 8.0, 13.01), 0, vec4(8.0, 8.0, 0.0, 0.0), 0, vec4(1.0, 13.01, 8.0, 13.01), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.0), vec3(8.0, 8.0, 8.0), vec4(8.0, 8.0, 15.0, 8.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, vec4(8.0, 8.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.0), vec3(8.0, 8.0, 8.0), vec3(0.), 0.0, -1, vec4(8.0, 8.0, 15.0, 8.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, vec4(8.0, 8.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 12.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(1.0, 4.0, 8.0, 4.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 270, vec4(8.0, 4.0, 15.0, 4.0), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 12.0, 8.0), vec3(8.0, 12.0, 15.0), vec3(0.), 0.0, -1, vec4(1.0, 4.0, 8.0, 4.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 270, vec4(8.0, 4.0, 15.0, 4.0), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
@@ -1497,25 +1650,27 @@ bool block_67(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/small_dripleaf_top
 bool block_68(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 2.0, 8.0), vec3(15.0, 3.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(8.0, 8.0, 15.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 2.0, 8.0), vec3(15.0, 3.0, 15.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(8.0, 8.0, 15.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 7.0, 1.01), vec3(8.0, 8.0, 8.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 1.01, 8.0, 8.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 7.0, 1.01), vec3(8.0, 8.0, 8.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 1.01, 8.0, 8.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 11.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 8.0, 8.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, normalMat, t, col);
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 11.0, 8.0), vec3(8.0, 12.0, 15.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 8.0, 8.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, normalMat, t, col);
     if (cube2 && t < minT) {
         minT = t;
         outCol = col;
@@ -1524,20 +1679,22 @@ bool block_68(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/small_dripleaf_top
 bool block_69(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, normalMat, t, col);
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec3(8.0, 8.0, 8.0), 45.0, 1, vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, normalMat, t, col);
     if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, normalMat, t, col);
+    bool cube1 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec3(8.0, 8.0, 8.0), -45.0, 1, vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, normalMat, t, col);
     if (cube1 && t < minT) {
         minT = t;
         outCol = col;
@@ -1546,63 +1703,75 @@ bool block_69(int faces, vec2 uv, out vec4 outCol) {
 }
 // from minecraft:block/dried_kelp_block
 bool block_70(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/enchanting_table
 bool block_71(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 12.0, 16.0), vec4(0.0, 4.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 4.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 12.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 4.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 4.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/end_portal_frame
 bool block_72(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 13.0, 16.0), vec4(0.0, 3.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 3.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 13.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 3.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 3.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/template_daylight_detector
 bool block_73(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 6.0, 16.0), vec4(0.0, 10.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 10.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 6.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 10.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 10.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/pressure_plate_up
 bool block_74(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(1.0, 0.0, 1.0), vec3(15.0, 1.0, 15.0), vec4(1.0, 15.0, 15.0, 16.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 15.0, 15.0, 16.0), 0, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(1.0, 0.0, 1.0), vec3(15.0, 1.0, 15.0), vec3(0.), 0.0, -1, vec4(1.0, 15.0, 15.0, 16.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 15.0, 15.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
 // from minecraft:block/template_glazed_terracotta
 bool block_75(int faces, vec2 uv, out vec4 outCol) {
-    float xRot = 30;
-    float yRot = 225;
+    float xRot = 30.0;
+    float yRot = 225.0;
+    vec3 scale = vec3(0.625, 0.625, 0.625);
+    vec3 translation = vec3(0.0, 0.0, 0.0);
     int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, scale, translation, rd, ro, normalMat, uvRange);
     float t;
-    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 180, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, uvRange, normalMat, t, outCol);
+    return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec3(0.), 0.0, -1, vec4(0.0, 0.0, 16.0, 16.0), 180, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, uvRange, normalMat, t, outCol);
 }
 bool custom_block(int modelID, int faces, out vec4 outCol) {
     switch (modelID) {
