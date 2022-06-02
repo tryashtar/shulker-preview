@@ -9,6 +9,8 @@ uniform float FogStart;
 uniform float FogEnd;
 uniform vec4 FogColor;
 
+uniform float GameTime;
+
 in float vertexDistance;
 in vec4 vertexColor;
 in vec2 texCoord0;
@@ -38,7 +40,7 @@ mat3 rotate(float x, float y) {
     );
 }
 
-void getProperties(vec2 uv, float xRot, float yRot, out vec3 rd, out vec3 ro, out mat3 normalMat, out vec4 uvRange) {
+void getProperties(vec2 uv, int aspectX, int aspectY, int frametime, float xRot, float yRot, out vec3 rd, out vec3 ro, out mat3 normalMat, out vec4 uvRange) {
     mat3 local = rotate(xRot, yRot);
     rd = local[2];
     vec3 localX = local[0];
@@ -50,7 +52,18 @@ void getProperties(vec2 uv, float xRot, float yRot, out vec3 rd, out vec3 ro, ou
     vec2 cornerUV3 = cornerTex3.xy / cornerTex3.z;
     vec2 minUV = min(cornerUV1, min(cornerUV2, cornerUV3));
     vec2 maxUV = max(cornerUV1, max(cornerUV2, cornerUV3));
-    uvRange = vec4(minUV, maxUV);
+
+    vec2 samplerSize = vec2(textureSize(Sampler0, 0));
+    ivec2 uvSize = ivec2((maxUV - minUV)*samplerSize + 0.5);
+    if (uvSize.y*aspectX > uvSize.x*aspectY && (uvSize.y * aspectX) % (uvSize.x * aspectY) == 0.) {
+        // Animation
+        uvRange = vec4(minUV, minUV + vec2(uvSize.xx)/samplerSize);
+        float frameCount = float(uvSize.y*aspectX)/float(uvSize.x*aspectY);
+        uvRange.yw += float(uvSize.x*aspectY)/float(aspectX)/samplerSize.y * mod(floor(GameTime * 24000. / float(frametime)), frameCount);
+    } else {
+        // No animation
+        uvRange = vec4(minUV, maxUV);
+    }
 
     normalMat = rotate(30.,225.)*transpose(local);
 }
@@ -154,8 +167,9 @@ bool cuboid(int faces, vec3 rd, vec3 ro, vec3 from, vec3 to, vec4 uvX, int rotX,
 bool block_0(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -163,8 +177,9 @@ bool block_0(int faces, vec2 uv, out vec4 outCol) {
 bool block_1(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec4(0.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 14.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -172,8 +187,9 @@ bool block_1(int faces, vec2 uv, out vec4 outCol) {
 bool block_2(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -198,8 +214,9 @@ bool block_2(int faces, vec2 uv, out vec4 outCol) {
 bool block_3(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(3.0, 10.0, 0.0), vec3(13.0, 16.0, 16.0), vec4(16.0, 0.0, 10.0, 16.0), 270, vec4(3.0, 0.0, 13.0, 16.0), 180, vec4(3.0, 0.0, 13.0, 6.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -207,8 +224,9 @@ bool block_3(int faces, vec2 uv, out vec4 outCol) {
 bool block_4(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 45;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -233,8 +251,9 @@ bool block_4(int faces, vec2 uv, out vec4 outCol) {
 bool block_5(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 16.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -242,8 +261,9 @@ bool block_5(int faces, vec2 uv, out vec4 outCol) {
 bool block_6(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -263,8 +283,9 @@ bool block_6(int faces, vec2 uv, out vec4 outCol) {
 bool block_7(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -284,8 +305,9 @@ bool block_7(int faces, vec2 uv, out vec4 outCol) {
 bool block_8(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.1, 0.0, 8.0), vec3(15.9, 15.9, 8.0), vec4(8.0, 0.09999999999999964, 8.0, 16.0), 0, vec4(0.1, 8.0, 15.9, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -293,8 +315,9 @@ bool block_8(int faces, vec2 uv, out vec4 outCol) {
 bool block_9(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.1), vec3(8.0, 15.9, 15.9), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.1, 8.0, 15.9), 0, vec4(8.0, 0.09999999999999964, 8.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -302,8 +325,9 @@ bool block_9(int faces, vec2 uv, out vec4 outCol) {
 bool block_10(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(2.0, 0.1, 2.0), vec3(14.0, 3.0, 14.0), vec4(2.0, 13.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 13.0, 14.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -311,8 +335,9 @@ bool block_10(int faces, vec2 uv, out vec4 outCol) {
 bool block_11(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(3.0, 3.0, 3.0), vec3(13.0, 14.0, 13.0), vec4(3.0, 2.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 2.0, 13.0, 13.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -320,8 +345,9 @@ bool block_11(int faces, vec2 uv, out vec4 outCol) {
 bool block_12(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 1.0), vec3(16.0, 16.0, 15.0), vec4(1.0, 0.0, 15.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 15.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -329,8 +355,9 @@ bool block_12(int faces, vec2 uv, out vec4 outCol) {
 bool block_13(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(1.0, 0.0, 0.0), vec3(15.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(1.0, 0.0, 15.0, 16.0), 0, vec4(1.0, 0.0, 15.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -338,8 +365,9 @@ bool block_13(int faces, vec2 uv, out vec4 outCol) {
 bool block_14(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 90, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -347,8 +375,9 @@ bool block_14(int faces, vec2 uv, out vec4 outCol) {
 bool block_15(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 45;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(5.0, 5.0, 5.0), vec3(11.0, 11.0, 11.0), vec4(9.0, 12.0, 6.0, 6.0), 0, vec4(6.0, 6.0, 9.0, 0.0), 0, vec4(6.0, 12.0, 3.0, 6.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -356,8 +385,9 @@ bool block_15(int faces, vec2 uv, out vec4 outCol) {
 bool block_16(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -377,8 +407,9 @@ bool block_16(int faces, vec2 uv, out vec4 outCol) {
 bool block_17(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 2.0, 16.0), vec4(0.0, 6.0, 16.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 180, vec4(0.0, 14.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -386,8 +417,9 @@ bool block_17(int faces, vec2 uv, out vec4 outCol) {
 bool block_18(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(4.0, 2.0, 4.0), vec3(12.0, 15.0, 12.0), vec4(2.0, 16.0, 15.0, 8.0), 90, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 13.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -395,8 +427,9 @@ bool block_18(int faces, vec2 uv, out vec4 outCol) {
 bool block_19(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0125, 12.0, 3.0), vec3(15.9875, 16.0, 16.0), vec4(0.0, 4.0, 13.0, 8.0), 0, vec4(0.0, 1.0, 16.0, 14.0), 180, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -404,8 +437,9 @@ bool block_19(int faces, vec2 uv, out vec4 outCol) {
 bool block_20(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 160;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -445,8 +479,9 @@ bool block_20(int faces, vec2 uv, out vec4 outCol) {
 bool block_21(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(0.0, 1.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -454,8 +489,9 @@ bool block_21(int faces, vec2 uv, out vec4 outCol) {
 bool block_22(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -463,8 +499,9 @@ bool block_22(int faces, vec2 uv, out vec4 outCol) {
 bool block_23(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -472,8 +509,9 @@ bool block_23(int faces, vec2 uv, out vec4 outCol) {
 bool block_24(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -503,8 +541,9 @@ bool block_24(int faces, vec2 uv, out vec4 outCol) {
 bool block_25(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 135;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -554,8 +593,9 @@ bool block_25(int faces, vec2 uv, out vec4 outCol) {
 bool block_26(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 135;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -575,8 +615,9 @@ bool block_26(int faces, vec2 uv, out vec4 outCol) {
 bool block_27(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -626,8 +667,9 @@ bool block_27(int faces, vec2 uv, out vec4 outCol) {
 bool block_28(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -647,8 +689,9 @@ bool block_28(int faces, vec2 uv, out vec4 outCol) {
 bool block_29(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -668,8 +711,9 @@ bool block_29(int faces, vec2 uv, out vec4 outCol) {
 bool block_30(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(4.0, 4.0, 2.0), vec3(12.0, 16.0, 14.0), vec4(0.0, 0.0, 12.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, vec4(0.0, 0.0, 8.0, 12.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -677,8 +721,9 @@ bool block_30(int faces, vec2 uv, out vec4 outCol) {
 bool block_31(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(5.0, 6.0, 6.0), vec3(11.0, 10.0, 10.0), vec4(6.0, 12.0, 10.0, 16.0), 0, vec4(5.0, 10.0, 11.0, 6.0), 0, vec4(5.0, 12.0, 11.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -686,8 +731,9 @@ bool block_31(int faces, vec2 uv, out vec4 outCol) {
 bool block_32(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 135;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -707,8 +753,9 @@ bool block_32(int faces, vec2 uv, out vec4 outCol) {
 bool block_33(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 20;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -733,8 +780,9 @@ bool block_33(int faces, vec2 uv, out vec4 outCol) {
 bool block_34(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 1.0, 16.0), vec4(0.0, 15.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 15.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -742,8 +790,9 @@ bool block_34(int faces, vec2 uv, out vec4 outCol) {
 bool block_35(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 45;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -788,8 +837,9 @@ bool block_35(int faces, vec2 uv, out vec4 outCol) {
 bool block_36(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(1.0, 1.0, 1.0), vec3(15.0, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -797,8 +847,9 @@ bool block_36(int faces, vec2 uv, out vec4 outCol) {
 bool block_37(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 45;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -818,8 +869,9 @@ bool block_37(int faces, vec2 uv, out vec4 outCol) {
 bool block_38(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 15.99, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 0.009999999999999787), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.009999999999999787), 0, uvRange, normalMat, t, outCol);
 }
@@ -827,8 +879,9 @@ bool block_38(int faces, vec2 uv, out vec4 outCol) {
 bool block_39(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -878,8 +931,9 @@ bool block_39(int faces, vec2 uv, out vec4 outCol) {
 bool block_40(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 45;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -899,8 +953,9 @@ bool block_40(int faces, vec2 uv, out vec4 outCol) {
 bool block_41(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -920,8 +975,9 @@ bool block_41(int faces, vec2 uv, out vec4 outCol) {
 bool block_42(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 9.0, 16.0), vec4(0.0, 7.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 7.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -929,8 +985,9 @@ bool block_42(int faces, vec2 uv, out vec4 outCol) {
 bool block_43(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(1.0, 9.0, 8.0), vec3(15.0, 16.0, 8.0), vec4(8.0, 0.0, 8.0, 7.0), 0, vec4(1.0, 8.0, 15.0, 8.0), 0, vec4(1.0, 9.0, 15.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -938,8 +995,9 @@ bool block_43(int faces, vec2 uv, out vec4 outCol) {
 bool block_44(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 15.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(0.0, 1.0, 16.0, 1.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 16.0, 1.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -947,8 +1005,9 @@ bool block_44(int faces, vec2 uv, out vec4 outCol) {
 bool block_45(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(16.0, 15.0, 0.002), vec4(15.998, 1.0, 16.0, 5.0), 0, vec4(0.0, 0.0, 16.0, 0.002), 0, vec4(0.0, 0.0, 16.0, 4.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -956,8 +1015,9 @@ bool block_45(int faces, vec2 uv, out vec4 outCol) {
 bool block_46(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -977,8 +1037,9 @@ bool block_46(int faces, vec2 uv, out vec4 outCol) {
 bool block_47(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -998,8 +1059,9 @@ bool block_47(int faces, vec2 uv, out vec4 outCol) {
 bool block_48(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1044,8 +1106,9 @@ bool block_48(int faces, vec2 uv, out vec4 outCol) {
 bool block_49(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 45;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1065,8 +1128,9 @@ bool block_49(int faces, vec2 uv, out vec4 outCol) {
 bool block_50(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 3.0, 16.0), vec4(0.0, 16.0, 16.0, 13.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 13.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -1074,8 +1138,9 @@ bool block_50(int faces, vec2 uv, out vec4 outCol) {
 bool block_51(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1105,8 +1170,9 @@ bool block_51(int faces, vec2 uv, out vec4 outCol) {
 bool block_52(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(2.0, 14.0, 2.0), vec3(14.0, 16.0, 14.0), vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -1114,8 +1180,9 @@ bool block_52(int faces, vec2 uv, out vec4 outCol) {
 bool block_53(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -1123,8 +1190,9 @@ bool block_53(int faces, vec2 uv, out vec4 outCol) {
 bool block_54(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1144,8 +1212,9 @@ bool block_54(int faces, vec2 uv, out vec4 outCol) {
 bool block_55(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -1153,8 +1222,9 @@ bool block_55(int faces, vec2 uv, out vec4 outCol) {
 bool block_56(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -1162,8 +1232,9 @@ bool block_56(int faces, vec2 uv, out vec4 outCol) {
 bool block_57(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1183,8 +1254,9 @@ bool block_57(int faces, vec2 uv, out vec4 outCol) {
 bool block_58(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(1.0, 15.9, 1.0), vec3(15.0, 15.9, 15.0), vec4(1.0, 0.09999999999999964, 15.0, 0.09999999999999964), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 0.09999999999999964, 15.0, 0.09999999999999964), 0, uvRange, normalMat, t, outCol);
 }
@@ -1192,8 +1264,9 @@ bool block_58(int faces, vec2 uv, out vec4 outCol) {
 bool block_59(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1223,8 +1296,9 @@ bool block_59(int faces, vec2 uv, out vec4 outCol) {
 bool block_60(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 3.0, 16.0), vec4(0.0, 0.0, 16.0, 3.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 0.0, 16.0, 3.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -1232,8 +1306,9 @@ bool block_60(int faces, vec2 uv, out vec4 outCol) {
 bool block_61(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1258,8 +1333,9 @@ bool block_61(int faces, vec2 uv, out vec4 outCol) {
 bool block_62(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1284,8 +1360,9 @@ bool block_62(int faces, vec2 uv, out vec4 outCol) {
 bool block_63(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1305,8 +1382,9 @@ bool block_63(int faces, vec2 uv, out vec4 outCol) {
 bool block_64(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 45;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1356,8 +1434,9 @@ bool block_64(int faces, vec2 uv, out vec4 outCol) {
 bool block_65(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1397,8 +1476,9 @@ bool block_65(int faces, vec2 uv, out vec4 outCol) {
 bool block_66(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.0), vec3(15.0, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -1406,8 +1486,9 @@ bool block_66(int faces, vec2 uv, out vec4 outCol) {
 bool block_67(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1432,8 +1513,9 @@ bool block_67(int faces, vec2 uv, out vec4 outCol) {
 bool block_68(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1458,8 +1540,9 @@ bool block_68(int faces, vec2 uv, out vec4 outCol) {
 bool block_69(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     float minT = 99999999.0;
     vec4 col;
@@ -1479,8 +1562,9 @@ bool block_69(int faces, vec2 uv, out vec4 outCol) {
 bool block_70(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -1488,8 +1572,9 @@ bool block_70(int faces, vec2 uv, out vec4 outCol) {
 bool block_71(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 12.0, 16.0), vec4(0.0, 4.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 4.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -1497,8 +1582,9 @@ bool block_71(int faces, vec2 uv, out vec4 outCol) {
 bool block_72(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 13.0, 16.0), vec4(0.0, 3.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 3.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -1506,8 +1592,9 @@ bool block_72(int faces, vec2 uv, out vec4 outCol) {
 bool block_73(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 6.0, 16.0), vec4(0.0, 10.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 10.0, 16.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -1515,8 +1602,9 @@ bool block_73(int faces, vec2 uv, out vec4 outCol) {
 bool block_74(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(1.0, 0.0, 1.0), vec3(15.0, 1.0, 15.0), vec4(1.0, 15.0, 15.0, 16.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 15.0, 15.0, 16.0), 0, uvRange, normalMat, t, outCol);
 }
@@ -1524,8 +1612,9 @@ bool block_74(int faces, vec2 uv, out vec4 outCol) {
 bool block_75(int faces, vec2 uv, out vec4 outCol) {
     float xRot = 30;
     float yRot = 225;
+    int aspectX = 1, aspectY = 1, frametime = 10;
     vec3 rd, ro; mat3 normalMat; vec4 uvRange;
-    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);
+    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);
     float t;
     return cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 180, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, uvRange, normalMat, t, outCol);
 }
