@@ -19,11 +19,12 @@ def main():
    # there's no reliable place in the jar to get them,
    # and while you can get them from the server reports,
    # it would be a waste of time to find the server jar and generate them in this script
-   data = urlopen(f'https://raw.githubusercontent.com/misode/mcmeta/{version}-summary/registries/data.json').read()
-   item_registry = json.loads(data)["item"]
+   data = urlopen(f'https://raw.githubusercontent.com/misode/mcmeta/{version}-registries/item/data.json').read()
+   item_registry = json.loads(data)
    item_registry.remove('air')
    jar_path = find_version_jar()
    data_json = read_json('data.json')
+   print('Loading models...')
    update_fakes('fake_models', data_json['fakes'].items())
    mc = Minecraft(jar_path, item_registry, read_json('data.json'), 'fake_models')
    font = FontAbstraction(3)
@@ -48,10 +49,6 @@ def main():
    # - all the overrides like light blocks
    # others:
    # - bug: leather chestplate bad offset because vanilla overlay is invisible
-   # - bug: animated blocks like sea lanterns are wrong
-   # - blocks like stairs have non-default rotation in GUI, we need to find all unique rotations, assign them an ID, and dedicate a few bits in the color code to this data
-   # - if a block has multiple cubes whose textures in a direction differ from each other (e.g. beacons), we can't draw all cubes at once
-   # - blocks like glazed terracotta have rotation on certain cubes
    # - need to bring back tint for blocks (from hardcoded_tints), a couple bits in color should suffice
    # - some blocks like lectern have rotated elements
 
@@ -565,6 +562,23 @@ def get_used_predicates(overrides):
 def comma_sep_float(lst):
    return ", ".join(map(lambda x: str(float(x)), lst))
 
+# rather naive sorting for cubes that have to be drawn separately
+# prioritizes height, then width, then length
+# faces with a texture are higher priority than faces without one
+def cubeset_sort(cubes):
+   categories = [0, 0, 0]
+   for c in cubes['cubes']:
+      categories[0] = max(categories[0], c.max[1])
+      if c.faces['up'].tx is not None:
+         categories[0] += 0.01
+      categories[1] = max(categories[1], 16 - c.min[1])
+      if c.faces['east'].tx is not None:
+         categories[1] += 0.01
+      categories[2] = max(categories[2], 16 - c.min[2])
+      if c.faces['north'].tx is not None:
+         categories[2] += 0.01
+   return tuple(categories)
+
 def generate_shader(mc, path):
    filepath = os.path.join(path, 'assets/minecraft/shaders/core/rendertype_text.fsh')
    with open(filepath) as file:
@@ -744,7 +758,7 @@ def generate_item_lines(mc, items, row, font):
             handled = True
       if not handled and len(model.cubes) > 0:
          # this is a block or something that has model elements, the shader will render it
-         sets = mc.get_unique_cubesets(model)
+         sets = sorted(mc.get_unique_cubesets(model), key=cubeset_sort)
          name = []
          unique_textures = list(set(model.textures.values()))
          unique_textures.sort()

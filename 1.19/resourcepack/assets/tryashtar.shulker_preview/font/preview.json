@@ -16751,7 +16751,7 @@
          "ascent": 0,
          "height": 0,
          "chars": [
-            "\u09d3"
+            "\u09cd"
          ]
       },
       {
@@ -16760,7 +16760,7 @@
          "ascent": -18,
          "height": 0,
          "chars": [
-            "\u09d4"
+            "\u09ce"
          ]
       },
       {
@@ -16769,7 +16769,7 @@
          "ascent": -36,
          "height": 0,
          "chars": [
-            "\u09d5"
+            "\u09cf"
          ]
       },
       {
@@ -16805,7 +16805,7 @@
          "ascent": 0,
          "height": 0,
          "chars": [
-            "\u09cd"
+            "\u09d3"
          ]
       },
       {
@@ -16814,7 +16814,7 @@
          "ascent": -18,
          "height": 0,
          "chars": [
-            "\u09ce"
+            "\u09d4"
          ]
       },
       {
@@ -16823,7 +16823,7 @@
          "ascent": -36,
          "height": 0,
          "chars": [
-            "\u09cf"
+            "\u09d5"
          ]
       },
       {
@@ -17156,66 +17156,12 @@
          "ascent": 0,
          "height": 0,
          "chars": [
-            "\u0e9a"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/big_dripleaf_side.png",
-         "ascent": -18,
-         "height": 0,
-         "chars": [
-            "\u0e9b"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/big_dripleaf_side.png",
-         "ascent": -36,
-         "height": 0,
-         "chars": [
-            "\u0e9c"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/big_dripleaf_stem.png",
-         "ascent": 0,
-         "height": 0,
-         "chars": [
-            "\u0e9d"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/big_dripleaf_stem.png",
-         "ascent": -18,
-         "height": 0,
-         "chars": [
-            "\u0e9e"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/big_dripleaf_stem.png",
-         "ascent": -36,
-         "height": 0,
-         "chars": [
-            "\u0e9f"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/big_dripleaf_tip.png",
-         "ascent": 0,
-         "height": 0,
-         "chars": [
             "\u0e97"
          ]
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/big_dripleaf_tip.png",
+         "file": "minecraft:block/big_dripleaf_side.png",
          "ascent": -18,
          "height": 0,
          "chars": [
@@ -17224,7 +17170,7 @@
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/big_dripleaf_tip.png",
+         "file": "minecraft:block/big_dripleaf_side.png",
          "ascent": -36,
          "height": 0,
          "chars": [
@@ -17233,7 +17179,34 @@
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/big_dripleaf_top.png",
+         "file": "minecraft:block/big_dripleaf_stem.png",
+         "ascent": 0,
+         "height": 0,
+         "chars": [
+            "\u0e9a"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/big_dripleaf_stem.png",
+         "ascent": -18,
+         "height": 0,
+         "chars": [
+            "\u0e9b"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/big_dripleaf_stem.png",
+         "ascent": -36,
+         "height": 0,
+         "chars": [
+            "\u0e9c"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/big_dripleaf_tip.png",
          "ascent": 0,
          "height": 0,
          "chars": [
@@ -17242,7 +17215,7 @@
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/big_dripleaf_top.png",
+         "file": "minecraft:block/big_dripleaf_tip.png",
          "ascent": -18,
          "height": 0,
          "chars": [
@@ -17251,11 +17224,38 @@
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/big_dripleaf_top.png",
+         "file": "minecraft:block/big_dripleaf_tip.png",
          "ascent": -36,
          "height": 0,
          "chars": [
             "\u0e96"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/big_dripleaf_top.png",
+         "ascent": 0,
+         "height": 0,
+         "chars": [
+            "\u0e9d"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/big_dripleaf_top.png",
+         "ascent": -18,
+         "height": 0,
+         "chars": [
+            "\u0e9e"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/big_dripleaf_top.png",
+         "ascent": -36,
+         "height": 0,
+         "chars": [
+            "\u0e9f"
          ]
       },
       {
@@ -18263,39 +18263,12 @@
          "ascent": 0,
          "height": 0,
          "chars": [
-            "\u09f6"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/cactus_side.png",
-         "ascent": -18,
-         "height": 0,
-         "chars": [
-            "\u09f7"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/cactus_side.png",
-         "ascent": -36,
-         "height": 0,
-         "chars": [
-            "\u09f8"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/cactus_top.png",
-         "ascent": 0,
-         "height": 0,
-         "chars": [
             "\u09f3"
          ]
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/cactus_top.png",
+         "file": "minecraft:block/cactus_side.png",
          "ascent": -18,
          "height": 0,
          "chars": [
@@ -18304,11 +18277,38 @@
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/cactus_top.png",
+         "file": "minecraft:block/cactus_side.png",
          "ascent": -36,
          "height": 0,
          "chars": [
             "\u09f5"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/cactus_top.png",
+         "ascent": 0,
+         "height": 0,
+         "chars": [
+            "\u09f6"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/cactus_top.png",
+         "ascent": -18,
+         "height": 0,
+         "chars": [
+            "\u09f7"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/cactus_top.png",
+         "ascent": -36,
+         "height": 0,
+         "chars": [
+            "\u09f8"
          ]
       },
       {
@@ -21260,39 +21260,12 @@
          "ascent": 0,
          "height": 0,
          "chars": [
-            "\u12b7"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/flowering_azalea_side.png",
-         "ascent": -18,
-         "height": 0,
-         "chars": [
-            "\u12b8"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/flowering_azalea_side.png",
-         "ascent": -36,
-         "height": 0,
-         "chars": [
-            "\u12b9"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/flowering_azalea_top.png",
-         "ascent": 0,
-         "height": 0,
-         "chars": [
             "\u12b4"
          ]
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/flowering_azalea_top.png",
+         "file": "minecraft:block/flowering_azalea_side.png",
          "ascent": -18,
          "height": 0,
          "chars": [
@@ -21301,11 +21274,38 @@
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/flowering_azalea_top.png",
+         "file": "minecraft:block/flowering_azalea_side.png",
          "ascent": -36,
          "height": 0,
          "chars": [
             "\u12b6"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/flowering_azalea_top.png",
+         "ascent": 0,
+         "height": 0,
+         "chars": [
+            "\u12b7"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/flowering_azalea_top.png",
+         "ascent": -18,
+         "height": 0,
+         "chars": [
+            "\u12b8"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/flowering_azalea_top.png",
+         "ascent": -36,
+         "height": 0,
+         "chars": [
+            "\u12b9"
          ]
       },
       {
@@ -22097,66 +22097,12 @@
          "ascent": 0,
          "height": 0,
          "chars": [
-            "\u0dbd"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/honey_block_bottom.png",
-         "ascent": -18,
-         "height": 0,
-         "chars": [
-            "\u0dbe"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/honey_block_bottom.png",
-         "ascent": -36,
-         "height": 0,
-         "chars": [
-            "\u0dbf"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/honey_block_side.png",
-         "ascent": 0,
-         "height": 0,
-         "chars": [
-            "\u0dc0"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/honey_block_side.png",
-         "ascent": -18,
-         "height": 0,
-         "chars": [
-            "\u0dc1"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/honey_block_side.png",
-         "ascent": -36,
-         "height": 0,
-         "chars": [
-            "\u0dc2"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/honey_block_top.png",
-         "ascent": 0,
-         "height": 0,
-         "chars": [
             "\u0dc3"
          ]
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/honey_block_top.png",
+         "file": "minecraft:block/honey_block_bottom.png",
          "ascent": -18,
          "height": 0,
          "chars": [
@@ -22165,11 +22111,65 @@
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/honey_block_top.png",
+         "file": "minecraft:block/honey_block_bottom.png",
          "ascent": -36,
          "height": 0,
          "chars": [
             "\u0dc5"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/honey_block_side.png",
+         "ascent": 0,
+         "height": 0,
+         "chars": [
+            "\u0dbd"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/honey_block_side.png",
+         "ascent": -18,
+         "height": 0,
+         "chars": [
+            "\u0dbe"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/honey_block_side.png",
+         "ascent": -36,
+         "height": 0,
+         "chars": [
+            "\u0dbf"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/honey_block_top.png",
+         "ascent": 0,
+         "height": 0,
+         "chars": [
+            "\u0dc0"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/honey_block_top.png",
+         "ascent": -18,
+         "height": 0,
+         "chars": [
+            "\u0dc1"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/honey_block_top.png",
+         "ascent": -36,
+         "height": 0,
+         "chars": [
+            "\u0dc2"
          ]
       },
       {
@@ -26714,39 +26714,12 @@
          "ascent": 0,
          "height": 0,
          "chars": [
-            "\u0e42"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/scaffolding_side.png",
-         "ascent": -18,
-         "height": 0,
-         "chars": [
-            "\u0e43"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/scaffolding_side.png",
-         "ascent": -36,
-         "height": 0,
-         "chars": [
-            "\u0e44"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/scaffolding_top.png",
-         "ascent": 0,
-         "height": 0,
-         "chars": [
             "\u0e3f"
          ]
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/scaffolding_top.png",
+         "file": "minecraft:block/scaffolding_side.png",
          "ascent": -18,
          "height": 0,
          "chars": [
@@ -26755,11 +26728,38 @@
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/scaffolding_top.png",
+         "file": "minecraft:block/scaffolding_side.png",
          "ascent": -36,
          "height": 0,
          "chars": [
             "\u0e41"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/scaffolding_top.png",
+         "ascent": 0,
+         "height": 0,
+         "chars": [
+            "\u0e42"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/scaffolding_top.png",
+         "ascent": -18,
+         "height": 0,
+         "chars": [
+            "\u0e43"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/scaffolding_top.png",
+         "ascent": -36,
+         "height": 0,
+         "chars": [
+            "\u0e44"
          ]
       },
       {
@@ -27092,7 +27092,7 @@
          "ascent": 0,
          "height": 0,
          "chars": [
-            "\u117e"
+            "\u117b"
          ]
       },
       {
@@ -27101,7 +27101,7 @@
          "ascent": -18,
          "height": 0,
          "chars": [
-            "\u117f"
+            "\u117c"
          ]
       },
       {
@@ -27110,7 +27110,7 @@
          "ascent": -36,
          "height": 0,
          "chars": [
-            "\u1180"
+            "\u117d"
          ]
       },
       {
@@ -27146,7 +27146,7 @@
          "ascent": 0,
          "height": 0,
          "chars": [
-            "\u117b"
+            "\u117e"
          ]
       },
       {
@@ -27155,7 +27155,7 @@
          "ascent": -18,
          "height": 0,
          "chars": [
-            "\u117c"
+            "\u117f"
          ]
       },
       {
@@ -27164,7 +27164,7 @@
          "ascent": -36,
          "height": 0,
          "chars": [
-            "\u117d"
+            "\u1180"
          ]
       },
       {
@@ -27551,39 +27551,12 @@
          "ascent": 0,
          "height": 0,
          "chars": [
-            "\u1070"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/spore_blossom.png",
-         "ascent": -18,
-         "height": 0,
-         "chars": [
-            "\u1071"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/spore_blossom.png",
-         "ascent": -36,
-         "height": 0,
-         "chars": [
-            "\u1072"
-         ]
-      },
-      {
-         "type": "bitmap",
-         "file": "minecraft:block/spore_blossom_base.png",
-         "ascent": 0,
-         "height": 0,
-         "chars": [
             "\u106d"
          ]
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/spore_blossom_base.png",
+         "file": "minecraft:block/spore_blossom.png",
          "ascent": -18,
          "height": 0,
          "chars": [
@@ -27592,11 +27565,38 @@
       },
       {
          "type": "bitmap",
-         "file": "minecraft:block/spore_blossom_base.png",
+         "file": "minecraft:block/spore_blossom.png",
          "ascent": -36,
          "height": 0,
          "chars": [
             "\u106f"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/spore_blossom_base.png",
+         "ascent": 0,
+         "height": 0,
+         "chars": [
+            "\u1070"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/spore_blossom_base.png",
+         "ascent": -18,
+         "height": 0,
+         "chars": [
+            "\u1071"
+         ]
+      },
+      {
+         "type": "bitmap",
+         "file": "minecraft:block/spore_blossom_base.png",
+         "ascent": -36,
+         "height": 0,
+         "chars": [
+            "\u1072"
          ]
       },
       {
