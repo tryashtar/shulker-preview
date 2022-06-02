@@ -599,8 +599,9 @@ def generate_shader(mc, path):
                f'bool block_{i}(int faces, vec2 uv, out vec4 outCol) {{',
                f'    float xRot = {display[0]};',
                f'    float yRot = {display[1]};',
+               '    int aspectX = 1, aspectY = 1, frametime = 10;',
                '    vec3 rd, ro; mat3 normalMat; vec4 uvRange;',
-               '    getProperties(uv, xRot, yRot, rd, ro, normalMat, uvRange);',
+               '    getProperties(uv, aspectX, aspectY, frametime, xRot, yRot, rd, ro, normalMat, uvRange);',
                '    float t;'
             ])
             if len(cubes) == 1:
