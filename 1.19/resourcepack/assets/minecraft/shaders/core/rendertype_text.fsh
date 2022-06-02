@@ -125,36 +125,22 @@ bool cuboid(int faces, vec3 rd, vec3 ro, vec3 from, vec3 to, vec4 uvX, int rotX,
     normalMat[0] *= -sgn.x;
     normalMat[1] *= -sgn.y;
     normalMat[2] *= -sgn.z;
-    vec3 temp = to;
-    to += (from - to) * (.5*sgn+.5);
-    from += (temp - from) * (.5*sgn+.5);
-    if (sgn.x==1.) {
-        flipY.y = 1. - flipY.y;
-        flipZ.x = 1. - flipZ.x;
-    }
-    if (sgn.y==1.) {
-        flipX.y = 1. - flipX.y;
-        flipZ.y = 1. - flipZ.y;
-    }
-    if (sgn.z==1.) {
-        flipX.x = 1. - flipX.x;
-        flipY.x = 1. - flipY.x;
-    }
+    vec3 intersectLayer = to + (from - to) * (sgn*.5+.5);
     vec3 size = to - from;
     // y
-    float tY = (to.y - ro.y)/rd.y;
+    float tY = (intersectLayer.y - ro.y)/rd.y;
     if ((faces      & 1) == 1 && handleIntersection(((rd * tY + ro).xz - from.xz)/size.xz, flipY, mapUV(uvY, uvRange), normalMat[1], (-rotY + 360) % 360, outCol)) {
         t = tY;
         return true;
     }
     // x
-    float tX = (to.x - ro.x)/rd.x;
+    float tX = (intersectLayer.x - ro.x)/rd.x;
     if ((faces >> 2 & 1) == 1 && handleIntersection(((rd * tX + ro).zy - from.zy)/size.zy, flipX, mapUV(uvX, uvRange), normalMat[0], (-rotX + 360) % 360, outCol)) {
         t = tX;
         return true;
     }
     // z
-    float tZ = (to.z - ro.z)/rd.z;
+    float tZ = (intersectLayer.z - ro.z)/rd.z;
     if ((faces >> 1 & 1) == 1 && handleIntersection(((rd * tZ + ro).xy - from.xy)/size.xy, flipZ, mapUV(uvZ, uvRange), normalMat[2], rotZ, outCol)) {
         t = tZ;
         return true;
