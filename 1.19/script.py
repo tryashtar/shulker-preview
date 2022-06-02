@@ -617,7 +617,7 @@ def generate_shader(mc, path):
                   output.append(f'    return {line}')
                else:
                   output.extend([
-                     f'    bool cube{j} = {line}'
+                     f'    bool cube{j} = {line}',
                      f'    if (cube{j} && t < minT) {{',
                      '        minT = t;',
                      '        outCol = col;',

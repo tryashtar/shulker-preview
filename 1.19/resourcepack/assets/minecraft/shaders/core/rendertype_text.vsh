@@ -33,7 +33,7 @@ vec2[] corners = vec2[](
 );
 
 const float size = 20;
-const vec2 offset = vec2(-2, -6);
+const vec2 offset = vec2(-2, -7);
 
 void main() {
 

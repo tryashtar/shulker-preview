@@ -106,8 +106,8 @@ bool cuboid(int faces, vec3 rd, vec3 ro, vec3 from, vec3 to, vec4 uvX, int rotX,
     from /= 16.0;
     to /= 16.0;
     vec2 flipX = vec2(0.0, 1.0);
-    vec2 flipY = vec2(1.0, 1.0);
-    vec2 flipZ = vec2(0.0, 1.0);
+    vec2 flipY = vec2(0.0, 1.0);
+    vec2 flipZ = vec2(1.0, 1.0);
     vec3 sgn = step(-rd, vec3(0.)) * 2. - 1.;
     normalMat[0] *= -sgn.x;
     normalMat[1] *= -sgn.y;
@@ -130,13 +130,13 @@ bool cuboid(int faces, vec3 rd, vec3 ro, vec3 from, vec3 to, vec4 uvX, int rotX,
     vec3 size = to - from;
     // y
     float tY = (to.y - ro.y)/rd.y;
-    if ((faces      & 1) == 1 && handleIntersection(((rd * tY + ro).xz - from.xz)/size.xz, flipY, mapUV(uvY, uvRange), normalMat[1], rotY, outCol)) {
+    if ((faces      & 1) == 1 && handleIntersection(((rd * tY + ro).xz - from.xz)/size.xz, flipY, mapUV(uvY, uvRange), normalMat[1], (-rotY + 360) % 360, outCol)) {
         t = tY;
         return true;
     }
     // x
     float tX = (to.x - ro.x)/rd.x;
-    if ((faces >> 2 & 1) == 1 && handleIntersection(((rd * tX + ro).zy - from.zy)/size.zy, flipX, mapUV(uvX, uvRange), normalMat[0], rotX, outCol)) {
+    if ((faces >> 2 & 1) == 1 && handleIntersection(((rd * tX + ro).zy - from.zy)/size.zy, flipX, mapUV(uvX, uvRange), normalMat[0], (-rotX + 360) % 360, outCol)) {
         t = tX;
         return true;
     }
@@ -177,15 +177,18 @@ bool block_2(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 4.0, 14.0), vec4(4.0, 2.0, 0.0, 14.0), 270, vec4(2.0, 2.0, 14.0, 14.0), 180, vec4(2.0, 12.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 4.0, 14.0), vec4(4.0, 2.0, 0.0, 14.0), 270, vec4(2.0, 2.0, 14.0, 14.0), 180, vec4(2.0, 12.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(4.0, 4.0, 3.0), vec3(12.0, 5.0, 13.0), vec4(5.0, 3.0, 4.0, 13.0), 270, vec4(4.0, 3.0, 12.0, 13.0), 180, vec4(4.0, 11.0, 12.0, 12.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(4.0, 4.0, 3.0), vec3(12.0, 5.0, 13.0), vec4(5.0, 3.0, 4.0, 13.0), 270, vec4(4.0, 3.0, 12.0, 13.0), 180, vec4(4.0, 11.0, 12.0, 12.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 5.0, 4.0), vec3(10.0, 10.0, 12.0), vec4(10.0, 4.0, 5.0, 12.0), 270, vec4(6.0, 4.0, 10.0, 12.0), 0, vec4(6.0, 6.0, 10.0, 11.0), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 5.0, 4.0), vec3(10.0, 10.0, 12.0), vec4(10.0, 4.0, 5.0, 12.0), 270, vec4(6.0, 4.0, 10.0, 12.0), 0, vec4(6.0, 6.0, 10.0, 11.0), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -209,15 +212,18 @@ bool block_4(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 1.0), vec3(15.0, 14.0, 15.0), vec4(10.5, 4.75, 7.0, 3.5), 0, vec4(10.5, 0.0, 7.0, 3.5), 0, vec4(14.0, 4.75, 10.5, 3.5), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(1.0, 9.0, 1.0), vec3(15.0, 14.0, 15.0), vec4(10.5, 4.75, 7.0, 3.5), 0, vec4(10.5, 0.0, 7.0, 3.5), 0, vec4(14.0, 4.75, 10.5, 3.5), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 1.0), vec3(15.0, 10.0, 15.0), vec4(10.5, 10.75, 7.0, 8.25), 0, vec4(10.5, 4.75, 7.0, 8.25), 0, vec4(14.0, 10.75, 10.5, 8.25), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 0.0, 1.0), vec3(15.0, 10.0, 15.0), vec4(10.5, 10.75, 7.0, 8.25), 0, vec4(10.5, 4.75, 7.0, 8.25), 0, vec4(14.0, 10.75, 10.5, 8.25), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(7.0, 7.0, 0.0), vec3(9.0, 11.0, 1.0), vec4(1.0, 1.25, 0.75, 0.25), 0, vec4(1.25, 0.25, 0.75, 0.0), 0, vec4(1.5, 1.25, 1.0, 0.25), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(7.0, 7.0, 0.0), vec3(9.0, 11.0, 1.0), vec4(1.0, 1.25, 0.75, 0.25), 0, vec4(1.25, 0.25, 0.75, 0.0), 0, vec4(1.5, 1.25, 1.0, 0.25), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -241,11 +247,13 @@ bool block_6(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(16.0, 16.0, 0.01), vec4(15.99, 0.0, 16.0, 11.0), 0, vec4(0.0, 0.0, 16.0, 0.01), 0, vec4(0.0, 0.0, 16.0, 11.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(16.0, 16.0, 0.01), vec4(15.99, 0.0, 16.0, 11.0), 0, vec4(0.0, 0.0, 16.0, 0.01), 0, vec4(0.0, 0.0, 16.0, 11.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 15.99), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, vec4(0.0, 15.99, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 11.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 15.99), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, vec4(0.0, 15.99, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 11.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -260,11 +268,13 @@ bool block_7(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(0.01, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 11.0), 0, vec4(0.0, 0.0, 0.01, 16.0), 0, vec4(15.99, 0.0, 16.0, 11.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 0.0), vec3(0.01, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 11.0), 0, vec4(0.0, 0.0, 0.01, 16.0), 0, vec4(15.99, 0.0, 16.0, 11.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(15.99, 5.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 11.0), 0, vec4(15.99, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(15.99, 5.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 11.0), 0, vec4(15.99, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.009999999999999787, 11.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -351,11 +361,13 @@ bool block_16(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 6.0), vec3(10.0, 1.0, 10.0), vec4(2.0, 6.0, 6.0, 7.0), 0, vec4(2.0, 2.0, 6.0, 6.0), 0, vec4(2.0, 6.0, 6.0, 7.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 6.0), vec3(10.0, 1.0, 10.0), vec4(2.0, 6.0, 6.0, 7.0), 0, vec4(2.0, 2.0, 6.0, 6.0), 0, vec4(2.0, 6.0, 6.0, 7.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 1.0, 7.0), vec3(9.0, 16.0, 9.0), vec4(0.0, 0.0, 2.0, 15.0), 0, vec4(2.0, 0.0, 4.0, 2.0), 0, vec4(0.0, 0.0, 2.0, 15.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 1.0, 7.0), vec3(9.0, 16.0, 9.0), vec4(0.0, 0.0, 2.0, 15.0), 0, vec4(2.0, 0.0, 4.0, 2.0), 0, vec4(0.0, 0.0, 2.0, 15.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -397,27 +409,33 @@ bool block_20(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(13.0, 0.0, 0.0), vec3(16.0, 3.0, 3.0), vec4(12.5, 5.25, 13.25, 6.0), 0, vec4(13.25, 4.5, 14.0, 5.25), 0, vec4(13.25, 5.25, 14.0, 6.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(13.0, 0.0, 0.0), vec3(16.0, 3.0, 3.0), vec4(12.5, 5.25, 13.25, 6.0), 0, vec4(13.25, 4.5, 14.0, 5.25), 0, vec4(13.25, 5.25, 14.0, 6.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 3.0, 16.0), vec3(16.0, 9.0, 32.0), vec4(5.5, 7.0, 7.0, 11.0), 90, vec4(1.5, 7.0, 5.5, 11.0), 0, vec4(0.0, 7.0, 16.0, 13.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 3.0, 16.0), vec3(16.0, 9.0, 32.0), vec4(5.5, 7.0, 7.0, 11.0), 90, vec4(1.5, 7.0, 5.5, 11.0), 0, vec4(0.0, 7.0, 16.0, 13.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(13.0, 0.0, 29.0), vec3(16.0, 3.0, 32.0), vec4(13.25, 3.75, 14.0, 4.5), 0, vec4(13.25, 3.0, 14.0, 3.75), 270, vec4(14.0, 3.75, 14.75, 4.5), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(13.0, 0.0, 29.0), vec3(16.0, 3.0, 32.0), vec4(13.25, 3.75, 14.0, 4.5), 0, vec4(13.25, 3.0, 14.0, 3.75), 270, vec4(14.0, 3.75, 14.75, 4.5), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 29.0), vec3(3.0, 3.0, 32.0), vec4(14.0, 0.75, 14.75, 1.5), 0, vec4(13.25, 0.0, 14.0, 0.75), 180, vec4(14.75, 0.75, 15.5, 1.5), 0, uvRange, normalMat, t, col);    if (cube3 && t < minT) {
+    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 29.0), vec3(3.0, 3.0, 32.0), vec4(14.0, 0.75, 14.75, 1.5), 0, vec4(13.25, 0.0, 14.0, 0.75), 180, vec4(14.75, 0.75, 15.5, 1.5), 0, uvRange, normalMat, t, col);
+    if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 3.0, 0.0), vec3(16.0, 9.0, 16.0), vec4(5.5, 1.5, 7.0, 5.5), 90, vec4(1.5, 1.5, 5.5, 5.5), 0, vec4(1.5, 0.0, 5.5, 1.5), 180, uvRange, normalMat, t, col);    if (cube4 && t < minT) {
+    bool cube4 = cuboid(faces, rd, ro, vec3(0.0, 3.0, 0.0), vec3(16.0, 9.0, 16.0), vec4(5.5, 1.5, 7.0, 5.5), 90, vec4(1.5, 1.5, 5.5, 5.5), 0, vec4(1.5, 0.0, 5.5, 1.5), 180, uvRange, normalMat, t, col);
+    if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(3.0, 3.0, 3.0), vec4(14.75, 2.25, 15.5, 3.0), 0, vec4(13.25, 1.5, 14.0, 2.25), 90, vec4(12.5, 2.25, 13.25, 3.0), 0, uvRange, normalMat, t, col);    if (cube5 && t < minT) {
+    bool cube5 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(3.0, 3.0, 3.0), vec4(14.75, 2.25, 15.5, 3.0), 0, vec4(13.25, 1.5, 14.0, 2.25), 90, vec4(12.5, 2.25, 13.25, 3.0), 0, uvRange, normalMat, t, col);
+    if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -459,19 +477,23 @@ bool block_24(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube3 && t < minT) {
+    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -486,35 +508,43 @@ bool block_25(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 0.0), vec3(10.0, 16.0, 4.0), vec4(0.0, 0.0, 4.0, 16.0), 0, vec4(6.0, 0.0, 10.0, 4.0), 0, vec4(6.0, 0.0, 10.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 0.0), vec3(10.0, 16.0, 4.0), vec4(0.0, 0.0, 4.0, 16.0), 0, vec4(6.0, 0.0, 10.0, 4.0), 0, vec4(6.0, 0.0, 10.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 12.0), vec3(10.0, 16.0, 16.0), vec4(12.0, 0.0, 16.0, 16.0), 0, vec4(6.0, 12.0, 10.0, 16.0), 0, vec4(6.0, 0.0, 10.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(6.0, 0.0, 12.0), vec3(10.0, 16.0, 16.0), vec4(12.0, 0.0, 16.0, 16.0), 0, vec4(6.0, 12.0, 10.0, 16.0), 0, vec4(6.0, 0.0, 10.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 0.0), vec3(9.0, 15.0, 16.0), vec4(0.0, 1.0, 16.0, 4.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 0.0), vec3(9.0, 15.0, 16.0), vec4(0.0, 1.0, 16.0, 4.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(7.0, 12.0, -2.0), vec3(9.0, 15.0, 0.0), vec4(0.0, 1.0, 2.0, 4.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, normalMat, t, col);    if (cube3 && t < minT) {
+    bool cube3 = cuboid(faces, rd, ro, vec3(7.0, 12.0, -2.0), vec3(9.0, 15.0, 0.0), vec4(0.0, 1.0, 2.0, 4.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, normalMat, t, col);
+    if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 16.0), vec3(9.0, 15.0, 18.0), vec4(14.0, 1.0, 16.0, 4.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, normalMat, t, col);    if (cube4 && t < minT) {
+    bool cube4 = cuboid(faces, rd, ro, vec3(7.0, 12.0, 16.0), vec3(9.0, 15.0, 18.0), vec4(14.0, 1.0, 16.0, 4.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(7.0, 1.0, 9.0, 4.0), 0, uvRange, normalMat, t, col);
+    if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 0.0), vec3(9.0, 9.0, 16.0), vec4(0.0, 7.0, 16.0, 10.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, normalMat, t, col);    if (cube5 && t < minT) {
+    bool cube5 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 0.0), vec3(9.0, 9.0, 16.0), vec4(0.0, 7.0, 16.0, 10.0), 0, vec4(7.0, 0.0, 9.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, normalMat, t, col);
+    if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(7.0, 6.0, -2.0), vec3(9.0, 9.0, 0.0), vec4(0.0, 7.0, 2.0, 10.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, normalMat, t, col);    if (cube6 && t < minT) {
+    bool cube6 = cuboid(faces, rd, ro, vec3(7.0, 6.0, -2.0), vec3(9.0, 9.0, 0.0), vec4(0.0, 7.0, 2.0, 10.0), 0, vec4(7.0, 14.0, 9.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, normalMat, t, col);
+    if (cube6 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 16.0), vec3(9.0, 9.0, 18.0), vec4(14.0, 7.0, 16.0, 10.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, normalMat, t, col);    if (cube7 && t < minT) {
+    bool cube7 = cuboid(faces, rd, ro, vec3(7.0, 6.0, 16.0), vec3(9.0, 9.0, 18.0), vec4(14.0, 7.0, 16.0, 10.0), 0, vec4(7.0, 0.0, 9.0, 2.0), 0, vec4(7.0, 7.0, 9.0, 10.0), 0, uvRange, normalMat, t, col);
+    if (cube7 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -529,11 +559,13 @@ bool block_26(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 16.0, 12.0), vec4(4.0, 0.0, 12.0, 16.0), 0, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(4.0, 0.0, 12.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 16.0, 12.0), vec4(4.0, 0.0, 12.0, 16.0), 0, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(4.0, 0.0, 12.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 0.0), vec3(11.0, 13.0, 16.0), vec4(0.0, 3.0, 16.0, 16.0), 0, vec4(5.0, 0.0, 11.0, 16.0), 0, vec4(5.0, 3.0, 11.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 0.0), vec3(11.0, 13.0, 16.0), vec4(0.0, 3.0, 16.0, 16.0), 0, vec4(5.0, 0.0, 11.0, 16.0), 0, vec4(5.0, 3.0, 11.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -548,35 +580,43 @@ bool block_27(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 15.0, 6.0), vec3(10.0, 16.0, 10.0), vec4(6.0, 15.0, 10.0, 16.0), 0, vec4(6.0, 6.0, 10.0, 10.0), 0, vec4(6.0, 15.0, 10.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 15.0, 6.0), vec3(10.0, 16.0, 10.0), vec4(6.0, 15.0, 10.0, 16.0), 0, vec4(6.0, 6.0, 10.0, 10.0), 0, vec4(6.0, 15.0, 10.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 14.0, 5.0), vec3(11.0, 15.0, 11.0), vec4(5.0, 14.0, 11.0, 15.0), 0, vec4(5.0, 5.0, 11.0, 11.0), 0, vec4(5.0, 14.0, 11.0, 15.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 14.0, 5.0), vec3(11.0, 15.0, 11.0), vec4(5.0, 14.0, 11.0, 15.0), 0, vec4(5.0, 5.0, 11.0, 11.0), 0, vec4(5.0, 14.0, 11.0, 15.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(5.0, 13.0, 5.0), vec3(11.0, 14.0, 11.0), vec4(4.0, 13.0, 12.0, 14.0), 0, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(4.0, 13.0, 12.0, 14.0), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(5.0, 13.0, 5.0), vec3(11.0, 14.0, 11.0), vec4(4.0, 13.0, 12.0, 14.0), 0, vec4(4.0, 4.0, 12.0, 12.0), 0, vec4(4.0, 13.0, 12.0, 14.0), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(3.0, 11.0, 3.0), vec3(13.0, 13.0, 13.0), vec4(3.0, 11.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 11.0, 13.0, 13.0), 0, uvRange, normalMat, t, col);    if (cube3 && t < minT) {
+    bool cube3 = cuboid(faces, rd, ro, vec3(3.0, 11.0, 3.0), vec3(13.0, 13.0, 13.0), vec4(3.0, 11.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 11.0, 13.0, 13.0), 0, uvRange, normalMat, t, col);
+    if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 8.0, 2.0), vec3(14.0, 11.0, 14.0), vec4(2.0, 8.0, 14.0, 11.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 8.0, 14.0, 11.0), 0, uvRange, normalMat, t, col);    if (cube4 && t < minT) {
+    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 8.0, 2.0), vec3(14.0, 11.0, 14.0), vec4(2.0, 8.0, 14.0, 11.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 8.0, 14.0, 11.0), 0, uvRange, normalMat, t, col);
+    if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(1.0, 3.0, 1.0), vec3(15.0, 8.0, 15.0), vec4(1.0, 3.0, 15.0, 8.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 3.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);    if (cube5 && t < minT) {
+    bool cube5 = cuboid(faces, rd, ro, vec3(1.0, 3.0, 1.0), vec3(15.0, 8.0, 15.0), vec4(1.0, 3.0, 15.0, 8.0), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 3.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);
+    if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 1.0, 2.0), vec3(14.0, 3.0, 14.0), vec4(2.0, 1.0, 14.0, 3.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 1.0, 14.0, 3.0), 0, uvRange, normalMat, t, col);    if (cube6 && t < minT) {
+    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 1.0, 2.0), vec3(14.0, 3.0, 14.0), vec4(2.0, 1.0, 14.0, 3.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 1.0, 14.0, 3.0), 0, uvRange, normalMat, t, col);
+    if (cube6 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(3.0, 0.0, 3.0), vec3(13.0, 1.0, 13.0), vec4(3.0, 0.0, 13.0, 1.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 0.0, 13.0, 1.0), 0, uvRange, normalMat, t, col);    if (cube7 && t < minT) {
+    bool cube7 = cuboid(faces, rd, ro, vec3(3.0, 0.0, 3.0), vec3(13.0, 1.0, 13.0), vec4(3.0, 0.0, 13.0, 1.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 0.0, 13.0, 1.0), 0, uvRange, normalMat, t, col);
+    if (cube7 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -591,11 +631,13 @@ bool block_28(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(12.0, 0.0, 6.0), vec3(14.0, 7.0, 10.0), vec4(10.0, 16.0, 6.0, 9.0), 0, vec4(12.0, 6.0, 14.0, 10.0), 0, vec4(2.0, 9.0, 4.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(12.0, 0.0, 6.0), vec3(14.0, 7.0, 10.0), vec4(10.0, 16.0, 6.0, 9.0), 0, vec4(12.0, 6.0, 14.0, 10.0), 0, vec4(2.0, 9.0, 4.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 6.0), vec3(4.0, 7.0, 10.0), vec4(10.0, 16.0, 6.0, 9.0), 0, vec4(2.0, 6.0, 4.0, 10.0), 0, vec4(12.0, 9.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 6.0), vec3(4.0, 7.0, 10.0), vec4(10.0, 16.0, 6.0, 9.0), 0, vec4(2.0, 6.0, 4.0, 10.0), 0, vec4(12.0, 9.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -610,11 +652,13 @@ bool block_29(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(12.0, 7.0, 5.0), vec3(14.0, 13.0, 11.0), vec4(0.0, 0.0, 6.0, 6.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(12.0, 7.0, 5.0), vec3(14.0, 13.0, 11.0), vec4(0.0, 0.0, 6.0, 6.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 7.0, 5.0), vec3(4.0, 13.0, 11.0), vec4(5.0, 3.0, 11.0, 9.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 7.0, 5.0), vec3(4.0, 13.0, 11.0), vec4(5.0, 3.0, 11.0, 9.0), 0, vec4(8.0, 0.0, 10.0, 6.0), 0, vec4(6.0, 0.0, 8.0, 6.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -647,11 +691,13 @@ bool block_32(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 8.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 8.0), 0, vec4(8.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(8.0, 8.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 8.0), 0, vec4(8.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -666,15 +712,18 @@ bool block_33(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(7.33333, 0.0, 7.33333), vec3(8.66666, 28.0, 8.66666), vec4(11.0, 0.5, 11.5, 11.0), 0, vec4(11.5, 0.0, 12.0, 0.5), 0, vec4(11.5, 0.5, 12.0, 11.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(7.33333, 0.0, 7.33333), vec3(8.66666, 28.0, 8.66666), vec4(11.0, 0.5, 11.5, 11.0), 0, vec4(11.5, 0.0, 12.0, 0.5), 0, vec4(11.5, 0.5, 12.0, 11.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.33333, 28.0, 7.33333), vec3(14.66667, 29.33333, 8.66667), vec4(0.0, 11.0, 0.5, 11.5), 0, vec4(5.5, 11.0, 0.5, 10.5), 0, vec4(6.0, 11.0, 11.0, 11.5), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.33333, 28.0, 7.33333), vec3(14.66667, 29.33333, 8.66667), vec4(0.0, 11.0, 0.5, 11.5), 0, vec4(5.5, 11.0, 0.5, 10.5), 0, vec4(6.0, 11.0, 11.0, 11.5), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.33333, 2.66667, 6.33333), vec3(14.66667, 29.33333, 7.33333), vec4(0.0, 0.25, 0.25, 10.25), 0, vec4(5.25, 0.0, 0.25, 0.25), 0, vec4(0.25, 0.25, 5.25, 10.25), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.33333, 2.66667, 6.33333), vec3(14.66667, 29.33333, 7.33333), vec4(0.0, 0.25, 0.25, 10.25), 0, vec4(5.25, 0.0, 0.25, 0.25), 0, vec4(0.25, 0.25, 5.25, 10.25), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -698,31 +747,38 @@ bool block_35(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 4.0, -14.0), vec3(14.0, 9.0, 2.0), vec4(11.0, 3.75, 12.0, 4.0625), 0, vec4(12.75, 3.75, 12.0, 2.75), 0, vec4(12.0, 3.75, 12.75, 4.0625), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 4.0, -14.0), vec3(14.0, 9.0, 2.0), vec4(11.0, 3.75, 12.0, 4.0625), 0, vec4(12.75, 3.75, 12.0, 2.75), 0, vec4(12.0, 3.75, 12.75, 4.0625), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(7.0, 2.875, 8.0, 3.875), 0, vec4(9.0, 2.875, 8.0, 1.875), 0, vec4(8.0, 2.875, 9.0, 3.875), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(7.0, 2.875, 8.0, 3.875), 0, vec4(9.0, 2.875, 8.0, 1.875), 0, vec4(8.0, 2.875, 9.0, 3.875), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(11.0, 16.0, 6.0), vec3(13.0, 20.0, 12.0), vec4(0.875, 0.375, 0.5, 0.625), 0, vec4(0.375, 0.375, 0.5, 0.0), 0, vec4(0.5, 0.375, 0.375, 0.625), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(11.0, 16.0, 6.0), vec3(13.0, 20.0, 12.0), vec4(0.875, 0.375, 0.5, 0.625), 0, vec4(0.375, 0.375, 0.5, 0.0), 0, vec4(0.5, 0.375, 0.375, 0.625), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(11.0, 9.0, -12.0), vec3(13.0, 11.0, -8.0), vec4(7.625, 0.25, 7.375, 0.375), 0, vec4(7.25, 0.25, 7.375, 0.0), 0, vec4(7.375, 0.25, 7.25, 0.375), 0, uvRange, normalMat, t, col);    if (cube3 && t < minT) {
+    bool cube3 = cuboid(faces, rd, ro, vec3(11.0, 9.0, -12.0), vec3(13.0, 11.0, -8.0), vec4(7.625, 0.25, 7.375, 0.375), 0, vec4(7.25, 0.25, 7.375, 0.0), 0, vec4(7.375, 0.25, 7.25, 0.375), 0, uvRange, normalMat, t, col);
+    if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(3.0, 16.0, 6.0), vec3(5.0, 20.0, 12.0), vec4(0.0, 0.375, 0.375, 0.625), 0, vec4(0.5, 0.375, 0.375, 0.0), 0, vec4(0.375, 0.375, 0.5, 0.625), 0, uvRange, normalMat, t, col);    if (cube4 && t < minT) {
+    bool cube4 = cuboid(faces, rd, ro, vec3(3.0, 16.0, 6.0), vec3(5.0, 20.0, 12.0), vec4(0.0, 0.375, 0.375, 0.625), 0, vec4(0.5, 0.375, 0.375, 0.0), 0, vec4(0.375, 0.375, 0.5, 0.625), 0, uvRange, normalMat, t, col);
+    if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(3.0, 9.0, -12.0), vec3(5.0, 11.0, -8.0), vec4(7.0, 0.25, 7.25, 0.375), 0, vec4(7.375, 0.25, 7.25, 0.0), 0, vec4(7.25, 0.25, 7.375, 0.375), 0, uvRange, normalMat, t, col);    if (cube5 && t < minT) {
+    bool cube5 = cuboid(faces, rd, ro, vec3(3.0, 9.0, -12.0), vec3(5.0, 11.0, -8.0), vec4(7.0, 0.25, 7.25, 0.375), 0, vec4(7.375, 0.25, 7.25, 0.0), 0, vec4(7.25, 0.25, 7.375, 0.375), 0, uvRange, normalMat, t, col);
+    if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 0.0, -14.0), vec3(14.0, 4.0, 2.0), vec4(11.0, 5.0625, 12.0, 5.3125), 0, vec4(12.75, 5.0625, 12.0, 4.0625), 0, vec4(12.0, 5.0625, 12.75, 5.3125), 0, uvRange, normalMat, t, col);    if (cube6 && t < minT) {
+    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 0.0, -14.0), vec3(14.0, 4.0, 2.0), vec4(11.0, 5.0625, 12.0, 5.3125), 0, vec4(12.75, 5.0625, 12.0, 4.0625), 0, vec4(12.0, 5.0625, 12.75, 5.3125), 0, uvRange, normalMat, t, col);
+    if (cube6 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -746,11 +802,13 @@ bool block_37(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 8.0, 12.0), vec4(0.0, 2.0, 2.0, 4.0), 0, vec4(4.0, 2.0, 2.0, 0.0), 0, vec4(2.0, 2.0, 4.0, 4.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 8.0, 12.0), vec4(0.0, 2.0, 2.0, 4.0), 0, vec4(4.0, 2.0, 2.0, 0.0), 0, vec4(2.0, 2.0, 4.0, 4.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(3.5, -0.5, 3.5), vec3(12.5, 8.5, 12.5), vec4(8.0, 2.0, 10.0, 4.0), 0, vec4(12.0, 2.0, 10.0, 0.0), 0, vec4(10.0, 2.0, 12.0, 4.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(3.5, -0.5, 3.5), vec3(12.5, 8.5, 12.5), vec4(8.0, 2.0, 10.0, 4.0), 0, vec4(12.0, 2.0, 10.0, 0.0), 0, vec4(10.0, 2.0, 12.0, 4.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -774,35 +832,43 @@ bool block_39(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(2.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 14.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(0.0, 14.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 14.0), vec3(2.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(0.0, 14.0, 2.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 14.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 14.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 16.0), 0, vec4(14.0, 14.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube3 && t < minT) {
+    bool cube3 = cuboid(faces, rd, ro, vec3(14.0, 0.0, 0.0), vec3(16.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 16.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(0.0, 0.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, normalMat, t, col);    if (cube4 && t < minT) {
+    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 0.0), vec3(14.0, 16.0, 2.0), vec4(14.0, 0.0, 16.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, normalMat, t, col);
+    if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(14.0, 0.0, 2.0, 2.0), 0, uvRange, normalMat, t, col);    if (cube5 && t < minT) {
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 14.0), vec3(14.0, 16.0, 16.0), vec4(0.0, 0.0, 2.0, 2.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(14.0, 0.0, 2.0, 2.0), 0, uvRange, normalMat, t, col);
+    if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(14.0, 14.0, 2.0), vec3(16.0, 16.0, 14.0), vec4(14.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, uvRange, normalMat, t, col);    if (cube6 && t < minT) {
+    bool cube6 = cuboid(faces, rd, ro, vec3(14.0, 14.0, 2.0), vec3(16.0, 16.0, 14.0), vec4(14.0, 0.0, 2.0, 2.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 0.0, 2.0, 2.0), 0, uvRange, normalMat, t, col);
+    if (cube6 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(0.0, 14.0, 2.0), vec3(2.0, 16.0, 14.0), vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, uvRange, normalMat, t, col);    if (cube7 && t < minT) {
+    bool cube7 = cuboid(faces, rd, ro, vec3(0.0, 14.0, 2.0), vec3(2.0, 16.0, 14.0), vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 0.0, 16.0, 2.0), 0, uvRange, normalMat, t, col);
+    if (cube7 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -817,11 +883,13 @@ bool block_40(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 4.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(8.0, 4.0, 12.0, 7.0), 0, vec4(4.0, 0.0, 8.0, 4.0), 0, vec4(12.0, 4.0, 16.0, 7.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 4.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(8.0, 4.0, 12.0, 7.0), 0, vec4(4.0, 0.0, 8.0, 4.0), 0, vec4(12.0, 4.0, 16.0, 7.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(8.0, 11.0, 12.0, 13.0), 0, vec4(4.0, 7.0, 8.0, 11.0), 0, vec4(12.0, 11.0, 16.0, 13.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(8.0, 11.0, 12.0, 13.0), 0, vec4(4.0, 7.0, 8.0, 11.0), 0, vec4(12.0, 11.0, 16.0, 13.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -836,11 +904,13 @@ bool block_41(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(3.0, 3.0, 3.0), vec3(13.0, 13.0, 13.0), vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(3.0, 3.0, 3.0), vec3(13.0, 13.0, 13.0), vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, vec4(3.0, 3.0, 13.0, 13.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -891,11 +961,13 @@ bool block_46(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(0.002, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 1.0, 16.0, 5.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 11.0, 0.0), vec3(0.002, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 1.0, 16.0, 5.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(15.998, 11.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 0.002000000000000668, 5.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(15.998, 11.0, 0.0), vec3(16.0, 15.0, 16.0), vec4(16.0, 0.0, 0.0, 4.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 1.0, 0.002000000000000668, 5.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -910,11 +982,13 @@ bool block_47(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(5.0, 0.0, 12.0), vec3(11.0, 15.0, 12.0), vec4(4.0, 1.0, 4.0, 16.0), 0, vec4(5.0, 12.0, 11.0, 12.0), 0, vec4(3.0, 0.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -929,31 +1003,38 @@ bool block_48(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 2.0), vec3(14.0, 16.0, 14.0), vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 14.0, 2.0), vec3(14.0, 16.0, 14.0), vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 2.0, 2.0), vec3(2.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);    if (cube3 && t < minT) {
+    bool cube3 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
+    if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, normalMat, t, col);    if (cube4 && t < minT) {
+    bool cube4 = cuboid(faces, rd, ro, vec3(14.0, 2.0, 2.0), vec3(16.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(0.0, 2.0, 2.0, 14.0), 0, uvRange, normalMat, t, col);
+    if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 2.0, 14.0), vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube5 && t < minT) {
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 0.0, 2.0), vec3(14.0, 2.0, 14.0), vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 2.0), vec3(14.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);    if (cube6 && t < minT) {
+    bool cube6 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 2.0), vec3(14.0, 14.0, 14.0), vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
+    if (cube6 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -968,11 +1049,13 @@ bool block_49(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 8.0, 12.0), vec4(0.0, 4.0, 2.0, 8.0), 0, vec4(4.0, 4.0, 2.0, 0.0), 0, vec4(2.0, 4.0, 4.0, 8.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.0, 0.0, 4.0), vec3(12.0, 8.0, 12.0), vec4(0.0, 4.0, 2.0, 8.0), 0, vec4(4.0, 4.0, 2.0, 0.0), 0, vec4(2.0, 4.0, 4.0, 8.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(3.5, -0.5, 3.5), vec3(12.5, 8.5, 12.5), vec4(8.0, 4.0, 10.0, 8.0), 0, vec4(12.0, 4.0, 10.0, 0.0), 0, vec4(10.0, 4.0, 12.0, 8.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(3.5, -0.5, 3.5), vec3(12.5, 8.5, 12.5), vec4(8.0, 4.0, 10.0, 8.0), 0, vec4(12.0, 4.0, 10.0, 0.0), 0, vec4(10.0, 4.0, 12.0, 8.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -996,19 +1079,23 @@ bool block_51(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 3.0), vec3(7.0, 16.0, 3.0), vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(-1.0, 3.0, 7.0, 3.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 3.0), vec3(7.0, 16.0, 3.0), vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(-1.0, 3.0, 7.0, 3.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 3.0), vec3(17.0, 16.0, 3.0), vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(9.0, 3.0, 17.0, 3.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 3.0), vec3(17.0, 16.0, 3.0), vec4(13.0, 0.0, 13.0, 8.0), 0, vec4(9.0, 3.0, 17.0, 3.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 13.0), vec3(17.0, 16.0, 13.0), vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(9.0, 13.0, 17.0, 13.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(9.0, 8.0, 13.0), vec3(17.0, 16.0, 13.0), vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(9.0, 13.0, 17.0, 13.0), 0, vec4(12.0, 8.0, 4.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 13.0), vec3(7.0, 16.0, 13.0), vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(-1.0, 13.0, 7.0, 13.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube3 && t < minT) {
+    bool cube3 = cuboid(faces, rd, ro, vec3(-1.0, 8.0, 13.0), vec3(7.0, 16.0, 13.0), vec4(3.0, 0.0, 3.0, 8.0), 0, vec4(-1.0, 13.0, 7.0, 13.0), 0, vec4(4.0, 8.0, 12.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -1041,11 +1128,13 @@ bool block_54(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 0.0), vec3(14.0, 14.0, 2.0), vec4(14.0, 2.0, 16.0, 14.0), 0, vec4(2.0, 0.0, 14.0, 2.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(2.0, 2.0, 14.0), vec3(14.0, 14.0, 16.0), vec4(0.0, 2.0, 2.0, 14.0), 0, vec4(2.0, 14.0, 14.0, 16.0), 0, vec4(2.0, 2.0, 14.0, 14.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -1078,11 +1167,13 @@ bool block_57(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 12.0, 6.0), vec3(10.0, 16.0, 10.0), vec4(0.0, 0.0, 4.0, 4.0), 0, vec4(4.0, 4.0, 0.0, 0.0), 0, vec4(0.0, 0.0, 4.0, 4.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(6.0, 12.0, 6.0), vec3(10.0, 16.0, 10.0), vec4(0.0, 0.0, 4.0, 4.0), 0, vec4(4.0, 4.0, 0.0, 0.0), 0, vec4(0.0, 0.0, 4.0, 4.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 0.0, 7.0), vec3(9.0, 12.0, 9.0), vec4(0.0, 4.0, 2.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 9.0), 0, vec4(0.0, 4.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(7.0, 0.0, 7.0), vec3(9.0, 12.0, 9.0), vec4(0.0, 4.0, 2.0, 16.0), 0, vec4(7.0, 7.0, 9.0, 9.0), 0, vec4(0.0, 4.0, 2.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -1106,19 +1197,23 @@ bool block_59(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 15.7, 0.0), vec3(24.0, 15.7, 16.0), vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 15.7, 0.0), vec3(24.0, 15.7, 16.0), vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 90, vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(-8.0, 15.7, 0.0), vec3(8.0, 15.7, 16.0), vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 270, vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(-8.0, 15.7, 0.0), vec3(8.0, 15.7, 16.0), vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 270, vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 15.7, 8.0), vec3(16.0, 15.7, 24.0), vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, vec4(16.0, 16.0, 0.0, 0.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 15.7, 8.0), vec3(16.0, 15.7, 24.0), vec4(-8.0, 0.3000000000000007, 8.0, 0.3000000000000007), 0, vec4(16.0, 16.0, 0.0, 0.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 15.7, -8.0), vec3(16.0, 15.7, 8.0), vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);    if (cube3 && t < minT) {
+    bool cube3 = cuboid(faces, rd, ro, vec3(0.0, 15.7, -8.0), vec3(16.0, 15.7, 8.0), vec4(8.0, 0.3000000000000007, 24.0, 0.3000000000000007), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.3000000000000007, 16.0, 0.3000000000000007), 0, uvRange, normalMat, t, col);
+    if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -1142,15 +1237,18 @@ bool block_61(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 8.0), vec3(16.0, 16.0, 8.0), vec4(8.0, 0.0, 8.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 8.0), vec3(16.0, 16.0, 8.0), vec4(8.0, 0.0, 8.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 8.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 0.002), vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 16.0, 0.002), vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 15.998), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 15.998), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(16.0, 0.0, 0.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -1165,15 +1263,18 @@ bool block_62(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.0), vec3(8.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 0.0, 0.0), vec3(8.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, vec4(8.0, 0.0, 8.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(0.002, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(0.002, 16.0, 16.0), vec4(16.0, 0.0, 0.0, 16.0), 0, vec4(0.0, 0.0, 0.002, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(15.998, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(15.998, 0.0, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(15.998, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 0.002000000000000668, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -1188,11 +1289,13 @@ bool block_63(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 15.998, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 15.998, 0.0), vec3(16.0, 16.0, 16.0), vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 0.002000000000000668), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 0.002, 16.0), vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 0.002, 16.0), vec4(0.0, 15.998, 16.0, 16.0), 0, vec4(0.0, 16.0, 16.0, 0.0), 0, vec4(0.0, 15.998, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -1207,35 +1310,43 @@ bool block_64(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 7.0), vec3(2.0, 16.0, 9.0), vec4(7.0, 0.0, 9.0, 11.0), 0, vec4(0.0, 7.0, 2.0, 9.0), 0, vec4(0.0, 0.0, 2.0, 11.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 5.0, 7.0), vec3(2.0, 16.0, 9.0), vec4(7.0, 0.0, 9.0, 11.0), 0, vec4(0.0, 7.0, 2.0, 9.0), 0, vec4(0.0, 0.0, 2.0, 11.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(14.0, 5.0, 7.0), vec3(16.0, 16.0, 9.0), vec4(7.0, 0.0, 9.0, 11.0), 0, vec4(14.0, 7.0, 16.0, 9.0), 0, vec4(14.0, 0.0, 16.0, 11.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(14.0, 5.0, 7.0), vec3(16.0, 16.0, 9.0), vec4(7.0, 0.0, 9.0, 11.0), 0, vec4(14.0, 7.0, 16.0, 9.0), 0, vec4(14.0, 0.0, 16.0, 11.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 6.0, 7.0), vec3(8.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 10.0), 0, vec4(6.0, 7.0, 8.0, 9.0), 0, vec4(6.0, 1.0, 8.0, 10.0), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(6.0, 6.0, 7.0), vec3(8.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 10.0), 0, vec4(6.0, 7.0, 8.0, 9.0), 0, vec4(6.0, 1.0, 8.0, 10.0), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(8.0, 6.0, 7.0), vec3(10.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 10.0), 0, vec4(8.0, 7.0, 10.0, 9.0), 0, vec4(8.0, 1.0, 10.0, 10.0), 0, uvRange, normalMat, t, col);    if (cube3 && t < minT) {
+    bool cube3 = cuboid(faces, rd, ro, vec3(8.0, 6.0, 7.0), vec3(10.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 10.0), 0, vec4(8.0, 7.0, 10.0, 9.0), 0, vec4(8.0, 1.0, 10.0, 10.0), 0, uvRange, normalMat, t, col);
+    if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 6.0, 7.0), vec3(6.0, 9.0, 9.0), vec4(7.0, 7.0, 9.0, 10.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(2.0, 7.0, 6.0, 10.0), 0, uvRange, normalMat, t, col);    if (cube4 && t < minT) {
+    bool cube4 = cuboid(faces, rd, ro, vec3(2.0, 6.0, 7.0), vec3(6.0, 9.0, 9.0), vec4(7.0, 7.0, 9.0, 10.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(2.0, 7.0, 6.0, 10.0), 0, uvRange, normalMat, t, col);
+    if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 12.0, 7.0), vec3(6.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 4.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(2.0, 1.0, 6.0, 4.0), 0, uvRange, normalMat, t, col);    if (cube5 && t < minT) {
+    bool cube5 = cuboid(faces, rd, ro, vec3(2.0, 12.0, 7.0), vec3(6.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 4.0), 0, vec4(2.0, 7.0, 6.0, 9.0), 0, vec4(2.0, 1.0, 6.0, 4.0), 0, uvRange, normalMat, t, col);
+    if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube6 = cuboid(faces, rd, ro, vec3(10.0, 6.0, 7.0), vec3(14.0, 9.0, 9.0), vec4(7.0, 7.0, 9.0, 10.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(10.0, 7.0, 14.0, 10.0), 0, uvRange, normalMat, t, col);    if (cube6 && t < minT) {
+    bool cube6 = cuboid(faces, rd, ro, vec3(10.0, 6.0, 7.0), vec3(14.0, 9.0, 9.0), vec4(7.0, 7.0, 9.0, 10.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(10.0, 7.0, 14.0, 10.0), 0, uvRange, normalMat, t, col);
+    if (cube6 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube7 = cuboid(faces, rd, ro, vec3(10.0, 12.0, 7.0), vec3(14.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 4.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(10.0, 1.0, 14.0, 4.0), 0, uvRange, normalMat, t, col);    if (cube7 && t < minT) {
+    bool cube7 = cuboid(faces, rd, ro, vec3(10.0, 12.0, 7.0), vec3(14.0, 15.0, 9.0), vec4(7.0, 1.0, 9.0, 4.0), 0, vec4(10.0, 7.0, 14.0, 9.0), 0, vec4(10.0, 1.0, 14.0, 4.0), 0, uvRange, normalMat, t, col);
+    if (cube7 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -1250,27 +1361,33 @@ bool block_65(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(0.0, 0.0, 0.0), vec3(16.0, 8.0, 16.0), vec4(0.0, 8.0, 16.0, 16.0), 0, vec4(0.0, 0.0, 16.0, 16.0), 0, vec4(0.0, 8.0, 16.0, 16.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 14.98, 1.0), vec3(15.0, 14.98, 15.0), vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 14.98, 1.0), vec3(15.0, 14.98, 15.0), vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, vec4(1.0, 1.0, 15.0, 15.0), 0, vec4(1.0, 1.0199999999999996, 15.0, 1.0199999999999996), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 14.98), vec3(15.0, 15.0, 14.98), vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, vec4(1.0, 14.98, 15.0, 14.98), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 14.98), vec3(15.0, 15.0, 14.98), vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, vec4(1.0, 14.98, 15.0, 14.98), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube3 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.02), vec3(15.0, 15.0, 1.02), vec4(14.98, 1.0, 14.98, 8.0), 0, vec4(1.0, 1.02, 15.0, 1.02), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);    if (cube3 && t < minT) {
+    bool cube3 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.02), vec3(15.0, 15.0, 1.02), vec4(14.98, 1.0, 14.98, 8.0), 0, vec4(1.0, 1.02, 15.0, 1.02), 0, vec4(1.0, 1.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);
+    if (cube3 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube4 = cuboid(faces, rd, ro, vec3(14.98, 8.0, 1.0), vec3(14.98, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(14.98, 1.0, 14.98, 15.0), 0, vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, uvRange, normalMat, t, col);    if (cube4 && t < minT) {
+    bool cube4 = cuboid(faces, rd, ro, vec3(14.98, 8.0, 1.0), vec3(14.98, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(14.98, 1.0, 14.98, 15.0), 0, vec4(1.0199999999999996, 1.0, 1.0199999999999996, 8.0), 0, uvRange, normalMat, t, col);
+    if (cube4 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube5 = cuboid(faces, rd, ro, vec3(1.02, 8.0, 1.0), vec3(1.02, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(1.02, 1.0, 1.02, 15.0), 0, vec4(14.98, 1.0, 14.98, 8.0), 0, uvRange, normalMat, t, col);    if (cube5 && t < minT) {
+    bool cube5 = cuboid(faces, rd, ro, vec3(1.02, 8.0, 1.0), vec3(1.02, 15.0, 15.0), vec4(1.0, 1.0, 15.0, 8.0), 0, vec4(1.02, 1.0, 1.02, 15.0), 0, vec4(14.98, 1.0, 14.98, 8.0), 0, uvRange, normalMat, t, col);
+    if (cube5 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -1294,15 +1411,18 @@ bool block_67(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 2.99, 8.0), vec3(15.0, 2.99, 15.0), vec4(1.0, 13.01, 8.0, 13.01), 0, vec4(8.0, 8.0, 0.0, 0.0), 0, vec4(1.0, 13.01, 8.0, 13.01), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 2.99, 8.0), vec3(15.0, 2.99, 15.0), vec4(1.0, 13.01, 8.0, 13.01), 0, vec4(8.0, 8.0, 0.0, 0.0), 0, vec4(1.0, 13.01, 8.0, 13.01), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.0), vec3(8.0, 8.0, 8.0), vec4(8.0, 8.0, 15.0, 8.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, vec4(8.0, 8.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 8.0, 1.0), vec3(8.0, 8.0, 8.0), vec4(8.0, 8.0, 15.0, 8.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 0, vec4(8.0, 8.0, 15.0, 8.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 12.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(1.0, 4.0, 8.0, 4.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 270, vec4(8.0, 4.0, 15.0, 4.0), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 12.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(1.0, 4.0, 8.0, 4.0), 0, vec4(0.0, 0.0, 8.0, 8.0), 270, vec4(8.0, 4.0, 15.0, 4.0), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -1317,15 +1437,18 @@ bool block_68(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 2.0, 8.0), vec3(15.0, 3.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(8.0, 8.0, 15.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(8.0, 2.0, 8.0), vec3(15.0, 3.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(8.0, 8.0, 15.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 7.0, 1.01), vec3(8.0, 8.0, 8.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 1.01, 8.0, 8.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(1.0, 7.0, 1.01), vec3(8.0, 8.0, 8.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 1.01, 8.0, 8.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 11.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 8.0, 8.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, normalMat, t, col);    if (cube2 && t < minT) {
+    bool cube2 = cuboid(faces, rd, ro, vec3(1.0, 11.0, 8.0), vec3(8.0, 12.0, 15.0), vec4(0.0, 0.0, 8.0, 1.0), 0, vec4(1.0, 8.0, 8.0, 15.0), 0, vec4(0.0, 0.0, 8.0, 1.0), 0, uvRange, normalMat, t, col);
+    if (cube2 && t < minT) {
         minT = t;
         outCol = col;
     }
@@ -1340,11 +1463,13 @@ bool block_69(int faces, vec2 uv, out vec4 outCol) {
     float t;
     float minT = 99999999.0;
     vec4 col;
-    bool cube0 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, normalMat, t, col);    if (cube0 && t < minT) {
+    bool cube0 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, normalMat, t, col);
+    if (cube0 && t < minT) {
         minT = t;
         outCol = col;
     }
-    bool cube1 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, normalMat, t, col);    if (cube1 && t < minT) {
+    bool cube1 = cuboid(faces, rd, ro, vec3(4.5, 0.0, 8.0), vec3(11.5, 14.0, 8.0), vec4(8.0, 2.0, 8.0, 16.0), 0, vec4(4.5, 8.0, 11.5, 8.0), 0, vec4(4.0, 0.0, 12.0, 14.0), 0, uvRange, normalMat, t, col);
+    if (cube1 && t < minT) {
         minT = t;
         outCol = col;
     }
