@@ -7,25 +7,27 @@ import numpy
 import shutil
 from PIL import Image
 from collections import OrderedDict
+from urllib.request import urlopen
 
 specials=["broken_elytra","crossbow_arrow","crossbow_firework","spawn_egg","spawn_egg_overlay","firework_star_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","potion_overlay","tipped_arrow_base","tipped_arrow_head", "filled_map_markings"]
 def main():
    # load item textures from two sources
    print("Loading icons...")
-   mcitems=load_items("D:/Minecraft/Java Storage/History/jar/assets/minecraft/textures/item")
+   mcitems=load_items(True, "D:/Minecraft/Java Storage/History/jar/assets/minecraft/textures/item")
    for item in reused_textures:
       mcitems[item]="."
    for item in spawn_egg_colors:
       mcitems[item]="."
    mcitems["tipped_arrow"]="."
-   mcblocks=load_items("../../block images")
-   mcbanners=load_items("../../block images/banner")
-   mcshields=load_items("../../block images/shield")
+   mcblocks=load_items(True, "../../block images")
+   mcbanners=load_items(False, "../../block images/banner")
+   mcshields=load_items(False, "../../block images/shield")
 
    # a few renames
    rename_key(mcitems, "clock_00", "clock")
    rename_key(mcitems, "compass_00", "compass")
    rename_key(mcitems, "crossbow_standby", "crossbow")
+   rename_key(mcblocks, "dirt_path", "grass_path")
 
    # delete unnecessary textures
    delete_entries_regex(mcitems, r"^clock_\d\d$")
@@ -33,19 +35,6 @@ def main():
    delete_entries_regex(mcitems, r"^(cross)?bow_pulling_\d$")
    delete_entries_regex(mcitems, r"^empty_armor_slot_")
    delete_entries(mcitems,["empty_armor_slot", "fishing_rod_cast", "ruby", "crystallized_honey"])
-
-   # 1.17 changes
-   rename_key(mcblocks, "dirt_path", "grass_path")
-   delete_entries(mcitems,["hanging_roots","glow_lichen","axolotl_spawn_egg","glow_squid_spawn_egg","goat_spawn_egg","bundle","bundle_filled","raw_gold","raw_iron","spyglass","raw_copper","copper_ingot","glow_berries","glow_ink_sac","axolotl_bucket","glow_item_frame","pointed_dripstone","powder_snow_bucket","spyglass_model","light"])
-   delete_entries(mcblocks,["tuff","calcite","dirt_path","moss_block","moss_carpet","rooted_dirt","big_dripleaf","sculk_sensor","tinted_glass","lightning_rod","smooth_basalt","spore_blossom","raw_gold_block","raw_iron_block","small_dripleaf"])
-   delete_entries_regex(mcitems,r"candle")
-   delete_entries_regex(mcitems,r"light_\d\d")
-   delete_entries_regex(mcitems,r"amethyst")
-   delete_entries_regex(mcblocks,r"deepslate")
-   delete_entries_regex(mcblocks,r"copper")
-   delete_entries_regex(mcblocks,r"azalea")
-   delete_entries_regex(mcblocks,r"amethyst")
-   delete_entries_regex(mcblocks,r"dripstone")
 
    blockitems=["acacia_sapling","activator_rail","allium","azure_bluet","birch_sapling","black_stained_glass_pane","blue_orchid","blue_stained_glass_pane","brain_coral","brain_coral_fan","brown_mushroom","brown_stained_glass_pane","bubble_coral","bubble_coral_fan","cobweb","cornflower","crimson_fungus","crimson_roots","cyan_stained_glass_pane","dandelion","dark_oak_sapling","dead_brain_coral","dead_brain_coral_fan","dead_bubble_coral","dead_bubble_coral_fan","dead_bush","dead_fire_coral","dead_fire_coral_fan","dead_horn_coral","dead_horn_coral_fan","dead_tube_coral","dead_tube_coral_fan","detector_rail","fern","fire_coral","fire_coral_fan","glass_pane","grass","gray_stained_glass_pane","green_stained_glass_pane","horn_coral","horn_coral_fan","iron_bars","jungle_sapling","ladder","large_fern","lever","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lilac","lily_of_the_valley","lily_pad","lime_stained_glass_pane","magenta_stained_glass_pane","nether_sprouts","oak_sapling","orange_stained_glass_pane","orange_tulip","oxeye_daisy","peony","pink_stained_glass_pane","pink_tulip","poppy","powered_rail","purple_stained_glass_pane","rail","redstone_torch","red_mushroom","red_stained_glass_pane","red_tulip","rose_bush","soul_torch","spruce_sapling","sunflower","tall_grass","torch","tripwire_hook","tube_coral","tube_coral_fan","twisting_vines","vine","warped_fungus","warped_roots","weeping_vines","white_stained_glass_pane","white_tulip","wither_rose","yellow_stained_glass_pane"]
    for blockitem in blockitems:
@@ -520,7 +509,9 @@ def delete_entries(dictionary, keys):
          del dictionary[k]
 
 # create [item name->path] dictionary from reading PNG files in one or more folders
-def load_items(*args):
+vanilla_items = json.loads(urlopen(f'https://raw.githubusercontent.com/misode/mcmeta/1.16.2-registries/item/data.json').read())
+vanilla_items.extend(['clock_00','compass_00','crossbow_standby','broken_elytra','crossbow_arrow','crossbow_firework','spawn_egg','spawn_egg_overlay','firework_star_overlay','leather_boots_overlay','leather_leggings_overlay','leather_chestplate_overlay','leather_helmet_overlay','potion_overlay','tipped_arrow_base','tipped_arrow_head','filled_map_markings','dirt_path'])
+def load_items(validate, *args):
    result={}
    for folder in args:
       for file in os.listdir(folder):
@@ -528,7 +519,8 @@ def load_items(*args):
          if ext==".png":
             name=os.path.splitext(file)[0]
             location=os.path.join(folder,file)
-            result[name]=location
+            if not validate or name in vanilla_items:
+               result[name]=location
    return result
 
 def check_items(items):
