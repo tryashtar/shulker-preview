@@ -1,0 +1,1 @@
+execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:silence_armor_trim_smithing_template"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.silence_armor_trim_smithing_template.1"}'}

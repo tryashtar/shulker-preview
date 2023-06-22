@@ -2,6 +2,7 @@
 
 |Version|Download|
 |---|---|
+|Minecraft 1.20|• [Data Pack](1.20/Shulker%20Preview%20Data%20Pack%20(1.20).zip?raw=1)<br>• [Resource Pack](1.20/Shulker%20Preview%20Resource%20Pack%20(1.20).zip?raw=1)|
 |Minecraft 1.19|• [Data Pack](1.19/Shulker%20Preview%20Data%20Pack%20(1.19).zip?raw=1)<br>• [Resource Pack](1.19/Shulker%20Preview%20Resource%20Pack%20(1.19).zip?raw=1)|
 |Minecraft 1.18|• [Data Pack](1.18/Shulker%20Preview%20Data%20Pack%20(1.18).zip?raw=1)<br>• [Resource Pack](1.18/Shulker%20Preview%20Resource%20Pack%20(1.18).zip?raw=1)|
 |Minecraft 1.17|• [Data Pack](1.17/Shulker%20Preview%20Data%20Pack%20(1.17).zip?raw=1)<br>• [Resource Pack](1.17/Shulker%20Preview%20Resource%20Pack%20(1.17).zip?raw=1)|
@@ -71,6 +72,13 @@
 
 ### Changelog
 ```diff
+Current 1.20 version
++ All 1.20 items
++ Use "fallback" feature instead of old translation-detection trick
+
+Current 1.19 version
++ All 1.19 items
+
 Current 1.18 version
 + All 1.18 items (all one of them)
 
