@@ -36,7 +36,7 @@ def main():
    delete_entries_regex(mcitems, r"^empty_armor_slot_")
    delete_entries_regex(mcitems, r"^empty_slot_")
    delete_entries(mcitems,["empty_armor_slot","fishing_rod_cast","ruby","crystallized_honey","spyglass_model"])
-   blockitems=["acacia_sapling","activator_rail","allium","azure_bluet","birch_sapling","black_stained_glass_pane","blue_orchid","blue_stained_glass_pane","brain_coral","brain_coral_fan","brown_mushroom","brown_stained_glass_pane","bubble_coral","bubble_coral_fan","cobweb","cornflower","crimson_fungus","crimson_roots","cyan_stained_glass_pane","dandelion","dark_oak_sapling","dead_brain_coral","dead_brain_coral_fan","dead_bubble_coral","dead_bubble_coral_fan","dead_bush","dead_fire_coral","dead_fire_coral_fan","dead_horn_coral","dead_horn_coral_fan","dead_tube_coral","dead_tube_coral_fan","detector_rail","fern","fire_coral","fire_coral_fan","glass_pane","grass","gray_stained_glass_pane","green_stained_glass_pane","horn_coral","horn_coral_fan","iron_bars","jungle_sapling","ladder","large_fern","lever","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lilac","lily_of_the_valley","lily_pad","lime_stained_glass_pane","magenta_stained_glass_pane","nether_sprouts","oak_sapling","orange_stained_glass_pane","orange_tulip","oxeye_daisy","peony","pink_stained_glass_pane","pink_tulip","poppy","powered_rail","purple_stained_glass_pane","rail","redstone_torch","red_mushroom","red_stained_glass_pane","red_tulip","rose_bush","soul_torch","spruce_sapling","sunflower","tall_grass","torch","tripwire_hook","tube_coral","tube_coral_fan","twisting_vines","vine","warped_fungus","warped_roots","weeping_vines","white_stained_glass_pane","white_tulip","wither_rose","yellow_stained_glass_pane","small_amethyst_bud","medium_amethyst_bud","large_amethyst_bud","amethyst_cluster","hanging_roots","glow_lichen","frogspawn","sculk_vein","torchflower","cherry_sapling"]
+   blockitems=["acacia_sapling","activator_rail","allium","azure_bluet","birch_sapling","black_stained_glass_pane","blue_orchid","blue_stained_glass_pane","brain_coral","brain_coral_fan","brown_mushroom","brown_stained_glass_pane","bubble_coral","bubble_coral_fan","cobweb","cornflower","crimson_fungus","crimson_roots","cyan_stained_glass_pane","dandelion","dark_oak_sapling","dead_brain_coral","dead_brain_coral_fan","dead_bubble_coral","dead_bubble_coral_fan","dead_bush","dead_fire_coral","dead_fire_coral_fan","dead_horn_coral","dead_horn_coral_fan","dead_tube_coral","dead_tube_coral_fan","detector_rail","fern","fire_coral","fire_coral_fan","glass_pane","short_grass","gray_stained_glass_pane","green_stained_glass_pane","horn_coral","horn_coral_fan","iron_bars","jungle_sapling","ladder","large_fern","lever","light_blue_stained_glass_pane","light_gray_stained_glass_pane","lilac","lily_of_the_valley","lily_pad","lime_stained_glass_pane","magenta_stained_glass_pane","nether_sprouts","oak_sapling","orange_stained_glass_pane","orange_tulip","oxeye_daisy","peony","pink_stained_glass_pane","pink_tulip","poppy","powered_rail","purple_stained_glass_pane","rail","redstone_torch","red_mushroom","red_stained_glass_pane","red_tulip","rose_bush","soul_torch","spruce_sapling","sunflower","tall_grass","torch","tripwire_hook","tube_coral","tube_coral_fan","twisting_vines","vine","warped_fungus","warped_roots","weeping_vines","white_stained_glass_pane","white_tulip","wither_rose","yellow_stained_glass_pane","small_amethyst_bud","medium_amethyst_bud","large_amethyst_bud","amethyst_cluster","hanging_roots","glow_lichen","frogspawn","sculk_vein","torchflower","cherry_sapling"]
    for blockitem in blockitems:
       mcitems[blockitem]="block"
 
@@ -536,7 +536,7 @@ def load_items(*args):
 
 def check_items(items):
    from urllib.request import urlopen
-   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/1.20-summary/registries/data.json').read()
+   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/1.20.4-summary/registries/data.json').read()
    registry=json.loads(data)["item"]
    for item in registry:
       if item not in items and item!="air":
@@ -544,7 +544,7 @@ def check_items(items):
 
 def remove_unsupported(items):
    from urllib.request import urlopen
-   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/1.20-summary/registries/data.json').read()
+   data=urlopen('https://raw.githubusercontent.com/misode/mcmeta/1.20.4-summary/registries/data.json').read()
    registry=json.loads(data)["item"]
    for item in list(items.keys()):
       if item not in registry and item not in specials:
@@ -649,6 +649,7 @@ spawn_egg_colors={
    "bat_spawn_egg": (4996656, 986895),
    "bee_spawn_egg": (15582019, 4400155),
    "blaze_spawn_egg": (16167425, 16775294),
+   "breeze_spawn_egg": (11506911, 9529055),
    "cat_spawn_egg": (15714446, 9794134),
    "cave_spider_spawn_egg": (803406, 11013646),
    "chicken_spawn_egg": (10592673, 16711680),
@@ -716,8 +717,8 @@ spawn_egg_colors={
    "zombified_piglin_spawn_egg": (15373203, 5009705),
    "zombie_villager_spawn_egg": (5651507, 7969893),
 }
-reused_textures={"debug_stick":"stick","enchanted_golden_apple":"golden_apple"}
-grass_colors={"vine":"#48b518","lily_pad":"#71c35c","grass":"#7bbd6b","fern":"#7bbd6b","tall_grass":"#7bbd6b","large_fern":"#7bbd6b"}
+reused_textures={"debug_stick":"stick","enchanted_golden_apple":"golden_apple","waxed_copper_door":"copper_door","waxed_exposed_copper_door":"exposed_copper_door","waxed_weathered_copper_door":"weathered_copper_door","waxed_oxidized_copper_door":"oxidized_copper_door"}
+grass_colors={"vine":"#48b518","lily_pad":"#71c35c","short_grass":"#7bbd6b","fern":"#7bbd6b","tall_grass":"#7bbd6b","large_fern":"#7bbd6b"}
 
 def color_hex(int_color):
    return "#"+format(int_color,'06x')

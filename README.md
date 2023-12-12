@@ -2,7 +2,7 @@
 
 |Version|Download|
 |---|---|
-|Minecraft 1.20|• [Data Pack](1.20/Shulker%20Preview%20Data%20Pack%20(1.20).zip?raw=1)<br>• [Resource Pack](1.20/Shulker%20Preview%20Resource%20Pack%20(1.20).zip?raw=1)|
+|Minecraft 1.20.3|• [Data Pack](1.20/Shulker%20Preview%20Data%20Pack%20(1.20).zip?raw=1)<br>• [Resource Pack](1.20/Shulker%20Preview%20Resource%20Pack%20(1.20).zip?raw=1)|
 |Minecraft 1.19|• [Data Pack](1.19/Shulker%20Preview%20Data%20Pack%20(1.19).zip?raw=1)<br>• [Resource Pack](1.19/Shulker%20Preview%20Resource%20Pack%20(1.19).zip?raw=1)|
 |Minecraft 1.18|• [Data Pack](1.18/Shulker%20Preview%20Data%20Pack%20(1.18).zip?raw=1)<br>• [Resource Pack](1.18/Shulker%20Preview%20Resource%20Pack%20(1.18).zip?raw=1)|
 |Minecraft 1.17|• [Data Pack](1.17/Shulker%20Preview%20Data%20Pack%20(1.17).zip?raw=1)<br>• [Resource Pack](1.17/Shulker%20Preview%20Resource%20Pack%20(1.17).zip?raw=1)|
@@ -74,7 +74,9 @@
 ```diff
 Current 1.20 version
 + All 1.20 items
++ All 1.21 experimental items
 + Use "fallback" feature instead of old translation-detection trick
++ Fixed artifacts in some mangrove block textures
 
 Current 1.19 version
 + All 1.19 items
