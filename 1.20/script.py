@@ -56,7 +56,6 @@ def main():
          special_render_tag.append(f'#tryashtar.shulker_preview:special_render/{kind}')
       else:
          special_render_tag.extend(items)
-
    init_data = ','.join(init_data)
    write_lines([f'data modify storage tryashtar.shulker_preview:data colors set value {{{init_data}}}'], 'datapack/data/tryashtar.shulker_preview/functions/meta/initialize_data.mcfunction')
    with zipfile.ZipFile(jar_path, 'r') as jar:
@@ -73,17 +72,20 @@ def main():
                result['base'].append(chars)
                layer += 1
          else:
-            block_image = f'../../block images/{item}.png'
-            if os.path.exists(block_image):
-               chars = new_sprite(char_cache)
-               char_cache['external'][block_image] = chars
-               result['base'].append(chars)
+            appearance_hash = calculate_appearance_hash(item, model)
+            if appearance_hash in char_cache['external']:
+               result['base'].append(char_cache['external'][appearance_hash][0])
+            else:
+               block_image = f'../../block images/{item}.png'
+               if os.path.exists(block_image):
+                  chars = new_sprite(char_cache)
+                  char_cache['external'][appearance_hash] = (chars, block_image)
+                  result['base'].append(chars)
          for override in model['overrides']:
             predicate = override['predicate']
             if not ('pulling' in predicate or 'pull' in predicate or 'brushing' in predicate or 'time' in predicate or 'angle' in predicate or 'cast' in predicate or 'tooting' in predicate or 'blocking' in predicate or 'trim_type' in predicate):
                result['overrides'].append(load_textures(item, get_model(jar, model_cache, override['model']))['base'])
          return result
-
       for item in item_list:
          model = get_model(jar, model_cache, f'item/{item}')
          textures = load_textures(item, model)
@@ -102,11 +104,10 @@ def main():
                add_normal_translations(item, textures['base'], lang, next_slot)
          else:
             print(f'WARNING: {item} not handled!')
-         
    grid = create_grid(char_cache['external'])
    for texture,sprites in char_cache['generated'].items():
       append_sprites(font, texture, {'rows':[[x] for x in sprites['rows']], 'negative':[sprites['negative']]})
-   append_sprites(font, 'tryashtar.shulker_preview:block_sheet', {'rows':[[''.join(['\u0000' if entry is None else entry[1]['rows'][row] for entry in grid_row]) for grid_row in grid] for row in range(0, 3)], 'negative':[''.join(['\u0000' if entry is None else entry[1]['negative'] for entry in grid_row]) for grid_row in grid]})
+   append_sprites(font, 'tryashtar.shulker_preview:block_sheet', {'rows':[[''.join(['\u0000' if entry is None else entry[1][0]['rows'][row] for entry in grid_row]) for grid_row in grid] for row in range(0, 3)], 'negative':[''.join(['\u0000' if entry is None else entry[1][0]['negative'] for entry in grid_row]) for grid_row in grid]})
    for row in range(0, 3):
       process_item = [
          'data modify entity 7368756c-6b65-7220-7072-657669657721 Item set from storage tryashtar.shulker_preview:data item',
@@ -147,7 +148,12 @@ def main():
    grid_image.save('resourcepack/assets/tryashtar.shulker_preview/textures/block_sheet.png', 'PNG')
    write_json(lang, 'resourcepack/assets/tryashtar.shulker_preview/lang/en_us.json')
    write_json({"providers":font}, 'resourcepack/assets/tryashtar.shulker_preview/font/preview.json')
-   write_json({"values":special_render_tag}, 'datapack/data/tryashtar.shulker_preview/tags/items/special_render.json')   
+   write_json({"values":special_render_tag}, 'datapack/data/tryashtar.shulker_preview/tags/items/special_render.json')
+
+def calculate_appearance_hash(item, model):
+   if len(model.get('elements', {})) == 0:
+      return hash(item)
+   return hash((json.dumps(model['textures']), json.dumps(model['elements'])))
 
 def color_hex(int_color):
    return f'#{format(int_color, '06x')}'
@@ -204,7 +210,7 @@ def create_image(grid, icon_size):
          continue
       x = pos[1] * icon_size
       y = pos[0] * icon_size
-      path = icon[0]
+      path = icon[1][1]
       with PIL.Image.open(path).convert('RGBA') as sprite:
          for corner in (0, icon_size - 1):
             r,g,b,a = sprite.getpixel((corner, corner))
@@ -247,18 +253,20 @@ def get_model(jar, cache, identifier):
          model['textures'] = {}
       if 'overrides' not in model:
          model['overrides'] = []
-      parent = model.get('parent')
-      if parent is not None:
-         parent = with_namespace(parent)
-         if parent == 'minecraft:builtin/generated':
+      parent_name = model.get('parent')
+      if parent_name is not None:
+         parent_name = with_namespace(parent_name)
+         if parent_name == 'minecraft:builtin/generated':
             model['generated'] = True
-         elif not parent.startswith('minecraft:builtin/'):
-            parent = get_model(jar, cache, parent)
+         elif not parent_name.startswith('minecraft:builtin/'):
+            parent = get_model(jar, cache, parent_name)
             if parent.get('generated', False):
                model['generated'] = True
             for key,value in parent['textures'].items():
                if key not in model['textures']:
                   model['textures'][key] = value
+            if 'elements' in parent and 'elements' not in model:
+               model['elements'] = parent['elements']
       cache[identifier] = model
       return model
 
