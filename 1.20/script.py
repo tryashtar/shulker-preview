@@ -121,7 +121,7 @@ def main():
                add_layered_translations(with_namespace(item), textures['base'], lang, next_slot, overlay_offset)
                if item == 'wolf_armor':
                   add_normal_translations(item, [textures['base'][0]], lang, next_slot)
-            elif item in colorable_items['potion']:
+            elif item in colorable_items['potion'] or item in colorable_items['map'] or item in colorable_items['star']:
                add_layered_translations(with_namespace(item), textures['base'], lang, next_slot, overlay_offset)
             else:
                add_normal_translations(item, textures['base'], lang, next_slot)
@@ -183,6 +183,23 @@ def main():
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}","color":"#$(red)$(green)$(blue)"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"white"}}]\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/potion2.mcfunction')
+      write_lines([
+         'data modify storage tryashtar.shulker_preview:data item merge value {red:"46",green:"40","blue":"2E"}',
+         'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:map_color"',
+         'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:convert_color',
+         f'function tryashtar.shulker_preview:row_{row}/special_render/map2 with storage tryashtar.shulker_preview:data item',
+      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/map1.mcfunction')
+      write_lines([
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"#$(red)$(green)$(blue)"}}]\''
+      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/map2.mcfunction')
+      write_lines([
+         'data modify storage tryashtar.shulker_preview:data item merge value {red:"8A",green:"8A","blue":"8A"}',
+         'function tryashtar.shulker_preview:star_color',
+         f'function tryashtar.shulker_preview:row_{row}/special_render/star2 with storage tryashtar.shulker_preview:data item',
+      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/star1.mcfunction')
+      write_lines([
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"#$(red)$(green)$(blue)"}}]\''
+      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/star2.mcfunction')
    grid_image = create_image(grid, 64)
    grid_image.save('resourcepack/assets/tryashtar.shulker_preview/textures/block_sheet.png', 'PNG')
    write_json(lang, 'resourcepack/assets/tryashtar.shulker_preview/lang/en_us.json')
@@ -277,7 +294,7 @@ def next_char(cache):
    for low, high in [(0xd800, 0xdbff), (0xdc00, 0xdfff), (0x05c8, 0x05d2), (0x05e8, 0x05ff), (0x061b, 0x0620), (0x0648, 0x065f), (0x066d, 0x066f), (0x070b, 0x0710), (0x072d, 0x072f), (0x074b, 0x074f), (0x07a4, 0x07a5), (0x07b1, 0x07c2), (0x07f4, 0x07f5), (0x07fa, 0x07fc), (0x07fe, 0x0800), (0x082e, 0x0832), (0x083c, 0x0842), (0x0856, 0x0858), (0x085c, 0x0862), (0x0868, 0x0897), (0x08a0, 0x08a2), (0x08b2, 0x08b8), (0x08c5, 0x08c9), (0xfb34, 0xfb48), (0xfbbf, 0xfbd5), (0xfd8d, 0xfd94), (0xfdc5, 0xfdce), (0xfdf0, 0xfdf2), (0xfe72, 0xfe78), (0xfefa, 0xfefe)]:
       if low <= char <= high:
          char = high + 1
-   while char in [0x0000, 0x000a, 0x00a7, 0x0590, 0x05be, 0x05c0, 0x05c3, 0x05c6, 0x0608, 0x060b, 0x060d, 0x0712, 0x081a, 0x0824, 0x0828, 0x200f, 0xfb1d, 0xfb1f] or unicodedata.bidirectional(chr(char)) in ['AL', 'R']:
+   while char in [0x0000, 0x000a, 0x00a7, 0x0025, 0x0590, 0x05be, 0x05c0, 0x05c3, 0x05c6, 0x0608, 0x060b, 0x060d, 0x0712, 0x081a, 0x0824, 0x0828, 0x200f, 0xfb1d, 0xfb1f] or unicodedata.bidirectional(chr(char)) in ['AL', 'R']:
       char += 1
    cache['prev'] = char
    return chr(char)
