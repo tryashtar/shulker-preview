@@ -1,5 +1,5 @@
 # summon item holder to run predicates against
-summon item_frame ~ -10000 ~ {Invulnerable:1b,NoGravity:1b,Silent:1b,Fixed:1b,Invisible:1b,UUID:[I;1936225644,1801810464,1886545270,1768257313]}
+summon armor_stand ~ -10000 ~ {Invulnerable:1b,NoGravity:1b,Silent:1b,Invisible:1b,Marker:1b,UUID:[I;1936225644,1801810464,1886545270,1768257313]}
 
 # copy and analyze contents one by one
 data modify storage tryashtar.shulker_preview:data item set from storage tryashtar.shulker_preview:data contents[{slot:0}].item
