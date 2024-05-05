@@ -19,12 +19,13 @@ def main():
    font = [{"type":"space","advances":space_provider}]
    model_cache = {}
    char_cache = {'prev':0,'generated':{},'external':{},'spaces':{}}
-   negative_tooltip = get_space(space_provider, char_cache, -169)
-   empty_slot = get_space(space_provider, char_cache, 18)
-   next_slot = get_space(space_provider, char_cache, 15)
-   overlay_offset = get_space(space_provider, char_cache, -3)
+   small_space = get_space(space_provider, char_cache, 1)
    one_space = get_space(space_provider, char_cache, 3)
+   next_slot = get_space(space_provider, char_cache, 15)
+   empty_slot = get_space(space_provider, char_cache, 18)
+   overlay_offset = get_space(space_provider, char_cache, -3)
    row_end = get_space(space_provider, char_cache, -162)
+   negative_tooltip = get_space(space_provider, char_cache, -169)
    lang = {"tryashtar.shulker_preview.translate":"%2$s"}
    tooltip1 = next_char(char_cache)
    tooltip2 = next_char(char_cache)
@@ -34,7 +35,7 @@ def main():
    lang['tryashtar.shulker_preview.shulker_tooltip_header'] = tooltip2 + negative_tooltip
    lang['tryashtar.shulker_preview.empty_slot'] = empty_slot
    lang['tryashtar.shulker_preview.row_end'] = row_end
-   char_cache['generated']['tryashtar.shulker_preview:missingno'] = new_sprite(char_cache)
+   char_cache['generated']['tryashtar.shulker_preview:missingno'] = new_sprite(char_cache, True)
    special_render_tag = []
    hardcoded_items = {
       'grass_colored': {"vine":0x48b518,"lily_pad":0x71c35c,"short_grass":0x7bbd6b,"fern":0x7bbd6b,"tall_grass":0x7bbd6b,"large_fern":0x7bbd6b},
@@ -87,7 +88,7 @@ def main():
             while f'layer{layer}' in model['textures']:
                texture = with_namespace(model['textures'][f'layer{layer}'])
                if texture not in char_cache['generated']:
-                  chars = new_sprite(char_cache)
+                  chars = new_sprite(char_cache, True)
                   char_cache['generated'][texture] = chars
                result['base'].append(char_cache['generated'][texture])
                layer += 1
@@ -98,7 +99,7 @@ def main():
             else:
                block_image = f'../../block images/{item}.png'
                if os.path.exists(block_image):
-                  chars = new_sprite(char_cache)
+                  chars = new_sprite(char_cache, False)
                   char_cache['external'][appearance_hash] = (chars, block_image)
                   result['base'].append(chars)
          for override in model['overrides']:
@@ -121,17 +122,17 @@ def main():
                   textures['base'][1] = {'rows':[one_space, one_space, one_space], 'negative': ''}
                add_layered_translations(with_namespace(item), textures['base'], lang, next_slot, overlay_offset)
                if item == 'wolf_armor':
-                  add_normal_translations(item, [textures['base'][0]], lang, next_slot)
+                  add_normal_translations(item, [textures['base'][0]], lang, next_slot, small_space)
             elif item in colorable_items['potion'] or item in colorable_items['map'] or item in colorable_items['star']:
                add_layered_translations(with_namespace(item), textures['base'], lang, next_slot, overlay_offset)
             else:
-               add_normal_translations(item, textures['base'], lang, next_slot)
+               add_normal_translations(item, textures['base'], lang, next_slot, small_space)
          else:
             print(f'WARNING: {item} not handled!')
    grid = create_grid(char_cache['external'])
    for texture,sprites in char_cache['generated'].items():
       append_sprites(font, texture, {'rows':[[x] for x in sprites['rows']], 'negative':[sprites['negative']]})
-   append_sprites(font, 'tryashtar.shulker_preview:block_sheet', {'rows':[[''.join(['\u0000' if entry is None else entry[1][0]['rows'][row] for entry in grid_row]) for grid_row in grid] for row in range(0, 3)], 'negative':[''.join(['\u0000' if entry is None else entry[1][0]['negative'] for entry in grid_row]) for grid_row in grid]})
+   append_sprites(font, 'tryashtar.shulker_preview:block_sheet', {'rows':[[''.join(['\u0000' if entry is None else entry[1][0]['rows'][row] for entry in grid_row]) for grid_row in grid] for row in range(0, 3)]})
    for row in range(0, 3):
       process_item = [
          'data modify entity @s Item set from storage tryashtar.shulker_preview:data item',
@@ -234,18 +235,31 @@ def add_layered_translations(name, textures, lang, next_slot, overlay_offset):
       result.append(sub)
    return result
 
-def add_normal_translations(item, textures, lang, next_slot):
+def add_normal_translations(item, textures, lang, next_slot, one_space):
    result = []
    for row in range(0, 3):
       key = f'tryashtar.shulker_preview.item.{with_namespace(item)}.{row}'
-      lang[key] = ''.join([layer['rows'][row] + layer['negative'] for layer in textures]) + next_slot
+      value = ''
+      negatives = False
+      for layer in textures:
+         if 'negative' in layer:
+            value += layer['rows'][row] + layer['negative']
+            negatives = True
+         else:
+            value += layer['rows'][row]
+      if negatives:
+         value += next_slot
+      else:
+         value += one_space
+      lang[key] = value
       result.append(key)
    return result
 
 def append_sprites(font, texture, sprite_chars):
    for row in range(0, 3):
       font.append({"type":"bitmap","file":f'{texture}.png',"ascent":5 + (row * -18),"height":16,"chars":sprite_chars['rows'][row]})
-   font.append({"type":"bitmap","file":f'{texture}.png',"ascent":-32768,"height":-16,"chars":sprite_chars['negative']})
+   if 'negative' in sprite_chars:
+      font.append({"type":"bitmap","file":f'{texture}.png',"ascent":-32768,"height":-16,"chars":sprite_chars['negative']})
 
 def create_grid(external_images):
    size = get_dimensions(len(external_images))
@@ -287,11 +301,13 @@ def get_space(provider, cache, size):
       cache['spaces'][size] = char
    return cache['spaces'][size]
 
-def new_sprite(cache):
-   return {
-      'rows': [next_char(cache), next_char(cache), next_char(cache)],
-      'negative': next_char(cache)
+def new_sprite(cache, negative):
+   result = {
+      'rows': [next_char(cache), next_char(cache), next_char(cache)]
    }
+   if negative:
+      result['negative'] = next_char(cache)
+   return result
 
 def next_char(cache):
    char = cache['prev'] + 1
