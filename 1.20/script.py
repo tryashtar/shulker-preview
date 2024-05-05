@@ -42,7 +42,8 @@ def main():
    lang['tryashtar.shulker_preview.empty_slot'] = empty_slot
    lang['tryashtar.shulker_preview.row_end'] = row_end
    char_cache['generated']['tryashtar.shulker_preview:missingno'] = new_sprite(char_cache, True)
-   special_render_tag = []
+   special_render_tag = ['#tryashtar.shulker_preview:special_render/overrides']
+   override_items = {}
    hardcoded_items = {
       'grass_colored': {"vine":0x48b518,"lily_pad":0x71c35c,"short_grass":0x7bbd6b,"fern":0x7bbd6b,"tall_grass":0x7bbd6b,"large_fern":0x7bbd6b},
       'spawn_eggs': {f'{k}_spawn_egg':v for k,v in {"bogged":(9084018,3231003),"armadillo":(11366765,0x824848),"wither":(0x141414,5075616),"snow_golem":(14283506,8496292),"sniffer":(8855049,2468720),"iron_golem":(14405058,7643954),"ender_dragon":(0x1C1C1C,14711290),"camel":(16565097,13341495),"allay":(56063,44543),"axolotl":(16499171,10890612),"bat":(4996656,986895),"bee":(15582019,4400155),"blaze":(16167425,16775294),"breeze":(11506911,9529055),"cat":(15714446,9794134),"cave_spider":(803406,11013646),"chicken":(10592673,16711680),"cod":(12691306,15058059),"cow":(4470310,10592673),"creeper":(894731,0),"dolphin":(2243405,16382457),"donkey":(5457209,8811878),"drowned":(9433559,7969893),"elder_guardian":(13552826,7632531),"enderman":(1447446,0),"endermite":(1447446,7237230),"evoker":(9804699,1973274),"frog":(13661252,0xFFC77C),"fox":(14005919,13396256),"ghast":(16382457,12369084),"glow_squid":(611926,8778172),"goat":(10851452,5589310),"guardian":(5931634,15826224),"hoglin":(13004373,6251620),"horse":(12623485,15656192),"husk":(7958625,15125652),"llama":(12623485,10051392),"magma_cube":(3407872,16579584),"mooshroom":(10489616,12040119),"mule":(1769984,5321501),"ocelot":(15720061,5653556),"panda":(15198183,1776418),"parrot":(894731,16711680),"phantom":(4411786,8978176),"pig":(15771042,14377823),"piglin":(10051392,16380836),"piglin_brute":(5843472,16380836),"pillager":(5451574,9804699),"polar_bear":(0xEEEEDE,14014157),"pufferfish":(16167425,3654642),"rabbit":(10051392,7555121),"ravager":(7697520,5984329),"salmon":(10489616,951412),"sheep":(15198183,16758197),"shulker":(9725844,5060690),"silverfish":(7237230,3158064),"skeleton":(12698049,4802889),"skeleton_horse":(6842447,15066584),"slime":(5349438,8306542),"spider":(3419431,11013646),"squid":(2243405,7375001),"stray":(6387319,14543594),"strider":(10236982,5065037),"tadpole":(7164733,1444352),"trader_llama":(15377456,4547222),"tropical_fish":(15690005,16775663),"turtle":(15198183,44975),"vex":(8032420,15265265),"villager":(5651507,12422002),"vindicator":(9804699,2580065),"wandering_trader":(4547222,15377456),"warden":(1001033,3790560),"witch":(3407872,5349438),"wither_skeleton":(1315860,4672845),"wolf":(14144467,13545366),"zoglin":(13004373,15132390),"zombie":(44975,7969893),"zombie_horse":(3232308,9945732),"zombified_piglin":(15373203,5009705),"zombie_villager":(5651507,7969893)}.items()}
@@ -111,7 +112,7 @@ def main():
          for override in model['overrides']:
             predicate = override['predicate']
             if not ('pulling' in predicate or 'pull' in predicate or 'brushing' in predicate or 'time' in predicate or 'angle' in predicate or 'cast' in predicate or 'tooting' in predicate or 'blocking' in predicate or 'trim_type' in predicate):
-               result['overrides'].append(load_textures(item, get_model(jar, model_cache, override['model']))['base'])
+               result['overrides'].append((predicate, load_textures(item, get_model(jar, model_cache, override['model']))['base']))
          return result
       for item in item_list:
          model = get_model(jar, model_cache, f'item/{item}')
@@ -128,11 +129,15 @@ def main():
                   textures['base'][1] = {'rows':[one_space, one_space, one_space], 'negative': ''}
                add_layered_translations(with_namespace(item), textures['base'], lang, next_slot, overlay_offset)
                if item == 'wolf_armor':
-                  add_normal_translations(item, [textures['base'][0]], lang, next_slot, small_space)
+                  add_normal_translations('item', with_namespace(item), [textures['base'][0]], lang, next_slot, small_space)
             elif item in colorable_items['potion'] or item in colorable_items['map'] or item in colorable_items['star']:
                add_layered_translations(with_namespace(item), textures['base'], lang, next_slot, overlay_offset)
             else:
-               add_normal_translations(item, textures['base'], lang, next_slot, small_space)
+               add_normal_translations('item', with_namespace(item), textures['base'], lang, next_slot, small_space)
+               if len(textures['overrides']) > 0:
+                  override_items[item] = [x[0] for x in textures['overrides']]
+                  for i,(_,override) in enumerate(textures['overrides']):
+                     add_normal_translations('override', with_namespace(item) + '.' + str(i), override, lang, next_slot, small_space)
          else:
             print(f'WARNING: {item} not handled!')
    grid = create_grid(char_cache['external'])
@@ -168,7 +173,8 @@ def main():
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.$(id).{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\''
       ]
       special_render = [
-         '$data modify storage tryashtar.shulker_preview:data item merge from storage tryashtar.shulker_preview:data lookups.colors."$(id)"'
+         '$data modify storage tryashtar.shulker_preview:data item merge from storage tryashtar.shulker_preview:data lookups.colors."$(id)"',
+         f'execute if items entity @s weapon #tryashtar.shulker_preview:special_render/overrides run return run function tryashtar.shulker_preview:row_{row}/special_render/overrides'
       ]
       for name in hardcoded_items:
          special_render.append(f'execute if items entity @s weapon #tryashtar.shulker_preview:special_render/{name} run return run function tryashtar.shulker_preview:row_{row}/special_render/{name} with storage tryashtar.shulker_preview:data item')
@@ -188,7 +194,7 @@ def main():
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.spawn_egg.0.{row}","color":"$(base)"}},{{"translate":"tryashtar.shulker_preview.layer.spawn_egg.1.{row}","color":"$(overlay)"}}]\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/spawn_eggs.mcfunction')
       write_lines([
-         'data modify storage tryashtar.shulker_preview:data item merge value {red:"A0",green:"65",blue:"40"}',
+         'data modify storage tryashtar.shulker_preview:data item merge value {red:"a0",green:"65",blue:"40"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:dyed_color".rgb',
          'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:convert_color',
          f'function tryashtar.shulker_preview:row_{row}/special_render/dyeable2 with storage tryashtar.shulker_preview:data item',
@@ -199,7 +205,7 @@ def main():
          f'$execute unless items entity @s weapon wolf_armor run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}","color":"#$(red)$(green)$(blue)"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"white"}}]\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/dyeable2.mcfunction')
       write_lines([
-         'data modify storage tryashtar.shulker_preview:data item merge value {red:"38",green:"5D","blue":"C6"}',
+         'data modify storage tryashtar.shulker_preview:data item merge value {red:"38",green:"5d","blue":"c6"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:potion_contents".custom_color',
          'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:convert_color',
          'execute if score #has_color shulker_preview matches 0 run function tryashtar.shulker_preview:potion_color',
@@ -209,7 +215,7 @@ def main():
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}","color":"#$(red)$(green)$(blue)"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"white"}}]\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/potion2.mcfunction')
       write_lines([
-         'data modify storage tryashtar.shulker_preview:data item merge value {red:"46",green:"40","blue":"2E"}',
+         'data modify storage tryashtar.shulker_preview:data item merge value {red:"46",green:"40","blue":"2e"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:map_color"',
          'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:convert_color',
          f'function tryashtar.shulker_preview:row_{row}/special_render/map2 with storage tryashtar.shulker_preview:data item',
@@ -218,7 +224,7 @@ def main():
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"#$(red)$(green)$(blue)"}}]\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/map2.mcfunction')
       write_lines([
-         'data modify storage tryashtar.shulker_preview:data item merge value {red:"8A",green:"8A","blue":"8A"}',
+         'data modify storage tryashtar.shulker_preview:data item merge value {red:"8a",green:"8a","blue":"8a"}',
          'function tryashtar.shulker_preview:star_color',
          f'function tryashtar.shulker_preview:row_{row}/special_render/star2 with storage tryashtar.shulker_preview:data item',
       ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/star1.mcfunction')
@@ -242,14 +248,45 @@ def main():
          ])
       durability.append(f'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.13.{row}"}}\'')
       write_lines(durability, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/durability.mcfunction')
+      override_fn = []
+      for item,predicates in override_items.items():
+         override_fn.append(f'execute if items entity @s weapon {item} run return run function tryashtar.shulker_preview:row_{row}/special_render/{item} with storage tryashtar.shulker_preview:data item')
+         specific_fn = []
+         light_check = False
+         for i,predicate in reversed(list(enumerate(predicates))):
+            if predicate.get('charged', 0) == 1 and predicate.get('firework', 0) == 1:
+               del predicate['charged']
+            test = []
+            for check,value in predicate.items():
+               if check == 'charged':
+                  test.append('if data storage tryashtar.shulker_preview:data item.components."minecraft:charged_projectiles"[0]')
+               elif check == 'firework':
+                  test.append('if data storage tryashtar.shulker_preview:data item.components."minecraft:charged_projectiles"[{id:"minecraft:firework_rocket"}]')
+               elif check == 'level':
+                  level = int(value*16)
+                  test.append(f'if data storage tryashtar.shulker_preview:data item.components."minecraft:block_state"{{level:"{level}"}}')
+                  light_check = True
+               elif check == 'filled':
+                  test.append('if items entity @s weapon *[bundle_contents~{items:{size:{min:1}}}]')
+               elif check == 'broken':
+                  test.append('if items entity @s weapon *[damage~{durability:{max:0}}]')
+               else:
+                  print(f'WARNING: unknown predicate {check} in item {item}')
+            specific_fn.append(f'execute {" ".join(test)} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.override.minecraft:{item}.{i}.{row}"}}\'')
+         if light_check:
+            specific_fn.insert(0, 'execute unless data storage tryashtar.shulker_preview:data item.components."minecraft:block_state".level run data modify storage tryashtar.shulker_preview:data item.components."minecraft:block_state".level set value "15"')
+         specific_fn.append(f'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.minecraft:{item}.{row}"}}\'')
+         write_lines(specific_fn, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/{item}.mcfunction')
+      write_lines(override_fn, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/overrides.mcfunction')
    grid_image = create_image(grid, 64)
    grid_image.save('resourcepack/assets/tryashtar.shulker_preview/textures/block_sheet.png', 'PNG')
    write_json(lang, 'resourcepack/assets/tryashtar.shulker_preview/lang/en_us.json')
    write_json({"providers":font}, 'resourcepack/assets/tryashtar.shulker_preview/font/preview.json')
    write_json({"values":special_render_tag}, 'datapack/data/tryashtar.shulker_preview/tags/items/special_render.json')
-   shutil.make_archive(f"Shulker Preview Data Pack ({target_version})", 'zip', "datapack")
-   shutil.make_archive(f"Shulker Preview Resource Pack ({target_version})", 'zip', "resourcepack")
-   shutil.make_archive(f"Shulker Preview Dark Theme ({target_version})", 'zip', "resourcepack_dark")
+   write_json({"values":list(sorted(override_items.keys()))}, 'datapack/data/tryashtar.shulker_preview/tags/items/special_render/overrides.json')
+   shutil.make_archive(f'Shulker Preview Data Pack ({target_version})', 'zip', 'datapack')
+   shutil.make_archive(f'Shulker Preview Resource Pack ({target_version})', 'zip', 'resourcepack')
+   shutil.make_archive(f'Shulker Preview Dark Theme ({target_version})', 'zip', 'resourcepack_dark')
 
 def calculate_appearance_hash(item, model):
    if len(model.get('elements', {})) == 0:
@@ -275,10 +312,10 @@ def add_layered_translations(name, textures, lang, next_slot, overlay_offset):
       result.append(sub)
    return result
 
-def add_normal_translations(item, textures, lang, next_slot, one_space):
+def add_normal_translations(kind, name, textures, lang, next_slot, one_space):
    result = []
    for row in range(0, 3):
-      key = f'tryashtar.shulker_preview.item.{with_namespace(item)}.{row}'
+      key = f'tryashtar.shulker_preview.{kind}.{name}.{row}'
       value = ''
       negatives = False
       for layer in textures:

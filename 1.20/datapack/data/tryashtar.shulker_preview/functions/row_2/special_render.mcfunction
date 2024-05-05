@@ -1,4 +1,5 @@
 $data modify storage tryashtar.shulker_preview:data item merge from storage tryashtar.shulker_preview:data lookups.colors."$(id)"
+execute if items entity @s weapon #tryashtar.shulker_preview:special_render/overrides run return run function tryashtar.shulker_preview:row_2/special_render/overrides
 execute if items entity @s weapon #tryashtar.shulker_preview:special_render/grass_colored run return run function tryashtar.shulker_preview:row_2/special_render/grass_colored with storage tryashtar.shulker_preview:data item
 execute if items entity @s weapon #tryashtar.shulker_preview:special_render/spawn_eggs run return run function tryashtar.shulker_preview:row_2/special_render/spawn_eggs with storage tryashtar.shulker_preview:data item
 execute if items entity @s weapon #dyeable run return run function tryashtar.shulker_preview:row_2/special_render/dyeable1

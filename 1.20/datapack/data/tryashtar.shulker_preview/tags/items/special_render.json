@@ -1,5 +1,6 @@
 {
    "values": [
+      "#tryashtar.shulker_preview:special_render/overrides",
       "#tryashtar.shulker_preview:special_render/grass_colored",
       "#tryashtar.shulker_preview:special_render/spawn_eggs",
       "#dyeable",
