@@ -4,12 +4,20 @@
   },
   "criteria": {
     "has_shulker_box": {
-      "trigger": "minecraft:inventory_changed",
+      "trigger": "inventory_changed",
       "conditions": {
         "items": [
           {
-            "tag": "tryashtar.shulker_preview:shulker_boxes",
-            "nbt": "{BlockEntityTag:{Items:[{}]}}"
+            "items": "#tryashtar.shulker_preview:shulker_boxes",
+            "predicates": {
+              "container": {
+                "items": {
+                  "size": {
+                    "min": 1
+                  }
+                }
+              }
+            }
           }
         ]
       }

@@ -1,1 +1,0 @@
-execute if data storage tryashtar.shulker_preview:data item{id:"minecraft:wayfinder_armor_trim_smithing_template"} run summon marker ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.item.wayfinder_armor_trim_smithing_template.1"}'}

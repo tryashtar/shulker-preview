@@ -2,7 +2,7 @@
 
 |Version|Download|
 |---|---|
-|Minecraft 1.20.3|• [Data Pack](1.20/Shulker%20Preview%20Data%20Pack%20(1.20).zip?raw=1)<br>• [Resource Pack](1.20/Shulker%20Preview%20Resource%20Pack%20(1.20).zip?raw=1)|
+|Minecraft 1.20.5|• [Data Pack](1.20/Shulker%20Preview%20Data%20Pack%20(1.20.5).zip?raw=1)<br>• [Resource Pack](1.20/Shulker%20Preview%20Resource%20Pack%20(1.20.5).zip?raw=1)|
 |Minecraft 1.19|• [Data Pack](1.19/Shulker%20Preview%20Data%20Pack%20(1.19).zip?raw=1)<br>• [Resource Pack](1.19/Shulker%20Preview%20Resource%20Pack%20(1.19).zip?raw=1)|
 |Minecraft 1.18|• [Data Pack](1.18/Shulker%20Preview%20Data%20Pack%20(1.18).zip?raw=1)<br>• [Resource Pack](1.18/Shulker%20Preview%20Resource%20Pack%20(1.18).zip?raw=1)|
 |Minecraft 1.17|• [Data Pack](1.17/Shulker%20Preview%20Data%20Pack%20(1.17).zip?raw=1)<br>• [Resource Pack](1.17/Shulker%20Preview%20Resource%20Pack%20(1.17).zip?raw=1)|
@@ -53,22 +53,19 @@
 * Does this work with Optifine?
    * Yes.
 * Does this work with other resource packs?
-   * In 1.16+, items in the preview will look as they do in your personal resource pack, but blocks will appear with vanilla textures.
-   * In earlier versions, both items and blocks will use vanilla textures. Also, the pack may conflict with other packs that override private use characters.
+   * Items in the preview will look as they do in your personal resource pack, but blocks will appear with vanilla textures.
 * What happens if players don't have the resource pack?
    * They will see the vanilla shulker box tooltip, though it may contain a few extra lines.
-* How do I disable/enable ender chest previews?
-   * In 1.16+: `/function tryashtar.shulker_preview:config/show_settings`
-   * In earlier versions, there are two functions in `.meta`
+* How do I enable/disable ender chest previews?
+   * Run `/function tryashtar.shulker_preview:config/show_settings` and click the buttons to toggle this feature.
 * How do I completely uninstall the pack?
-   * After disabling the pack with `/datapack disable`, the following artifacts will remain and must be cleared manually:
+   * After disabling or removing the pack, the following artifacts will remain and must be cleared manually:
       * The `shulker_preview` scoreboard objective. This can be removed with `/scoreboard objectives remove shulker_preview`.
-      * In 1.16 and earlier, a forceloaded chunk near the worldborder. This can be removed with `/forceload remove 29999977 9832`. If you wish, you can also delete the region file containing this chunk: `r.58593.19.mca`.
       * The temporary values saved to NBT storage. This can be removed by deleting the `command_storage_tryashtar.shulker_preview.dat` file from your world's `data` folder.
       * Any existing shulker boxes will still show the preview in the tooltip. To remove it, simply place and break the shulker box after the pack has been disabled.
 * It's not working for me!
    * First, please [follow these instructions](https://imgur.com/a/rBukto5) to diagnose and solve some very common issues.
-   * If that didn't fix your problem, feel free to message me on twitter ([@tryashtar](https://twitter.com/tryashtar)) or discord (@tryashtar#7885) and I will be happy to help.
+   * If that didn't fix your problem, feel free to message me on twitter ([@tryashtar](https://twitter.com/tryashtar)) or discord (@tryashtar) and I will be happy to help.
 
 ### Changelog
 ```diff

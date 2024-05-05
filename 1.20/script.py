@@ -7,6 +7,7 @@ import math
 import unicodedata
 import urllib.request
 import PIL.Image
+import shutil
 
 def main():
    target_version = '1.20.5'
@@ -205,6 +206,9 @@ def main():
    write_json(lang, 'resourcepack/assets/tryashtar.shulker_preview/lang/en_us.json')
    write_json({"providers":font}, 'resourcepack/assets/tryashtar.shulker_preview/font/preview.json')
    write_json({"values":special_render_tag}, 'datapack/data/tryashtar.shulker_preview/tags/items/special_render.json')
+   shutil.make_archive(f"Shulker Preview Data Pack ({target_version})", 'zip', "datapack")
+   shutil.make_archive(f"Shulker Preview Resource Pack ({target_version})", 'zip', "resourcepack")
+   shutil.make_archive(f"Shulker Preview Dark Theme ({target_version})", 'zip', "resourcepack_dark")
 
 def calculate_appearance_hash(item, model):
    if len(model.get('elements', {})) == 0:
