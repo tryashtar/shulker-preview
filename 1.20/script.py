@@ -13,7 +13,8 @@ import colorsys
 def main():
    target_version = '1.20.5'
    version_folder = os.path.expanduser('~/.minecraft/versions')
-   item_list = json.loads(urllib.request.urlopen(f'https://raw.githubusercontent.com/misode/mcmeta/{target_version}-registries/item/data.json').read())
+   item_list = download_json(f'https://raw.githubusercontent.com/misode/mcmeta/{target_version}-registries/item/data.json', f'../cache/items-{target_version}.json')
+   banner_list = download_json(f'https://raw.githubusercontent.com/misode/mcmeta/{target_version}-registries/banner_pattern/data.json', f'../cache/banners-{target_version}.json')
    item_list.remove('air')
    jar_path = os.path.join(version_folder, target_version, f'{target_version}.jar')
    space_provider = {}
@@ -30,6 +31,7 @@ def main():
    one_count_overlay = get_space(space_provider, char_cache, -7)
    count_overlay = get_space(space_provider, char_cache, -13)
    dura_overlay = get_space(space_provider, char_cache, -16)
+   banner_overlay = get_space(space_provider, char_cache, -17)
    row_end = get_space(space_provider, char_cache, -162)
    negative_tooltip = get_space(space_provider, char_cache, -169)
    lang = {"tryashtar.shulker_preview.translate":"%2$s"}
@@ -41,6 +43,7 @@ def main():
    lang['tryashtar.shulker_preview.shulker_tooltip_header'] = tooltip2 + negative_tooltip
    lang['tryashtar.shulker_preview.empty_slot'] = empty_slot
    lang['tryashtar.shulker_preview.row_end'] = row_end
+   lang['tryashtar.shulker_preview.overlay'] = back_a_tad
    char_cache['generated']['tryashtar.shulker_preview:missingno'] = new_sprite(char_cache, True)
    special_render_tag = ['#tryashtar.shulker_preview:special_render/overrides']
    override_items = {}
@@ -82,9 +85,10 @@ def main():
       else:
          special_render_tag.extend(items)
    init_data = ','.join(init_data)
-   all_hex = ",".join([f'"{x:02x}"' for x in range(0, 256)])
-   potion_data = ",".join([f'"minecraft:{x}":[{y[0]},{y[1]},{y[2]},{y[3]}]' for x,y in potion_colors.items()])
-   write_lines([f'data modify storage tryashtar.shulker_preview:data lookups set value {{hex:[{all_hex}],potions:{{{potion_data}}},colors:{{{init_data}}}}}'], 'datapack/data/tryashtar.shulker_preview/functions/meta/initialize_data.mcfunction')
+   all_hex = ','.join([f'"{x:02x}"' for x in range(0, 256)])
+   potion_data = ','.join([f'"minecraft:{x}":[{y[0]},{y[1]},{y[2]},{y[3]}]' for x,y in potion_colors.items()])
+   dye_data = ','.join(f'{x}:"{y}"' for x,y in {"white":"#f9fffe","orange":"#f9801d","magenta":"#c74ebd","light_blue":"#3ab3da","yellow":"#fed83d","lime":"#80c71f","pink":"#f38baa","gray":"#474f52","light_gray":"#9d9d97","cyan":"#169c9c","purple":"#8932b8","blue":"#3c44aa","brown":"#835432","green":"#5e7c16","red":"#b02e26","black":"#1d1d21"}.items())
+   write_lines([f'data modify storage tryashtar.shulker_preview:data lookups set value {{hex:[{all_hex}],dyes:{{{dye_data}}},potions:{{{potion_data}}},colors:{{{init_data}}}}}'], 'datapack/data/tryashtar.shulker_preview/functions/meta/initialize_data.mcfunction')
    with zipfile.ZipFile(jar_path, 'r') as jar:
       with io.TextIOWrapper(jar.open('data/minecraft/tags/items/dyeable.json'), encoding='utf-8') as model_file:
          vanilla_dyeables = json.load(model_file)['values']
@@ -140,6 +144,14 @@ def main():
                      add_normal_translations('override', with_namespace(item) + '.' + str(i), override, lang, next_slot, small_space)
          else:
             print(f'WARNING: {item} not handled!')
+      for pattern in banner_list:
+         image = f'../../block images/banner/{pattern}.png'
+         if os.path.exists(image):
+            chars = new_sprite(char_cache, False)
+            char_cache['external'][hash(pattern)] = (chars, image)
+            add_overlay_translations('banner', with_namespace(pattern), [chars], lang, banner_overlay)
+         else:
+            print(f'WARNING: banner pattern {pattern} not handled!')
    grid = create_grid(char_cache['external'])
    for texture,sprites in char_cache['generated'].items():
       append_sprites(font, texture, {'rows':[[x] for x in sprites['rows']], 'negative':[sprites['negative']]})
@@ -166,6 +178,7 @@ def main():
          'data modify entity @s HandItems[0] set from storage tryashtar.shulker_preview:data item',
          f'execute if items entity @s weapon #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:row_{row}/special_render with storage tryashtar.shulker_preview:data item',
          f'execute unless items entity @s weapon #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:row_{row}/simple_render with storage tryashtar.shulker_preview:data item',
+         f'execute if items entity @s weapon #banners[banner_patterns] run function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns',
          f'execute if items entity @s weapon *[damage~{{damage:{{min:1}}}},max_damage] run function tryashtar.shulker_preview:row_{row}/overlay/durability',
          f'execute if items entity @s weapon *[count~{{min:2}}] run function tryashtar.shulker_preview:row_{row}/overlay/count with storage tryashtar.shulker_preview:data item'
       ]
@@ -234,6 +247,19 @@ def main():
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.number.$(count).{row}"}}\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/count.mcfunction')
+      write_lines([
+         'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay"}}\'',
+         f'function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns_loop'
+      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner_patterns.mcfunction')
+      write_lines([
+         'function tryashtar.shulker_preview:banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
+         f'function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns_one with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
+         'data remove storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
+         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns_loop'
+      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner_patterns_loop.mcfunction')
+      write_lines([
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.banner.$(pattern).{row}","color":"$(color)"}}\''
+      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner_patterns_one.mcfunction')
       durability = [
          'execute store result score #damage shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:damage"'
       ]
@@ -288,6 +314,15 @@ def main():
    shutil.make_archive(f'Shulker Preview Resource Pack ({target_version})', 'zip', 'resourcepack')
    shutil.make_archive(f'Shulker Preview Dark Theme ({target_version})', 'zip', 'resourcepack_dark')
 
+def download_json(url, path):
+   if os.path.exists(path):
+      with open(path, 'r', encoding='utf-8') as file:
+         return json.load(file)
+   data = urllib.request.urlopen(url).read()
+   with open(path, 'wb') as file:
+      file.write(data)
+   return json.loads(data)
+
 def calculate_appearance_hash(item, model):
    if len(model.get('elements', {})) == 0:
       return hash(item)
@@ -310,6 +345,17 @@ def add_layered_translations(name, textures, lang, next_slot, overlay_offset):
          lang[key] = text
          sub.append(key)
       result.append(sub)
+   return result
+
+def add_overlay_translations(kind, name, textures, lang, back):
+   result = []
+   for row in range(0, 3):
+      key = f'tryashtar.shulker_preview.overlay.{kind}.{name}.{row}'
+      value = back
+      for layer in textures:
+         value += layer['rows'][row]
+      lang[key] = value
+      result.append(key)
    return result
 
 def add_normal_translations(kind, name, textures, lang, next_slot, one_space):
