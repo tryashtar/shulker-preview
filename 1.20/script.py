@@ -15,6 +15,7 @@ def main():
    version_folder = os.path.expanduser('~/.minecraft/versions')
    item_list = download_json(f'https://raw.githubusercontent.com/misode/mcmeta/{target_version}-registries/item/data.json', f'../cache/items-{target_version}.json')
    banner_list = download_json(f'https://raw.githubusercontent.com/misode/mcmeta/{target_version}-registries/banner_pattern/data.json', f'../cache/banners-{target_version}.json')
+   pot_list = download_json(f'https://raw.githubusercontent.com/misode/mcmeta/{target_version}-registries/decorated_pot_patterns/data.json', f'../cache/pots-{target_version}.json')
    item_list.remove('air')
    jar_path = os.path.join(version_folder, target_version, f'{target_version}.jar')
    space_provider = {}
@@ -44,6 +45,7 @@ def main():
    lang['tryashtar.shulker_preview.empty_slot'] = empty_slot
    lang['tryashtar.shulker_preview.row_end'] = row_end
    lang['tryashtar.shulker_preview.overlay'] = back_a_tad
+   lang['tryashtar.shulker_preview.overlay_done'] = small_space
    char_cache['generated']['tryashtar.shulker_preview:missingno'] = new_sprite(char_cache, True)
    special_render_tag = ['#tryashtar.shulker_preview:special_render/overrides']
    override_items = {}
@@ -152,6 +154,24 @@ def main():
             add_overlay_translations('banner', with_namespace(pattern), [chars], lang, banner_overlay)
          else:
             print(f'WARNING: banner pattern {pattern} not handled!')
+      for pattern in pot_list:
+         if pattern in ('decorated_pot_base', 'decorated_pot_side'):
+            continue
+         simple_name = pattern.removesuffix('_pottery_pattern')
+         item_name = f'{simple_name}_pottery_sherd'
+         image1 = f'../../block images/pot/{simple_name}.left.png'
+         image2 = f'../../block images/pot/{simple_name}.right.png'
+         if os.path.exists(image1) and os.path.exists(image2):
+            chars1 = new_sprite(char_cache, False)
+            chars2 = new_sprite(char_cache, False)
+            char_cache['external'][hash(item_name + '.left')] = (chars1, image1)
+            char_cache['external'][hash(item_name + '.right')] = (chars2, image2)
+            add_overlay_translations('pot', with_namespace(item_name) + '.left', [chars1], lang, banner_overlay)
+            add_overlay_translations('pot', with_namespace(item_name) + '.right', [chars2], lang, banner_overlay)
+         else:
+            print(f'WARNING: pot pattern {simple_name} not handled!')
+      add_overlay_translations('pot', 'minecraft:brick.left', [{'rows':['', '', '']}], lang, '')
+      add_overlay_translations('pot', 'minecraft:brick.right', [{'rows':['', '', '']}], lang, '')
    grid = create_grid(char_cache['external'])
    for texture,sprites in char_cache['generated'].items():
       append_sprites(font, texture, {'rows':[[x] for x in sprites['rows']], 'negative':[sprites['negative']]})
@@ -178,7 +198,8 @@ def main():
          'data modify entity @s HandItems[0] set from storage tryashtar.shulker_preview:data item',
          f'execute if items entity @s weapon #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:row_{row}/special_render with storage tryashtar.shulker_preview:data item',
          f'execute unless items entity @s weapon #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:row_{row}/simple_render with storage tryashtar.shulker_preview:data item',
-         f'execute if items entity @s weapon #banners[banner_patterns] run function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns',
+         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns',
+         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations" run function tryashtar.shulker_preview:row_{row}/overlay/pot_patterns1',
          f'execute if items entity @s weapon *[damage~{{damage:{{min:1}}}},max_damage] run function tryashtar.shulker_preview:row_{row}/overlay/durability',
          f'execute if items entity @s weapon *[count~{{min:2}}] run function tryashtar.shulker_preview:row_{row}/overlay/count with storage tryashtar.shulker_preview:data item'
       ]
@@ -248,8 +269,9 @@ def main():
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.number.$(count).{row}"}}\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/count.mcfunction')
       write_lines([
-         'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay"}}\'',
-         f'function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns_loop'
+         'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay"}\'',
+         f'function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns_loop',
+         'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner_patterns.mcfunction')
       write_lines([
          'function tryashtar.shulker_preview:banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
@@ -260,6 +282,16 @@ def main():
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.banner.$(pattern).{row}","color":"$(color)"}}\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner_patterns_one.mcfunction')
+      write_lines([
+         'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay"}\'',
+         'data modify storage tryashtar.shulker_preview:data item.left set from storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations"[1]',
+         'data modify storage tryashtar.shulker_preview:data item.right set from storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations"[3]',
+         f'function tryashtar.shulker_preview:row_{row}/overlay/pot_patterns2 with storage tryashtar.shulker_preview:data item',
+         'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\''
+      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/pot_patterns1.mcfunction')
+      write_lines([
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay.pot.$(left).left.{row}"}},{{"translate":"tryashtar.shulker_preview.overlay.pot.$(right).right.{row}"}}]\''
+      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/pot_patterns2.mcfunction')
       durability = [
          'execute store result score #damage shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:damage"'
       ]
