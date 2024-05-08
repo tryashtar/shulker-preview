@@ -89,7 +89,8 @@ def main():
    init_data = ','.join(init_data)
    all_hex = ','.join([f'"{x:02x}"' for x in range(0, 256)])
    potion_data = ','.join([f'"minecraft:{x}":[{y[0]},{y[1]},{y[2]},{y[3]}]' for x,y in potion_colors.items()])
-   dye_data = ','.join(f'{x}:"{y}"' for x,y in {"white":"#f9fffe","orange":"#f9801d","magenta":"#c74ebd","light_blue":"#3ab3da","yellow":"#fed83d","lime":"#80c71f","pink":"#f38baa","gray":"#474f52","light_gray":"#9d9d97","cyan":"#169c9c","purple":"#8932b8","blue":"#3c44aa","brown":"#835432","green":"#5e7c16","red":"#b02e26","black":"#1d1d21"}.items())
+   dye_map = {"white":"#f9fffe","orange":"#f9801d","magenta":"#c74ebd","light_blue":"#3ab3da","yellow":"#fed83d","lime":"#80c71f","pink":"#f38baa","gray":"#474f52","light_gray":"#9d9d97","cyan":"#169c9c","purple":"#8932b8","blue":"#3c44aa","brown":"#835432","green":"#5e7c16","red":"#b02e26","black":"#1d1d21"}
+   dye_data = ','.join(f'{x}:"{y}"' for x,y in dye_map.items())
    write_lines([f'data modify storage tryashtar.shulker_preview:data lookups set value {{hex:[{all_hex}],dyes:{{{dye_data}}},potions:{{{potion_data}}},colors:{{{init_data}}}}}'], 'datapack/data/tryashtar.shulker_preview/functions/meta/initialize_data.mcfunction')
    with zipfile.ZipFile(jar_path, 'r') as jar:
       with io.TextIOWrapper(jar.open('data/minecraft/tags/items/dyeable.json'), encoding='utf-8') as model_file:
@@ -147,11 +148,15 @@ def main():
          else:
             print(f'WARNING: {item} not handled!')
       for pattern in banner_list:
-         image = f'../../block images/banner/{pattern}.png'
-         if os.path.exists(image):
-            chars = new_sprite(char_cache, False)
-            char_cache['external'][hash(pattern)] = (chars, image)
-            add_overlay_translations('banner', with_namespace(pattern), [chars], lang, banner_overlay)
+         image1 = f'../../block images/banner/{pattern}.png'
+         image2 = f'../../block images/shield/{pattern}.png'
+         if os.path.exists(image1) and os.path.exists(image2):
+            chars1 = new_sprite(char_cache, False)
+            chars2 = new_sprite(char_cache, False)
+            char_cache['external'][hash(pattern + '.banner')] = (chars1, image1)
+            char_cache['external'][hash(pattern + '.shield')] = (chars2, image2)
+            add_overlay_translations('banner', with_namespace(pattern), [chars1], lang, banner_overlay)
+            add_overlay_translations('shield', with_namespace(pattern), [chars2], lang, banner_overlay)
          else:
             print(f'WARNING: banner pattern {pattern} not handled!')
       for pattern in pot_list:
@@ -198,7 +203,9 @@ def main():
          'data modify entity @s HandItems[0] set from storage tryashtar.shulker_preview:data item',
          f'execute if items entity @s weapon #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:row_{row}/special_render with storage tryashtar.shulker_preview:data item',
          f'execute unless items entity @s weapon #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:row_{row}/simple_render with storage tryashtar.shulker_preview:data item',
-         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns',
+         f'execute if items entity @s weapon #banners if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns',
+         f'execute if items entity @s weapon shield if data storage tryashtar.shulker_preview:data item.components."minecraft:base_color" run function tryashtar.shulker_preview:row_{row}/overlay/shield_base',
+         f'execute if items entity @s weapon shield if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:row_{row}/overlay/shield_patterns',
          f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations" run function tryashtar.shulker_preview:row_{row}/overlay/pot_patterns1',
          f'execute if items entity @s weapon *[damage~{{damage:{{min:1}}}},max_damage] run function tryashtar.shulker_preview:row_{row}/overlay/durability',
          f'execute if items entity @s weapon *[count~{{min:2}}] run function tryashtar.shulker_preview:row_{row}/overlay/count with storage tryashtar.shulker_preview:data item'
@@ -282,6 +289,25 @@ def main():
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.banner.$(pattern).{row}","color":"$(color)"}}\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner_patterns_one.mcfunction')
+      write_lines([
+         'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay"}\'',
+         f'function tryashtar.shulker_preview:row_{row}/overlay/shield_patterns_loop',
+         'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\''
+      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/shield_patterns.mcfunction')
+      write_lines([
+         'function tryashtar.shulker_preview:banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
+         f'function tryashtar.shulker_preview:row_{row}/overlay/shield_patterns_one with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
+         'data remove storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
+         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:row_{row}/overlay/shield_patterns_loop'
+      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/shield_patterns_loop.mcfunction')
+      write_lines([
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.shield.$(pattern).{row}","color":"$(color)"}}\''
+      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/shield_patterns_one.mcfunction')
+      shield_base = []
+      for dye,color in dye_map.items():
+         shield_base.append(f'execute if data storage tryashtar.shulker_preview:data item.components{{"minecraft:base_color":"{dye}"}} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"tryashtar.shulker_preview.overlay.shield.minecraft:base.{row}","color":"{color}"}},{{"translate":"tryashtar.shulker_preview.overlay_done"}}]\'')
+      shield_base.append('data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\'')
+      write_lines(shield_base, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/shield_base.mcfunction')
       write_lines([
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay"}\'',
          'data modify storage tryashtar.shulker_preview:data item.left set from storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations"[1]',
