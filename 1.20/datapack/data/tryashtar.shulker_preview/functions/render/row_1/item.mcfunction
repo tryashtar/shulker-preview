@@ -1,6 +1,6 @@
 data modify entity @s Item set from storage tryashtar.shulker_preview:data item
-execute if items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:render/row_1/special_render with storage tryashtar.shulker_preview:data item
-execute unless items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:render/row_1/simple_render with storage tryashtar.shulker_preview:data item
+execute if items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:render/row_1/special with storage tryashtar.shulker_preview:data item
+execute unless items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:render/row_1/simple with storage tryashtar.shulker_preview:data item
 execute if items entity @s contents #banners if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_1/overlay/banner_patterns
 execute if items entity @s contents shield if data storage tryashtar.shulker_preview:data item.components."minecraft:base_color" run function tryashtar.shulker_preview:render/row_1/overlay/shield_base
 execute if items entity @s contents shield if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_1/overlay/shield_patterns

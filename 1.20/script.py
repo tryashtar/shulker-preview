@@ -286,8 +286,8 @@ def main():
          lang[f"tryashtar.shulker_preview.durability.{num}.{row}"] = dura_overlay + char + two_space
       process_item = [
          'data modify entity @s Item set from storage tryashtar.shulker_preview:data item',
-         f'execute if items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:render/row_{row}/special_render with storage tryashtar.shulker_preview:data item',
-         f'execute unless items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:render/row_{row}/simple_render with storage tryashtar.shulker_preview:data item',
+         f'execute if items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:render/row_{row}/special with storage tryashtar.shulker_preview:data item',
+         f'execute unless items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:render/row_{row}/simple with storage tryashtar.shulker_preview:data item',
          f'execute if items entity @s contents #banners if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns',
          f'execute if items entity @s contents shield if data storage tryashtar.shulker_preview:data item.components."minecraft:base_color" run function tryashtar.shulker_preview:render/row_{row}/overlay/shield_base',
          f'execute if items entity @s contents shield if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns',
@@ -324,7 +324,7 @@ def main():
       write_lines([
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"a0",green:"65",blue:"40"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:dyed_color".rgb',
-         'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:convert_color',
+         'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
          f'function tryashtar.shulker_preview:render/row_{row}/special_render/dyeable2 with storage tryashtar.shulker_preview:data item',
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/dyeable1.mcfunction')
       write_lines([
@@ -335,8 +335,8 @@ def main():
       write_lines([
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"38",green:"5d","blue":"c6"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:potion_contents".custom_color',
-         'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:convert_color',
-         'execute if score #has_color shulker_preview matches 0 run function tryashtar.shulker_preview:potion_color',
+         'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
+         'execute if score #has_color shulker_preview matches 0 run function tryashtar.shulker_preview:render/potion_color',
          f'function tryashtar.shulker_preview:render/row_{row}/special_render/potion2 with storage tryashtar.shulker_preview:data item',
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/potion1.mcfunction')
       write_lines([
@@ -345,7 +345,7 @@ def main():
       write_lines([
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"46",green:"40","blue":"2e"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:map_color"',
-         'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:convert_color',
+         'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
          f'function tryashtar.shulker_preview:render/row_{row}/special_render/map2 with storage tryashtar.shulker_preview:data item',
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/map1.mcfunction')
       write_lines([
@@ -353,7 +353,7 @@ def main():
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/map2.mcfunction')
       write_lines([
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"8a",green:"8a","blue":"8a"}',
-         'function tryashtar.shulker_preview:star_color',
+         'function tryashtar.shulker_preview:render/star_color',
          f'function tryashtar.shulker_preview:render/row_{row}/special_render/star2 with storage tryashtar.shulker_preview:data item',
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/star1.mcfunction')
       write_lines([
@@ -368,7 +368,7 @@ def main():
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/banner_patterns.mcfunction')
       write_lines([
-         'function tryashtar.shulker_preview:banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
+         'function tryashtar.shulker_preview:render/banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          f'function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns_one with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          'data remove storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns_loop'
@@ -382,7 +382,7 @@ def main():
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/shield_patterns.mcfunction')
       write_lines([
-         'function tryashtar.shulker_preview:banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
+         'function tryashtar.shulker_preview:render/banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          f'function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns_one with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          'data remove storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns_loop'
@@ -435,7 +435,7 @@ def main():
          'scoreboard players set #fullness shulker_preview 0',
          'data modify storage tryashtar.shulker_preview:data bundle_stack set value [{fullness:0}]',
          'data modify storage tryashtar.shulker_preview:data bundle_stack[0].contents set from storage tryashtar.shulker_preview:data item.components."minecraft:bundle_contents"',
-         'function tryashtar.shulker_preview:bundle_weight',
+         'function tryashtar.shulker_preview:render/bundle_weight',
          f'execute if score #fullness shulker_preview matches 64000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.0.{row}","color":"#6666ff"}}\'',
          f'execute if score #fullness shulker_preview matches 59000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.1.{row}","color":"#6666ff"}}\'',
          f'execute if score #fullness shulker_preview matches 54000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.2.{row}","color":"#6666ff"}}\'',

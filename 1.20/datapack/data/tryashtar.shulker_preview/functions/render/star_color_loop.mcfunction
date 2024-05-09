@@ -10,4 +10,4 @@ scoreboard players operation #color shulker_preview /= #256 shulker_preview
 scoreboard players operation #red shulker_preview += #color shulker_preview
 
 data remove storage tryashtar.shulker_preview:data item.components."minecraft:firework_explosion".colors[-1]
-execute if data storage tryashtar.shulker_preview:data item.components."minecraft:firework_explosion".colors[0] run function tryashtar.shulker_preview:star_color_loop
+execute if data storage tryashtar.shulker_preview:data item.components."minecraft:firework_explosion".colors[0] run function tryashtar.shulker_preview:render/star_color_loop

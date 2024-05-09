@@ -1,7 +1,7 @@
 scoreboard players set #fullness shulker_preview 0
 data modify storage tryashtar.shulker_preview:data bundle_stack set value [{fullness:0}]
 data modify storage tryashtar.shulker_preview:data bundle_stack[0].contents set from storage tryashtar.shulker_preview:data item.components."minecraft:bundle_contents"
-function tryashtar.shulker_preview:bundle_weight
+function tryashtar.shulker_preview:render/bundle_weight
 execute if score #fullness shulker_preview matches 64000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value '{"translate":"tryashtar.shulker_preview.durability.0.1","color":"#6666ff"}'
 execute if score #fullness shulker_preview matches 59000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value '{"translate":"tryashtar.shulker_preview.durability.1.1","color":"#6666ff"}'
 execute if score #fullness shulker_preview matches 54000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value '{"translate":"tryashtar.shulker_preview.durability.2.1","color":"#6666ff"}'
