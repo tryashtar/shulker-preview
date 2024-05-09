@@ -9,8 +9,6 @@
          "with": [
             {
                "translate": "container.shulkerBox.more",
-               "color": "gray",
-               "italic": true,
                "with": [
                   {
                      "score": {
@@ -18,7 +16,9 @@
                         "objective": "shulker_preview"
                      }
                   }
-               ]
+               ],
+               "color": "gray",
+               "italic": true
             },
             ""
          ]

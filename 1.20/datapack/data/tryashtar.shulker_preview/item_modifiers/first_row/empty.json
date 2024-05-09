@@ -9,11 +9,11 @@
          "with": [
             "",
             {
-               "font": "tryashtar.shulker_preview:preview",
                "storage": "tryashtar.shulker_preview:data",
                "nbt": "tooltip[]",
                "interpret": true,
                "separator": "",
+               "font": "tryashtar.shulker_preview:preview",
                "color": "white",
                "italic": false
             }

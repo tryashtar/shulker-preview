@@ -7,22 +7,24 @@
          "translate": "tryashtar.shulker_preview.translate",
          "fallback": "%1$s",
          "with": [
-            [
-               {
-                  "nbt": "Item.tag.display.Name",
-                  "entity": "0-1c9-c369-0-2668",
-                  "interpret": true,
-                  "color": "gray",
-                  "italic": false
-               },
-               " x",
-               {
-                  "score": {
-                     "name": "#amount",
-                     "objective": "shulker_preview"
+            {
+               "translate": "container.shulkerBox.itemCount",
+               "with": [
+                  {
+                     "entity": "7368756c-6b65-7220-7072-657669657721",
+                     "nbt": "Item.components.\"minecraft:custom_name\"",
+                     "interpret": true
+                  },
+                  {
+                     "score": {
+                        "name": "#amount",
+                        "objective": "shulker_preview"
+                     }
                   }
-               }
-            ],
+               ],
+               "color": "gray",
+               "italic": false
+            },
             ""
          ]
       }

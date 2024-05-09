@@ -25,7 +25,7 @@ def main():
    small_space = get_space(space_provider, char_cache, 1)
    two_space = get_space(space_provider, char_cache, 2)
    one_space = get_space(space_provider, char_cache, 3)
-   tooltip_push_fwd = get_space(space_provider, char_cache, 5)
+   tooltip_push_fwd = get_space(space_provider, char_cache, 8)
    almost_next_slot = get_space(space_provider, char_cache, 14)
    next_slot = get_space(space_provider, char_cache, 15)
    empty_slot = get_space(space_provider, char_cache, 18)
@@ -39,30 +39,22 @@ def main():
    row_end = get_space(space_provider, char_cache, -162)
    lang = {"tryashtar.shulker_preview.translate":"%2$s"}
    for tex, tip, bottom in [('shulker_box', 'shulker', 20), ('generic_54', 'ender', 27)]:
-      tooltip_1 = next_char(char_cache)
-      tooltip_neg1 = next_char(char_cache)
-      tooltip_2 = next_char(char_cache)
-      tooltip_neg2 = next_char(char_cache)
-      tooltip_3 = next_char(char_cache)
-      tooltip_neg3 = next_char(char_cache)
-      split_2 = ['\u0000'] * 32
-      split_neg2 = ['\u0000'] * 32
-      split_3 = ['\u0000'] * 32
-      split_neg3 = ['\u0000'] * 32
-      split_2[8] = tooltip_2
-      split_neg2[8] = tooltip_neg2
-      split_3[bottom] = tooltip_3
-      split_neg3[bottom] = tooltip_neg3
-      font.extend([
-         {"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": 23, "height": 64, "chars": [tooltip_1, "\u0000", "\u0000", "\u0000"]},
-         {"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": -32768, "height": -64, "chars": [tooltip_neg1, "\u0000", "\u0000", "\u0000"]},
-         {"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": 23-64, "height": 8, "chars": split_2},
-         {"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": -32768, "height": -8, "chars": split_neg2},
-         {"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": 23-64-7, "height": 8, "chars": split_3},
-         {"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": -32768, "height": -8, "chars": split_neg3}
-      ])
-      lang[f"tryashtar.shulker_preview.{tip}_tooltip"] = tooltip_push_back + tooltip_1 + tooltip_neg1 + overlay_offset + tooltip_2 + tooltip_neg2 + overlay_offset + tooltip_3 + tooltip_neg3 + tooltip_push_fwd
-
+      ascent = 8
+      slices = [{'height':8,'range':[0]},{'height':8,'range':[2,3,4,5,6,7,8,bottom]}]
+      text = ''
+      for section in slices:
+         for include in section['range']:
+            positive = ['\u0000'] * (256 // section['height'])
+            negative = ['\u0000'] * (256 // section['height'])
+            pos = next_char(char_cache)
+            neg = next_char(char_cache)
+            positive[include] = pos
+            negative[include] = neg
+            font.append({"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": ascent, "height": section['height'], "chars": positive})
+            font.append({"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": -32768, "height": -section['height'], "chars": negative})
+            ascent -= section['height']
+            text += pos + neg + overlay_offset
+      lang[f"tryashtar.shulker_preview.{tip}_tooltip"] = tooltip_push_back + text + tooltip_push_fwd
    lang['tryashtar.shulker_preview.empty_slot'] = empty_slot
    lang['tryashtar.shulker_preview.row_end'] = row_end
    lang['tryashtar.shulker_preview.overlay'] = back_a_tad
@@ -210,9 +202,9 @@ def main():
          elif got_pats:
             break
    for armor in ('helmet', 'chestplate', 'leggings', 'boots'):
-      chars = new_sprite(char_cache, True)
-      add_overlay_translations('trim', armor, [chars], lang, banner_overlay, almost_next_slot)
-      char_cache['generated'][f'minecraft:trims/items/{armor}_trim'] = chars
+      positive = new_sprite(char_cache, True)
+      add_overlay_translations('trim', armor, [positive], lang, banner_overlay, almost_next_slot)
+      char_cache['generated'][f'minecraft:trims/items/{armor}_trim'] = positive
    grid = create_grid(char_cache['external'])
    for texture,sprites in char_cache['generated'].items():
       append_sprites(font, texture, {'rows':[[x] for x in sprites['rows']], 'negative':[sprites['negative']]}, sprites.get('anim_height', 1))
@@ -222,7 +214,7 @@ def main():
       nums = ''.join([next_char(char_cache) for x in range(0, 10)])
       shadows = ''.join([next_char(char_cache) for x in range(0, 10)])
       negs = ''.join([next_char(char_cache) for x in range(0, 10)])
-      font.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -(18 * row) - 4, "height": 8, "chars": [
+      font.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -(18 * row) - 11, "height": 8, "chars": [
          empty_row,
          empty_row,
          empty_row,
@@ -240,7 +232,7 @@ def main():
          empty_row,
          empty_row
       ]})
-      font.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -(18 * row) - 5, "height": 8, "chars": [
+      font.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -(18 * row) - 12, "height": 8, "chars": [
          empty_row,
          empty_row,
          empty_row,
@@ -289,130 +281,130 @@ def main():
       dur2 = [next_char(char_cache) for _ in range(6,11)]
       dur3 = [next_char(char_cache) for _ in range(11,15)]
       durchars = [*dur1, *dur2, *dur3]
-      font.append({"type":"bitmap","file":"tryashtar.shulker_preview:durability.png","ascent":-18*row-8,"height":2,"chars":[''.join(dur1),''.join(dur2),''.join(dur3 + ['\u0000'])]})
+      font.append({"type":"bitmap","file":"tryashtar.shulker_preview:durability.png","ascent":-18*row-15,"height":2,"chars":[''.join(dur1),''.join(dur2),''.join(dur3 + ['\u0000'])]})
       for num,char in enumerate(durchars):
          lang[f"tryashtar.shulker_preview.durability.{num}.{row}"] = dura_overlay + char + two_space
       process_item = [
          'data modify entity @s Item set from storage tryashtar.shulker_preview:data item',
-         f'execute if items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:row_{row}/special_render with storage tryashtar.shulker_preview:data item',
-         f'execute unless items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:row_{row}/simple_render with storage tryashtar.shulker_preview:data item',
-         f'execute if items entity @s contents #banners if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns',
-         f'execute if items entity @s contents shield if data storage tryashtar.shulker_preview:data item.components."minecraft:base_color" run function tryashtar.shulker_preview:row_{row}/overlay/shield_base',
-         f'execute if items entity @s contents shield if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:row_{row}/overlay/shield_patterns',
-         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations" run function tryashtar.shulker_preview:row_{row}/overlay/pot_patterns1',
-         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:trim" run function tryashtar.shulker_preview:row_{row}/overlay/armor_trim',
-         f'execute if items entity @s contents *[damage~{{damage:{{min:1}}}},max_damage] run function tryashtar.shulker_preview:row_{row}/overlay/durability',
-         f'execute if items entity @s contents *[count~{{min:2}}] run function tryashtar.shulker_preview:row_{row}/overlay/count with storage tryashtar.shulker_preview:data item',
-         f'execute if items entity @s contents bundle[bundle_contents~{{items:{{size:{{min:1}}}}}}] run function tryashtar.shulker_preview:row_{row}/overlay/bundle_bar'
+         f'execute if items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:render/row_{row}/special_render with storage tryashtar.shulker_preview:data item',
+         f'execute unless items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:render/row_{row}/simple_render with storage tryashtar.shulker_preview:data item',
+         f'execute if items entity @s contents #banners if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns',
+         f'execute if items entity @s contents shield if data storage tryashtar.shulker_preview:data item.components."minecraft:base_color" run function tryashtar.shulker_preview:render/row_{row}/overlay/shield_base',
+         f'execute if items entity @s contents shield if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns',
+         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations" run function tryashtar.shulker_preview:render/row_{row}/overlay/pot_patterns1',
+         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:trim" run function tryashtar.shulker_preview:render/row_{row}/overlay/armor_trim',
+         f'execute if items entity @s contents *[damage~{{damage:{{min:1}}}},max_damage] run function tryashtar.shulker_preview:render/row_{row}/overlay/durability',
+         f'execute if items entity @s contents *[count~{{min:2}}] run function tryashtar.shulker_preview:render/row_{row}/overlay/count with storage tryashtar.shulker_preview:data item',
+         f'execute if items entity @s contents bundle[bundle_contents~{{items:{{size:{{min:1}}}}}}] run function tryashtar.shulker_preview:render/row_{row}/overlay/bundle_bar'
       ]
       simple_render = [
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.$(id).{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\''
       ]
       special_render = [
          '$data modify storage tryashtar.shulker_preview:data item merge from storage tryashtar.shulker_preview:data lookups.colors."$(id)"',
-         f'execute if items entity @s contents #tryashtar.shulker_preview:special_render/overrides run return run function tryashtar.shulker_preview:row_{row}/special_render/overrides'
+         f'execute if items entity @s contents #tryashtar.shulker_preview:special_render/overrides run return run function tryashtar.shulker_preview:render/row_{row}/special_render/overrides'
       ]
       for name in hardcoded_items:
-         special_render.append(f'execute if items entity @s contents #tryashtar.shulker_preview:special_render/{name} run return run function tryashtar.shulker_preview:row_{row}/special_render/{name} with storage tryashtar.shulker_preview:data item')
-      special_render.append(f'execute if items entity @s contents #dyeable run return run function tryashtar.shulker_preview:row_{row}/special_render/dyeable1')
+         special_render.append(f'execute if items entity @s contents #tryashtar.shulker_preview:special_render/{name} run return run function tryashtar.shulker_preview:render/row_{row}/special_render/{name} with storage tryashtar.shulker_preview:data item')
+      special_render.append(f'execute if items entity @s contents #dyeable run return run function tryashtar.shulker_preview:render/row_{row}/special_render/dyeable1')
       for kind,items in colorable_items.items():
          if len(items) == 1:
-            special_render.append(f'execute if items entity @s contents {items[0]} run return run function tryashtar.shulker_preview:row_{row}/special_render/{kind}1')
+            special_render.append(f'execute if items entity @s contents {items[0]} run return run function tryashtar.shulker_preview:render/row_{row}/special_render/{kind}1')
          else:
-            special_render.append(f'execute if items entity @s contents #tryashtar.shulker_preview:special_render/{kind} run return run function tryashtar.shulker_preview:row_{row}/special_render/{kind}1')
-      write_lines(process_item, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/process_item.mcfunction')
-      write_lines(simple_render, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/simple_render.mcfunction')
-      write_lines(special_render, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render.mcfunction')
+            special_render.append(f'execute if items entity @s contents #tryashtar.shulker_preview:special_render/{kind} run return run function tryashtar.shulker_preview:render/row_{row}/special_render/{kind}1')
+      write_lines(process_item, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/item.mcfunction')
+      write_lines(simple_render, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/simple.mcfunction')
+      write_lines(special_render, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special.mcfunction')
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.$(id).{row}","color":"$(color)"}}\''
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/grass_colored.mcfunction')
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/grass_colored.mcfunction')
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.spawn_egg.0.{row}","color":"$(base)"}},{{"translate":"tryashtar.shulker_preview.layer.spawn_egg.1.{row}","color":"$(overlay)"}}]\''
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/spawn_eggs.mcfunction')
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/spawn_eggs.mcfunction')
       write_lines([
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"a0",green:"65",blue:"40"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:dyed_color".rgb',
          'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:convert_color',
-         f'function tryashtar.shulker_preview:row_{row}/special_render/dyeable2 with storage tryashtar.shulker_preview:data item',
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/dyeable1.mcfunction')
+         f'function tryashtar.shulker_preview:render/row_{row}/special_render/dyeable2 with storage tryashtar.shulker_preview:data item',
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/dyeable1.mcfunction')
       write_lines([
          f'$execute if score #has_color shulker_preview matches 1 if items entity @s contents wolf_armor run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}"}},{{"translate":"tryashtar.shulker_preview.layer.minecraft:wolf_armor.1.{row}","color":"#$(red)$(green)$(blue)"}}]\'',
          f'execute if score #has_color shulker_preview matches 0 if items entity @s contents wolf_armor run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.minecraft:wolf_armor.{row}"}}\'',
          f'$execute unless items entity @s contents wolf_armor run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}","color":"#$(red)$(green)$(blue)"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"white"}}]\''
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/dyeable2.mcfunction')
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/dyeable2.mcfunction')
       write_lines([
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"38",green:"5d","blue":"c6"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:potion_contents".custom_color',
          'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:convert_color',
          'execute if score #has_color shulker_preview matches 0 run function tryashtar.shulker_preview:potion_color',
-         f'function tryashtar.shulker_preview:row_{row}/special_render/potion2 with storage tryashtar.shulker_preview:data item',
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/potion1.mcfunction')
+         f'function tryashtar.shulker_preview:render/row_{row}/special_render/potion2 with storage tryashtar.shulker_preview:data item',
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/potion1.mcfunction')
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}","color":"#$(red)$(green)$(blue)"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"white"}}]\''
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/potion2.mcfunction')
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/potion2.mcfunction')
       write_lines([
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"46",green:"40","blue":"2e"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:map_color"',
          'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:convert_color',
-         f'function tryashtar.shulker_preview:row_{row}/special_render/map2 with storage tryashtar.shulker_preview:data item',
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/map1.mcfunction')
+         f'function tryashtar.shulker_preview:render/row_{row}/special_render/map2 with storage tryashtar.shulker_preview:data item',
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/map1.mcfunction')
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"#$(red)$(green)$(blue)"}}]\''
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/map2.mcfunction')
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/map2.mcfunction')
       write_lines([
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"8a",green:"8a","blue":"8a"}',
          'function tryashtar.shulker_preview:star_color',
-         f'function tryashtar.shulker_preview:row_{row}/special_render/star2 with storage tryashtar.shulker_preview:data item',
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/star1.mcfunction')
+         f'function tryashtar.shulker_preview:render/row_{row}/special_render/star2 with storage tryashtar.shulker_preview:data item',
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/star1.mcfunction')
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"#$(red)$(green)$(blue)"}}]\''
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/star2.mcfunction')
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/star2.mcfunction')
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.number_shadow.$(count).{row}","color":"#3e3e3e"}},{{"translate":"tryashtar.shulker_preview.number.$(count).{row}","color":"white"}}]\''
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/count.mcfunction')
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/count.mcfunction')
       write_lines([
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay"}\'',
-         f'function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns_loop',
+         f'function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns_loop',
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\''
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner_patterns.mcfunction')
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/banner_patterns.mcfunction')
       write_lines([
          'function tryashtar.shulker_preview:banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
-         f'function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns_one with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
+         f'function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns_one with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          'data remove storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
-         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:row_{row}/overlay/banner_patterns_loop'
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner_patterns_loop.mcfunction')
+         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns_loop'
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/banner_patterns_loop.mcfunction')
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.banner.$(pattern).{row}","color":"$(color)"}}\''
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/banner_patterns_one.mcfunction')
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/banner_patterns_one.mcfunction')
       write_lines([
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay"}\'',
-         f'function tryashtar.shulker_preview:row_{row}/overlay/shield_patterns_loop',
+         f'function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns_loop',
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\''
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/shield_patterns.mcfunction')
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/shield_patterns.mcfunction')
       write_lines([
          'function tryashtar.shulker_preview:banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
-         f'function tryashtar.shulker_preview:row_{row}/overlay/shield_patterns_one with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
+         f'function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns_one with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          'data remove storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
-         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:row_{row}/overlay/shield_patterns_loop'
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/shield_patterns_loop.mcfunction')
+         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns_loop'
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/shield_patterns_loop.mcfunction')
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.shield.$(pattern).{row}","color":"$(color)"}}\''
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/shield_patterns_one.mcfunction')
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/shield_patterns_one.mcfunction')
       shield_base = []
       for dye,color in dye_map.items():
          shield_base.append(f'execute if data storage tryashtar.shulker_preview:data item.components{{"minecraft:base_color":"{dye}"}} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"tryashtar.shulker_preview.overlay.shield.minecraft:base.{row}","color":"{color}"}},{{"translate":"tryashtar.shulker_preview.overlay_done"}}]\'')
       shield_base.append('data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\'')
-      write_lines(shield_base, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/shield_base.mcfunction')
+      write_lines(shield_base, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/shield_base.mcfunction')
       write_lines([
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay"}\'',
          'data modify storage tryashtar.shulker_preview:data item.left set from storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations"[1]',
          'data modify storage tryashtar.shulker_preview:data item.right set from storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations"[3]',
-         f'function tryashtar.shulker_preview:row_{row}/overlay/pot_patterns2 with storage tryashtar.shulker_preview:data item',
+         f'function tryashtar.shulker_preview:render/row_{row}/overlay/pot_patterns2 with storage tryashtar.shulker_preview:data item',
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\''
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/pot_patterns1.mcfunction')
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/pot_patterns1.mcfunction')
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay.pot.$(left).left.{row}"}},{{"translate":"tryashtar.shulker_preview.overlay.pot.$(right).right.{row}"}}]\''
-      ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/pot_patterns2.mcfunction')
+      ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/pot_patterns2.mcfunction')
       main_trim = []
       for armor,tag in {'helmet':'head_armor', 'chestplate':'chest_armor', 'leggings':'leg_armor', 'boots':'foot_armor'}.items():
          armor_trim = []
@@ -422,9 +414,9 @@ def main():
                armor_trim.append(f'execute if data storage tryashtar.shulker_preview:data item.components{{"minecraft:trim":{{material:"minecraft:{material}"}}}} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"tryashtar.shulker_preview.overlay.trim.{armor}.{row}","color":"{color[0]}"}},{{"translate":"tryashtar.shulker_preview.overlay_done"}}]\'')
             else:
                armor_trim.append(f'execute if data storage tryashtar.shulker_preview:data item.components{{"minecraft:trim":{{material:"minecraft:{material}"}}}} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"tryashtar.shulker_preview.overlay.trim.{armor}.{row}","color":"{color}"}},{{"translate":"tryashtar.shulker_preview.overlay_done"}}]\'')
-         write_lines(armor_trim, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/armor_trim/{armor}.mcfunction')
-         main_trim.append(f'execute if items entity @s contents #{tag} run return run function tryashtar.shulker_preview:row_{row}/overlay/armor_trim/{armor}')
-      write_lines(main_trim, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/armor_trim.mcfunction')
+         write_lines(armor_trim, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/armor_trim/{armor}.mcfunction')
+         main_trim.append(f'execute if items entity @s contents #{tag} run return run function tryashtar.shulker_preview:render/row_{row}/overlay/armor_trim/{armor}')
+      write_lines(main_trim, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/armor_trim.mcfunction')
       durability = [
          'execute store result score #damage shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:damage"'
       ]
@@ -438,7 +430,7 @@ def main():
             f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.{n}.{row}","color":"{color}"}}\''
          ])
       durability.append(f'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.13.{row}"}}\'')
-      write_lines(durability, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/durability.mcfunction')
+      write_lines(durability, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/durability.mcfunction')
       bundle_bar = [
          'scoreboard players set #fullness shulker_preview 0',
          'data modify storage tryashtar.shulker_preview:data bundle_stack set value [{fullness:0}]',
@@ -458,10 +450,10 @@ def main():
          f'execute if score #fullness shulker_preview matches 6000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.11.{row}","color":"#6666ff"}}\'',
          f'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.12.{row}","color":"#6666ff"}}\''
       ]
-      write_lines(bundle_bar, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/bundle_bar.mcfunction')
+      write_lines(bundle_bar, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/bundle_bar.mcfunction')
       override_fn = []
       for item,predicates in override_items.items():
-         override_fn.append(f'execute if items entity @s contents {item} run return run function tryashtar.shulker_preview:row_{row}/special_render/{item} with storage tryashtar.shulker_preview:data item')
+         override_fn.append(f'execute if items entity @s contents {item} run return run function tryashtar.shulker_preview:render/row_{row}/special_render/{item} with storage tryashtar.shulker_preview:data item')
          specific_fn = []
          light_check = False
          for num,predicate in reversed(list(enumerate(predicates))):
@@ -487,8 +479,8 @@ def main():
          if light_check:
             specific_fn.insert(0, 'execute unless data storage tryashtar.shulker_preview:data item.components."minecraft:block_state".level run data modify storage tryashtar.shulker_preview:data item.components."minecraft:block_state".level set value "15"')
          specific_fn.append(f'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.minecraft:{item}.{row}"}}\'')
-         write_lines(specific_fn, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/{item}.mcfunction')
-      write_lines(override_fn, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/special_render/overrides.mcfunction')
+         write_lines(specific_fn, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/{item}.mcfunction')
+      write_lines(override_fn, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/overrides.mcfunction')
    grid_image = create_image(grid, 64)
    grid_image.save('resourcepack/assets/tryashtar.shulker_preview/textures/block_sheet.png', 'PNG')
    write_json(lang, 'resourcepack/assets/tryashtar.shulker_preview/lang/en_us.json')
@@ -572,7 +564,7 @@ def append_sprites(font, texture, sprite_chars, anim_height):
       result = list(sprite_chars['rows'][row])
       for _ in range(1, anim_height):
          result.append('\u0000' * len(result[0]))
-      font.append({"type":"bitmap","file":f'{texture}.png',"ascent":5 + (row * -18),"height":16,"chars":result})
+      font.append({"type":"bitmap","file":f'{texture}.png',"ascent":-2 + (row * -18),"height":16,"chars":result})
    if 'negative' in sprite_chars:
       result = list(sprite_chars['negative'])
       for _ in range(1, anim_height):

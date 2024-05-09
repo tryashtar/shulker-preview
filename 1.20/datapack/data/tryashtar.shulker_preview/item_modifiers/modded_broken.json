@@ -5,13 +5,13 @@
    "lore": [
       {
          "text": "Bukkit prevented this shulker tooltip",
-         "italic": false,
-         "color": "#f06e6e"
+         "color": "#f06e6e",
+         "italic": false
       },
       {
          "text": "from displaying correctly. Sorry!",
-         "italic": false,
-         "color": "#f06e6e"
+         "color": "#f06e6e",
+         "italic": false
       }
    ]
 }
