@@ -93,7 +93,7 @@ def main():
    dye_map = {"white":"#f9fffe","orange":"#f9801d","magenta":"#c74ebd","light_blue":"#3ab3da","yellow":"#fed83d","lime":"#80c71f","pink":"#f38baa","gray":"#474f52","light_gray":"#9d9d97","cyan":"#169c9c","purple":"#8932b8","blue":"#3c44aa","brown":"#835432","green":"#5e7c16","red":"#b02e26","black":"#1d1d21"}
    dye_data = ','.join(f'{x}:"{y}"' for x,y in dye_map.items())
    write_lines([f'data modify storage tryashtar.shulker_preview:data lookups set value {{hex:[{all_hex}],dyes:{{{dye_data}}},potions:{{{potion_data}}},colors:{{{init_data}}}}}'], 'datapack/data/tryashtar.shulker_preview/functions/meta/initialize_data.mcfunction')
-   trim_materials = {}
+   trim_materials = {'amethyst':'#c98ff3','copper':'#e3826c','diamond':('#cbfff5','#15b3a1'),'emerald':'#82f6ad','gold':('#fffd90','#c29c2a'),'iron':('#c5d2d4','#a2b0b3'),'lapis':'#416e97','netherite':('#5a575a','#2e2829'),'quartz':'#f2efed','redstone':'#e62008'}
    trim_patterns = []
    with zipfile.ZipFile(jar_path, 'r') as jar:
       with io.TextIOWrapper(jar.open('data/minecraft/tags/items/dyeable.json'), encoding='utf-8') as model_file:
@@ -180,20 +180,12 @@ def main():
             print(f'WARNING: pot pattern {simple_name} not handled!')
       add_overlay_translations('pot', 'minecraft:brick.left', [{'rows':['', '', '']}], lang, '', '')
       add_overlay_translations('pot', 'minecraft:brick.right', [{'rows':['', '', '']}], lang, '', '')
-      got_mats = False
       got_pats = False
       for path in jar.namelist():
-         if path.startswith('data/minecraft/trim_material/'):
-            got_mats = True
-            with io.TextIOWrapper(jar.open(path), encoding='utf-8') as trim_file:
-               trim_data = json.load(trim_file)
-               trim_materials[path.removeprefix('data/minecraft/trim_material/').removesuffix('.json')] = trim_data['description']['color'].lower()
-         elif path.startswith('data/minecraft/trim_pattern/'):
+         if path.startswith('data/minecraft/trim_pattern/'):
             got_pats = True
-            with io.TextIOWrapper(jar.open(path), encoding='utf-8') as trim_file:
-               trim_data = json.load(trim_file)
-               trim_patterns.append(path.removeprefix('data/minecraft/trim_pattern/').removesuffix('.json'))
-         elif got_mats and got_pats:
+            trim_patterns.append(path.removeprefix('data/minecraft/trim_pattern/').removesuffix('.json'))
+         elif got_pats:
             break
    for armor in ('helmet', 'chestplate', 'leggings', 'boots'):
       chars = new_sprite(char_cache, True)
@@ -346,7 +338,11 @@ def main():
       for armor,tag in {'helmet':'head_armor', 'chestplate':'chest_armor', 'leggings':'leg_armor', 'boots':'foot_armor'}.items():
          armor_trim = []
          for material,color in trim_materials.items():
-            armor_trim.append(f'execute if data storage tryashtar.shulker_preview:data item.components{{"minecraft:trim":{{material:"minecraft:{material}"}}}} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"tryashtar.shulker_preview.overlay.trim.{armor}.{row}","color":"{color}"}},{{"translate":"tryashtar.shulker_preview.overlay_done"}}]\'')
+            if isinstance(color, tuple):
+               armor_trim.append(f'execute if data storage tryashtar.shulker_preview:data item.components{{"minecraft:trim":{{material:"minecraft:{material}"}}}} if items entity @s weapon #tryashtar.shulker_preview:armor_material/{material} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"tryashtar.shulker_preview.overlay.trim.{armor}.{row}","color":"{color[1]}"}},{{"translate":"tryashtar.shulker_preview.overlay_done"}}]\'')
+               armor_trim.append(f'execute if data storage tryashtar.shulker_preview:data item.components{{"minecraft:trim":{{material:"minecraft:{material}"}}}} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"tryashtar.shulker_preview.overlay.trim.{armor}.{row}","color":"{color[0]}"}},{{"translate":"tryashtar.shulker_preview.overlay_done"}}]\'')
+            else:
+               armor_trim.append(f'execute if data storage tryashtar.shulker_preview:data item.components{{"minecraft:trim":{{material:"minecraft:{material}"}}}} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"tryashtar.shulker_preview.overlay.trim.{armor}.{row}","color":"{color}"}},{{"translate":"tryashtar.shulker_preview.overlay_done"}}]\'')
          write_lines(armor_trim, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/armor_trim/{armor}.mcfunction')
          main_trim.append(f'execute if items entity @s weapon #{tag} run return run function tryashtar.shulker_preview:row_{row}/overlay/armor_trim/{armor}')
       write_lines(main_trim, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/armor_trim.mcfunction')
