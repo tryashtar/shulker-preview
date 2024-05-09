@@ -74,6 +74,15 @@ Current 1.20 version
 + All 1.21 experimental items
 + Use "fallback" feature instead of old translation-detection trick
 + Fixed artifacts in some mangrove block textures
++ Armor trims show on trimmed items
++ Decorated pots show their patterns
++ All colorable items show exact colors
++ Bundles show their fill percentage
++ Option for colored tooltips
++ Ender chest previews are now enabled by default
++ Use storage instead of entities to construct tooltip
++ Use macros instead of function trees to generate translations
++ Tooltip and number textures come from your resource pack
 
 Current 1.19 version
 + All 1.19 items
