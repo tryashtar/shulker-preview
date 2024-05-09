@@ -5,5 +5,7 @@ execute if items entity @s weapon #banners if data storage tryashtar.shulker_pre
 execute if items entity @s weapon shield if data storage tryashtar.shulker_preview:data item.components."minecraft:base_color" run function tryashtar.shulker_preview:row_2/overlay/shield_base
 execute if items entity @s weapon shield if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:row_2/overlay/shield_patterns
 execute if data storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations" run function tryashtar.shulker_preview:row_2/overlay/pot_patterns1
+execute if data storage tryashtar.shulker_preview:data item.components."minecraft:trim" run function tryashtar.shulker_preview:row_2/overlay/armor_trim
 execute if items entity @s weapon *[damage~{damage:{min:1}},max_damage] run function tryashtar.shulker_preview:row_2/overlay/durability
+execute if items entity @s weapon bundle[bundle_contents~{items:{size:{min:1}}}] run function tryashtar.shulker_preview:row_2/overlay/bundle_bar
 execute if items entity @s weapon *[count~{min:2}] run function tryashtar.shulker_preview:row_2/overlay/count with storage tryashtar.shulker_preview:data item

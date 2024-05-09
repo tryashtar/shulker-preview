@@ -25,6 +25,7 @@ def main():
    small_space = get_space(space_provider, char_cache, 1)
    two_space = get_space(space_provider, char_cache, 2)
    one_space = get_space(space_provider, char_cache, 3)
+   almost_next_slot = get_space(space_provider, char_cache, 14)
    next_slot = get_space(space_provider, char_cache, 15)
    empty_slot = get_space(space_provider, char_cache, 18)
    back_a_tad = get_space(space_provider, char_cache, -1)
@@ -92,6 +93,8 @@ def main():
    dye_map = {"white":"#f9fffe","orange":"#f9801d","magenta":"#c74ebd","light_blue":"#3ab3da","yellow":"#fed83d","lime":"#80c71f","pink":"#f38baa","gray":"#474f52","light_gray":"#9d9d97","cyan":"#169c9c","purple":"#8932b8","blue":"#3c44aa","brown":"#835432","green":"#5e7c16","red":"#b02e26","black":"#1d1d21"}
    dye_data = ','.join(f'{x}:"{y}"' for x,y in dye_map.items())
    write_lines([f'data modify storage tryashtar.shulker_preview:data lookups set value {{hex:[{all_hex}],dyes:{{{dye_data}}},potions:{{{potion_data}}},colors:{{{init_data}}}}}'], 'datapack/data/tryashtar.shulker_preview/functions/meta/initialize_data.mcfunction')
+   trim_materials = {}
+   trim_patterns = []
    with zipfile.ZipFile(jar_path, 'r') as jar:
       with io.TextIOWrapper(jar.open('data/minecraft/tags/items/dyeable.json'), encoding='utf-8') as model_file:
          vanilla_dyeables = json.load(model_file)['values']
@@ -155,8 +158,8 @@ def main():
             chars2 = new_sprite(char_cache, False)
             char_cache['external'][hash(pattern + '.banner')] = (chars1, image1)
             char_cache['external'][hash(pattern + '.shield')] = (chars2, image2)
-            add_overlay_translations('banner', with_namespace(pattern), [chars1], lang, banner_overlay)
-            add_overlay_translations('shield', with_namespace(pattern), [chars2], lang, banner_overlay)
+            add_overlay_translations('banner', with_namespace(pattern), [chars1], lang, banner_overlay, '')
+            add_overlay_translations('shield', with_namespace(pattern), [chars2], lang, banner_overlay, '')
          else:
             print(f'WARNING: banner pattern {pattern} not handled!')
       for pattern in pot_list:
@@ -171,12 +174,31 @@ def main():
             chars2 = new_sprite(char_cache, False)
             char_cache['external'][hash(item_name + '.left')] = (chars1, image1)
             char_cache['external'][hash(item_name + '.right')] = (chars2, image2)
-            add_overlay_translations('pot', with_namespace(item_name) + '.left', [chars1], lang, banner_overlay)
-            add_overlay_translations('pot', with_namespace(item_name) + '.right', [chars2], lang, banner_overlay)
+            add_overlay_translations('pot', with_namespace(item_name) + '.left', [chars1], lang, banner_overlay, '')
+            add_overlay_translations('pot', with_namespace(item_name) + '.right', [chars2], lang, banner_overlay, '')
          else:
             print(f'WARNING: pot pattern {simple_name} not handled!')
-      add_overlay_translations('pot', 'minecraft:brick.left', [{'rows':['', '', '']}], lang, '')
-      add_overlay_translations('pot', 'minecraft:brick.right', [{'rows':['', '', '']}], lang, '')
+      add_overlay_translations('pot', 'minecraft:brick.left', [{'rows':['', '', '']}], lang, '', '')
+      add_overlay_translations('pot', 'minecraft:brick.right', [{'rows':['', '', '']}], lang, '', '')
+      got_mats = False
+      got_pats = False
+      for path in jar.namelist():
+         if path.startswith('data/minecraft/trim_material/'):
+            got_mats = True
+            with io.TextIOWrapper(jar.open(path), encoding='utf-8') as trim_file:
+               trim_data = json.load(trim_file)
+               trim_materials[path.removeprefix('data/minecraft/trim_material/').removesuffix('.json')] = trim_data['description']['color'].lower()
+         elif path.startswith('data/minecraft/trim_pattern/'):
+            got_pats = True
+            with io.TextIOWrapper(jar.open(path), encoding='utf-8') as trim_file:
+               trim_data = json.load(trim_file)
+               trim_patterns.append(path.removeprefix('data/minecraft/trim_pattern/').removesuffix('.json'))
+         elif got_mats and got_pats:
+            break
+   for armor in ('helmet', 'chestplate', 'leggings', 'boots'):
+      chars = new_sprite(char_cache, True)
+      add_overlay_translations('trim', armor, [chars], lang, banner_overlay, almost_next_slot)
+      char_cache['generated'][f'minecraft:trims/items/{armor}_trim'] = chars
    grid = create_grid(char_cache['external'])
    for texture,sprites in char_cache['generated'].items():
       append_sprites(font, texture, {'rows':[[x] for x in sprites['rows']], 'negative':[sprites['negative']]})
@@ -207,7 +229,9 @@ def main():
          f'execute if items entity @s weapon shield if data storage tryashtar.shulker_preview:data item.components."minecraft:base_color" run function tryashtar.shulker_preview:row_{row}/overlay/shield_base',
          f'execute if items entity @s weapon shield if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:row_{row}/overlay/shield_patterns',
          f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations" run function tryashtar.shulker_preview:row_{row}/overlay/pot_patterns1',
+         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:trim" run function tryashtar.shulker_preview:row_{row}/overlay/armor_trim',
          f'execute if items entity @s weapon *[damage~{{damage:{{min:1}}}},max_damage] run function tryashtar.shulker_preview:row_{row}/overlay/durability',
+         f'execute if items entity @s weapon bundle[bundle_contents~{{items:{{size:{{min:1}}}}}}] run function tryashtar.shulker_preview:row_{row}/overlay/bundle_bar',
          f'execute if items entity @s weapon *[count~{{min:2}}] run function tryashtar.shulker_preview:row_{row}/overlay/count with storage tryashtar.shulker_preview:data item'
       ]
       simple_render = [
@@ -318,6 +342,14 @@ def main():
       write_lines([
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay.pot.$(left).left.{row}"}},{{"translate":"tryashtar.shulker_preview.overlay.pot.$(right).right.{row}"}}]\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/pot_patterns2.mcfunction')
+      main_trim = []
+      for armor,tag in {'helmet':'head_armor', 'chestplate':'chest_armor', 'leggings':'leg_armor', 'boots':'foot_armor'}.items():
+         armor_trim = []
+         for material,color in trim_materials.items():
+            armor_trim.append(f'execute if data storage tryashtar.shulker_preview:data item.components{{"minecraft:trim":{{material:"minecraft:{material}"}}}} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"tryashtar.shulker_preview.overlay.trim.{armor}.{row}","color":"{color}"}},{{"translate":"tryashtar.shulker_preview.overlay_done"}}]\'')
+         write_lines(armor_trim, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/armor_trim/{armor}.mcfunction')
+         main_trim.append(f'execute if items entity @s weapon #{tag} run return run function tryashtar.shulker_preview:row_{row}/overlay/armor_trim/{armor}')
+      write_lines(main_trim, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/armor_trim.mcfunction')
       durability = [
          'execute store result score #damage shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:damage"'
       ]
@@ -405,13 +437,17 @@ def add_layered_translations(name, textures, lang, next_slot, overlay_offset):
       result.append(sub)
    return result
 
-def add_overlay_translations(kind, name, textures, lang, back):
+def add_overlay_translations(kind, name, textures, lang, back, forth):
    result = []
    for row in range(0, 3):
       key = f'tryashtar.shulker_preview.overlay.{kind}.{name}.{row}'
       value = back
       for layer in textures:
-         value += layer['rows'][row]
+         if 'negative' in layer:
+            value += layer['rows'][row] + layer['negative']
+         else:
+            value += layer['rows'][row]
+      value += forth
       lang[key] = value
       result.append(key)
    return result
@@ -533,10 +569,12 @@ def with_namespace(identifier):
    return f'minecraft:{identifier}'
 
 def write_json(data, path):
+   os.makedirs(os.path.dirname(path), exist_ok=True)
    with open(path, 'w', encoding='utf-8') as file:
       json.dump(data, file, indent=3, ensure_ascii=True)
 
 def write_lines(lines, path):
+   os.makedirs(os.path.dirname(path), exist_ok=True)
    with open(path, 'w', encoding='utf-8') as file:
       for line in lines:
          file.write(line + '\n')
