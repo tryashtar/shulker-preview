@@ -1,4 +1,4 @@
-# copy and analyze contents one by one
+# analyze the contents of the container one item at a time
 data modify storage tryashtar.shulker_preview:data item set from storage tryashtar.shulker_preview:data contents[{slot:0}].item
 execute if data storage tryashtar.shulker_preview:data contents[{slot:0}] run function tryashtar.shulker_preview:render/row_0/item
 execute unless data storage tryashtar.shulker_preview:data contents[{slot:0}] run data modify storage tryashtar.shulker_preview:data tooltip append value '{"translate":"tryashtar.shulker_preview.empty_slot"}'

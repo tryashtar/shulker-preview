@@ -1,3 +1,4 @@
+# a firework star color is derived by averaging all of its contained colors
 scoreboard players set #red shulker_preview 0
 scoreboard players set #green shulker_preview 0
 scoreboard players set #blue shulker_preview 0
@@ -5,6 +6,7 @@ execute store result score #total shulker_preview run data get storage tryashtar
 execute if score #total shulker_preview matches 0 run return run return fail
 function tryashtar.shulker_preview:render/star_color_loop
 
+# average out the colors and get the result in hex form for the color macro
 scoreboard players operation #red shulker_preview /= #total shulker_preview
 scoreboard players operation #green shulker_preview /= #total shulker_preview
 scoreboard players operation #blue shulker_preview /= #total shulker_preview

@@ -1,3 +1,5 @@
+# look up the red, green, and blue components of this potion effect
+# some potions like turtle master or water bottles add different amounts to the total, since they don't just have one effect
 $data modify storage tryashtar.shulker_preview:data potion_color set from storage tryashtar.shulker_preview:data lookups.potions."$(id)"
 execute store result score #add shulker_preview run data get storage tryashtar.shulker_preview:data potion_color[0]
 scoreboard players operation #add shulker_preview *= #amplifier shulker_preview

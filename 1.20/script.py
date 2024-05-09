@@ -104,7 +104,10 @@ def main():
    potion_data = ','.join([f'"minecraft:{x}":[{y[0]},{y[1]},{y[2]},{y[3]}]' for x,y in potion_colors.items()])
    dye_map = {"white":"#f9fffe","orange":"#f9801d","magenta":"#c74ebd","light_blue":"#3ab3da","yellow":"#fed83d","lime":"#80c71f","pink":"#f38baa","gray":"#474f52","light_gray":"#9d9d97","cyan":"#169c9c","purple":"#8932b8","blue":"#3c44aa","brown":"#835432","green":"#5e7c16","red":"#b02e26","black":"#1d1d21"}
    dye_data = ','.join(f'{x}:"{y}"' for x,y in dye_map.items())
-   write_lines([f'data modify storage tryashtar.shulker_preview:data lookups set value {{hex:[{all_hex}],dyes:{{{dye_data}}},potions:{{{potion_data}}},colors:{{{init_data}}}}}'], 'datapack/data/tryashtar.shulker_preview/functions/meta/initialize_data.mcfunction')
+   write_lines([
+      '# lookup table for constructing various color-related macros',
+      f'data modify storage tryashtar.shulker_preview:data lookups set value {{hex:[{all_hex}],dyes:{{{dye_data}}},potions:{{{potion_data}}},colors:{{{init_data}}}}}'
+   ], 'datapack/data/tryashtar.shulker_preview/functions/meta/initialize_data.mcfunction')
    trim_materials = {'amethyst':'#c98ff3','copper':'#e3826c','diamond':('#cbfff5','#15b3a1'),'emerald':'#82f6ad','gold':('#fffd90','#c29c2a'),'iron':('#c5d2d4','#a2b0b3'),'lapis':'#416e97','netherite':('#5a575a','#2e2829'),'quartz':'#f2efed','redstone':'#e62008'}
    trim_patterns = []
    with zipfile.ZipFile(jar_path, 'r') as jar:
