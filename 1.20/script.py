@@ -106,6 +106,8 @@ def main():
                texture = with_namespace(model['textures'][f'layer{layer}'])
                if texture not in char_cache['generated']:
                   chars = new_sprite(char_cache, True)
+                  if texture == 'minecraft:block/sculk_vein':
+                     chars['anim_height'] = 4
                   char_cache['generated'][texture] = chars
                result['base'].append(char_cache['generated'][texture])
                layer += 1
@@ -193,8 +195,8 @@ def main():
       char_cache['generated'][f'minecraft:trims/items/{armor}_trim'] = chars
    grid = create_grid(char_cache['external'])
    for texture,sprites in char_cache['generated'].items():
-      append_sprites(font, texture, {'rows':[[x] for x in sprites['rows']], 'negative':[sprites['negative']]})
-   append_sprites(font, 'tryashtar.shulker_preview:block_sheet', {'rows':[[''.join(['\u0000' if entry is None else entry[1][0]['rows'][row] for entry in grid_row]) for grid_row in grid] for row in range(0, 3)]})
+      append_sprites(font, texture, {'rows':[[x] for x in sprites['rows']], 'negative':[sprites['negative']]}, sprites.get('anim_height', 1))
+   append_sprites(font, 'tryashtar.shulker_preview:block_sheet', {'rows':[[''.join(['\u0000' if entry is None else entry[1][0]['rows'][row] for entry in grid_row]) for grid_row in grid] for row in range(0, 3)]}, 1)
    for row in range(0, 3):
       digits = [next_char(char_cache) for _ in range(0,10)]
       font.append({"type":"bitmap","file":"tryashtar.shulker_preview:numbers.png","ascent":-18*row-4,"height":8,"chars":[
@@ -488,11 +490,17 @@ def add_normal_translations(kind, name, textures, lang, next_slot, one_space):
       result.append(key)
    return result
 
-def append_sprites(font, texture, sprite_chars):
+def append_sprites(font, texture, sprite_chars, anim_height):
    for row in range(0, 3):
-      font.append({"type":"bitmap","file":f'{texture}.png',"ascent":5 + (row * -18),"height":16,"chars":sprite_chars['rows'][row]})
+      result = list(sprite_chars['rows'][row])
+      for _ in range(1, anim_height):
+         result.append('\u0000' * len(result[0]))
+      font.append({"type":"bitmap","file":f'{texture}.png',"ascent":5 + (row * -18),"height":16,"chars":result})
    if 'negative' in sprite_chars:
-      font.append({"type":"bitmap","file":f'{texture}.png',"ascent":-32768,"height":-16,"chars":sprite_chars['negative']})
+      result = list(sprite_chars['negative'])
+      for _ in range(1, anim_height):
+         result.append('\u0000' * len(result[0]))
+      font.append({"type":"bitmap","file":f'{texture}.png',"ascent":-32768,"height":-16,"chars":result})
 
 def create_grid(external_images):
    size = get_dimensions(len(external_images))
