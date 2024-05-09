@@ -1,6 +1,3 @@
-# initialize the tooltip text component array that all rendering appends to
-data modify storage tryashtar.shulker_preview:data tooltip set value ['{"translate":"tryashtar.shulker_preview.shulker_tooltip"}']
-
 # construct an artificial container that has the player's ender chest items
 # populate it by copying one item at a time, since serializing player NBT is slow
 # we also need an item entity anyway to run the processing and create the tooltip, which will be copied to every ender chest in the player's inventory
@@ -70,7 +67,7 @@ data remove storage tryashtar.shulker_preview:data contents[{item:0b}]
 
 # in the likely case the last ender chest slot is empty, restore a real item so the entity can receive lore
 # run the processing and save the lore to be copied identically to every ender chest
-item replace entity 7368756c-6b65-7220-7072-65766965773f contents with tnt
+item replace entity 7368756c-6b65-7220-7072-65766965773f contents with ender_chest
 execute as 7368756c-6b65-7220-7072-65766965773f run function tryashtar.shulker_preview:process
 data modify storage tryashtar.shulker_preview:data lore set from entity 7368756c-6b65-7220-7072-65766965773f Item.components."minecraft:lore"
 kill 7368756c-6b65-7220-7072-65766965773f

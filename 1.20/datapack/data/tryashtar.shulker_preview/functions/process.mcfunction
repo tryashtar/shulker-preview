@@ -1,5 +1,6 @@
 # box processing requires matching against real items in some cases, so we need an entity to hold those
 # use an item entity specifically for the vanilla fallback tooltip, a selector text component will show the item's display name
+function tryashtar.shulker_preview:start_render
 summon item ~ -10000 ~ {Invulnerable:1b,NoGravity:1b,Silent:1b,UUID:[I;1936225644,1801810464,1886545270,1768257313],Item:{id:"tnt",count:1}}
 execute as 7368756c-6b65-7220-7072-657669657721 run function tryashtar.shulker_preview:analyze
 

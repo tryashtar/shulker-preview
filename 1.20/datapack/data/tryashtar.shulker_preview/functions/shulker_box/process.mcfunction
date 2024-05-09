@@ -1,6 +1,3 @@
-# initialize the tooltip text component array that all rendering appends to
-data modify storage tryashtar.shulker_preview:data tooltip set value ['{"translate":"tryashtar.shulker_preview.shulker_tooltip"}']
-
 # the processing function works on a single item, so we need to spawn an item entity to run it
 # we can copy the player's box to and from it quickly
 summon item ~ -10000 ~ {Invulnerable:1b,NoGravity:1b,Silent:1b,UUID:[I;1936225644,1801810464,1886545270,1768257343],Item:{id:"tnt",count:1}}
