@@ -1,7 +1,7 @@
 {
-   "function": "minecraft:set_lore",
+   "function": "set_lore",
    "entity": "this",
-   "replace": true,
+   "mode": "replace_all",
    "lore": [
       {
          "translate": "tryashtar.shulker_preview.translate",
@@ -9,7 +9,9 @@
          "with": [
             [
                {
-                  "selector": "0-1c9-c369-0-2668",
+                  "nbt": "Item.tag.display.Name",
+                  "entity": "0-1c9-c369-0-2668",
+                  "interpret": true,
                   "color": "gray",
                   "italic": false
                },
@@ -23,7 +25,9 @@
             ],
             {
                "font": "tryashtar.shulker_preview:preview",
-               "selector": "@e[type=marker,tag=tryashtar.shulker_preview,x=0,y=0,z=0,sort=nearest]",
+               "storage": "tryashtar.shulker_preview:data",
+               "nbt": "tooltip[]",
+               "interpret": true,
                "separator": "",
                "color": "white",
                "italic": false

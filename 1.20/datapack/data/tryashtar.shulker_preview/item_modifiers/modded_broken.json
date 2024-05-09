@@ -1,7 +1,7 @@
 {
-   "function": "minecraft:set_lore",
+   "function": "set_lore",
    "entity": "this",
-   "replace": true,
+   "mode": "replace_all",
    "lore": [
       {
          "text": "Bukkit prevented this shulker tooltip",

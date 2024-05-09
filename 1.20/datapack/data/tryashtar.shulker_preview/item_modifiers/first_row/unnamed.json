@@ -1,7 +1,7 @@
 {
-   "function": "minecraft:set_lore",
+   "function": "set_lore",
    "entity": "this",
-   "replace": true,
+   "mode": "replace_all",
    "lore": [
       {
          "translate": "tryashtar.shulker_preview.translate",
@@ -23,9 +23,7 @@
             ],
             {
                "font": "tryashtar.shulker_preview:preview",
-               "nbt": "CustomName",
-               "entity": "@e[type=marker,tag=tryashtar.shulker_preview,x=0,y=0,z=0,sort=nearest]",
-               "interpret": true,
+               "selector": "@e[type=marker,tag=tryashtar.shulker_preview,x=0,y=0,z=0,sort=nearest]",
                "separator": "",
                "color": "white",
                "italic": false
