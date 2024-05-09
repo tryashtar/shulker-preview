@@ -39,9 +39,16 @@ execute if score #amount shulker_preview matches 1.. if items entity 7368756c-6b
 execute if score #amount shulker_preview matches 1.. unless items entity 7368756c-6b65-7220-7072-657669657721 contents *[custom_name] run item modify entity @s contents tryashtar.shulker_preview:other_rows/unnamed
 execute if score #amount shulker_preview matches ..0 run item modify entity @s contents tryashtar.shulker_preview:other_rows/empty
 
+# vanilla only shows 5, but we show 6 because it pushes the advanced tooltip below the container
+data modify entity 7368756c-6b65-7220-7072-657669657721 Item set from storage tryashtar.shulker_preview:data contents[5].item
+execute store result score #amount shulker_preview run data get storage tryashtar.shulker_preview:data contents[5].item.count
+execute if score #amount shulker_preview matches 1.. if items entity 7368756c-6b65-7220-7072-657669657721 contents *[custom_name] run item modify entity @s contents tryashtar.shulker_preview:other_rows/named
+execute if score #amount shulker_preview matches 1.. unless items entity 7368756c-6b65-7220-7072-657669657721 contents *[custom_name] run item modify entity @s contents tryashtar.shulker_preview:other_rows/unnamed
+execute if score #amount shulker_preview matches ..0 run item modify entity @s contents tryashtar.shulker_preview:other_rows/empty
+
 # lastly, show the "X more..." line if the pack is not equipped
 execute store result score #more shulker_preview run data get storage tryashtar.shulker_preview:data contents
-scoreboard players remove #more shulker_preview 5
+scoreboard players remove #more shulker_preview 6
 execute if score #more shulker_preview matches 1.. run item modify entity @s contents tryashtar.shulker_preview:other_rows/more
 execute if score #more shulker_preview matches ..0 run item modify entity @s contents tryashtar.shulker_preview:other_rows/empty
 

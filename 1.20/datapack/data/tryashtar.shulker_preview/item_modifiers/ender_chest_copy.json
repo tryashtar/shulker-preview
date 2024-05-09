@@ -32,6 +32,11 @@
          "storage": "tryashtar.shulker_preview:data",
          "nbt": "lore[5]",
          "interpret": true
+      },
+      {
+         "storage": "tryashtar.shulker_preview:data",
+         "nbt": "lore[6]",
+         "interpret": true
       }
    ]
 }
