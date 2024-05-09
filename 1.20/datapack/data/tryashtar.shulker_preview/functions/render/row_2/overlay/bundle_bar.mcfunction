@@ -1,3 +1,5 @@
+# render the fullness bar of a bundle
+# set up a stack to be used in case of bundle nesting, get the weight, then check against some thresholds to get the bar width
 scoreboard players set #fullness shulker_preview 0
 data modify storage tryashtar.shulker_preview:data bundle_stack set value [{fullness:0}]
 data modify storage tryashtar.shulker_preview:data bundle_stack[0].contents set from storage tryashtar.shulker_preview:data item.components."minecraft:bundle_contents"

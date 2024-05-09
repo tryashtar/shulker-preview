@@ -288,22 +288,30 @@ def main():
       for num,char in enumerate(durchars):
          lang[f"tryashtar.shulker_preview.durability.{num}.{row}"] = dura_overlay + char + two_space
       process_item = [
+         '# render the base item texture',
          'data modify entity @s Item set from storage tryashtar.shulker_preview:data item',
          f'execute if items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:render/row_{row}/special with storage tryashtar.shulker_preview:data item',
          f'execute unless items entity @s contents #tryashtar.shulker_preview:special_render run function tryashtar.shulker_preview:render/row_{row}/simple with storage tryashtar.shulker_preview:data item',
+         '',
+         '# render some item-specific overlays',
          f'execute if items entity @s contents #banners if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns',
          f'execute if items entity @s contents shield if data storage tryashtar.shulker_preview:data item.components."minecraft:base_color" run function tryashtar.shulker_preview:render/row_{row}/overlay/shield_base',
          f'execute if items entity @s contents shield if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns',
          f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations" run function tryashtar.shulker_preview:render/row_{row}/overlay/pot_patterns1',
          f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:trim" run function tryashtar.shulker_preview:render/row_{row}/overlay/armor_trim',
+         '',
+         '# render some generic overlays',
+         '# banner bundle is last since checking the weight involves overwriting the weapon item',
          f'execute if items entity @s contents *[damage~{{damage:{{min:1}}}},max_damage] run function tryashtar.shulker_preview:render/row_{row}/overlay/durability',
          f'execute if items entity @s contents *[count~{{min:2}}] run function tryashtar.shulker_preview:render/row_{row}/overlay/count with storage tryashtar.shulker_preview:data item',
          f'execute if items entity @s contents bundle[bundle_contents~{{items:{{size:{{min:1}}}}}}] run function tryashtar.shulker_preview:render/row_{row}/overlay/bundle_bar'
       ]
       simple_render = [
+         '# macro for simple items that are just one or more uncolored layers',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.$(id).{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\''
       ]
       special_render = [
+         '# items that require special rendering, like model overrides or colored layers',
          '$data modify storage tryashtar.shulker_preview:data item merge from storage tryashtar.shulker_preview:data lookups.colors."$(id)"',
          f'execute if items entity @s contents #tryashtar.shulker_preview:special_render/overrides run return run function tryashtar.shulker_preview:render/row_{row}/special_render/overrides'
       ]
@@ -319,23 +327,29 @@ def main():
       write_lines(simple_render, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/simple.mcfunction')
       write_lines(special_render, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special.mcfunction')
       write_lines([
+         '# certain grass items render like normal, but with their entire texture colored',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.$(id).{row}","color":"$(color)"}}\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/grass_colored.mcfunction')
       write_lines([
+         '# spawn eggs render with two separately colored layers',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.spawn_egg.0.{row}","color":"$(base)"}},{{"translate":"tryashtar.shulker_preview.layer.spawn_egg.1.{row}","color":"$(overlay)"}}]\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/spawn_eggs.mcfunction')
       write_lines([
+         '# dyeable items can be any color, so a macro is needed',
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"a0",green:"65",blue:"40"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:dyed_color".rgb',
          'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
          f'function tryashtar.shulker_preview:render/row_{row}/special_render/dyeable2 with storage tryashtar.shulker_preview:data item',
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/dyeable1.mcfunction')
       write_lines([
+         '# dyeable items render with a base layer and a colored layer',
+         '# wolf armor uniquely doesn\'t render its top layer when not dyed',
          f'$execute if score #has_color shulker_preview matches 1 if items entity @s contents wolf_armor run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}"}},{{"translate":"tryashtar.shulker_preview.layer.minecraft:wolf_armor.1.{row}","color":"#$(red)$(green)$(blue)"}}]\'',
          f'execute if score #has_color shulker_preview matches 0 if items entity @s contents wolf_armor run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.minecraft:wolf_armor.{row}"}}\'',
          f'$execute unless items entity @s contents wolf_armor run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}","color":"#$(red)$(green)$(blue)"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"white"}}]\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/dyeable2.mcfunction')
       write_lines([
+         '# potions can be any color, so a macro is needed',
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"38",green:"5d","blue":"c6"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:potion_contents".custom_color',
          'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
@@ -343,62 +357,82 @@ def main():
          f'function tryashtar.shulker_preview:render/row_{row}/special_render/potion2 with storage tryashtar.shulker_preview:data item',
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/potion1.mcfunction')
       write_lines([
+         '# potions render with a base layer and a colored layer',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}","color":"#$(red)$(green)$(blue)"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"white"}}]\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/potion2.mcfunction')
       write_lines([
+         '# maps can be any color, so a macro is needed',
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"46",green:"40","blue":"2e"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:map_color"',
          'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
          f'function tryashtar.shulker_preview:render/row_{row}/special_render/map2 with storage tryashtar.shulker_preview:data item',
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/map1.mcfunction')
       write_lines([
+         '# maps render with a base layer and a colored layer',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"#$(red)$(green)$(blue)"}}]\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/map2.mcfunction')
       write_lines([
+         '# firework stars can be any color, so a macro is needed',
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"8a",green:"8a","blue":"8a"}',
          'function tryashtar.shulker_preview:render/star_color',
          f'function tryashtar.shulker_preview:render/row_{row}/special_render/star2 with storage tryashtar.shulker_preview:data item',
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/star1.mcfunction')
       write_lines([
+         '# firework stars render with a base layer and a colored layer',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"#$(red)$(green)$(blue)"}}]\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/star2.mcfunction')
       write_lines([
+         '# render the item count numbers',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.number_shadow.$(count).{row}","color":"#3e3e3e"}},{{"translate":"tryashtar.shulker_preview.number.$(count).{row}","color":"white"}}]\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/count.mcfunction')
       write_lines([
+         '# render banner patterns as overlays',
+         '# first move the cursor back on top of the item, then draw the overlays, then put the cursor after the item again',
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay"}\'',
          f'function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns_loop',
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/banner_patterns.mcfunction')
       write_lines([
+         '# recursively render banner patterns using a macro',
          'function tryashtar.shulker_preview:render/banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          f'function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns_one with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          'data remove storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns_loop'
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/banner_patterns_loop.mcfunction')
       write_lines([
+         '# render one banner pattern with a dye-specific color',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.banner.$(pattern).{row}","color":"$(color)"}}\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/banner_patterns_one.mcfunction')
       write_lines([
+         '# render banner patterns as overlays',
+         '# first move the cursor back on top of the item, then draw the overlays, then put the cursor after the item again',
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay"}\'',
          f'function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns_loop',
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/shield_patterns.mcfunction')
       write_lines([
+         '# recursively render banner patterns using a macro',
          'function tryashtar.shulker_preview:render/banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          f'function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns_one with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          'data remove storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns_loop'
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/shield_patterns_loop.mcfunction')
       write_lines([
+         '# render one banner pattern with a dye-specific color',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.shield.$(pattern).{row}","color":"$(color)"}}\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/shield_patterns_one.mcfunction')
-      shield_base = []
+      shield_base = [
+         '# render the base color layer for a banner shield',
+         '# since the ID is known and the palette is limited, no macro is necessary'
+      ]
       for dye,color in dye_map.items():
          shield_base.append(f'execute if data storage tryashtar.shulker_preview:data item.components{{"minecraft:base_color":"{dye}"}} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"tryashtar.shulker_preview.overlay.shield.minecraft:base.{row}","color":"{color}"}},{{"translate":"tryashtar.shulker_preview.overlay_done"}}]\'')
       shield_base.append('data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\'')
       write_lines(shield_base, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/shield_base.mcfunction')
       write_lines([
+         '# render decorated pot patterns as overlays',
+         '# only the second and fourth are visible on the left and right, respectively',
+         '# each ID is an item name of either a sherd or brick',
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay"}\'',
          'data modify storage tryashtar.shulker_preview:data item.left set from storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations"[1]',
          'data modify storage tryashtar.shulker_preview:data item.right set from storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations"[3]',
@@ -406,11 +440,18 @@ def main():
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/pot_patterns1.mcfunction')
       write_lines([
+         '# render both patterns at once with a macro',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay.pot.$(left).left.{row}"}},{{"translate":"tryashtar.shulker_preview.overlay.pot.$(right).right.{row}"}}]\''
       ], f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/pot_patterns2.mcfunction')
-      main_trim = []
+      main_trim = [
+         '# render the armor trim overlay texture based on the type of armor this is'
+      ]
       for armor,tag in {'helmet':'head_armor', 'chestplate':'chest_armor', 'leggings':'leg_armor', 'boots':'foot_armor'}.items():
-         armor_trim = []
+         armor_trim = [
+            '# render the armor trim overlay texture based on the material color',
+            '# it\'s not as accurate as the true items which use paletted permutations',
+            '# items of a matching material use a darker color as well'
+         ]
          for material,color in trim_materials.items():
             if isinstance(color, tuple):
                armor_trim.append(f'execute if data storage tryashtar.shulker_preview:data item.components{{"minecraft:trim":{{material:"minecraft:{material}"}}}} if items entity @s contents #tryashtar.shulker_preview:armor_material/{material} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay"}},{{"translate":"tryashtar.shulker_preview.overlay.trim.{armor}.{row}","color":"{color[1]}"}},{{"translate":"tryashtar.shulker_preview.overlay_done"}}]\'')
@@ -421,6 +462,9 @@ def main():
          main_trim.append(f'execute if items entity @s contents #{tag} run return run function tryashtar.shulker_preview:render/row_{row}/overlay/armor_trim/{armor}')
       write_lines(main_trim, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/armor_trim.mcfunction')
       durability = [
+         '# render the durability bar',
+         '# first we get the current damage of the item, then see what the damage would be if set to a specific ratio',
+         '# if the current damage is less than these thresholds, use that corresponding bar width and color',
          'execute store result score #damage shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:damage"'
       ]
       for n in range(0, 13):
@@ -435,6 +479,8 @@ def main():
       durability.append(f'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.13.{row}"}}\'')
       write_lines(durability, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/durability.mcfunction')
       bundle_bar = [
+         '# render the fullness bar of a bundle',
+         '# set up a stack to be used in case of bundle nesting, get the weight, then check against some thresholds to get the bar width',
          'scoreboard players set #fullness shulker_preview 0',
          'data modify storage tryashtar.shulker_preview:data bundle_stack set value [{fullness:0}]',
          'data modify storage tryashtar.shulker_preview:data bundle_stack[0].contents set from storage tryashtar.shulker_preview:data item.components."minecraft:bundle_contents"',
@@ -454,10 +500,14 @@ def main():
          f'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.12.{row}","color":"#6666ff"}}\''
       ]
       write_lines(bundle_bar, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/overlay/bundle_bar.mcfunction')
-      override_fn = []
+      override_fn = [
+         '# these items have model override predicates, requiring special checks to render properly'
+      ]
       for item,predicates in override_items.items():
          override_fn.append(f'execute if items entity @s contents {item} run return run function tryashtar.shulker_preview:render/row_{row}/special_render/{item} with storage tryashtar.shulker_preview:data item')
-         specific_fn = []
+         specific_fn = [
+            f'# generated from the {item} model file'
+         ]
          light_check = False
          for num,predicate in reversed(list(enumerate(predicates))):
             if predicate.get('charged', 0) == 1 and predicate.get('firework', 0) == 1:
@@ -480,7 +530,7 @@ def main():
                   print(f'WARNING: unknown predicate {check} in item {item}')
             specific_fn.append(f'execute {" ".join(test)} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.override.minecraft:{item}.{num}.{row}"}}\'')
          if light_check:
-            specific_fn.insert(0, 'execute unless data storage tryashtar.shulker_preview:data item.components."minecraft:block_state".level run data modify storage tryashtar.shulker_preview:data item.components."minecraft:block_state".level set value "15"')
+            specific_fn.insert(1, 'execute unless data storage tryashtar.shulker_preview:data item.components."minecraft:block_state".level run data modify storage tryashtar.shulker_preview:data item.components."minecraft:block_state".level set value "15"')
          specific_fn.append(f'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.minecraft:{item}.{row}"}}\'')
          write_lines(specific_fn, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/{item}.mcfunction')
       write_lines(override_fn, f'datapack/data/tryashtar.shulker_preview/functions/render/row_{row}/special_render/overrides.mcfunction')

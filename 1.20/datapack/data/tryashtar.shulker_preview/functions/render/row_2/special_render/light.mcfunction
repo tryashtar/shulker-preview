@@ -1,3 +1,4 @@
+# generated from the light model file
 execute unless data storage tryashtar.shulker_preview:data item.components."minecraft:block_state".level run data modify storage tryashtar.shulker_preview:data item.components."minecraft:block_state".level set value "15"
 execute if data storage tryashtar.shulker_preview:data item.components."minecraft:block_state"{level:"15"} run return run data modify storage tryashtar.shulker_preview:data tooltip append value '{"translate":"tryashtar.shulker_preview.override.minecraft:light.15.2"}'
 execute if data storage tryashtar.shulker_preview:data item.components."minecraft:block_state"{level:"14"} run return run data modify storage tryashtar.shulker_preview:data tooltip append value '{"translate":"tryashtar.shulker_preview.override.minecraft:light.14.2"}'

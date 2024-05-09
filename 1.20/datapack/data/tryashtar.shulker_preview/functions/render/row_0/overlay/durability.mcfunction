@@ -1,3 +1,6 @@
+# render the durability bar
+# first we get the current damage of the item, then see what the damage would be if set to a specific ratio
+# if the current damage is less than these thresholds, use that corresponding bar width and color
 execute store result score #damage shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:damage"
 item modify entity @s contents {function:"set_damage",damage:0.9615384615384616}
 execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"

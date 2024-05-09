@@ -1,3 +1,4 @@
+# items that require special rendering, like model overrides or colored layers
 $data modify storage tryashtar.shulker_preview:data item merge from storage tryashtar.shulker_preview:data lookups.colors."$(id)"
 execute if items entity @s contents #tryashtar.shulker_preview:special_render/overrides run return run function tryashtar.shulker_preview:render/row_1/special_render/overrides
 execute if items entity @s contents #tryashtar.shulker_preview:special_render/grass_colored run return run function tryashtar.shulker_preview:render/row_1/special_render/grass_colored with storage tryashtar.shulker_preview:data item
