@@ -360,6 +360,26 @@ def main():
          ])
       durability.append(f'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.13.{row}"}}\'')
       write_lines(durability, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/durability.mcfunction')
+      bundle_bar = [
+         'scoreboard players set #fullness shulker_preview 0',
+         'data modify storage tryashtar.shulker_preview:data bundle_stack set value [{fullness:0}]',
+         'data modify storage tryashtar.shulker_preview:data bundle_stack[0].contents set from storage tryashtar.shulker_preview:data item.components."minecraft:bundle_contents"',
+         'function tryashtar.shulker_preview:bundle_weight',
+         f'execute if score #fullness shulker_preview matches 64000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.0.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 59000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.1.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 54000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.2.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 48000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.3.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 43000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.4.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 38000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.5.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 32000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.6.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 27000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.7.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 22000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.8.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 16000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.9.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 11000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.10.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 6000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.11.{row}","color":"#6666ff"}}\'',
+         f'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.12.{row}","color":"#6666ff"}}\''
+      ]
+      write_lines(bundle_bar, f'datapack/data/tryashtar.shulker_preview/functions/row_{row}/overlay/bundle_bar.mcfunction')
       override_fn = []
       for item,predicates in override_items.items():
          override_fn.append(f'execute if items entity @s weapon {item} run return run function tryashtar.shulker_preview:row_{row}/special_render/{item} with storage tryashtar.shulker_preview:data item')
