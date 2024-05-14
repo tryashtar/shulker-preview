@@ -2,9 +2,9 @@
 execute if items entity @s hotbar.0 ender_chest run item modify entity @s hotbar.0 tryashtar.shulker_preview:ender_chest_copy
 execute if items entity @s hotbar.1 ender_chest run item modify entity @s hotbar.1 tryashtar.shulker_preview:ender_chest_copy
 execute if items entity @s hotbar.2 ender_chest run item modify entity @s hotbar.2 tryashtar.shulker_preview:ender_chest_copy
-execute if items entity @s hotbar.3 ender_chest run item modify entity @s hotbar.1 tryashtar.shulker_preview:ender_chest_copy
-execute if items entity @s hotbar.4 ender_chest run item modify entity @s hotbar.1 tryashtar.shulker_preview:ender_chest_copy
-execute if items entity @s hotbar.5 ender_chest run item modify entity @s hotbar.1 tryashtar.shulker_preview:ender_chest_copy
-execute if items entity @s hotbar.6 ender_chest run item modify entity @s hotbar.1 tryashtar.shulker_preview:ender_chest_copy
-execute if items entity @s hotbar.7 ender_chest run item modify entity @s hotbar.1 tryashtar.shulker_preview:ender_chest_copy
-execute if items entity @s hotbar.8 ender_chest run item modify entity @s hotbar.1 tryashtar.shulker_preview:ender_chest_copy
+execute if items entity @s hotbar.3 ender_chest run item modify entity @s hotbar.3 tryashtar.shulker_preview:ender_chest_copy
+execute if items entity @s hotbar.4 ender_chest run item modify entity @s hotbar.4 tryashtar.shulker_preview:ender_chest_copy
+execute if items entity @s hotbar.5 ender_chest run item modify entity @s hotbar.5 tryashtar.shulker_preview:ender_chest_copy
+execute if items entity @s hotbar.6 ender_chest run item modify entity @s hotbar.6 tryashtar.shulker_preview:ender_chest_copy
+execute if items entity @s hotbar.7 ender_chest run item modify entity @s hotbar.7 tryashtar.shulker_preview:ender_chest_copy
+execute if items entity @s hotbar.8 ender_chest run item modify entity @s hotbar.8 tryashtar.shulker_preview:ender_chest_copy
