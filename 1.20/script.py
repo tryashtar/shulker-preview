@@ -275,7 +275,7 @@ def main():
       for num in range(1, 10):
          lang[f'tryashtar.shulker_preview.number.{num}.{row}'] = tooltip_push_back + negs[num] + nums[num] + small_space
          lang[f'tryashtar.shulker_preview.number_shadow.{num}.{row}'] = overlay_offset + negs[num] + shadows[num]
-      for num in range(10, 65):
+      for num in range(10, 100):
          d1 = num // 10
          d2 = num % 10
          lang[f'tryashtar.shulker_preview.number.{num}.{row}'] = one_count_overlay + negs[d1] + negs[d2] + nums[d1] + nums[d2] + small_space
