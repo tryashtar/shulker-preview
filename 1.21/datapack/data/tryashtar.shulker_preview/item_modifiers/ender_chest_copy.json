@@ -1,0 +1,42 @@
+{
+   "function": "set_lore",
+   "mode": "replace_all",
+   "entity": "this",
+   "lore": [
+      {
+         "storage": "tryashtar.shulker_preview:data",
+         "nbt": "lore[0]",
+         "interpret": true
+      },
+      {
+         "storage": "tryashtar.shulker_preview:data",
+         "nbt": "lore[1]",
+         "interpret": true
+      },
+      {
+         "storage": "tryashtar.shulker_preview:data",
+         "nbt": "lore[2]",
+         "interpret": true
+      },
+      {
+         "storage": "tryashtar.shulker_preview:data",
+         "nbt": "lore[3]",
+         "interpret": true
+      },
+      {
+         "storage": "tryashtar.shulker_preview:data",
+         "nbt": "lore[4]",
+         "interpret": true
+      },
+      {
+         "storage": "tryashtar.shulker_preview:data",
+         "nbt": "lore[5]",
+         "interpret": true
+      },
+      {
+         "storage": "tryashtar.shulker_preview:data",
+         "nbt": "lore[6]",
+         "interpret": true
+      }
+   ]
+}

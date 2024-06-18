@@ -1,0 +1,27 @@
+{
+   "function": "set_lore",
+   "entity": "this",
+   "mode": "append",
+   "lore": [
+      {
+         "translate": "tryashtar.shulker_preview.translate",
+         "fallback": "%1$s",
+         "with": [
+            {
+               "translate": "container.shulkerBox.more",
+               "with": [
+                  {
+                     "score": {
+                        "name": "#more",
+                        "objective": "shulker_preview"
+                     }
+                  }
+               ],
+               "color": "gray",
+               "italic": true
+            },
+            ""
+         ]
+      }
+   ]
+}

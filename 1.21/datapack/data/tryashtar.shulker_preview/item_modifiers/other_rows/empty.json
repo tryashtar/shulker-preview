@@ -1,0 +1,6 @@
+{
+   "function": "set_lore",
+   "entity": "this",
+   "mode": "append",
+   "lore": [""]
+}
