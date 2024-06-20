@@ -1,7 +1,7 @@
 execute store result score #version shulker_preview run data get entity @a[limit=1] DataVersion
-execute if score #version shulker_preview matches 1..1967 run tellraw @a [{"text":"\nOutdated Minecraft version!\nYou need to be on version ","color":"red"},{"text":"1.14.3","color":"yellow"},{"text":" or later for shulker previews to work!"}]
-execute if score #version shulker_preview matches 1..1967 run scoreboard players set #setup shulker_preview -1
-execute if score #version shulker_preview matches 1968.. if score #setup shulker_preview matches -1 run scoreboard players set #setup shulker_preview 0
+execute if score #version shulker_preview matches 1..2224 run tellraw @a [{"text":"\nOutdated Minecraft version!\nYou need to be on version ","color":"red"},{"text":"1.15","color":"yellow"},{"text":" or later for shulker previews to work!"}]
+execute if score #version shulker_preview matches 1..2224 run scoreboard players set #setup shulker_preview -1
+execute if score #version shulker_preview matches 2225.. if score #setup shulker_preview matches -1 run scoreboard players set #setup shulker_preview 0
 
 scoreboard players add #setup shulker_preview 0
 execute if score #setup shulker_preview matches 0 run tellraw @a {"translate":"%1$s","with":[{"text":"\nDon't forget to equip the resource pack!\n","color":"red"},""]}
