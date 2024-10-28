@@ -14,4 +14,4 @@ execute if data storage tryashtar.shulker_preview:data item.components."minecraf
 # banner bundle is last since checking the weight involves overwriting the weapon item
 execute if items entity @s contents *[damage~{damage:{min:1}},max_damage] run function tryashtar.shulker_preview:render/row_1/overlay/durability
 execute if items entity @s contents *[count~{min:2}] run function tryashtar.shulker_preview:render/row_1/overlay/count with storage tryashtar.shulker_preview:data item
-execute if items entity @s contents bundle[bundle_contents~{items:{size:{min:1}}}] run function tryashtar.shulker_preview:render/row_1/overlay/bundle_bar
+execute if items entity @s contents *[bundle_contents~{items:{size:{min:1}}}] run function tryashtar.shulker_preview:render/row_1/overlay/bundle_bar
