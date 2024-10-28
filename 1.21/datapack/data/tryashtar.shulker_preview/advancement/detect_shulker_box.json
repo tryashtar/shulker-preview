@@ -10,13 +10,7 @@
           {
             "items": "#tryashtar.shulker_preview:shulker_boxes",
             "predicates": {
-              "container": {
-                "items": {
-                  "size": {
-                    "min": 1
-                  }
-                }
-              }
+              "container": {}
             }
           }
         ]

@@ -2,6 +2,7 @@
 # we can copy the player's box to and from it quickly
 summon item ~ -10000 ~ {Invulnerable:1b,NoGravity:1b,Silent:1b,UUID:[I;1936225644,1801810464,1886545270,1768257343],Item:{id:"tnt",count:1}}
 function tryashtar.shulker_preview:shulker_box/from_inventory
+data modify storage tryashtar.shulker_preview:data contents set value []
 data modify storage tryashtar.shulker_preview:data contents set from entity 7368756c-6b65-7220-7072-65766965773f Item.components."minecraft:container"
 
 # process the item, creating the tooltip
