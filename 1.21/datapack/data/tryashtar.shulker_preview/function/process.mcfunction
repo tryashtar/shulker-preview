@@ -54,7 +54,6 @@ execute if score #more shulker_preview matches ..0 run item modify entity @s con
 
 # hide the original tooltip lines, and mark this box as processed
 item modify entity @s contents tryashtar.shulker_preview:finish
-execute if score #modded shulker_preview matches 2 store result entity @s Item.components."minecraft:custom_data"."shulker_preview.lore_length" int 1 run data get entity @s Item.components."minecraft:lore"[0]
 
 # don't process any more items this tick
 scoreboard players set #ready shulker_preview 0

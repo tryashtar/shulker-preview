@@ -8,7 +8,7 @@
          "fallback": "%1$s",
          "with": [
             {
-               "translate": "container.shulkerBox.itemCount",
+               "translate": "item.container.item_count",
                "with": [
                   {
                      "selector": "7368756c-6b65-7220-7072-657669657721"

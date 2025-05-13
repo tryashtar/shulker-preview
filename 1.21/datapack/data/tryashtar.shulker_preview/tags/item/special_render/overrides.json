@@ -4,6 +4,7 @@
       "beehive",
       "crossbow",
       "elytra",
-      "light"
+      "light",
+      "test_block"
    ]
 }

@@ -15,6 +15,7 @@
                "separator": "",
                "font": "tryashtar.shulker_preview:preview",
                "color": "white",
+               "shadow_color": 0,
                "italic": false
             }
          ]
