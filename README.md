@@ -2,7 +2,7 @@
 
 |Version|Download|
 |---|---|
-|Minecraft 1.21.5|• [Data Pack](1.21/Shulker%20Preview%20Data%20Pack%20(1.21.5).zip?raw=1)<br>• [Resource Pack](1.21/Shulker%20Preview%20Resource%20Pack%20(1.21.5).zip?raw=1)|
+|Minecraft 1.21.6|• [Data Pack](1.21/Shulker%20Preview%20Data%20Pack%20(1.21.6).zip?raw=1)<br>• [Resource Pack](1.21/Shulker%20Preview%20Resource%20Pack%20(1.21.6).zip?raw=1)|
 |Minecraft 1.20.5|• [Data Pack](1.20/Shulker%20Preview%20Data%20Pack%20(1.20.5).zip?raw=1)<br>• [Resource Pack](1.20/Shulker%20Preview%20Resource%20Pack%20(1.20.5).zip?raw=1)|
 |Minecraft 1.19|• [Data Pack](1.19/Shulker%20Preview%20Data%20Pack%20(1.19).zip?raw=1)<br>• [Resource Pack](1.19/Shulker%20Preview%20Resource%20Pack%20(1.19).zip?raw=1)|
 |Minecraft 1.18|• [Data Pack](1.18/Shulker%20Preview%20Data%20Pack%20(1.18).zip?raw=1)<br>• [Resource Pack](1.18/Shulker%20Preview%20Resource%20Pack%20(1.18).zip?raw=1)|
@@ -72,12 +72,11 @@
 ```diff
 Current 1.21 version
 + All 1.21 items
-+ All winter drop experimental items
 + Bee nests/hives show honey when full
++ Settings menu now uses custom dialog instead of chat
 
 Current 1.20 version
 + All 1.20 items
-+ All 1.21 experimental items
 + Use "fallback" feature instead of old translation-detection trick
 + Fixed artifacts in some mangrove block textures
 + Armor trims show on trimmed items

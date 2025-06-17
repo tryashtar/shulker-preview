@@ -1,8 +1,8 @@
 # check for sufficient Minecraft version
 execute store result score #version shulker_preview run data get entity @a[limit=1] DataVersion
-execute if score #version shulker_preview matches 1..4324 run tellraw @a [{text:"\nOutdated Minecraft version!\nYou need to be on version ",color:"red"},{text:"1.21.5",color:"yellow"},{text:" or later for shulker previews to work!\n"},{text:"Download for older versions here\n",color:"blue",underlined:true,click_event:{action:"open_url",url:"https://tryashtar.github.io/shulker-preview"}}]
-execute if score #version shulker_preview matches 1..4324 run scoreboard players set #install shulker_preview -1
-execute if score #version shulker_preview matches 4325.. if score #install shulker_preview matches -1 run scoreboard players set #install shulker_preview 0
+execute if score #version shulker_preview matches 1..4433 run tellraw @a [{text:"\nOutdated Minecraft version!\nYou need to be on version ",color:"red"},{text:"1.21.6",color:"yellow"},{text:" or later for shulker previews to work!\n"},{text:"Download for older versions here\n",color:"blue",underlined:true,click_event:{action:"open_url",url:"https://tryashtar.github.io/shulker-preview"}}]
+execute if score #version shulker_preview matches 1..4433 run scoreboard players set #install shulker_preview -1
+execute if score #version shulker_preview matches 4434.. if score #install shulker_preview matches -1 run scoreboard players set #install shulker_preview 0
 
 # check for resource pack equipped/success message
 scoreboard players add #install shulker_preview 0

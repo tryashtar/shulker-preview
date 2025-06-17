@@ -11,9 +11,9 @@ import shutil
 import colorsys
 
 def main():
-   target_version = '1.21.5'
+   target_version = '1.21.6-rc1'
    jar_target = '1.21.3'
-   export_version = '1.21.5'
+   export_version = '1.21.6'
    version_folder = os.path.expanduser('~/.minecraft/versions')
    item_list = download_json(f'https://raw.githubusercontent.com/misode/mcmeta/{target_version}-registries/item/data.json', f'../cache/items-{target_version}.json')
    banner_list = download_json(f'https://raw.githubusercontent.com/misode/mcmeta/{target_version}-registries/banner_pattern/data.json', f'../cache/banners-{target_version}.json')
