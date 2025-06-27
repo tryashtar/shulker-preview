@@ -1,0 +1,9 @@
+[project]
+name = "shulker-preview"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "beet[image]>=0.111.0",
+    "model-resolver>=1.8.2",
+    "numpy>=2.3.1",
+]
