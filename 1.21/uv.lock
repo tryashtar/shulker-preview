@@ -315,14 +315,12 @@ source = { virtual = "." }
 dependencies = [
     { name = "beet", extra = ["image"] },
     { name = "model-resolver" },
-    { name = "numpy" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "beet", extras = ["image"], specifier = ">=0.111.0" },
     { name = "model-resolver", specifier = ">=1.8.2" },
-    { name = "numpy", specifier = ">=2.3.1" },
 ]
 
 [[package]]

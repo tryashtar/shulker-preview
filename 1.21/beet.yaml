@@ -6,3 +6,5 @@ resource_pack:
   load: [in/resourcepack]
 pipeline: [plugin.main]
 output: out
+meta:
+  minecraft_version: 1.21.6
