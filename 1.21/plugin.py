@@ -7,18 +7,31 @@ import model_resolver
 import model_resolver.utils
 
 def main(ctx: beet.Context):
+   icon = beet.PngFile(PIL.Image.open('in/pack.png'))
+   ctx.assets.icon = icon
+   ctx.data.icon = icon
+   # to do: when https://github.com/mcbeet/beet/pull/472 is merged, use 'minecraft' field
    target_version = ctx.meta['minecraft_version']
    ctx.meta['model_resolver'] = {
       'minecraft_version': target_version,
       'preferred_minecraft_generated': 'java',
-      'special_rendering': True
+      'special_rendering': True,
+      'use_cache': True
    }
    render = model_resolver.Render(ctx)
    render.default_render_size = 64
    vanilla = render.getter._vanilla
    components = model_resolver.utils.get_default_components(ctx)
+   unusual_default_models = {}
+   for item, defaults in components.items():
+      if defaults['minecraft:item_model'] != item:
+         unusual_default_models[item] = defaults['minecraft:item_model']
    generated_sprites: list[str] = []
    font = FontManager()
+   next_slot = font.get_space(15)
+   overlay = font.get_space(-3)
+   fully_macroable = {}
+   not_fully_macroable = {}
    for name, entry in vanilla.assets.item_models.items():
       squashed_model = squash_conditions(entry.data['model'])
       model_type = canon(squashed_model['type'])
@@ -27,39 +40,82 @@ def main(ctx: beet.Context):
             model_name = squashed_model['model']
             model = vanilla.assets.models[model_name]
             tints = squashed_model.get('tints')
+            if tints is None:
+               fully_macroable[name] = []
+            else:
+               not_fully_macroable[name] = {}
             layers = generated_layers(vanilla.assets.models, model)
             if layers is not None:
                for layer in layers:
-                  font.add_sprite(canon(layer))
+                  layer_name = canon(layer)
+                  font.add_sprite(layer_name)
+                  if name in fully_macroable:
+                     fully_macroable[name].append(layer_name)
             else:
                gen_name = model_name + '.model'
                if gen_name not in generated_sprites:
                   render.add_model_task(
-                     model=model_name,
-                     path_ctx=gen_name,
-                     animation_mode='one_file'
+                     model = model_name,
+                     path_ctx = gen_name,
+                     animation_mode = 'one_file'
                   )
                   generated_sprites.append(gen_name)
+               if name in fully_macroable:
+                  fully_macroable[name].append(gen_name)
          case 'minecraft:special':
             gen_name = name + '.item'
             if gen_name not in generated_sprites:
                render.add_item_task(
-                  item=model_resolver.Item(id=name, components={'minecraft:item_model':name}),
-                  path_ctx=gen_name,
-                  animation_mode='one_file'
+                  item = model_resolver.Item(id=name, components={'minecraft:item_model':name}),
+                  path_ctx = gen_name,
+                  animation_mode = 'one_file'
                )
                generated_sprites.append(gen_name)
+            fully_macroable[name] = [gen_name]
          case _:
-            print(name, squashed_model)
+            not_fully_macroable[name] = {}
    render.run()
    generated_entries = [(ctx.assets.textures[x].image, x) for x in generated_sprites]
    grid_img, grid_refs = make_grid(generated_entries, render.default_render_size)
    for path in generated_sprites:
       del ctx.assets.textures[path]
-   block_sheet_path = 'tryashtar.shulker_preview:block_sheet'
-   ctx.assets.textures[block_sheet_path] = beet.Texture(grid_img)
-   font.add_grid(block_sheet_path, grid_refs)
-   ctx.assets.fonts['tryashtar.shulker_preview:preview'] = font.build()
+   datapack = ctx.data['tryashtar.shulker_preview']
+   resourcepack = ctx.assets['tryashtar.shulker_preview']
+   resourcepack.textures['block_sheet'] = beet.Texture(grid_img)
+   font.add_grid('block_sheet', grid_refs)
+   resourcepack.fonts['preview'] = font.build()
+   lang = resourcepack.languages['en_us']
+   for item, sprites in fully_macroable.items():
+      data = [font.get_sprite(x) for x in sprites]
+      lang.data[f'tryashtar.shulker_preview.item.{item}.0'] = overlay.join([x['rows'][0] + x['negative'] for x in data]) + next_slot
+      lang.data[f'tryashtar.shulker_preview.item.{item}.1'] = overlay.join([x['rows'][1] + x['negative'] for x in data]) + next_slot
+      lang.data[f'tryashtar.shulker_preview.item.{item}.2'] = overlay.join([x['rows'][2] + x['negative'] for x in data]) + next_slot
+   special_render = []
+   for entry in not_fully_macroable:
+      special_render.append({'id':entry})
+   data_special_render = ','.join(map(lambda x: f'{{id:"{x['id']}"}}', special_render))
+   datapack.functions['meta/initialize_data'] = beet.Function([
+      '# lookup table for various macros',
+      f'data modify storage tryashtar.shulker_preview:data lookups set value {{special_models:[{data_special_render}]}}'
+   ])
+   for row in range(3):
+      item = [
+         "# an item's rendering depends on its item_model component, so get that first",
+         "# there's no known way to get the value of default components, so we have to guess by the ID",
+         "# in vanilla, every single item has a default item_model that matches its ID",
+         "# if there were any exceptions, we could list them here",
+         "# when the item stack has a custom item_model component, use it instead",
+         'data modify storage tryashtar.shulker_preview:data item.model set from storage tryashtar.shulker_preview:data item.id',
+      ]
+      for item, model in unusual_default_models.items():
+         item.append(f'execute if data storage tryashtar.shulker_preview:data item{{id:"{item}"}} run data modify storage tryashtar.shulker_preview:data item.model set value "{model}"')
+      item.extend([
+         'data modify storage tryashtar.shulker_preview:data item.model set from storage tryashtar.shulker_preview:data item.components."minecraft:item_model"',
+         '',
+         "# almost all models can be drawn with a single simple translation macro"
+      ])
+      datapack.functions[f'render/row_{row}/item'] = beet.Function(item)
+   print(not_fully_macroable)
 
 def squash_conditions(model: dict) -> dict:
    model_type = canon(model['type'])
@@ -130,6 +186,7 @@ def make_grid(entries: list[tuple[PIL.Image.Image, str]], icon_size: int) -> tup
       x = pos_x * icon_size
       y = pos_y * icon_size
       image.paste(sprite, (x, y, x + icon_size, y + icon_size))
+      # to do: with negatives, is this still necessary?
       for corner in (0, icon_size - 1):
          r,g,b,a = sprite.getpixel((corner, corner))
          if a == 0:
@@ -210,7 +267,7 @@ class FontManager:
          spaces = {}
          for width, char in self.spaces.items():
             spaces[char] = width
-         providers.append({'type':'space','spaces':spaces})
+         providers.append({'type':'space','advances':spaces})
       for path, data in self.sprites.items():
          for row, entry in enumerate(data['rows']):
             providers.append({'type':'bitmap','file':path,'ascent':-2 + (row * -18),'height':16,'chars':[entry]})
