@@ -1,0 +1,8 @@
+name: Shulker Preview
+author: tryashtar
+data_pack:
+  load: [in/datapack]
+resource_pack:
+  load: [in/resourcepack]
+pipeline: [plugin.main]
+output: out
