@@ -1,49 +1,123 @@
 import math
+import re
+import unicodedata
 import PIL.Image
 import beet
 import model_resolver
-import re
-import unicodedata
+import model_resolver.utils
 
 def main(ctx: beet.Context):
    target_version = ctx.meta['minecraft_version']
-   ctx.meta['model_resolver'] = model_resolver.ModelResolverOptions(minecraft_version=target_version, preferred_minecraft_generated='java')
+   ctx.meta['model_resolver'] = {
+      'minecraft_version': target_version,
+      'preferred_minecraft_generated': 'java',
+      'special_rendering': True
+   }
    render = model_resolver.Render(ctx)
    render.default_render_size = 64
    vanilla = render.getter._vanilla
+   components = model_resolver.utils.get_default_components(ctx)
    generated_sprites: list[str] = []
    font = FontManager()
    for name, entry in vanilla.assets.item_models.items():
-      model_type = entry.data['model']['type']
-      if canon(model_type) == 'minecraft:model':
-         model_name = entry.data['model']['model']
-         model = vanilla.assets.models[model_name]
-         tints = entry.data['model'].get('tints')
-         layers = generated_layers(vanilla.assets.models, model)
-         if layers is not None:
-            for layer in layers:
-               font.add_sprite(canon(layer))
-         else:
-            print('Nogen', name, model.data, entry.data)
-            render.add_model_task(
-               model=model_name,
-               path_ctx=name,
-               animation_mode='one_file'
-            )
-            generated_sprites.append(name)
-      else:
-         print('Nomodel', name, entry.data)
+      squashed_model = squash_conditions(entry.data['model'])
+      model_type = canon(squashed_model['type'])
+      match model_type:
+         case 'minecraft:model':
+            model_name = squashed_model['model']
+            model = vanilla.assets.models[model_name]
+            tints = squashed_model.get('tints')
+            layers = generated_layers(vanilla.assets.models, model)
+            if layers is not None:
+               for layer in layers:
+                  font.add_sprite(canon(layer))
+            else:
+               gen_name = model_name + '.model'
+               if gen_name not in generated_sprites:
+                  render.add_model_task(
+                     model=model_name,
+                     path_ctx=gen_name,
+                     animation_mode='one_file'
+                  )
+                  generated_sprites.append(gen_name)
+         case 'minecraft:special':
+            gen_name = name + '.item'
+            if gen_name not in generated_sprites:
+               render.add_item_task(
+                  item=model_resolver.Item(id=name, components={'minecraft:item_model':name}),
+                  path_ctx=gen_name,
+                  animation_mode='one_file'
+               )
+               generated_sprites.append(gen_name)
+         case _:
+            print(name, squashed_model)
    render.run()
    generated_entries = [(ctx.assets.textures[x].image, x) for x in generated_sprites]
    grid_img, grid_refs = make_grid(generated_entries, render.default_render_size)
-   print(grid_refs)
    for path in generated_sprites:
       del ctx.assets.textures[path]
    block_sheet_path = 'tryashtar.shulker_preview:block_sheet'
    ctx.assets.textures[block_sheet_path] = beet.Texture(grid_img)
    font.add_grid(block_sheet_path, grid_refs)
-   print(font.sprite_map)
    ctx.assets.fonts['tryashtar.shulker_preview:preview'] = font.build()
+
+def squash_conditions(model: dict) -> dict:
+   model_type = canon(model['type'])
+   match model_type:
+      case 'minecraft:condition':
+         prop = canon(model['property'])
+         model['on_true'] = squash_conditions(model['on_true'])
+         model['on_false'] = squash_conditions(model['on_false'])
+         if model['on_true'] == model['on_false']:
+            return model['on_true']
+         match prop:
+            case 'minecraft:bundle/has_selected_item' | 'minecraft:carried' | 'minecraft:extended_view' | 'minecraft:fishing_rod/cast' | 'minecraft:keybind_down' | 'minecraft:selected' | 'minecraft:using_item' | 'minecraft:view_entity':
+               return model['on_false']
+            case _:
+               return model
+      case 'minecraft:select':
+         prop = canon(model['property'])
+         if 'fallback' in model:
+            model['fallback'] = squash_conditions(model['fallback'])
+         for case in model['cases']:
+            case['model'] = squash_conditions(case['model'])
+         match prop:
+            case 'minecraft:context_entity_type' | 'minecraft:local_time':
+               return model['fallback']
+            case 'minecraft:context_dimension':
+               for case in model['cases']:
+                  if case['when'] == 'minecraft:overworld' or 'minecraft:overworld' in case['when']:
+                     return case['model']
+               return model['fallback']
+            case 'minecraft:display_context':
+               for case in model['cases']:
+                  if case['when'] == 'gui' or 'gui' in case['when']:
+                     return case['model']
+                  return model['fallback']
+            case 'minecraft:main_hand':
+               for case in model['cases']:
+                  if case['when'] == 'right' or 'right' in case['when']:
+                     return case['model']
+                  return model['fallback']
+            case _:
+               return model
+      case 'minecraft:range_dispatch':
+         prop = canon(model['property'])
+         if 'fallback' in model:
+            model['fallback'] = squash_conditions(model['fallback'])
+         for case in model['entries']:
+            case['model'] = squash_conditions(case['model'])
+         match prop:
+            case 'minecraft:compass' | 'minecraft:cooldown' | 'minecraft:crossbow/pull' | 'minecraft:time' | 'minecraft:use_cycle' | 'minecraft:use_duration':
+               for case in model['entries']:
+                  if case['threshold'] == 0:
+                     return case['model']
+               return model['fallback']
+            case _:
+               return model
+      case _:
+         return model
+   return model
 
 def make_grid(entries: list[tuple[PIL.Image.Image, str]], icon_size: int) -> tuple[PIL.Image.Image, list[list[str | None]]]:
    width, height = grid_dimensions(len(entries))
