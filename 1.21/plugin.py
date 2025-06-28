@@ -12,6 +12,10 @@ def main(ctx: beet.Context):
    ctx.data.icon = icon
    # to do: when https://github.com/mcbeet/beet/pull/472 is merged, use 'minecraft' field
    target_version = ctx.meta['minecraft_version']
+   
+   # flat items can have their actual textures added to the font
+   # but 3D models like blocks need to be rendered and stored separately in the pack
+   # ideally in a big grid like a normal font provider texture
    ctx.meta['model_resolver'] = {
       'minecraft_version': target_version,
       'preferred_minecraft_generated': 'java',
@@ -21,39 +25,38 @@ def main(ctx: beet.Context):
    render = model_resolver.Render(ctx)
    render.default_render_size = 64
    vanilla = render.getter._vanilla
-   components = model_resolver.utils.get_default_components(ctx)
-   unusual_default_models = {}
-   for model, defaults in components.items():
-      if defaults['minecraft:item_model'] != model:
-         unusual_default_models[model] = defaults['minecraft:item_model']
+   
+   # the renderer doesn't provide a simple model -> image API
+   # instead, we feed it many models with output paths, then it saves them all to the pack at once
+   # but we don't want them in the pack, we want them in a big grid
+   # so we keep track of the output paths so we can load the generated images, then delete them from the pack
    generated_sprites: list[str] = []
+   
    font = FontManager()
    next_slot = font.get_space(15)
    overlay = font.get_space(-3)
-   translatable_models = {}
-   not_fully_macroable = {}
+   
+   # the goal is to convert every vanilla item model definition to text components
+   # anything we can draw "all at once" gets a lang file entry consisting of its characters
+   # most models can be entirely drawn all at once just by looking up their lang file entry with a macro
+   # but a few need special command logic written by hand
+   translatable_models: dict[str, list[str]] = {}
+   translatable_overlays: list[str] = []
+   not_fully_macroable: dict[str, dict] = {}
    for name, entry in vanilla.assets.item_models.items():
       squashed_model = squash_conditions(entry.data['model'])
       model_type = short(squashed_model['type'])
       match model_type:
          case 'model':
-            model_name = squashed_model['model']
+            # most item models are this, just a simple model
+            # it could be a 3D model we need to render, or a flat item sprite made of 1 or more layers
+            model_name = canon(squashed_model['model'])
             model = vanilla.assets.models[model_name]
-            tints = squashed_model.get('tints')
-            if tints is not None:
-               not_fully_macroable[name] = {'tints':tints, 'layers':[]}
             layers = generated_layers(vanilla.assets.models, model)
-            if layers is not None:
-               translatable_models[name] = []
-               for layer in layers:
-                  layer_name = canon(layer)
-                  # technically we should be looking the layers up in the atlas to get the real texture path
-                  font.add_sprite(layer_name)
-                  translatable_models[name].append(layer_name)
-                  if name in not_fully_macroable:
-                     not_fully_macroable[name]['layers'].append(layer_name)
-            else:
+            if layers is None:
+               # this is a 3D model, render it and use that texture as the single layer
                gen_name = model_name + '.model'
+               layers = [gen_name]
                if gen_name not in generated_sprites:
                   render.add_model_task(
                      model = model_name,
@@ -61,10 +64,23 @@ def main(ctx: beet.Context):
                      animation_mode = 'one_file'
                   )
                   generated_sprites.append(gen_name)
-               translatable_models[name] = [gen_name]
-               if name in not_fully_macroable:
-                  not_fully_macroable[name]['sprite'] = gen_name
+            for layer in layers:
+               # this is technically wrong for flat item sprites
+               # we should be looking the layers up in the atlas to get the real texture path
+               font.add_sprite(layer)
+            # if it's tinted, we need separate lang entries for each layer so we can draw them with different colors
+            # otherwise, we can just merge all the layers into one simple entry
+            tints = squashed_model.get('tints')
+            if tints is not None:
+               translatable_models[name] = [layers[0]]
+               for overlay in layers[1:]:
+                  if overlay not in translatable_overlays:
+                     translatable_overlays.append(overlay)
+               not_fully_macroable[name] = {'tints':tints, 'layers':layers}
+            else:
+               translatable_models[name] = layers
          case 'special':
+            # some special models are simple and can just be one rendered texture
             gen_name = name + '.item'
             if gen_name not in generated_sprites:
                render.add_item_task(
@@ -92,7 +108,13 @@ def main(ctx: beet.Context):
       lang.data[f'tryashtar.shulker_preview.item.{model}.0'] = overlay.join([x['rows'][0] + x['negative'] for x in data]) + next_slot
       lang.data[f'tryashtar.shulker_preview.item.{model}.1'] = overlay.join([x['rows'][1] + x['negative'] for x in data]) + next_slot
       lang.data[f'tryashtar.shulker_preview.item.{model}.2'] = overlay.join([x['rows'][2] + x['negative'] for x in data]) + next_slot
+   for sprite in translatable_overlays:
+      data = font.get_sprite(sprite)
+      lang.data[f'tryashtar.shulker_preview.overlay.{sprite}.0'] = overlay + data['rows'][0] + data['negative'] + next_slot
+      lang.data[f'tryashtar.shulker_preview.overlay.{sprite}.1'] = overlay + data['rows'][1] + data['negative'] + next_slot
+      lang.data[f'tryashtar.shulker_preview.overlay.{sprite}.2'] = overlay + data['rows'][2] + data['negative'] + next_slot
    simple_tinted = {}
+   potionlike = {}
    for model, special in list(not_fully_macroable.items()):
       if 'tints' in special and len(special['tints']) == 1:
          tint = special['tints'][0]
@@ -100,9 +122,22 @@ def main(ctx: beet.Context):
             if tint['downfall'] == 1.0 and tint['temperature'] == 0.5:
                tint['type'] = 'minecraft:constant'
                tint['value'] = 0xff7bbd6b
-         if short(tint['type']) == 'constant':
-            simple_tinted[model] = tint['value']
-            del not_fully_macroable[model]
+         match short(tint['type']):
+            case 'constant':
+               simple_tinted[model] = tint['value']
+               del not_fully_macroable[model]
+            case 'potion':
+               potionlike[model] = (tint['default'], special['layers'])
+               del not_fully_macroable[model]
+            case _:
+               pass
+   print(potionlike)
+   print(translatable_overlays)
+   components = model_resolver.utils.get_default_components(ctx)
+   unusual_default_models = {}
+   for model, defaults in components.items():
+      if defaults['minecraft:item_model'] != model:
+         unusual_default_models[model] = defaults['minecraft:item_model']
    for row in range(3):
       item = [
          'data modify entity @s Item set from storage tryashtar.shulker_preview:data item',
@@ -114,10 +149,16 @@ def main(ctx: beet.Context):
       sprite_simple_tinted = []
       for model, tint in simple_tinted.items():
          sprite_simple_tinted.append(f'execute if items entity @s contents *[item_model="{short(model)}"] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+      potionlike_check = '|'.join([f'item_model="{short(x)}"' for x in potionlike.keys()])
+      sprite.append(f'execute if items entity @s contents *[{potionlike_check}] run return run function tryashtar.shulker_preview:render/row_{row}/sprite/potion')
+      sprite_potionlike = []
+      for model, (default, layers) in potionlike.items():
+         sprite_potionlike.append(f'execute if items entity @s contents *[item_model="{short(model)}"] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
       datapack.functions[f'render/row_{row}/item'] = beet.Function(item)
       datapack.functions[f'render/row_{row}/sprite'] = beet.Function(sprite)
       datapack.functions[f'render/row_{row}/sprite/simple_tinted'] = beet.Function(sprite_simple_tinted)
-   if len(not_fully_macroable) > 0:
+      datapack.functions[f'render/row_{row}/sprite/potion'] = beet.Function(sprite_potionlike)
+   if len(not_fully_macroable) > 0 and False:
       print('UNHANDLED MODELS:')
       for model, data in not_fully_macroable.items():
          print(model)
@@ -130,6 +171,10 @@ def color_hex(color: int):
    color %= 2**24
    return f'#{format(color, '06x')}'
 
+# item models can have logic to switch to different models if certain conditions are met
+# we have to check these conditions with commands
+# some of them are impossible to detect, or can never be met while inside a container
+# so we eliminate them, simplifying the model until it only has conditions we can check, or none at all
 def squash_conditions(model: dict) -> dict:
    model_type = short(model['type'])
    match model_type:
@@ -137,9 +182,15 @@ def squash_conditions(model: dict) -> dict:
          prop = short(model['property'])
          model['on_true'] = squash_conditions(model['on_true'])
          model['on_false'] = squash_conditions(model['on_false'])
+         # the compass model ends up simplifying to a check for the lodestone component
+         # we could check that with commands
+         # but the simplified two models it picks between are the same, so no point in checking
          if model['on_true'] == model['on_false']:
             return model['on_true']
          match prop:
+            # most of these can never be true for an item in a static container
+            # keybind_down could be true, but we can't check it or update the lore dynamically
+            # (and vanilla doesn't use it anyway)
             case 'bundle/has_selected_item' | 'carried' | 'extended_view' | 'fishing_rod/cast' | 'keybind_down' | 'selected' | 'using_item' | 'view_entity':
                return model['on_false']
             case _:
@@ -151,18 +202,26 @@ def squash_conditions(model: dict) -> dict:
          for case in model['cases']:
             case['model'] = squash_conditions(case['model'])
          match prop:
+            # there is no context entity in a static container
+            # we have no way of checking the local time or updating the lore dynamically
             case 'context_entity_type' | 'local_time':
                return model['fallback']
+            # assume we are in the overworld
+            # we could check it, but have no way of updating the lore dynamically
+            # (vanilla doesn't use it anyway)
             case 'context_dimension':
                for case in model['cases']:
                   if case['when'] == 'overworld' or 'overworld' in case['when']:
                      return case['model']
                return model['fallback']
+            # items in a static container are always in the gui context
             case 'display_context':
                for case in model['cases']:
                   if case['when'] == 'gui' or 'gui' in case['when']:
                      return case['model']
                   return model['fallback']
+            # assume the player is right-handed
+            # we have no way of checking or updating the lore dynamically
             case 'main_hand':
                for case in model['cases']:
                   if case['when'] == 'right' or 'right' in case['when']:
@@ -177,6 +236,9 @@ def squash_conditions(model: dict) -> dict:
          for case in model['entries']:
             case['model'] = squash_conditions(case['model'])
          match prop:
+            # most of these can never be anything other than 0 for an item in a static container
+            # we could conceivably check compass direction and time of day
+            # but we have no way of updating the lore dynamically
             case 'compass' | 'cooldown' | 'crossbow/pull' | 'time' | 'use_cycle' | 'use_duration':
                for case in model['entries']:
                   if case['threshold'] == 0:
@@ -214,6 +276,12 @@ def grid_dimensions(area: int) -> tuple[int, int]:
       height -= 1
    return (width, height)
 
+# each item texture added to the font gets 4 characters: one for each container row, and a negative version
+# this includes every entry in the grid
+# when generating translations for full item models, we may sometimes need to overlay multiple textures
+# therefore, it's helpful to be able to lookup the 4 characters from the item texture name
+# this class keeps them in sprite_map while also generating the final providers
+# note that the block grid for example has named texture entries, but the provider makes no mention of them, just the final grid
 class FontManager:
    def __init__(self):
       self.last_char = 0
@@ -223,9 +291,10 @@ class FontManager:
       self.sprite_map: dict[str, dict] = {}
    
    def add_sprite(self, texture: str):
-      data = {'rows': [self.next_char(), self.next_char(), self.next_char()], 'negative': self.next_char()}
-      self.sprites[texture] = data
-      self.sprite_map[texture] = data
+      if texture not in self.sprite_map:
+         data = {'rows': [self.next_char(), self.next_char(), self.next_char()], 'negative': self.next_char()}
+         self.sprites[texture] = data
+         self.sprite_map[texture] = data
    
    def add_grid(self, grid: str, textures: list[list[str | None]]):
       rows: list[list[str]] = [[], [], []]
@@ -298,8 +367,11 @@ def canon(location: str) -> str:
 def short(location: str) -> str:
    return location.removeprefix('minecraft:')
 
+# find all the layers of a flat item sprite model
+# all models of this kind ultimately parent to the builtin/generated model
+# so if we don't find that, this is a 3D model that needs to be rendered instead
 def generated_layers(source: beet.NamespaceProxy[beet.Model], model: beet.Model) -> list[str] | None:
-   result = []
+   result: list[str | None] = []
    while 'parent' in model.data:
       if 'textures' in model.data:
          for name, path in model.data['textures'].items():
@@ -308,9 +380,15 @@ def generated_layers(source: beet.NamespaceProxy[beet.Model], model: beet.Model)
                index = int(match.group(1))
                if index >= len(result):
                   result.extend([None] * (index - len(result) + 1))
-               result[index] = path
+               # child texture references override parent ones
+               # so since we're traversing up the hierarchy, ignore layers that were already defined
+               # looking for textures in the parent is probably overkill since in vanilla the layers are always on the bottom model
+               # also this doesn't handle '#refs' to point to other defined textures
+               # but why would a flat item sprite ever do that?
+               if result[index] is None:
+                  result[index] = canon(path)
       parent = canon(model.data['parent'])
       if parent == 'minecraft:builtin/generated':
-         return result
+         return [x for x in result if x is not None]
       model = source[parent]
    return None
