@@ -4,5 +4,6 @@ version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
     "beet[image]>=0.111.0",
+    "mecha>=0.98.1",
     "model-resolver>=1.8.2",
 ]

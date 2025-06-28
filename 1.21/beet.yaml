@@ -12,7 +12,9 @@ resource_pack:
   description:
     text: 'Shulker Box tooltip preview: resource pack'
     color: '#8fdff7'
-pipeline: [plugin.main]
+pipeline: [plugin.main, mecha]
 output: out
 meta:
   minecraft_version: '1.21.6'
+  mecha:
+    readonly: true

@@ -23,34 +23,35 @@ def main(ctx: beet.Context):
    vanilla = render.getter._vanilla
    components = model_resolver.utils.get_default_components(ctx)
    unusual_default_models = {}
-   for item, defaults in components.items():
-      if defaults['minecraft:item_model'] != item:
-         unusual_default_models[item] = defaults['minecraft:item_model']
+   for model, defaults in components.items():
+      if defaults['minecraft:item_model'] != model:
+         unusual_default_models[model] = defaults['minecraft:item_model']
    generated_sprites: list[str] = []
    font = FontManager()
    next_slot = font.get_space(15)
    overlay = font.get_space(-3)
-   fully_macroable = {}
+   translatable_models = {}
    not_fully_macroable = {}
    for name, entry in vanilla.assets.item_models.items():
       squashed_model = squash_conditions(entry.data['model'])
-      model_type = canon(squashed_model['type'])
+      model_type = short(squashed_model['type'])
       match model_type:
-         case 'minecraft:model':
+         case 'model':
             model_name = squashed_model['model']
             model = vanilla.assets.models[model_name]
             tints = squashed_model.get('tints')
-            if tints is None:
-               fully_macroable[name] = []
-            else:
-               not_fully_macroable[name] = {}
+            if tints is not None:
+               not_fully_macroable[name] = {'tints':tints, 'layers':[]}
             layers = generated_layers(vanilla.assets.models, model)
             if layers is not None:
+               translatable_models[name] = []
                for layer in layers:
                   layer_name = canon(layer)
+                  # technically we should be looking the layers up in the atlas to get the real texture path
                   font.add_sprite(layer_name)
-                  if name in fully_macroable:
-                     fully_macroable[name].append(layer_name)
+                  translatable_models[name].append(layer_name)
+                  if name in not_fully_macroable:
+                     not_fully_macroable[name]['layers'].append(layer_name)
             else:
                gen_name = model_name + '.model'
                if gen_name not in generated_sprites:
@@ -60,9 +61,10 @@ def main(ctx: beet.Context):
                      animation_mode = 'one_file'
                   )
                   generated_sprites.append(gen_name)
-               if name in fully_macroable:
-                  fully_macroable[name].append(gen_name)
-         case 'minecraft:special':
+               translatable_models[name] = [gen_name]
+               if name in not_fully_macroable:
+                  not_fully_macroable[name]['sprite'] = gen_name
+         case 'special':
             gen_name = name + '.item'
             if gen_name not in generated_sprites:
                render.add_item_task(
@@ -71,9 +73,9 @@ def main(ctx: beet.Context):
                   animation_mode = 'one_file'
                )
                generated_sprites.append(gen_name)
-            fully_macroable[name] = [gen_name]
+            translatable_models[name] = [gen_name]
          case _:
-            not_fully_macroable[name] = {}
+            not_fully_macroable[name] = {'model':squashed_model}
    render.run()
    generated_entries = [(ctx.assets.textures[x].image, x) for x in generated_sprites]
    grid_img, grid_refs = make_grid(generated_entries, render.default_render_size)
@@ -85,86 +87,97 @@ def main(ctx: beet.Context):
    font.add_grid('block_sheet', grid_refs)
    resourcepack.fonts['preview'] = font.build()
    lang = resourcepack.languages['en_us']
-   for item, sprites in fully_macroable.items():
+   for model, sprites in translatable_models.items():
       data = [font.get_sprite(x) for x in sprites]
-      lang.data[f'tryashtar.shulker_preview.item.{item}.0'] = overlay.join([x['rows'][0] + x['negative'] for x in data]) + next_slot
-      lang.data[f'tryashtar.shulker_preview.item.{item}.1'] = overlay.join([x['rows'][1] + x['negative'] for x in data]) + next_slot
-      lang.data[f'tryashtar.shulker_preview.item.{item}.2'] = overlay.join([x['rows'][2] + x['negative'] for x in data]) + next_slot
-   special_render = []
-   for entry in not_fully_macroable:
-      special_render.append({'id':entry})
-   data_special_render = ','.join(map(lambda x: f'{{id:"{x['id']}"}}', special_render))
-   datapack.functions['meta/initialize_data'] = beet.Function([
-      '# lookup table for various macros',
-      f'data modify storage tryashtar.shulker_preview:data lookups set value {{special_models:[{data_special_render}]}}'
-   ])
+      lang.data[f'tryashtar.shulker_preview.item.{model}.0'] = overlay.join([x['rows'][0] + x['negative'] for x in data]) + next_slot
+      lang.data[f'tryashtar.shulker_preview.item.{model}.1'] = overlay.join([x['rows'][1] + x['negative'] for x in data]) + next_slot
+      lang.data[f'tryashtar.shulker_preview.item.{model}.2'] = overlay.join([x['rows'][2] + x['negative'] for x in data]) + next_slot
+   simple_tinted = {}
+   for model, special in list(not_fully_macroable.items()):
+      if 'tints' in special and len(special['tints']) == 1:
+         tint = special['tints'][0]
+         if short(tint['type']) == 'grass':
+            if tint['downfall'] == 1.0 and tint['temperature'] == 0.5:
+               tint['type'] = 'minecraft:constant'
+               tint['value'] = 0xff7bbd6b
+         if short(tint['type']) == 'constant':
+            simple_tinted[model] = tint['value']
+            del not_fully_macroable[model]
    for row in range(3):
       item = [
-         "# an item's rendering depends on its item_model component, so get that first",
-         "# there's no known way to get the value of default components, so we have to guess by the ID",
-         "# in vanilla, every single item has a default item_model that matches its ID",
-         "# if there were any exceptions, we could list them here",
-         "# when the item stack has a custom item_model component, use it instead",
-         'data modify storage tryashtar.shulker_preview:data item.model set from storage tryashtar.shulker_preview:data item.id',
+         'data modify entity @s Item set from storage tryashtar.shulker_preview:data item',
+         f'function tryashtar.shulker_preview:render/row_{row}/sprite',
       ]
-      for item, model in unusual_default_models.items():
-         item.append(f'execute if data storage tryashtar.shulker_preview:data item{{id:"{item}"}} run data modify storage tryashtar.shulker_preview:data item.model set value "{model}"')
-      item.extend([
-         'data modify storage tryashtar.shulker_preview:data item.model set from storage tryashtar.shulker_preview:data item.components."minecraft:item_model"',
-         '',
-         "# almost all models can be drawn with a single simple translation macro"
-      ])
+      sprite = []
+      simple_tinted_check = '|'.join([f'item_model="{short(x)}"' for x in simple_tinted.keys()])
+      sprite.append(f'execute if items entity @s contents *[{simple_tinted_check}] run return run function tryashtar.shulker_preview:render/row_{row}/sprite/simple_tinted')
+      sprite_simple_tinted = []
+      for model, tint in simple_tinted.items():
+         sprite_simple_tinted.append(f'execute if items entity @s contents *[item_model="{short(model)}"] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
       datapack.functions[f'render/row_{row}/item'] = beet.Function(item)
-   print(not_fully_macroable)
+      datapack.functions[f'render/row_{row}/sprite'] = beet.Function(sprite)
+      datapack.functions[f'render/row_{row}/sprite/simple_tinted'] = beet.Function(sprite_simple_tinted)
+   if len(not_fully_macroable) > 0:
+      print('UNHANDLED MODELS:')
+      for model, data in not_fully_macroable.items():
+         print(model)
+         print(data)
+         print()
+
+def color_hex(color: int):
+   if color < 0:
+      color += 2**32
+   color %= 2**24
+   return f'#{format(color, '06x')}'
 
 def squash_conditions(model: dict) -> dict:
-   model_type = canon(model['type'])
+   model_type = short(model['type'])
    match model_type:
-      case 'minecraft:condition':
-         prop = canon(model['property'])
+      case 'condition':
+         prop = short(model['property'])
          model['on_true'] = squash_conditions(model['on_true'])
          model['on_false'] = squash_conditions(model['on_false'])
          if model['on_true'] == model['on_false']:
             return model['on_true']
          match prop:
-            case 'minecraft:bundle/has_selected_item' | 'minecraft:carried' | 'minecraft:extended_view' | 'minecraft:fishing_rod/cast' | 'minecraft:keybind_down' | 'minecraft:selected' | 'minecraft:using_item' | 'minecraft:view_entity':
+            case 'bundle/has_selected_item' | 'carried' | 'extended_view' | 'fishing_rod/cast' | 'keybind_down' | 'selected' | 'using_item' | 'view_entity':
                return model['on_false']
             case _:
                return model
-      case 'minecraft:select':
-         prop = canon(model['property'])
+      case 'select':
+         prop = short(model['property'])
          if 'fallback' in model:
             model['fallback'] = squash_conditions(model['fallback'])
          for case in model['cases']:
             case['model'] = squash_conditions(case['model'])
          match prop:
-            case 'minecraft:context_entity_type' | 'minecraft:local_time':
+            case 'context_entity_type' | 'local_time':
                return model['fallback']
-            case 'minecraft:context_dimension':
+            case 'context_dimension':
                for case in model['cases']:
-                  if case['when'] == 'minecraft:overworld' or 'minecraft:overworld' in case['when']:
+                  if case['when'] == 'overworld' or 'overworld' in case['when']:
                      return case['model']
                return model['fallback']
-            case 'minecraft:display_context':
+            case 'display_context':
                for case in model['cases']:
                   if case['when'] == 'gui' or 'gui' in case['when']:
                      return case['model']
                   return model['fallback']
-            case 'minecraft:main_hand':
+            case 'main_hand':
                for case in model['cases']:
                   if case['when'] == 'right' or 'right' in case['when']:
                      return case['model']
                   return model['fallback']
             case _:
                return model
-      case 'minecraft:range_dispatch':
-         prop = canon(model['property'])
+      case 'range_dispatch':
+         prop = short(model['property'])
          if 'fallback' in model:
             model['fallback'] = squash_conditions(model['fallback'])
          for case in model['entries']:
             case['model'] = squash_conditions(case['model'])
          match prop:
-            case 'minecraft:compass' | 'minecraft:cooldown' | 'minecraft:crossbow/pull' | 'minecraft:time' | 'minecraft:use_cycle' | 'minecraft:use_duration':
+            case 'compass' | 'cooldown' | 'crossbow/pull' | 'time' | 'use_cycle' | 'use_duration':
                for case in model['entries']:
                   if case['threshold'] == 0:
                      return case['model']
@@ -281,6 +294,9 @@ class FontManager:
 
 def canon(location: str) -> str:
    return f'minecraft:{location}' if ':' not in location else location
+
+def short(location: str) -> str:
+   return location.removeprefix('minecraft:')
 
 def generated_layers(source: beet.NamespaceProxy[beet.Model], model: beet.Model) -> list[str] | None:
    result = []
