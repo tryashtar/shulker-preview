@@ -147,17 +147,13 @@ wheels = [
 [[package]]
 name = "model-resolver"
 version = "1.8.2"
-source = { registry = "https://pypi.org/simple" }
+source = { git = "https://github.com/tryashtar/model_resolver#1a673cb97c8b0b8b132f5bc630a9482e4adaacc2" }
 dependencies = [
     { name = "beet" },
     { name = "pillow" },
     { name = "pyopengl" },
     { name = "rich" },
     { name = "tqdm" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/90/22/3321a9e5a5d4ccd1ba5d3bd350ea9de0a1c12131cd7e25aa3d6eb3669144/model_resolver-1.8.2.tar.gz", hash = "sha256:e1875891e635edacbe99f279e8e1eb6948dee49fc94b90456808b05898a870c7", size = 35542, upload-time = "2025-06-09T07:27:39.222Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/79/18/7a41e76fb434f68325f9bb856e988ac96c88a2d08f8add52763886f21421/model_resolver-1.8.2-py3-none-any.whl", hash = "sha256:c5286f28b2186dde26d902669bd93aa3beafeb66104a69b434560decab9d7f73", size = 46758, upload-time = "2025-06-09T07:27:38.096Z" },
 ]
 
 [[package]]
@@ -285,11 +281,7 @@ wheels = [
 [[package]]
 name = "pyopengl"
 version = "3.1.9"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c0/42/71080db298df3ddb7e3090bfea8fd7c300894d8b10954c22f8719bd434eb/pyopengl-3.1.9.tar.gz", hash = "sha256:28ebd82c5f4491a418aeca9672dffb3adbe7d33b39eada4548a5b4e8c03f60c8", size = 1913642, upload-time = "2025-01-20T02:17:53.263Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/44/8634af40b0db528b5b37e901c0dc67321354880d251bf8965901d57693a5/PyOpenGL-3.1.9-py3-none-any.whl", hash = "sha256:15995fd3b0deb991376805da36137a4ae5aba6ddbb5e29ac1f35462d130a3f77", size = 3190341, upload-time = "2025-01-20T02:17:50.913Z" },
-]
+source = { git = "https://github.com/tryashtar/pyopengl#048423b1529dbc83891bf8b9ab7f4500edcd7ee2" }
 
 [[package]]
 name = "pyyaml"
@@ -329,13 +321,15 @@ dependencies = [
     { name = "beet", extra = ["image"] },
     { name = "mecha" },
     { name = "model-resolver" },
+    { name = "pyopengl" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "beet", extras = ["image"], specifier = ">=0.111.0" },
     { name = "mecha", specifier = ">=0.98.1" },
-    { name = "model-resolver", specifier = ">=1.8.2" },
+    { name = "model-resolver", git = "https://github.com/tryashtar/model_resolver" },
+    { name = "pyopengl", git = "https://github.com/tryashtar/pyopengl" },
 ]
 
 [[package]]

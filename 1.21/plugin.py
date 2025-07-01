@@ -1,5 +1,6 @@
 import math
 import re
+import typing
 import unicodedata
 import PIL.Image
 import beet
@@ -10,6 +11,8 @@ def main(ctx: beet.Context):
    icon = beet.PngFile(PIL.Image.open('in/pack.png'))
    ctx.assets.icon = icon
    ctx.data.icon = icon
+   datapack = ctx.data['tryashtar.shulker_preview']
+   resourcepack = ctx.assets['tryashtar.shulker_preview']
    # to do: when https://github.com/mcbeet/beet/pull/472 is merged, use 'minecraft' field
    target_version = ctx.meta['minecraft_version']
    
@@ -35,15 +38,33 @@ def main(ctx: beet.Context):
    font = FontManager()
    next_slot = font.get_space(15)
    overlay = font.get_space(-3)
+   lang = resourcepack.languages['en_us']
    
    # the goal is to convert every vanilla item model definition to text components
    # anything we can draw "all at once" gets a lang file entry consisting of its characters
    # most models can be entirely drawn all at once just by looking up their lang file entry with a macro
    # but a few need special command logic written by hand
-   translatable_models: dict[str, list[str]] = {}
-   translatable_overlays: list[str] = []
-   not_fully_macroable: dict[str, dict] = {}
+   def add_model_translations(model: str, sprites: list[str]):
+      data = [font.add_sprite(x) for x in sprites]
+      lang.data[f'tryashtar.shulker_preview.item.{model}.0'] = overlay.join([x['rows'][0] + x['negative'] for x in data]) + next_slot
+      lang.data[f'tryashtar.shulker_preview.item.{model}.1'] = overlay.join([x['rows'][1] + x['negative'] for x in data]) + next_slot
+      lang.data[f'tryashtar.shulker_preview.item.{model}.2'] = overlay.join([x['rows'][2] + x['negative'] for x in data]) + next_slot
+
+   def add_overlay_translations(sprite: str):
+      data = font.add_sprite(sprite)
+      lang.data[f'tryashtar.shulker_preview.overlay.{sprite}.0'] = overlay + data['rows'][0] + data['negative'] + next_slot
+      lang.data[f'tryashtar.shulker_preview.overlay.{sprite}.1'] = overlay + data['rows'][1] + data['negative'] + next_slot
+      lang.data[f'tryashtar.shulker_preview.overlay.{sprite}.2'] = overlay + data['rows'][2] + data['negative'] + next_slot
+   
+   # even among models that can't be drawn with a simple macro, there are common patterns
+   # for example, many models are simply a single texture with a hardcoded color
+   # to make the item-drawing function more efficient, we want to detect these models in groups and do the special logic
+   # so collect models into these groups with known strategies for special drawing
+   simple_tinted: dict[str, int] = {}
+   potionlike: dict[int, dict[str, list[str]]] = {}
+   
    for name, entry in vanilla.assets.item_models.items():
+      name = canon(name)
       squashed_model = squash_conditions(entry.data['model'])
       model_type = short(squashed_model['type'])
       match model_type:
@@ -67,103 +88,115 @@ def main(ctx: beet.Context):
             for layer in layers:
                # this is technically wrong for flat item sprites
                # we should be looking the layers up in the atlas to get the real texture path
+               # in vanilla, they happen to always be the same
                font.add_sprite(layer)
             # if it's tinted, we need separate lang entries for each layer so we can draw them with different colors
             # otherwise, we can just merge all the layers into one simple entry
             tints = squashed_model.get('tints')
             if tints is not None:
-               translatable_models[name] = [layers[0]]
-               for overlay in layers[1:]:
-                  if overlay not in translatable_overlays:
-                     translatable_overlays.append(overlay)
-               not_fully_macroable[name] = {'tints':tints, 'layers':layers}
+               add_model_translations(name, [layers[0]])
+               for layer in layers[1:]:
+                  add_overlay_translations(layer)
+               if len(tints) == 1:
+                  tint = tints[0]
+                  # simple trick, vanilla items use this exact configuration which we can precompute
+                  if short(tint['type']) == 'grass':
+                     if tint['downfall'] == 1.0 and tint['temperature'] == 0.5:
+                        tint['type'] = 'minecraft:constant'
+                        tint['value'] = 0xff7bbd6b
+                  match short(tint['type']):
+                     case 'constant':
+                        simple_tinted[name] = tint['value']
+                     case 'potion':
+                        if tint['default'] not in potionlike:
+                           potionlike[tint['default']] = {}
+                        potionlike[tint['default']][name] = layers
+                     case _:
+                        print(f'Unhandled tinted model {name}: {squashed_model}')
+               else:
+                  print(f'Unhandled tinted model {name}: {squashed_model}')
             else:
-               translatable_models[name] = layers
+               add_model_translations(name, layers)
          case 'special':
             # some special models are simple and can just be one rendered texture
-            gen_name = name + '.item'
-            if gen_name not in generated_sprites:
-               render.add_item_task(
-                  item = model_resolver.Item(id=name, components={'minecraft:item_model':name}),
-                  path_ctx = gen_name,
-                  animation_mode = 'one_file'
-               )
-               generated_sprites.append(gen_name)
-            translatable_models[name] = [gen_name]
+            match short(squashed_model['model']['type']):
+               case 'chest' | 'conduit' | 'head' | 'player_head' | 'shulker_box' | 'bed' | 'banner':
+                  gen_name = name + '.item'
+                  if gen_name not in generated_sprites:
+                     render.add_item_task(
+                        item = model_resolver.Item(id=name, components={'minecraft:item_model':name}),
+                        path_ctx = gen_name,
+                        animation_mode = 'one_file'
+                     )
+                     generated_sprites.append(gen_name)
+                  add_model_translations(name, [gen_name])
+               case _:
+                  print(f'Unhandled special model {name}: {squashed_model}')
          case _:
-            not_fully_macroable[name] = {'model':squashed_model}
+            print(f'Unhandled model {name}: {squashed_model}')
    render.run()
    generated_entries = [(ctx.assets.textures[x].image, x) for x in generated_sprites]
    grid_img, grid_refs = make_grid(generated_entries, render.default_render_size)
    for path in generated_sprites:
       del ctx.assets.textures[path]
-   datapack = ctx.data['tryashtar.shulker_preview']
-   resourcepack = ctx.assets['tryashtar.shulker_preview']
    resourcepack.textures['block_sheet'] = beet.Texture(grid_img)
    font.add_grid('block_sheet', grid_refs)
    resourcepack.fonts['preview'] = font.build()
-   lang = resourcepack.languages['en_us']
-   for model, sprites in translatable_models.items():
-      data = [font.get_sprite(x) for x in sprites]
-      lang.data[f'tryashtar.shulker_preview.item.{model}.0'] = overlay.join([x['rows'][0] + x['negative'] for x in data]) + next_slot
-      lang.data[f'tryashtar.shulker_preview.item.{model}.1'] = overlay.join([x['rows'][1] + x['negative'] for x in data]) + next_slot
-      lang.data[f'tryashtar.shulker_preview.item.{model}.2'] = overlay.join([x['rows'][2] + x['negative'] for x in data]) + next_slot
-   for sprite in translatable_overlays:
-      data = font.get_sprite(sprite)
-      lang.data[f'tryashtar.shulker_preview.overlay.{sprite}.0'] = overlay + data['rows'][0] + data['negative'] + next_slot
-      lang.data[f'tryashtar.shulker_preview.overlay.{sprite}.1'] = overlay + data['rows'][1] + data['negative'] + next_slot
-      lang.data[f'tryashtar.shulker_preview.overlay.{sprite}.2'] = overlay + data['rows'][2] + data['negative'] + next_slot
-   simple_tinted = {}
-   potionlike = {}
-   for model, special in list(not_fully_macroable.items()):
-      if 'tints' in special and len(special['tints']) == 1:
-         tint = special['tints'][0]
-         if short(tint['type']) == 'grass':
-            if tint['downfall'] == 1.0 and tint['temperature'] == 0.5:
-               tint['type'] = 'minecraft:constant'
-               tint['value'] = 0xff7bbd6b
-         match short(tint['type']):
-            case 'constant':
-               simple_tinted[model] = tint['value']
-               del not_fully_macroable[model]
-            case 'potion':
-               potionlike[model] = (tint['default'], special['layers'])
-               del not_fully_macroable[model]
-            case _:
-               pass
-   print(potionlike)
-   print(translatable_overlays)
+   
+   # we need the item_model component in a string to run the macro
+   # but there's no way to do this if the component is set to the default for that item type (which it almost always is)
+   # so we need to bake into the pack a way to convert an item type to an item_model component
+   # fortunately, for every vanilla item, its default item_model component is identical to its ID
+   # so this is a very easy default strategy
+   # here we look for any item types that don't have this property
+   # any that do can be specifically checked for and the correct item_model string assigned
    components = model_resolver.utils.get_default_components(ctx)
    unusual_default_models = {}
    for model, defaults in components.items():
       if defaults['minecraft:item_model'] != model:
          unusual_default_models[model] = defaults['minecraft:item_model']
+   
+   def check_model(models: typing.Iterable[str]) -> str:
+      check = '|'.join([f'item_model="{short(x)}"' for x in models])
+      return f'if items entity @s contents *[{check}]'
+   
    for row in range(3):
-      item = [
+      item_fn = [
          'data modify entity @s Item set from storage tryashtar.shulker_preview:data item',
-         f'function tryashtar.shulker_preview:render/row_{row}/sprite',
+         f'function tryashtar.shulker_preview:render/row_{row}/model',
       ]
-      sprite = []
-      simple_tinted_check = '|'.join([f'item_model="{short(x)}"' for x in simple_tinted.keys()])
-      sprite.append(f'execute if items entity @s contents *[{simple_tinted_check}] run return run function tryashtar.shulker_preview:render/row_{row}/sprite/simple_tinted')
-      sprite_simple_tinted = []
+      model_fn = []
+      
+      model_fn.append(f'execute {check_model(simple_tinted.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/simple_tinted')
+      simple_tinted_fn = []
       for model, tint in simple_tinted.items():
-         sprite_simple_tinted.append(f'execute if items entity @s contents *[item_model="{short(model)}"] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
-      potionlike_check = '|'.join([f'item_model="{short(x)}"' for x in potionlike.keys()])
-      sprite.append(f'execute if items entity @s contents *[{potionlike_check}] run return run function tryashtar.shulker_preview:render/row_{row}/sprite/potion')
-      sprite_potionlike = []
-      for model, (default, layers) in potionlike.items():
-         sprite_potionlike.append(f'execute if items entity @s contents *[item_model="{short(model)}"] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
-      datapack.functions[f'render/row_{row}/item'] = beet.Function(item)
-      datapack.functions[f'render/row_{row}/sprite'] = beet.Function(sprite)
-      datapack.functions[f'render/row_{row}/sprite/simple_tinted'] = beet.Function(sprite_simple_tinted)
-      datapack.functions[f'render/row_{row}/sprite/potion'] = beet.Function(sprite_potionlike)
-   if len(not_fully_macroable) > 0 and False:
-      print('UNHANDLED MODELS:')
-      for model, data in not_fully_macroable.items():
-         print(model)
-         print(data)
-         print()
+         simple_tinted_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+      datapack.functions[f'render/row_{row}/model/simple_tinted'] = beet.Function(simple_tinted_fn)
+      
+      for default_color, data in potionlike.items():
+         fn_name = f'render/row_{row}/model/potion' if len(potionlike) == 1 else f'render/row_{row}/model/potion/{default_color}'
+         model_fn.append(f'execute {check_model(data.keys())} run return run function tryashtar.shulker_preview:{fn_name}')
+         color = color_hex(default_color)
+         potionlike_fn = [
+            '# potions can be any color, so a macro is needed',
+            f'data modify storage tryashtar.shulker_preview:data item merge value {{red:"{color[1:3]}",green:"{color[3:5]}","blue":"{color[5:7]}"}}',
+            'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:potion_contents".custom_color',
+            'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
+            'execute if score #has_color shulker_preview matches 0 run function tryashtar.shulker_preview:render/potion_color',
+            f'function tryashtar.shulker_preview:{fn_name}.macro with storage tryashtar.shulker_preview:data item',
+         ]
+         # to do: needs fallback
+         # to do: need overlay name somehow.. would be nice if it actually did match the item model name
+         # to do: use item_model not ID
+         potionlike_fn2 = [
+            '# potions render with a base layer and a colored layer',
+            f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{translate:"tryashtar.shulker_preview.item.$(id).{row}",color:"#$(red)$(green)$(blue)"}},{{translate:"tryashtar.shulker_preview.layer.$(id).{row}",color:"white"}}]',
+         ]
+         datapack.functions[fn_name] = beet.Function(potionlike_fn)
+         datapack.functions[f'{fn_name}.macro'] = beet.Function(potionlike_fn2)
+      
+      datapack.functions[f'render/row_{row}/item'] = beet.Function(item_fn)
+      datapack.functions[f'render/row_{row}/model'] = beet.Function(model_fn)
 
 def color_hex(color: int):
    if color < 0:
@@ -295,6 +328,7 @@ class FontManager:
          data = {'rows': [self.next_char(), self.next_char(), self.next_char()], 'negative': self.next_char()}
          self.sprites[texture] = data
          self.sprite_map[texture] = data
+      return self.sprite_map[texture]
    
    def add_grid(self, grid: str, textures: list[list[str | None]]):
       rows: list[list[str]] = [[], [], []]
