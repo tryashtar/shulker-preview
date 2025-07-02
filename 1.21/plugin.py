@@ -37,9 +37,40 @@ def main(ctx: beet.Context):
    
    font = FontManager()
    next_slot = font.get_space(15)
+   empty_slot = font.get_space(18)
    overlay = font.get_space(-3)
+   tooltip_push_back = font.get_space(-4)
+   tooltip_push_fwd = font.get_space(8)
+   row_end = font.get_space(-162)
+   back_a_tad = font.get_space(-1)
+   small_space = font.get_space(1)
    lang = resourcepack.languages['en_us']
-   
+   for tex, tip, bottom in [('shulker_box', 'shulker', 20), ('generic_54', 'ender', 27)]:
+      ascent = 8
+      slices = [{'height':8,'range':[0]},{'height':8,'range':[2,3,4,5,6,7,8,bottom]}]
+      text = ''
+      for section in slices:
+         for include in section['range']:
+            positive = ['\u0000'] * (256 // section['height'])
+            negative = ['\u0000'] * (256 // section['height'])
+            pos = font.next_char()
+            neg = font.next_char()
+            positive[include] = pos
+            negative[include] = neg
+            font.add_provider({"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": ascent, "height": section['height'], "chars": positive})
+            font.add_provider({"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": -32768, "height": -section['height'], "chars": negative})
+            ascent -= section['height']
+            text += pos + neg + overlay
+      lang.data[f"tryashtar.shulker_preview.{tip}_tooltip"] = tooltip_push_back + text + tooltip_push_fwd
+   lang.data['tryashtar.shulker_preview.empty_slot'] = empty_slot
+   lang.data['tryashtar.shulker_preview.row_end'] = row_end
+   lang.data['tryashtar.shulker_preview.overlay'] = back_a_tad
+   lang.data['tryashtar.shulker_preview.overlay_done'] = small_space
+   missing = font.add_sprite('tryashtar.shulker_preview:missingno')
+   lang.data['tryashtar.shulker_preview.missingno.0'] = missing['rows'][0] + missing['negative'] + next_slot
+   lang.data['tryashtar.shulker_preview.missingno.1'] = missing['rows'][1] + missing['negative'] + next_slot
+   lang.data['tryashtar.shulker_preview.missingno.2'] = missing['rows'][2] + missing['negative'] + next_slot
+
    # the goal is to convert every vanilla item model definition to text components
    # anything we can draw "all at once" gets a lang file entry consisting of its characters
    # most models can be entirely drawn all at once just by looking up their lang file entry with a macro
@@ -50,11 +81,12 @@ def main(ctx: beet.Context):
       lang.data[f'tryashtar.shulker_preview.item.{model}.1'] = overlay.join([x['rows'][1] + x['negative'] for x in data]) + next_slot
       lang.data[f'tryashtar.shulker_preview.item.{model}.2'] = overlay.join([x['rows'][2] + x['negative'] for x in data]) + next_slot
 
-   def add_overlay_translations(sprite: str):
-      data = font.add_sprite(sprite)
-      lang.data[f'tryashtar.shulker_preview.overlay.{sprite}.0'] = overlay + data['rows'][0] + data['negative'] + next_slot
-      lang.data[f'tryashtar.shulker_preview.overlay.{sprite}.1'] = overlay + data['rows'][1] + data['negative'] + next_slot
-      lang.data[f'tryashtar.shulker_preview.overlay.{sprite}.2'] = overlay + data['rows'][2] + data['negative'] + next_slot
+   def add_overlay_translations(model: str, sprites: list[str]):
+      for i, sprite in enumerate(sprites):
+         data = font.add_sprite(sprite)
+         lang.data[f'tryashtar.shulker_preview.layer.{model}.{i}.0'] = overlay + data['rows'][0] + data['negative'] + next_slot
+         lang.data[f'tryashtar.shulker_preview.layer.{model}.{i}.1'] = overlay + data['rows'][1] + data['negative'] + next_slot
+         lang.data[f'tryashtar.shulker_preview.layer.{model}.{i}.2'] = overlay + data['rows'][2] + data['negative'] + next_slot
    
    # even among models that can't be drawn with a simple macro, there are common patterns
    # for example, many models are simply a single texture with a hardcoded color
@@ -93,10 +125,11 @@ def main(ctx: beet.Context):
             # if it's tinted, we need separate lang entries for each layer so we can draw them with different colors
             # otherwise, we can just merge all the layers into one simple entry
             tints = squashed_model.get('tints')
-            if tints is not None:
+            if tints is None:
+               add_model_translations(name, layers)
+            else:
                add_model_translations(name, [layers[0]])
-               for layer in layers[1:]:
-                  add_overlay_translations(layer)
+               add_overlay_translations(name, layers[1:])
                if len(tints) == 1:
                   tint = tints[0]
                   # simple trick, vanilla items use this exact configuration which we can precompute
@@ -104,10 +137,10 @@ def main(ctx: beet.Context):
                      if tint['downfall'] == 1.0 and tint['temperature'] == 0.5:
                         tint['type'] = 'minecraft:constant'
                         tint['value'] = 0xff7bbd6b
-                  match short(tint['type']):
-                     case 'constant':
+                  match (short(tint['type']), len(layers)):
+                     case ('constant', 1):
                         simple_tinted[name] = tint['value']
-                     case 'potion':
+                     case ('potion', 2):
                         if tint['default'] not in potionlike:
                            potionlike[tint['default']] = {}
                         potionlike[tint['default']][name] = layers
@@ -115,8 +148,6 @@ def main(ctx: beet.Context):
                         print(f'Unhandled tinted model {name}: {squashed_model}')
                else:
                   print(f'Unhandled tinted model {name}: {squashed_model}')
-            else:
-               add_model_translations(name, layers)
          case 'special':
             # some special models are simple and can just be one rendered texture
             match short(squashed_model['model']['type']):
@@ -162,10 +193,25 @@ def main(ctx: beet.Context):
    
    for row in range(3):
       item_fn = [
+         "# render the base item model",
          'data modify entity @s Item set from storage tryashtar.shulker_preview:data item',
          f'function tryashtar.shulker_preview:render/row_{row}/model',
       ]
-      model_fn = []
+      model_fn = [
+         "# an item's rendering depends on its item_model component, so get that first",
+         "# there's no known way to get the value of default components, so we have to guess by the ID",
+         "# in vanilla, every single item has a default item_model that matches its ID",
+         "# if there were any exceptions, we could list them here",
+         "# when the item stack has a custom item_model component, use it instead",
+         'data modify storage tryashtar.shulker_preview:data item.model set from storage tryashtar.shulker_preview:data item.id',
+      ]
+      for item, model in unusual_default_models.items():
+         model_fn.append(f'execute if data storage tryashtar.shulker_preview:data item{{id:"{item}"}} run data modify storage tryashtar.shulker_preview:data item.model set value "{model}"')
+      model_fn.extend([
+         'data modify storage tryashtar.shulker_preview:data item.model set from storage tryashtar.shulker_preview:data item.components."minecraft:item_model"',
+         '',
+         "# models that require special rendering, like model overrides or colored layers",
+      ])
       
       model_fn.append(f'execute {check_model(simple_tinted.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/simple_tinted')
       simple_tinted_fn = []
@@ -185,15 +231,22 @@ def main(ctx: beet.Context):
             'execute if score #has_color shulker_preview matches 0 run function tryashtar.shulker_preview:render/potion_color',
             f'function tryashtar.shulker_preview:{fn_name}.macro with storage tryashtar.shulker_preview:data item',
          ]
-         # to do: needs fallback
-         # to do: need overlay name somehow.. would be nice if it actually did match the item model name
-         # to do: use item_model not ID
          potionlike_fn2 = [
             '# potions render with a base layer and a colored layer',
-            f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{translate:"tryashtar.shulker_preview.item.$(id).{row}",color:"#$(red)$(green)$(blue)"}},{{translate:"tryashtar.shulker_preview.layer.$(id).{row}",color:"white"}}]',
+            f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{translate:"tryashtar.shulker_preview.item.$(model).{row}",color:"#$(red)$(green)$(blue)",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}},{{translate:"tryashtar.shulker_preview.layer.$(model).0.{row}",color:"white",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}]',
          ]
          datapack.functions[fn_name] = beet.Function(potionlike_fn)
          datapack.functions[f'{fn_name}.macro'] = beet.Function(potionlike_fn2)
+      
+      model_fn.extend([
+         '',
+         'function tryashtar.shulker_preview:render/row_0/model/simple.macro with storage tryashtar.shulker_preview:data item'
+      ])
+      simple_fn = [
+         "# macro for simple models that are just one or more uncolored layers",
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.$(model).{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}'
+      ]
+      datapack.functions[f'render/row_{row}/model/simple.macro'] = beet.Function(simple_fn)
       
       datapack.functions[f'render/row_{row}/item'] = beet.Function(item_fn)
       datapack.functions[f'render/row_{row}/model'] = beet.Function(model_fn)
@@ -322,6 +375,7 @@ class FontManager:
       self.sprites: dict[str, dict] = {}
       self.grids: dict[str, dict] = {}
       self.sprite_map: dict[str, dict] = {}
+      self.providers: list[dict] = []
    
    def add_sprite(self, texture: str):
       if texture not in self.sprite_map:
@@ -355,7 +409,10 @@ class FontManager:
                rows[2][-1] += '\u0000'
                negative[-1] += '\u0000'
       self.grids[grid] = {'rows': rows, 'negative': negative}
-      
+     
+   def add_provider(self, provider: dict):
+      self.providers.append(provider)
+    
    def get_sprite(self, texture: str) -> dict:
       return self.sprite_map[texture]
    
@@ -384,6 +441,7 @@ class FontManager:
          for width, char in self.spaces.items():
             spaces[char] = width
          providers.append({'type':'space','advances':spaces})
+      providers.extend(self.providers)
       for path, data in self.sprites.items():
          for row, entry in enumerate(data['rows']):
             providers.append({'type':'bitmap','file':path,'ascent':-2 + (row * -18),'height':16,'chars':[entry]})
