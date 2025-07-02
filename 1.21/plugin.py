@@ -87,7 +87,7 @@ def main(ctx: beet.Context):
    # so collect models into these groups with known strategies for special drawing
    simple_tinted: dict[str, int] = {}
    potionlike: dict[int, dict[str, list[str]]] = {}
-   armor: list[tuple[dict[str, str], list[tuple[str, str, dict[str, str]]]]] = []
+   armor: list[tuple[dict[str, tuple[str, int]], list[tuple[str, dict[str, tuple[str, int]]]]]] = []
    
    vanilla = beet.contrib.vanilla.Vanilla(ctx, minecraft_version=target_version)
    block_atlas = vanilla.assets.atlases['minecraft:blocks']
@@ -151,7 +151,7 @@ def main(ctx: beet.Context):
             # (and a slightly different trim texture when the material matches)
             # check that this item matches this exact pattern so we can render it correctly
             common_base: str | None = None
-            trims: dict[str, str] = {}
+            trims: dict[str, tuple[str, int]] = {}
             if short(item_model['fallback']['type']) == 'model' and item_model['fallback'].get('tints') is None:
                model_name = canon(item_model['fallback']['model'])
                model = vanilla.assets.models[model_name]
@@ -164,19 +164,25 @@ def main(ctx: beet.Context):
                   model = vanilla.assets.models[model_name]
                   layers = generated_layers(vanilla.assets.models, model)
                   if layers is not None and len(layers) == 2:
-                     trims[canon(case['when'])] = layers[1]
+                     result = get_colored_permutation(vanilla.assets.textures, block_atlas, layers[1])
+                     if result is None:
+                        return False
+                     trims[canon(case['when'])] = result
                      bottom_layer = get_texture_from_atlas_entry(block_atlas, layers[0])
                      if bottom_layer == common_base:
                         continue
                common_base = None
                break
             if common_base is not None:
+               add_model_translations(name, [common_base])
+               for texture, _ in trims.values():
+                  add_overlay_translations(texture, [texture])
                for trim_defs, bases in armor:
                   difference = dict(set(trims.items()) - set(trim_defs.items()))
                   if len(difference) <= 2:
-                     bases.append((name, common_base, difference))
+                     bases.append((name, difference))
                      return True
-               armor.append((trims, [(name, common_base, {})]))
+               armor.append((trims, [(name, {})]))
                return True
             return False
          case _:
@@ -289,7 +295,7 @@ def main(ctx: beet.Context):
          datapack.functions[fn_name] = beet.Function(potionlike_fn)
          datapack.functions[f'{fn_name}.macro'] = beet.Function(potionlike_fn2)
       
-      model_fn.append(f'execute {check_model([x for _, models in armor for x, _, _ in models])} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor')
+      model_fn.append(f'execute {check_model([x for _, models in armor for x, _ in models])} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor')
       armor_fn = [
          "# armor starts with normal rendering of the base model",
          'function tryashtar.shulker_preview:render/row_0/model/simple.macro with storage tryashtar.shulker_preview:data item',
@@ -297,18 +303,19 @@ def main(ctx: beet.Context):
          "# then the trim overlay if present",
       ]
       for trims, items in armor:
+         # kinda lazy way to come up with a name for the categories
          slot_name = items[0][0].split('_')[1]
-         armor_fn.append(f'execute {check_model([name for name, _, _ in items], 'trim')} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor/{slot_name}')
+         armor_fn.append(f'execute {check_model([name for name, _ in items], 'trim')} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor/{slot_name}')
          slot_fn = [
             "# render the armor trim overlay based on the material color",
             "# it's not as accurate as the true items which use paletted permutations",
             "# items of a matching material use a darker color",
          ]
-         for name, _, overrides in items:
-            for material, layer in overrides.items():
-               slot_fn.append(f'execute {check_model([name], f'trim~{{material:"{short(material)}"}}')} run return run say {layer}')
-         for material, layer in trims.items():
-            slot_fn.append(f'execute if items entity @s contents *[trim~{{material:"{short(material)}"}}] run return run say {layer}')
+         for name, overrides in items:
+            for material, (texture, color) in overrides.items():
+               slot_fn.append(f'execute {check_model([name], f'trim~{{material:"{short(material)}"}}')} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.layer.{texture}.0.{row}",color:"{color_hex(color)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+         for material, (texture, color) in trims.items():
+            slot_fn.append(f'execute if items entity @s contents *[trim~{{material:"{short(material)}"}}] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.layer.{texture}.0.{row}",color:"{color_hex(color)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
          datapack.functions[f'render/row_{row}/model/armor/{slot_name}'] = beet.Function(slot_fn)
       datapack.functions[f'render/row_{row}/model/armor'] = beet.Function(armor_fn)
       
@@ -335,6 +342,22 @@ def get_texture_from_atlas_entry(atlas: beet.Atlas, entry: str) -> str | None:
                return canon(source['prefix'] + path.removeprefix(prefix))
          case _:
             pass
+   return None
+
+def get_colored_permutation(textures: beet.NamespaceProxy[beet.Texture], atlas: beet.Atlas, entry: str) -> tuple[str, int] | None:
+   entry = canon(entry)
+   for source in atlas.data['sources']:
+      if short(source['type']) == 'paletted_permutations':
+         for base in source['textures']:
+            prefix = canon(base) + '_'
+            if entry.startswith(prefix):
+               material = entry.removeprefix(prefix)
+               if material in source['permutations']:
+                  texture = textures[canon(source['permutations'][material])]
+                  # kinda lazy way to get the color for this palette
+                  r,g,b = texture.image.getpixel((0, 0))
+                  color = r * 2**16 + g * 2**8 + b
+                  return (canon(base), color)
    return None
 
 def color_hex(color: int):
