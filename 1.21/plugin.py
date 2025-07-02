@@ -4,6 +4,7 @@ import typing
 import unicodedata
 import PIL.Image
 import beet
+import beet.contrib.vanilla
 import model_resolver
 import model_resolver.utils
 
@@ -25,9 +26,8 @@ def main(ctx: beet.Context):
       'special_rendering': True,
       'use_cache': True
    }
-   render = model_resolver.Render(ctx)
+   render = model_resolver.Render(ctx=ctx)
    render.default_render_size = 64
-   vanilla = render.getter._vanilla
    
    # the renderer doesn't provide a simple model -> image API
    # instead, we feed it many models with output paths, then it saves them all to the pack at once
@@ -87,6 +87,117 @@ def main(ctx: beet.Context):
    # so collect models into these groups with known strategies for special drawing
    simple_tinted: dict[str, int] = {}
    potionlike: dict[int, dict[str, list[str]]] = {}
+   armor: list[tuple[dict[str, str], list[tuple[str, str, dict[str, str]]]]] = []
+   
+   vanilla = beet.contrib.vanilla.Vanilla(ctx, minecraft_version=target_version)
+   block_atlas = vanilla.assets.atlases['minecraft:blocks']
+   
+   def handle_model(name: str, item_model: dict[str, typing.Any]) -> bool:
+      # most item models are this, just a simple model
+      # it could be a 3D model we need to render, or a flat item sprite made of 1 or more layers
+      model_name = canon(item_model['model'])
+      model = vanilla.assets.models[model_name]
+      layers = generated_layers(vanilla.assets.models, model)
+      if layers is None:
+         # this is a 3D model, render it and use that texture as the single layer
+         gen_name = model_name + '.model'
+         layers = [gen_name]
+         if gen_name not in generated_sprites:
+            render.add_model_task(
+               model = model_name,
+               path_ctx = gen_name,
+               animation_mode = 'one_file'
+            )
+            generated_sprites.append(gen_name)
+      for layer in layers:
+         actual_texture = get_texture_from_atlas_entry(block_atlas, layer)
+         if actual_texture is None:
+            return False
+         font.add_sprite(actual_texture)
+      # if it's tinted, we need separate lang entries for each layer so we can draw them with different colors
+      # otherwise, we can just merge all the layers into one simple entry
+      tints = item_model.get('tints')
+      if tints is None:
+         add_model_translations(name, layers)
+         return True
+      if len(tints) == 1:
+         add_model_translations(name, [layers[0]])
+         add_overlay_translations(name, layers[1:])
+         tint = tints[0]
+         # simple trick, vanilla items use this exact configuration which we can precompute
+         if short(tint['type']) == 'grass':
+            if tint['downfall'] == 1.0 and tint['temperature'] == 0.5:
+               tint['type'] = 'minecraft:constant'
+               tint['value'] = 0xff7bbd6b
+         match (short(tint['type']), len(layers)):
+            case ('constant', 1):
+               simple_tinted[name] = tint['value']
+               return True
+            case ('potion', 2):
+               if tint['default'] not in potionlike:
+                  potionlike[tint['default']] = {}
+               potionlike[tint['default']][name] = layers
+               return True
+            case _:
+               return False
+      return False
+   
+   def handle_select(name: str, item_model: dict[str, typing.Any]) -> bool:
+      match short(item_model['property']):
+         case 'trim_material':
+            # armor tends to follow a specific pattern
+            # with no trim, it renders a single tintless texture
+            # with a trim, it renders that same tintless texture with the trim texture on top
+            # (and a slightly different trim texture when the material matches)
+            # check that this item matches this exact pattern so we can render it correctly
+            common_base: str | None = None
+            trims: dict[str, str] = {}
+            if short(item_model['fallback']['type']) == 'model' and item_model['fallback'].get('tints') is None:
+               model_name = canon(item_model['fallback']['model'])
+               model = vanilla.assets.models[model_name]
+               layers = generated_layers(vanilla.assets.models, model)
+               if layers is not None and len(layers) == 1:
+                  common_base = get_texture_from_atlas_entry(block_atlas, layers[0])
+            for case in item_model['cases']:
+               if short(case['model']['type']) == 'model' and case['model'].get('tints') is None:
+                  model_name = canon(case['model']['model'])
+                  model = vanilla.assets.models[model_name]
+                  layers = generated_layers(vanilla.assets.models, model)
+                  if layers is not None and len(layers) == 2:
+                     trims[canon(case['when'])] = layers[1]
+                     bottom_layer = get_texture_from_atlas_entry(block_atlas, layers[0])
+                     if bottom_layer == common_base:
+                        continue
+               common_base = None
+               break
+            if common_base is not None:
+               for trim_defs, bases in armor:
+                  difference = dict(set(trims.items()) - set(trim_defs.items()))
+                  if len(difference) <= 2:
+                     bases.append((name, common_base, difference))
+                     return True
+               armor.append((trims, [(name, common_base, {})]))
+               return True
+            return False
+         case _:
+            return False
+   
+   def handle_special(name: str, item_model: dict[str, typing.Any]) -> bool:
+      # some special models are simple and can just be one rendered texture
+      match short(item_model['model']['type']):
+         case 'chest' | 'conduit' | 'head' | 'player_head' | 'shulker_box' | 'bed' | 'banner':
+            gen_name = name + '.item'
+            if gen_name not in generated_sprites:
+               render.add_item_task(
+                  item = model_resolver.Item(id=name, components={'minecraft:item_model':name}),
+                  path_ctx = gen_name,
+                  animation_mode = 'one_file'
+               )
+               generated_sprites.append(gen_name)
+            add_model_translations(name, [gen_name])
+            return True
+         case _:
+            return False
    
    for name, entry in vanilla.assets.item_models.items():
       name = canon(name)
@@ -94,70 +205,16 @@ def main(ctx: beet.Context):
       model_type = short(squashed_model['type'])
       match model_type:
          case 'model':
-            # most item models are this, just a simple model
-            # it could be a 3D model we need to render, or a flat item sprite made of 1 or more layers
-            model_name = canon(squashed_model['model'])
-            model = vanilla.assets.models[model_name]
-            layers = generated_layers(vanilla.assets.models, model)
-            if layers is None:
-               # this is a 3D model, render it and use that texture as the single layer
-               gen_name = model_name + '.model'
-               layers = [gen_name]
-               if gen_name not in generated_sprites:
-                  render.add_model_task(
-                     model = model_name,
-                     path_ctx = gen_name,
-                     animation_mode = 'one_file'
-                  )
-                  generated_sprites.append(gen_name)
-            for layer in layers:
-               # this is technically wrong for flat item sprites
-               # we should be looking the layers up in the atlas to get the real texture path
-               # in vanilla, they happen to always be the same
-               font.add_sprite(layer)
-            # if it's tinted, we need separate lang entries for each layer so we can draw them with different colors
-            # otherwise, we can just merge all the layers into one simple entry
-            tints = squashed_model.get('tints')
-            if tints is None:
-               add_model_translations(name, layers)
-            else:
-               add_model_translations(name, [layers[0]])
-               add_overlay_translations(name, layers[1:])
-               if len(tints) == 1:
-                  tint = tints[0]
-                  # simple trick, vanilla items use this exact configuration which we can precompute
-                  if short(tint['type']) == 'grass':
-                     if tint['downfall'] == 1.0 and tint['temperature'] == 0.5:
-                        tint['type'] = 'minecraft:constant'
-                        tint['value'] = 0xff7bbd6b
-                  match (short(tint['type']), len(layers)):
-                     case ('constant', 1):
-                        simple_tinted[name] = tint['value']
-                     case ('potion', 2):
-                        if tint['default'] not in potionlike:
-                           potionlike[tint['default']] = {}
-                        potionlike[tint['default']][name] = layers
-                     case _:
-                        print(f'Unhandled tinted model {name}: {squashed_model}')
-               else:
-                  print(f'Unhandled tinted model {name}: {squashed_model}')
+            handled = handle_model(name, squashed_model)
+         case 'select':
+            handled = handle_select(name, squashed_model)
          case 'special':
-            # some special models are simple and can just be one rendered texture
-            match short(squashed_model['model']['type']):
-               case 'chest' | 'conduit' | 'head' | 'player_head' | 'shulker_box' | 'bed' | 'banner':
-                  gen_name = name + '.item'
-                  if gen_name not in generated_sprites:
-                     render.add_item_task(
-                        item = model_resolver.Item(id=name, components={'minecraft:item_model':name}),
-                        path_ctx = gen_name,
-                        animation_mode = 'one_file'
-                     )
-                     generated_sprites.append(gen_name)
-                  add_model_translations(name, [gen_name])
-               case _:
-                  print(f'Unhandled special model {name}: {squashed_model}')
+            handled = handle_special(name, squashed_model)
          case _:
-            print(f'Unhandled model {name}: {squashed_model}')
+            handled = False
+      if not handled:
+         print(f'Unhandled item model {name}: {squashed_model}')
+
    render.run()
    generated_entries = [(ctx.assets.textures[x].image, x) for x in generated_sprites]
    grid_img, grid_refs = make_grid(generated_entries, render.default_render_size)
@@ -180,8 +237,9 @@ def main(ctx: beet.Context):
       if defaults['minecraft:item_model'] != model:
          unusual_default_models[model] = defaults['minecraft:item_model']
    
-   def check_model(models: typing.Iterable[str]) -> str:
-      check = '|'.join([f'item_model="{short(x)}"' for x in models])
+   def check_model(models: typing.Iterable[str], extra: str | None=None) -> str:
+      extra = '' if extra is None else extra + ','
+      check = extra + '|'.join([f'item_model="{short(x)}"' for x in models])
       return f'if items entity @s contents *[{check}]'
    
    for row in range(font.rows):
@@ -203,7 +261,7 @@ def main(ctx: beet.Context):
       model_fn.extend([
          'data modify storage tryashtar.shulker_preview:data item.model set from storage tryashtar.shulker_preview:data item.components."minecraft:item_model"',
          '',
-         "# models that require special rendering, like model overrides or colored layers",
+         "# models that require special rendering, like component checks or colored layers",
       ])
       
       model_fn.append(f'execute {check_model(simple_tinted.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/simple_tinted')
@@ -231,6 +289,29 @@ def main(ctx: beet.Context):
          datapack.functions[fn_name] = beet.Function(potionlike_fn)
          datapack.functions[f'{fn_name}.macro'] = beet.Function(potionlike_fn2)
       
+      model_fn.append(f'execute {check_model([x for _, models in armor for x, _, _ in models])} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor')
+      armor_fn = [
+         "# armor starts with normal rendering of the base model",
+         'function tryashtar.shulker_preview:render/row_0/model/simple.macro with storage tryashtar.shulker_preview:data item',
+         '',
+         "# then the trim overlay if present",
+      ]
+      for trims, items in armor:
+         slot_name = items[0][0].split('_')[1]
+         armor_fn.append(f'execute {check_model([name for name, _, _ in items], 'trim')} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor/{slot_name}')
+         slot_fn = [
+            "# render the armor trim overlay based on the material color",
+            "# it's not as accurate as the true items which use paletted permutations",
+            "# items of a matching material use a darker color",
+         ]
+         for name, _, overrides in items:
+            for material, layer in overrides.items():
+               slot_fn.append(f'execute {check_model([name], f'trim~{{material:"{short(material)}"}}')} run return run say {layer}')
+         for material, layer in trims.items():
+            slot_fn.append(f'execute if items entity @s contents *[trim~{{material:"{short(material)}"}}] run return run say {layer}')
+         datapack.functions[f'render/row_{row}/model/armor/{slot_name}'] = beet.Function(slot_fn)
+      datapack.functions[f'render/row_{row}/model/armor'] = beet.Function(armor_fn)
+      
       model_fn.extend([
          '',
          'function tryashtar.shulker_preview:render/row_0/model/simple.macro with storage tryashtar.shulker_preview:data item'
@@ -243,6 +324,18 @@ def main(ctx: beet.Context):
       
       datapack.functions[f'render/row_{row}/item'] = beet.Function(item_fn)
       datapack.functions[f'render/row_{row}/model'] = beet.Function(model_fn)
+
+def get_texture_from_atlas_entry(atlas: beet.Atlas, entry: str) -> str | None:
+   _namespace, path = canon(entry).split(':')
+   for source in atlas.data['sources']:
+      match short(source['type']):
+         case 'directory':
+            prefix = source['source'] + '/'
+            if path.startswith(prefix):
+               return canon(source['prefix'] + path.removeprefix(prefix))
+         case _:
+            pass
+   return None
 
 def color_hex(color: int):
    if color < 0:
@@ -342,7 +435,9 @@ def make_grid(entries: list[tuple[PIL.Image.Image, str]], icon_size: int) -> tup
       image.paste(sprite, (x, y, x + icon_size, y + icon_size))
       # to do: with negatives, is this still necessary?
       for corner in (0, icon_size - 1):
-         r,g,b,a = sprite.getpixel((corner, corner))
+         pixel = sprite.getpixel((corner, corner))
+         assert type(pixel) is tuple
+         r,g,b,a = pixel
          if a == 0:
             r,g,b = (139, 139, 139)
          image.putpixel((x + corner, y + corner), (r, g, b, max(a, 18)))
