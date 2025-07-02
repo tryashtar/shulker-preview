@@ -35,15 +35,13 @@ def main(ctx: beet.Context):
    # so we keep track of the output paths so we can load the generated images, then delete them from the pack
    generated_sprites: list[str] = []
    
-   font = FontManager()
+   font = FontManager(rows=3)
    next_slot = font.get_space(15)
    empty_slot = font.get_space(18)
    overlay = font.get_space(-3)
    tooltip_push_back = font.get_space(-4)
    tooltip_push_fwd = font.get_space(8)
    row_end = font.get_space(-162)
-   back_a_tad = font.get_space(-1)
-   small_space = font.get_space(1)
    lang = resourcepack.languages['en_us']
    for tex, tip, bottom in [('shulker_box', 'shulker', 20), ('generic_54', 'ender', 27)]:
       ascent = 8
@@ -64,12 +62,9 @@ def main(ctx: beet.Context):
       lang.data[f"tryashtar.shulker_preview.{tip}_tooltip"] = tooltip_push_back + text + tooltip_push_fwd
    lang.data['tryashtar.shulker_preview.empty_slot'] = empty_slot
    lang.data['tryashtar.shulker_preview.row_end'] = row_end
-   lang.data['tryashtar.shulker_preview.overlay'] = back_a_tad
-   lang.data['tryashtar.shulker_preview.overlay_done'] = small_space
    missing = font.add_sprite('tryashtar.shulker_preview:missingno')
-   lang.data['tryashtar.shulker_preview.missingno.0'] = missing['rows'][0] + missing['negative'] + next_slot
-   lang.data['tryashtar.shulker_preview.missingno.1'] = missing['rows'][1] + missing['negative'] + next_slot
-   lang.data['tryashtar.shulker_preview.missingno.2'] = missing['rows'][2] + missing['negative'] + next_slot
+   for row in range(font.rows):
+      lang.data[f'tryashtar.shulker_preview.missingno.{row}'] = missing['rows'][row] + missing['negative'] + next_slot
 
    # the goal is to convert every vanilla item model definition to text components
    # anything we can draw "all at once" gets a lang file entry consisting of its characters
@@ -77,16 +72,14 @@ def main(ctx: beet.Context):
    # but a few need special command logic written by hand
    def add_model_translations(model: str, sprites: list[str]):
       data = [font.add_sprite(x) for x in sprites]
-      lang.data[f'tryashtar.shulker_preview.item.{model}.0'] = overlay.join([x['rows'][0] + x['negative'] for x in data]) + next_slot
-      lang.data[f'tryashtar.shulker_preview.item.{model}.1'] = overlay.join([x['rows'][1] + x['negative'] for x in data]) + next_slot
-      lang.data[f'tryashtar.shulker_preview.item.{model}.2'] = overlay.join([x['rows'][2] + x['negative'] for x in data]) + next_slot
+      for row in range(font.rows):
+         lang.data[f'tryashtar.shulker_preview.item.{model}.{row}'] = overlay.join([x['rows'][row] + x['negative'] for x in data]) + next_slot
 
    def add_overlay_translations(model: str, sprites: list[str]):
       for i, sprite in enumerate(sprites):
          data = font.add_sprite(sprite)
-         lang.data[f'tryashtar.shulker_preview.layer.{model}.{i}.0'] = overlay + data['rows'][0] + data['negative'] + next_slot
-         lang.data[f'tryashtar.shulker_preview.layer.{model}.{i}.1'] = overlay + data['rows'][1] + data['negative'] + next_slot
-         lang.data[f'tryashtar.shulker_preview.layer.{model}.{i}.2'] = overlay + data['rows'][2] + data['negative'] + next_slot
+         for row in range(font.rows):
+            lang.data[f'tryashtar.shulker_preview.layer.{model}.{i}.{row}'] = overlay + data['rows'][row] + data['negative'] + next_slot
    
    # even among models that can't be drawn with a simple macro, there are common patterns
    # for example, many models are simply a single texture with a hardcoded color
@@ -191,7 +184,7 @@ def main(ctx: beet.Context):
       check = '|'.join([f'item_model="{short(x)}"' for x in models])
       return f'if items entity @s contents *[{check}]'
    
-   for row in range(3):
+   for row in range(font.rows):
       item_fn = [
          "# render the base item model",
          'data modify entity @s Item set from storage tryashtar.shulker_preview:data item',
@@ -261,7 +254,7 @@ def color_hex(color: int):
 # we have to check these conditions with commands
 # some of them are impossible to detect, or can never be met while inside a container
 # so we eliminate them, simplifying the model until it only has conditions we can check, or none at all
-def squash_conditions(model: dict) -> dict:
+def squash_conditions(model: dict[str, typing.Any]) -> dict[str, typing.Any]:
    model_type = short(model['type'])
    match model_type:
       case 'condition':
@@ -368,52 +361,53 @@ def grid_dimensions(area: int) -> tuple[int, int]:
 # therefore, it's helpful to be able to lookup the 4 characters from the item texture name
 # this class keeps them in sprite_map while also generating the final providers
 # note that the block grid for example has named texture entries, but the provider makes no mention of them, just the final grid
+GridData = typing.TypedDict('GridData', {'rows': list[list[str]], 'negative': list[str]})
+SpriteData = typing.TypedDict('SpriteData', {'rows': list[str], 'negative': str})
 class FontManager:
-   def __init__(self):
-      self.last_char = 0
+   def __init__(self, rows: int):
+      self.rows: int = rows
+      self.last_char: int = 0
       self.spaces: dict[int, str] = {}
-      self.sprites: dict[str, dict] = {}
-      self.grids: dict[str, dict] = {}
-      self.sprite_map: dict[str, dict] = {}
-      self.providers: list[dict] = []
+      self.sprites: dict[str, SpriteData] = {}
+      self.grids: dict[str, GridData] = {}
+      self.sprite_map: dict[str, SpriteData] = {}
+      self.providers: list[dict[str, typing.Any]] = []
    
-   def add_sprite(self, texture: str):
+   def add_sprite(self, texture: str) -> SpriteData:
       if texture not in self.sprite_map:
-         data = {'rows': [self.next_char(), self.next_char(), self.next_char()], 'negative': self.next_char()}
+         data: SpriteData = {'rows': [self.next_char() for _ in range(self.rows)], 'negative': self.next_char()}
          self.sprites[texture] = data
          self.sprite_map[texture] = data
       return self.sprite_map[texture]
    
    def add_grid(self, grid: str, textures: list[list[str | None]]):
-      rows: list[list[str]] = [[], [], []]
+      rows: list[list[str]] = [[] for _ in range(self.rows)]
       negative: list[str] = []
       for row in textures:
-         rows[0].append('')
-         rows[1].append('')
-         rows[2].append('')
+         for x in rows:
+            x.append('')
          negative.append('')
          for texture in row:
             if texture is not None:
-               r0 = self.next_char()
-               r1 = self.next_char()
-               r2 = self.next_char()
+               rowchars = []
+               for x in rows:
+                  ch = self.next_char()
+                  x[-1] += ch
+                  rowchars.append(ch)
                n = self.next_char()
-               rows[0][-1] += r0
-               rows[1][-1] += r1
-               rows[2][-1] += r2
                negative[-1] += n
-               self.sprite_map[texture] = {'rows': [r0, r1, r2], 'negative': n}
+               self.sprite_map[texture] = {'rows': rowchars, 'negative': n}
             else:
-               rows[0][-1] += '\u0000'
-               rows[1][-1] += '\u0000'
-               rows[2][-1] += '\u0000'
+               for x in rows:
+                  x[-1] += '\u0000'
                negative[-1] += '\u0000'
-      self.grids[grid] = {'rows': rows, 'negative': negative}
+      data: GridData = {'rows': rows, 'negative': negative}
+      self.grids[grid] = data
      
-   def add_provider(self, provider: dict):
+   def add_provider(self, provider: dict[str, typing.Any]):
       self.providers.append(provider)
     
-   def get_sprite(self, texture: str) -> dict:
+   def get_sprite(self, texture: str) -> SpriteData:
       return self.sprite_map[texture]
    
    def next_char(self):
