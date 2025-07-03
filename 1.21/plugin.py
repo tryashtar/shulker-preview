@@ -49,12 +49,12 @@ def main(ctx: beet.Context):
    ArmorTrims = typing.TypedDict('ArmorTrims', {'model': str, 'overrides': dict[str, TextureColor]})
    ArmorEntry = typing.TypedDict('ArmorEntry', {'trims': dict[str, TextureColor], 'models': list[ArmorTrims]})
    ModelSprite = typing.TypedDict('ModelSprite', {'sprite': str, 'tint': dict[str, typing.Any] | None})
-   BlockProperties = typing.TypedDict('BlockProperties', {'property': str, 'values': list[str]})
+   PropertyCheck = typing.TypedDict('PropertyCheck', {'check': typing.Callable[[str], str], 'values': list[str]})
    simple_tinted: dict[str, int] = {}
    simple_property: dict[str, PropertyEntry] = {}
    potionlike: dict[int, dict[str, list[str]]] = {}
    armor: list[ArmorEntry] = []
-   block_states: dict[str, BlockProperties] = {}
+   case_property: dict[str, PropertyCheck] = {}
    
    # we're going to enumerate every item model in vanilla, to collect their sprites and sort into patterns
    # what follows are some functions for handling particular item models
@@ -164,7 +164,8 @@ def main(ctx: beet.Context):
    # models that switch based on a property fall into a few patterns
    # we don't even necessarily need to implement a similar switch if the pattern is easier done another way
    def handle_select(name: str, item_model: dict[str, typing.Any]) -> bool:
-      match short(item_model['property']):
+      prop = short(item_model['property'])
+      match prop:
          case 'trim_material':
             # armor tends to follow a specific pattern
             # with no trim, it renders some untinted sprites
@@ -211,7 +212,7 @@ def main(ctx: beet.Context):
                   return True
             armor.append({'trims':trims, 'models':[{'model':name, 'overrides':{}}]})
             return True
-         case 'block_state':
+         case 'block_state' | 'charge_type':
             # all of these in vanilla just render completely different sprites
             # so we have no better strategy than adding all of them as lang entries and picking the right one
             fallback = get_model_sprites(item_model['fallback'])
@@ -221,6 +222,11 @@ def main(ctx: beet.Context):
                return False
             fallback_spr = [x['sprite'] for x in fallback]
             model_translations[name] = fallback_spr
+            # the arrow charge type matches when there is any non-rocket item in the charged projectiles
+            # checking for this is awkward with only one subcommand
+            # it's easier to just let the rocket case come first so we don't have to
+            if prop == 'charge_type':
+               item_model['cases'].sort(key=lambda x: x['when'] == 'rocket', reverse=True)
             for case in item_model['cases']:
                layers = get_model_sprites(case['model'])
                if layers is None:
@@ -229,7 +235,20 @@ def main(ctx: beet.Context):
                   return False
                case_spr = [x['sprite'] for x in layers]
                model_translations[name + '.' + case['when']] = case_spr
-            block_states[name] = {'property': item_model['block_state_property'], 'values': [case['when'] for case in item_model['cases']]}
+            match prop:
+               case 'block_state':
+                  block_prop = item_model['block_state_property']
+                  check = lambda x: f'"minecraft:block_state"{{{block_prop}:"{x}"}}'
+               case 'charge_type':
+                  def charge_check(val: str) -> str:
+                     match val:
+                        case 'arrow':
+                           return '"minecraft:charged_projectiles"[0]'
+                        case 'rocket':
+                           return '"minecraft:charged_projectiles"[{id:"minecraft:firework_rocket"}]'
+                     raise ValueError(val)
+                  check = charge_check
+            case_property[name] = {'check': check, 'values': [case['when'] for case in item_model['cases']]}
             return True
          case _:
             return False
@@ -390,29 +409,30 @@ def main(ctx: beet.Context):
          "# models that require special rendering, like component checks or colored layers",
       ])
       
-      model_fn.append(f'execute {check_model(simple_property.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/property')
-      property_fn = []
+      model_fn.append(f'execute {check_model([*simple_property.keys(), *case_property.keys()])} run return run function tryashtar.shulker_preview:render/row_{row}/model/property')
+      property_fn = [
+         '# models that change based on a component property',
+      ]
       for model, entry in simple_property.items():
          property_fn.extend([
             f'execute {check_model([model], entry['check'])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{entry['true']}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}',
             f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{entry['false']}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}',
          ])
+      for model, data in case_property.items():
+         for value in data['values']:
+            property_fn.append(f'execute {check_model([model])} if data storage tryashtar.shulker_preview:data item.components.{data['check'](value)} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{value}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+         property_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+
       datapack.functions[f'render/row_{row}/model/property'] = beet.Function(property_fn)
       
       model_fn.append(f'execute {check_model(simple_tinted.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/tinted')
-      tinted_fn = []
+      tinted_fn = [
+         '# models with a hardcoded color',
+      ]
       for model, tint in simple_tinted.items():
          tinted_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
       datapack.functions[f'render/row_{row}/model/tinted'] = beet.Function(tinted_fn)
-      
-      model_fn.append(f'execute {check_model(block_states.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/block_state')
-      block_fn = []
-      for model, data in block_states.items():
-         for value in data['values']:
-            block_fn.append(f'execute {check_model([model])} if data storage tryashtar.shulker_preview:data item.components."minecraft:block_state"{{{data['property']}:"{value}"}} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{value}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
-         block_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
-      datapack.functions[f'render/row_{row}/model/block_state'] = beet.Function(block_fn)
-      
+            
       for default_color, data in potionlike.items():
          fn_name = f'render/row_{row}/model/potion' if len(potionlike) == 1 else f'render/row_{row}/model/potion/{default_color}'
          model_fn.append(f'execute {check_model(data.keys())} run return run function tryashtar.shulker_preview:{fn_name}')
