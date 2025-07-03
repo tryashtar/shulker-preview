@@ -17,24 +17,266 @@ def main(ctx: beet.Context):
    # to do: when https://github.com/mcbeet/beet/pull/472 is merged, use 'minecraft' field
    target_version = ctx.meta['minecraft_version']
    
-   # flat items can have their actual textures added to the font
-   # but 3D models like blocks need to be rendered and stored separately in the pack
-   # ideally in a big grid like a normal font provider texture
+   # every item texture needs to be added to the font
+   # flat models (using builtin/generated) are composed of one or more atlas entries as layers
+   # we can find these texture paths and reference them directly, adding each one to the font
+   atlas_sprites: list[str] = []
+   # 3D models like blocks need to be rendered and stored separately in the pack
+   # we'll put them in a big grid like a normal font provider
+   rendered_sprites: list[str] = []
+   
+   # the renderer doesn't provide a simple model -> image API
+   # instead, we feed it many models with output paths, then it saves them all to the pack at once
+   # but we don't want them in the pack, we want them in a big grid
+   # so we keep track of the output paths so we can load the generated images, then delete them from the pack
    ctx.meta['model_resolver'] = {
       'minecraft_version': target_version,
       'preferred_minecraft_generated': 'java',
       'special_rendering': True,
       'use_cache': True
    }
-   render = model_resolver.Render(ctx=ctx)
-   render.default_render_size = 64
+   render = model_resolver.Render(ctx=ctx, default_render_size=64)
    
-   # the renderer doesn't provide a simple model -> image API
-   # instead, we feed it many models with output paths, then it saves them all to the pack at once
-   # but we don't want them in the pack, we want them in a big grid
-   # so we keep track of the output paths so we can load the generated images, then delete them from the pack
-   rendered_sprites: list[str] = []
-   atlas_sprites: list[str] = []
+   # if an item model just consists of sprites, we can layer those sprites into one lang file entry
+   model_translations: dict[str, list[str]] = {}
+   # if the item model needs extra sprites drawn conditionally or with color, we need discrete entries for those
+   overlay_translations: dict[str, list[str]] = {}
+   
+   # even among models that can't be drawn with a simple macro, there are common patterns
+   # to make the item-drawing function more efficient, we want to detect these models in groups and do the special logic
+   # so collect models into these groups with known strategies for special drawing
+   PropertyEntry = typing.TypedDict('PropertyEntry', {'check': str, 'true': str, 'false': str})
+   ArmorTrims = typing.TypedDict('ArmorTrims', {'model': str, 'overrides': dict[str, TextureColor]})
+   ArmorEntry = typing.TypedDict('ArmorEntry', {'trims': dict[str, TextureColor], 'models': list[ArmorTrims]})
+   ModelSprite = typing.TypedDict('ModelSprite', {'sprite': str, 'tint': dict[str, typing.Any] | None})
+   simple_tinted: dict[str, int] = {}
+   simple_property: dict[str, PropertyEntry] = {}
+   potionlike: dict[int, dict[str, list[str]]] = {}
+   armor: list[ArmorEntry] = []
+   
+   # we're going to enumerate every item model in vanilla, to collect their sprites and sort into patterns
+   # what follows are some functions for handling particular item models
+   vanilla = beet.contrib.vanilla.Vanilla(ctx, minecraft_version=target_version)
+   block_atlas = vanilla.assets.atlases['minecraft:blocks']
+   
+   # if this item model just consists of sprites (i.e. no conditions), return said sprites
+   # many models are like this, and they're easier to render and check for in patterns
+   def get_model_sprites(item_model: dict[str, typing.Any]) -> list[ModelSprite] | None:
+      model_type = short(item_model['type'])
+      match model_type:
+         case 'model':
+            # most item models are this, just a simple model
+            # it could be a 3D model we need to render, or a flat item made of one or more layers
+            tints: list[dict[str, typing.Any]] = item_model.get('tints', [])
+            model_name = canon(item_model['model'])
+            model = vanilla.assets.models[model_name]
+            layers = generated_layers(vanilla.assets.models, model)
+            if layers is None:
+               # this is a 3D model, render it and use that texture as the single sprite
+               gen_name = model_name + '.model'
+               if gen_name not in rendered_sprites:
+                  render.add_model_task(
+                     model = model_name,
+                     path_ctx = gen_name,
+                     animation_mode = 'one_file'
+                  )
+                  rendered_sprites.append(gen_name)
+               layers = [gen_name]
+            else:
+               # this is a flat item, its sprites come from the atlas
+               for layer in layers:
+                  if layer not in atlas_sprites:
+                     atlas_sprites.append(layer)
+            # I don't really understand tints super well
+            # I think each tint matches a layer, so it's correct to zip them like this?
+            if len(tints) > len(layers):
+               return None
+            return [{'sprite':layers[i], 'tint':tints[i] if i < len(tints) else None} for i in range(len(layers))]
+         case 'special':
+            # some special models are simple and can just be one sprite
+            match short(item_model['model']['type']):
+               case 'chest' | 'conduit' | 'head' | 'player_head' | 'shulker_box' | 'bed' | 'banner':
+                  gen_name = name + '.item'
+                  if gen_name not in rendered_sprites:
+                     render.add_item_task(
+                        item = model_resolver.Item(id=name, components={'minecraft:item_model':name}),
+                        path_ctx = gen_name,
+                        animation_mode = 'one_file'
+                     )
+                     rendered_sprites.append(gen_name)
+                  return [{'sprite':gen_name, 'tint':None}]
+               case _:
+                  return None
+         case 'composite':
+            # if all the models in this composite are made of sprites,
+            # then the entire thing is just made of sprites
+            # this codepath doesn't trigger in vanilla right now
+            combined = []
+            for entry in item_model['models']:
+               result = get_model_sprites(entry)
+               if result is None:
+                  return None
+               combined.extend(result)
+            return combined
+         case _:
+            return None
+   
+   # when a model is made entirely of sprites, it may fall into one of a few patterns depending on whether or how they're tinted
+   def handle_layered(name: str, layers: list[ModelSprite]) -> bool:
+      tinted_layer_indices = [i for i, layer in enumerate(layers) if layer['tint'] is not None]
+      if len(tinted_layer_indices) == 0:
+         # none of the layers are tinted
+         # great, we can just layer all the sprites into one entry
+         model_translations[name] = [layer['sprite'] for layer in layers]
+         return True
+      if tinted_layer_indices == [0]:
+         # only the first layer is tinted
+         # we'll use one lang entry for the bottom layer,
+         # and one more for everything on top
+         model_translations[name] = [layers[0]['sprite']]
+         if len(layers) > 1:
+            overlay_translations[name] = [layer['sprite'] for layer in layers[1:]]
+         tint = layers[0]['tint']
+         assert tint is not None
+         # simple trick, vanilla items use this exact configuration which we can precompute
+         if short(tint['type']) == 'grass':
+            if tint['downfall'] == 1.0 and tint['temperature'] == 0.5:
+               tint['type'] = 'minecraft:constant'
+               tint['value'] = 0xff7bbd6b
+         match (short(tint['type']), len(layers)):
+            case ('constant', 1):
+               # only one layer tinted with a hardcoded color, very easy
+               simple_tinted[name] = tint['value']
+               return True
+            case ('potion', 2):
+               # one layer tinted with potion tint, and one untinted layer on top
+               # potions and tipped arrows match this pattern
+               if tint['default'] not in potionlike:
+                  potionlike[tint['default']] = {}
+               potionlike[tint['default']][name] = [layer['sprite'] for layer in layers]
+               return True
+            case _:
+               return False
+      return False
+   
+   # models that switch based on a property fall into a few patterns
+   # we don't even necessarily need to implement a similar switch if the pattern is easier done another way
+   def handle_select(name: str, item_model: dict[str, typing.Any]) -> bool:
+      match short(item_model['property']):
+         case 'trim_material':
+            # armor tends to follow a specific pattern
+            # with no trim, it renders some untinted sprites
+            # with a trim, it renders those same untinted sprites with one trim sprite on top
+            # (and a slightly different trim texture when the material matches)
+            # check that this item matches this exact pattern
+            # if it does, we can render it by always drawing the base, then checking the material to draw the trim
+            common_base: list[str] | None = None
+            trims: dict[str, TextureColor] = {}
+            layers = get_model_sprites(item_model['fallback'])
+            if layers is not None and all(x['tint'] is None for x in layers):
+               common_base = [x['sprite'] for x in layers]
+            if common_base is None:
+               return False
+            for case in item_model['cases']:
+               layers = get_model_sprites(case['model'])
+               if layers is None:
+                  return False
+               if not all(x['tint'] is None for x in layers):
+                  return False
+               all_layers = [x['sprite'] for x in layers]
+               if len(all_layers) != len(common_base) + 1:
+                  return False
+               if all_layers[:len(common_base)] != common_base:
+                  return False
+               texture = get_texture_from_atlas_entry(vanilla.assets.textures, block_atlas, all_layers[-1])
+               if texture is None:
+                  return False
+               trims[canon(case['when'])] = texture
+            # use one lang entry for the base sprites
+            model_translations[name] = common_base
+            for trim in trims.values():
+               # and one lang entry for the trim sprite
+               overlay_translations[trim['texture']] = [trim['texture']]
+            # each entry in the armor list has a map of trims, and list of models that use those trims
+            # for example, all boot models use a trim map that points to the boot trim texture
+            # if this model's trims match one we already have, add to its list, otherwise add a new entry
+            # since matching materials use a darker color, there's usually one different trim in an otherwise perfect match
+            # instead of creating a whole new entry, just keep that single override
+            for entry in armor:
+               difference = dict_diff(trims, entry['trims'])
+               if len(difference) <= 1:
+                  entry['models'].append({'model':name, 'overrides':difference})
+                  return True
+            armor.append({'trims':trims, 'models':[{'model':name, 'overrides':{}}]})
+            return True
+         case _:
+            return False
+   
+   # models that switch based on a condition
+   # we need to decide what to do based on how complex the two options are
+   def handle_condition(name: str, item_model: dict[str, typing.Any]) -> bool:
+      match short(item_model['property']):
+         case 'broken':
+            # used by elytra in vanilla
+            check = 'max_damage,!unbreakable,damage~{durability:{max:1}}'
+            true_name = name + '.broken'
+         case 'has_component':
+            # used by wolf armor in vanilla
+            component = item_model['component']
+            check = short(component)
+            true_name = name + '.' + check
+         case 'component':
+            # not used in vanilla
+            # I don't even bother converting the predicate to SNBT here
+            component = item_model['predicate']
+            predicate = item_model['value']
+            check = f'{short(component)}~{predicate}'
+            true_name = name + '.check'
+            print(f'Model {name} is using component condition! {item_model}')
+         case 'damaged':
+            # not used in vanilla
+            check = 'max_damage,!unbreakable,damage~{damage:{min:1}}'
+            true_name = name + '.damaged'
+         case _:
+            return False
+      # if both alternate models are simply sprites with no tinting, we can simply add lang entries for both
+      # elytra does this
+      on_true = get_model_sprites(item_model['on_true'])
+      on_false = get_model_sprites(item_model['on_false'])
+      if on_true is not None and on_false is not None and all(x['tint'] is None for x in on_true) and all(x['tint'] is None for x in on_false):
+         false_name = name
+         model_translations[true_name] = [x['sprite'] for x in on_true]
+         model_translations[false_name] = [x['sprite'] for x in on_false]
+         simple_property[name] = {'check':check, 'true': true_name, 'false': false_name}
+         return True
+      return False
+   
+   for name, entry in vanilla.assets.item_models.items():
+      name = canon(name)
+      squashed_model = squash_conditions(entry.data['model'])
+      result = get_model_sprites(squashed_model)
+      if result is not None:
+         handled = handle_layered(name, result)
+      else:
+         handled = False
+      if not handled:
+         model_type = short(squashed_model['type'])
+         match model_type:
+            case 'select':
+               handled = handle_select(name, squashed_model)
+            case 'condition':
+               handled = handle_condition(name, squashed_model)
+            case _:
+               handled = False
+      if not handled:
+         print(f'Unhandled item model {name}: {squashed_model}')
+
+   render.run()
+   generated_entries = [(ctx.assets.textures[x].image, x) for x in rendered_sprites]
+   grid_img, grid_refs = make_grid(generated_entries, render.default_render_size)
+   for path in rendered_sprites:
+      del ctx.assets.textures[path]
+   resourcepack.textures['block_sheet'] = beet.Texture(grid_img)
    
    font = FontManager(rows=3)
    next_slot = font.get_space(15)
@@ -67,217 +309,6 @@ def main(ctx: beet.Context):
    for row in range(font.rows):
       lang.data[f'tryashtar.shulker_preview.missingno.{row}'] = missing['rows'][row] + missing['negative'] + next_slot
 
-   # the goal is to convert every vanilla item model definition to text components
-   # anything we can draw "all at once" gets a lang file entry consisting of its characters
-   # most models can be entirely drawn all at once just by looking up their lang file entry with a macro
-   # but a few need special command logic written by hand
-   model_translations: dict[str, list[str]] = {}
-   overlay_translations: dict[str, list[str]] = {}
-   
-   # even among models that can't be drawn with a simple macro, there are common patterns
-   # for example, many models are simply a single texture with a hardcoded color
-   # to make the item-drawing function more efficient, we want to detect these models in groups and do the special logic
-   # so collect models into these groups with known strategies for special drawing
-   PropertyEntry = typing.TypedDict('PropertyEntry', {'check': str, 'true': str, 'false': str})
-   ArmorTrims = typing.TypedDict('ArmorTrims', {'model': str, 'overrides': dict[str, TextureColor]})
-   ArmorEntry = typing.TypedDict('ArmorEntry', {'trims': dict[str, TextureColor], 'models': list[ArmorTrims]})
-   simple_tinted: dict[str, int] = {}
-   simple_property: dict[str, PropertyEntry] = {}
-   potionlike: dict[int, dict[str, list[str]]] = {}
-   armor: list[ArmorEntry] = []
-   
-   vanilla = beet.contrib.vanilla.Vanilla(ctx, minecraft_version=target_version)
-   block_atlas = vanilla.assets.atlases['minecraft:blocks']
-   
-   ModelLayer = typing.TypedDict('ModelLayer', {'layer': str, 'tint': dict[str, typing.Any] | None})
-   def get_model_layers(item_model: dict[str, typing.Any]) -> list[ModelLayer] | None:
-      model_type = short(item_model['type'])
-      match model_type:
-         case 'model':
-            tints: list[dict[str, typing.Any]] = item_model.get('tints', [])
-            model_name = canon(item_model['model'])
-            model = vanilla.assets.models[model_name]
-            layers = generated_layers(vanilla.assets.models, model)
-            if layers is None:
-               # this is a 3D model, render it and use that texture as the single layer
-               gen_name = model_name + '.model'
-               if gen_name not in rendered_sprites:
-                  render.add_model_task(
-                     model = model_name,
-                     path_ctx = gen_name,
-                     animation_mode = 'one_file'
-                  )
-                  rendered_sprites.append(gen_name)
-               layers = [gen_name]
-            else:
-               for layer in layers:
-                  if layer not in atlas_sprites:
-                     atlas_sprites.append(layer)
-            if len(tints) > len(layers):
-               return None
-            return [{'layer':layers[i], 'tint':tints[i] if i < len(tints) else None} for i in range(len(layers))]
-         case 'special':
-            match short(item_model['model']['type']):
-               case 'chest' | 'conduit' | 'head' | 'player_head' | 'shulker_box' | 'bed' | 'banner':
-                  gen_name = name + '.item'
-                  if gen_name not in rendered_sprites:
-                     render.add_item_task(
-                        item = model_resolver.Item(id=name, components={'minecraft:item_model':name}),
-                        path_ctx = gen_name,
-                        animation_mode = 'one_file'
-                     )
-                     rendered_sprites.append(gen_name)
-                  return [{'layer':gen_name, 'tint':None}]
-               case _:
-                  return None
-         case 'composite':
-            combined = []
-            for entry in item_model['models']:
-               result = get_model_layers(entry)
-               if result is None:
-                  return None
-               combined.extend(result)
-            return combined
-         case _:
-            return None
-   
-   def handle_layered(name: str, layers: list[ModelLayer]) -> bool:
-      has_tints = [i for i, layer in enumerate(layers) if layer['tint'] is not None]
-      if len(has_tints) == 0:
-         model_translations[name] = [layer['layer'] for layer in layers]
-         return True
-      if has_tints == [0]:
-         model_translations[name] = [layers[0]['layer']]
-         if len(layers) > 1:
-            overlay_translations[name] = [layer['layer'] for layer in layers[1:]]
-         tint = layers[0]['tint']
-         assert tint is not None
-         # simple trick, vanilla items use this exact configuration which we can precompute
-         if short(tint['type']) == 'grass':
-            if tint['downfall'] == 1.0 and tint['temperature'] == 0.5:
-               tint['type'] = 'minecraft:constant'
-               tint['value'] = 0xff7bbd6b
-         match (short(tint['type']), len(layers)):
-            case ('constant', 1):
-               simple_tinted[name] = tint['value']
-               return True
-            case ('potion', 2):
-               if tint['default'] not in potionlike:
-                  potionlike[tint['default']] = {}
-               potionlike[tint['default']][name] = [layer['layer'] for layer in layers]
-               return True
-            case _:
-               return False
-      return False
-   
-   def dict_diff(d1: dict, d2: dict) -> dict:
-      result = {}
-      for key, value in d1.items():
-         if key not in d2 or d2[key] != value:
-            result[key] = value
-      return result
-   
-   def handle_select(name: str, item_model: dict[str, typing.Any]) -> bool:
-      match short(item_model['property']):
-         case 'trim_material':
-            # armor tends to follow a specific pattern
-            # with no trim, it renders some untinted layers
-            # with a trim, it renders those same untinted layers with one trim texture on top
-            # (and a slightly different trim texture when the material matches)
-            # check that this item matches this exact pattern so we can render it correctly
-            common_base: list[str] | None = None
-            trims: dict[str, TextureColor] = {}
-            layers = get_model_layers(item_model['fallback'])
-            if layers is not None and all(x['tint'] is None for x in layers):
-               common_base = [x['layer'] for x in layers]
-            if common_base is None:
-               return False
-            for case in item_model['cases']:
-               layers = get_model_layers(case['model'])
-               if layers is None:
-                  return False
-               if not all(x['tint'] is None for x in layers):
-                  return False
-               all_layers = [x['layer'] for x in layers]
-               if len(all_layers) != len(common_base) + 1:
-                  return False
-               if all_layers[:len(common_base)] != common_base:
-                  return False
-               perm = get_texture_from_atlas_entry(vanilla.assets.textures, block_atlas, all_layers[-1])
-               if perm is None:
-                  return False
-               trims[canon(case['when'])] = perm
-            model_translations[name] = common_base
-            for trim in trims.values():
-               overlay_translations[trim['texture']] = [trim['texture']]
-            for entry in armor:
-               difference = dict_diff(trims, entry['trims'])
-               if len(difference) <= 2:
-                  entry['models'].append({'model':name, 'overrides':difference})
-                  return True
-            armor.append({'trims':trims, 'models':[{'model':name, 'overrides':{}}]})
-            return True
-         case _:
-            return False
-   
-   def handle_condition(name: str, item_model: dict[str, typing.Any]) -> bool:
-      match short(item_model['property']):
-         case 'broken':
-            check = 'max_damage,!unbreakable,damage~{durability:{max:1}}'
-            true_name = name + '.broken'
-         case 'has_component':
-            component = item_model['component']
-            check = short(component)
-            true_name = name + '.' + check
-         case 'component':
-            component = item_model['predicate']
-            predicate = item_model['value']
-            # to do: convert to SNBT
-            check = f'{short(component)}~{predicate}'
-            true_name = name + '.check'
-            print(f'Model {name} is using component condition! {item_model}')
-         case 'damaged':
-            check = 'max_damage,!unbreakable,damage~{damage:{min:1}}'
-            true_name = name + '.damaged'
-         case _:
-            return False
-      on_true = get_model_layers(item_model['on_true'])
-      on_false = get_model_layers(item_model['on_false'])
-      # all(x['tint'] is None for x in layers)
-      if on_true is not None and on_false is not None:
-         false_name = name
-         model_translations[true_name] = [x['layer'] for x in on_true]
-         model_translations[false_name] = [x['layer'] for x in on_false]
-         simple_property[name] = {'check':check, 'true': true_name, 'false': false_name}
-         return True
-      return False
-   
-   for name, entry in vanilla.assets.item_models.items():
-      name = canon(name)
-      squashed_model = squash_conditions(entry.data['model'])
-      result = get_model_layers(squashed_model)
-      if result is not None:
-         handled = handle_layered(name, result)
-      else:
-         handled = False
-      if not handled:
-         model_type = short(squashed_model['type'])
-         match model_type:
-            case 'select':
-               handled = handle_select(name, squashed_model)
-            case 'condition':
-               handled = handle_condition(name, squashed_model)
-            case _:
-               handled = False
-      if not handled:
-         print(f'Unhandled item model {name}: {squashed_model}')
-
-   render.run()
-   generated_entries = [(ctx.assets.textures[x].image, x) for x in rendered_sprites]
-   grid_img, grid_refs = make_grid(generated_entries, render.default_render_size)
-   for path in rendered_sprites:
-      del ctx.assets.textures[path]
-   resourcepack.textures['block_sheet'] = beet.Texture(grid_img)
    font.add_grid('block_sheet', grid_refs)
    for entry in atlas_sprites:
       texture = get_texture_from_atlas_entry(vanilla.assets.textures, block_atlas, entry)
@@ -442,6 +473,13 @@ def color_hex(color: int):
       color += 2**32
    color %= 2**24
    return f'#{format(color, '06x')}'
+
+def dict_diff(d1: dict, d2: dict) -> dict:
+   result = {}
+   for key, value in d1.items():
+      if key not in d2 or d2[key] != value:
+         result[key] = value
+   return result
 
 # item models can have logic to switch to different models if certain conditions are met
 # we have to check these conditions with commands
