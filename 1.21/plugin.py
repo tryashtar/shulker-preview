@@ -409,6 +409,7 @@ def main(ctx: beet.Context):
    next_slot = font.get_space(15)
    empty_slot = font.get_space(18)
    overlay = font.get_space(-3)
+   prev_slot = font.get_space(-18)
    tooltip_push_back = font.get_space(-4)
    tooltip_push_fwd = font.get_space(8)
    row_end = font.get_space(-162)
@@ -453,7 +454,7 @@ def main(ctx: beet.Context):
    for name, sprites in overlay_translations.items():
       data = [font.get_sprite(x) for x in sprites]
       for row in range(font.rows):
-         lang.data[f'tryashtar.shulker_preview.overlay.{name}.{row}'] = overlay + overlay.join([x['rows'][row] + x['negative'] for x in data]) + next_slot
+         lang.data[f'tryashtar.shulker_preview.overlay.{name}.{row}'] = prev_slot + overlay.join([x['rows'][row] + x['negative'] for x in data]) + next_slot
 
    # we need the item_model component in a string to run the macro
    # but there's no way to do this if the component is set to the default for that item type (which it almost always is)
@@ -801,7 +802,7 @@ class FontManager:
    def add_sprite(self, texture: str) -> SpriteData:
       if texture not in self.sprite_map:
          data: SpriteData = {'rows': [self.next_char() for _ in range(self.rows)], 'negative': self.next_char()}
-         self.sprites[texture] = data
+         self.sprites[texture + '.png'] = data
          self.sprite_map[texture] = data
       return self.sprite_map[texture]
    
@@ -827,7 +828,7 @@ class FontManager:
                   x[-1] += '\u0000'
                negative[-1] += '\u0000'
       data: GridData = {'rows': rows, 'negative': negative}
-      self.grids[grid] = data
+      self.grids[grid + '.png'] = data
      
    def add_provider(self, provider: dict[str, typing.Any]):
       self.providers.append(provider)
