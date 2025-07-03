@@ -23,19 +23,9 @@ def main(ctx: beet.Context):
    atlas_sprites: list[str] = []
    # 3D models like blocks need to be rendered and stored separately in the pack
    # we'll put them in a big grid like a normal font provider
-   rendered_sprites: list[str] = []
-   
-   # the renderer doesn't provide a simple model -> image API
-   # instead, we feed it many models with output paths, then it saves them all to the pack at once
-   # but we don't want them in the pack, we want them in a big grid
-   # so we keep track of the output paths so we can load the generated images, then delete them from the pack
-   ctx.meta['model_resolver'] = {
-      'minecraft_version': target_version,
-      'preferred_minecraft_generated': 'java',
-      'special_rendering': True,
-      'use_cache': True
-   }
-   render = model_resolver.Render(ctx=ctx, default_render_size=64)
+   rendered_item_sprites: dict[str, str] = {}
+   rendered_model_sprites: dict[str, str] = {}
+   rendered_fake_sprites: dict[str, dict[str, typing.Any]] = {}
    
    # if an item model just consists of sprites, we can layer those sprites into one lang file entry
    model_translations: dict[str, list[str]] = {}
@@ -46,8 +36,9 @@ def main(ctx: beet.Context):
    # to make the item-drawing function more efficient, we want to detect these models in groups and do the special logic
    # so collect models into these groups with known strategies for special drawing
    PropertyEntry = typing.TypedDict('PropertyEntry', {'check': str, 'true': str, 'false': str})
-   ArmorTrims = typing.TypedDict('ArmorTrims', {'model': str, 'dye': int | None, 'overrides': dict[str, TextureColor]})
-   ArmorEntry = typing.TypedDict('ArmorEntry', {'trims': dict[str, TextureColor], 'models': list[ArmorTrims]})
+   Trim = typing.TypedDict('Trim', {'texture': str, 'color': int | None, 'name': str})
+   ArmorTrims = typing.TypedDict('ArmorTrims', {'model': str, 'dye': int | None, 'overrides': dict[str, Trim]})
+   ArmorEntry = typing.TypedDict('ArmorEntry', {'trims': dict[str, Trim], 'models': list[ArmorTrims]})
    ModelSprite = typing.TypedDict('ModelSprite', {'sprite': str, 'tint': dict[str, typing.Any] | None})
    PropertyCheck = typing.TypedDict('PropertyCheck', {'check': typing.Callable[[str], str], 'values': list[str]})
    simple_tinted: dict[str, int] = {}
@@ -55,11 +46,23 @@ def main(ctx: beet.Context):
    potionlike: dict[int, dict[str, list[str]]] = {}
    armor: list[ArmorEntry] = []
    case_property: dict[str, PropertyCheck] = {}
+   banners: list[str] = []
    
    # we're going to enumerate every item model in vanilla, to collect their sprites and sort into patterns
    # what follows are some functions for handling particular item models
    vanilla = beet.contrib.vanilla.Vanilla(ctx, minecraft_version=target_version)
    block_atlas = vanilla.assets.atlases['minecraft:blocks']
+   
+   banner_patterns: dict[str, str] = {}
+   banner_atlas = vanilla.assets.atlases['minecraft:banner_patterns']
+   for pattern, file in vanilla.data.banner_patterns.items():
+      asset = file.data['asset_id']
+      namespace, path = canon(asset).split(':')
+      final = f'{namespace}:entity/banner/{path}'
+      result = get_texture_from_atlas_entry(vanilla.assets.textures, banner_atlas, final)
+      if result is not None:
+         texture = result['texture']
+         banner_patterns[pattern] = texture
    
    # if this item model just consists of sprites (i.e. no conditions), return said sprites
    # many models are like this, and they're easier to render and check for in patterns
@@ -76,13 +79,7 @@ def main(ctx: beet.Context):
             if layers is None:
                # this is a 3D model, render it and use that texture as the single sprite
                gen_name = model_name + '.model'
-               if gen_name not in rendered_sprites:
-                  render.add_model_task(
-                     model = model_name,
-                     path_ctx = gen_name,
-                     animation_mode = 'one_file'
-                  )
-                  rendered_sprites.append(gen_name)
+               rendered_model_sprites[gen_name] = model_name
                layers = [gen_name]
             else:
                # this is a flat item, its sprites come from the atlas
@@ -97,15 +94,9 @@ def main(ctx: beet.Context):
          case 'special':
             # some special models are simple and can just be one sprite
             match short(item_model['model']['type']):
-               case 'chest' | 'conduit' | 'head' | 'player_head' | 'shulker_box' | 'bed' | 'banner':
+               case 'chest' | 'conduit' | 'head' | 'player_head' | 'shulker_box' | 'bed':
                   gen_name = name + '.item'
-                  if gen_name not in rendered_sprites:
-                     render.add_item_task(
-                        item = model_resolver.Item(id=name, components={'minecraft:item_model':name}),
-                        path_ctx = gen_name,
-                        animation_mode = 'one_file'
-                     )
-                     rendered_sprites.append(gen_name)
+                  rendered_item_sprites[gen_name] = name
                   return [{'sprite':gen_name, 'tint':None}]
                case _:
                   return None
@@ -174,7 +165,7 @@ def main(ctx: beet.Context):
             # check that this item matches this exact pattern
             # if it does, we can render it by always drawing the base, then checking the material to draw the trim
             common_base: list[ModelSprite]
-            trims: dict[str, TextureColor] = {}
+            trims: dict[str, Trim] = {}
             layers = get_model_sprites(item_model['fallback'])
             if layers is None:
                return False
@@ -190,7 +181,10 @@ def main(ctx: beet.Context):
                texture = get_texture_from_atlas_entry(vanilla.assets.textures, block_atlas, layers[-1]['sprite'])
                if texture is None:
                   return False
-               trims[canon(case['when'])] = texture
+               trim_name = short(texture['texture'])
+               if trim_name.startswith('trims/items/') and trim_name.endswith('_trim'):
+                  trim_name = 'trim.' + trim_name.removeprefix('trims/items/').removesuffix('_trim')
+               trims[canon(case['when'])] = {'color':texture['color'], 'texture':texture['texture'], 'name':trim_name}
             if all(x['tint'] is None for x in common_base):
                # use one lang entry for the base sprites
                model_translations[name] = [x['sprite'] for x in common_base]
@@ -214,7 +208,7 @@ def main(ctx: beet.Context):
                return False
             for trim in trims.values():
                # use one lang entry for the trim sprite
-               overlay_translations[trim['texture']] = [trim['texture']]
+               overlay_translations[trim['name']] = [trim['texture']]
             # each entry in the armor list has a map of trims, and list of models that use those trims
             # for example, all boot models use a trim map that points to the boot trim texture
             # if this model's trims match one we already have, add to its list, otherwise add a new entry
@@ -307,6 +301,45 @@ def main(ctx: beet.Context):
          return True
       return False
    
+   # some special models that render extra stuff based on certain components
+   def handle_special(name: str, item_model: dict[str, typing.Any]) -> bool:
+      special = short(item_model['model']['type'])
+      match special:
+         case 'banner' | 'shield':
+            gen_name = name + '.item'
+            rendered_item_sprites[gen_name] = name
+            # use one lang entry for the base model
+            model_translations[name] = [gen_name]
+            for pattern, texture in banner_patterns.items():
+               fake_model = {
+                  "parent": item_model['base'],
+                  "textures": {
+                     "0": texture
+                  },
+                  "elements": [
+                     {
+                        "from": [8.66667, 2.66667, 1.33333],
+                        "to": [9.66667, 29.33333, 14.66667],
+                        "rotation": {"angle": -90, "axis": "y", "origin": [8, 0, 8]},
+                        "faces": {
+                           "north": {"uv": [5.25, 0.25, 5.5, 10.25], "texture": "#0"},
+                           "east": {"uv": [0.25, 0.25, 5.25, 10.25], "texture": "#0"},
+                           "south": {"uv": [0, 0.25, 0.25, 10.25], "texture": "#0"},
+                           "west": {"uv": [5.5, 0.25, 10.5, 10.25], "texture": "#0"},
+                           "up": {"uv": [5.25, 0, 0.25, 0.25], "rotation": 90, "texture": "#0"},
+                           "down": {"uv": [10.25, 0, 5.25, 0.25], "rotation": 270, "texture": "#0"}
+                        }
+                     }
+                  ]
+               }
+               gen_name = pattern + '.banner'
+               rendered_fake_sprites[gen_name] = fake_model
+               overlay_translations['banner.' + pattern] = [gen_name]
+            banners.append(name)
+            return True
+         case _:
+            return False
+   
    for name, entry in vanilla.assets.item_models.items():
       name = canon(name)
       squashed_model = squash_conditions(entry.data['model'])
@@ -322,16 +355,54 @@ def main(ctx: beet.Context):
                handled = handle_select(name, squashed_model)
             case 'condition':
                handled = handle_condition(name, squashed_model)
+            case 'special':
+               handled = handle_special(name, squashed_model)
             case _:
                handled = False
       if not handled:
          print(f'Unhandled item model {name}: {squashed_model}')
 
+   # the renderer doesn't provide a simple model -> image API
+   # instead, we feed it many models with output paths, then it saves them all to the pack at once
+   # but we don't want them in the pack, we want them in a big grid
+   # so we keep track of the output paths so we can load the generated images, then delete them from the pack
+   for gen_name, fake_model in rendered_fake_sprites.items():
+      model_file = beet.Model(fake_model)
+      ctx.assets.models[gen_name] = model_file
+   ctx.meta['model_resolver'] = {
+      'minecraft_version': target_version,
+      'preferred_minecraft_generated': 'java',
+      'special_rendering': True,
+      'use_cache': True
+   }
+   render = model_resolver.Render(ctx=ctx)
+   render.default_render_size = 64
+   for gen_name, model_name in rendered_model_sprites.items():
+      render.add_model_task(
+         model = model_name,
+         path_ctx = gen_name,
+         animation_mode = 'one_file'
+      )
+   for gen_name, item_model in rendered_item_sprites.items():
+      render.add_item_task(
+         item = model_resolver.Item(id=item_model, components={'minecraft:item_model':item_model}),
+         path_ctx = gen_name,
+         animation_mode = 'one_file'
+      )
+   for gen_name in rendered_fake_sprites.keys():
+      render.add_model_task(
+         model = gen_name,
+         path_ctx = gen_name,
+         animation_mode = 'one_file'
+      )
    render.run()
-   generated_entries = [(ctx.assets.textures[x].image, x) for x in rendered_sprites]
+   all_rendered = [*rendered_model_sprites.keys(), *rendered_item_sprites.keys(), *rendered_fake_sprites.keys()]
+   generated_entries = [(ctx.assets.textures[x].image, x) for x in all_rendered]
    grid_img, grid_refs = make_grid(generated_entries, render.default_render_size)
-   for path in rendered_sprites:
-      del ctx.assets.textures[path]
+   for gen_name in all_rendered:
+      del ctx.assets.textures[gen_name]
+   for gen_name in rendered_fake_sprites.keys():
+      del ctx.assets.models[gen_name]
    resourcepack.textures['block_sheet'] = beet.Texture(grid_img)
    
    font = FontManager(rows=3)
@@ -365,13 +436,13 @@ def main(ctx: beet.Context):
    for row in range(font.rows):
       lang.data[f'tryashtar.shulker_preview.missingno.{row}'] = missing['rows'][row] + missing['negative'] + next_slot
 
-   font.add_grid('block_sheet', grid_refs)
+   font.add_grid('tryashtar.shulker_preview:block_sheet', grid_refs)
    for entry in atlas_sprites:
-      texture = get_texture_from_atlas_entry(vanilla.assets.textures, block_atlas, entry)
-      if texture is not None:
-         font.add_sprite(texture['texture'])
+      asset = get_texture_from_atlas_entry(vanilla.assets.textures, block_atlas, entry)
+      if asset is not None:
+         font.add_sprite(asset['texture'])
       else:
-         print(f'Texture not found in atlas {texture}')
+         print(f'Texture not found in atlas {asset}')
    resourcepack.fonts['preview'] = font.build()
    
    for model, sprites in model_translations.items():
@@ -503,15 +574,36 @@ def main(ctx: beet.Context):
             "# items of a matching material use a darker color",
          ]
          for model in entry['models']:
-            for material, texture in model['overrides'].items():
-               color = f',color:"{color_hex(texture['color'])}"' if texture['color'] is not None else ''
-               slot_fn.append(f'execute {check_model([model['model']], f'trim~{{material:"{short(material)}"}}')} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.overlay.{texture['texture']}.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
-         for material, texture in entry['trims'].items():
-            color = f',color:"{color_hex(texture['color'])}"' if texture['color'] is not None else ''
-            slot_fn.append(f'execute if items entity @s contents *[trim~{{material:"{short(material)}"}}] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.overlay.{texture['texture']}.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+            for material, asset in model['overrides'].items():
+               color = f',color:"{color_hex(asset['color'])}"' if asset['color'] is not None else ''
+               slot_fn.append(f'execute {check_model([model['model']], f'trim~{{material:"{short(material)}"}}')} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.overlay.{asset['name']}.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+         for material, asset in entry['trims'].items():
+            color = f',color:"{color_hex(asset['color'])}"' if asset['color'] is not None else ''
+            slot_fn.append(f'execute if items entity @s contents *[trim~{{material:"{short(material)}"}}] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.overlay.{asset['name']}.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
          datapack.functions[f'render/row_{row}/model/armor/trim/{slot_name}'] = beet.Function(slot_fn)
       datapack.functions[f'render/row_{row}/model/armor'] = beet.Function(armor_fn)
       datapack.functions[f'render/row_{row}/model/armor/base'] = beet.Function(armor_base)
+      
+      model_fn.append(f'execute {check_model(banners)} run return run function tryashtar.shulker_preview:render/row_{row}/model/banner')
+      banner_fn = [
+         "# banner models with pattern overlays",
+         f'function tryashtar.shulker_preview:render/row_{row}/model/simple.macro with storage tryashtar.shulker_preview:data item',
+         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/model/banner/pattern_loop',
+      ]
+      banner_loop = [
+         "# recursively render banner patterns using a macro",
+         'function tryashtar.shulker_preview:render/banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
+         f'function tryashtar.shulker_preview:render/row_{row}/model/banner/pattern with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
+         'data remove storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
+         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/model/banner/pattern_loop',
+      ]
+      banner_one = [
+         "# render one banner pattern with a dye-specific color",
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.overlay.banner.$(pattern).{row}",color:"$(color)",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}'
+      ]
+      datapack.functions[f'render/row_{row}/model/banner'] = beet.Function(banner_fn)
+      datapack.functions[f'render/row_{row}/model/banner/pattern_loop'] = beet.Function(banner_loop)
+      datapack.functions[f'render/row_{row}/model/banner/pattern'] = beet.Function(banner_one)
       
       model_fn.extend([
          '',
