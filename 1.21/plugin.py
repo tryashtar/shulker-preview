@@ -46,7 +46,7 @@ def main(ctx: beet.Context):
    # to make the item-drawing function more efficient, we want to detect these models in groups and do the special logic
    # so collect models into these groups with known strategies for special drawing
    PropertyEntry = typing.TypedDict('PropertyEntry', {'check': str, 'true': str, 'false': str})
-   ArmorTrims = typing.TypedDict('ArmorTrims', {'model': str, 'overrides': dict[str, TextureColor]})
+   ArmorTrims = typing.TypedDict('ArmorTrims', {'model': str, 'dye': int | None, 'overrides': dict[str, TextureColor]})
    ArmorEntry = typing.TypedDict('ArmorEntry', {'trims': dict[str, TextureColor], 'models': list[ArmorTrims]})
    ModelSprite = typing.TypedDict('ModelSprite', {'sprite': str, 'tint': dict[str, typing.Any] | None})
    PropertyCheck = typing.TypedDict('PropertyCheck', {'check': typing.Callable[[str], str], 'values': list[str]})
@@ -168,37 +168,52 @@ def main(ctx: beet.Context):
       match prop:
          case 'trim_material':
             # armor tends to follow a specific pattern
-            # with no trim, it renders some untinted sprites
-            # with a trim, it renders those same untinted sprites with one trim sprite on top
+            # with no trim, it renders some sprites
+            # with a trim, it renders those same sprites with one trim sprite on top
             # (and a slightly different trim texture when the material matches)
             # check that this item matches this exact pattern
             # if it does, we can render it by always drawing the base, then checking the material to draw the trim
-            common_base: list[str] | None = None
+            common_base: list[ModelSprite]
             trims: dict[str, TextureColor] = {}
             layers = get_model_sprites(item_model['fallback'])
-            if layers is not None and all(x['tint'] is None for x in layers):
-               common_base = [x['sprite'] for x in layers]
-            if common_base is None:
+            if layers is None:
                return False
+            common_base = layers
             for case in item_model['cases']:
                layers = get_model_sprites(case['model'])
                if layers is None:
                   return False
-               if not all(x['tint'] is None for x in layers):
+               if len(layers) != len(common_base) + 1:
                   return False
-               all_layers = [x['sprite'] for x in layers]
-               if len(all_layers) != len(common_base) + 1:
+               if layers[:len(common_base)] != common_base:
                   return False
-               if all_layers[:len(common_base)] != common_base:
-                  return False
-               texture = get_texture_from_atlas_entry(vanilla.assets.textures, block_atlas, all_layers[-1])
+               texture = get_texture_from_atlas_entry(vanilla.assets.textures, block_atlas, layers[-1]['sprite'])
                if texture is None:
                   return False
                trims[canon(case['when'])] = texture
-            # use one lang entry for the base sprites
-            model_translations[name] = common_base
+            if all(x['tint'] is None for x in common_base):
+               # use one lang entry for the base sprites
+               model_translations[name] = [x['sprite'] for x in common_base]
+               default_color = None
+            elif len(common_base) >= 1:
+               tint = common_base[0]['tint']
+               if tint is None:
+                  return False
+               if short(tint['type']) != 'dye':
+                  return False
+               if not all(x['tint'] is None for x in common_base[1:]):
+                  return False
+               default_color = tint['default']
+               # dyeable leather armor matches this pattern
+               # use one lang entry for the base dyed texture
+               # and one more for everything on top
+               model_translations[name] = [common_base[0]['sprite']]
+               if len(common_base) > 1:
+                  overlay_translations[name] = [x['sprite'] for x in common_base[1:]]
+            else:
+               return False
             for trim in trims.values():
-               # and one lang entry for the trim sprite
+               # use one lang entry for the trim sprite
                overlay_translations[trim['texture']] = [trim['texture']]
             # each entry in the armor list has a map of trims, and list of models that use those trims
             # for example, all boot models use a trim map that points to the boot trim texture
@@ -208,9 +223,9 @@ def main(ctx: beet.Context):
             for entry in armor:
                difference = dict_diff(trims, entry['trims'])
                if len(difference) <= 1:
-                  entry['models'].append({'model':name, 'overrides':difference})
+                  entry['models'].append({'model':name, 'dye': default_color, 'overrides':difference})
                   return True
-            armor.append({'trims':trims, 'models':[{'model':name, 'overrides':{}}]})
+            armor.append({'trims':trims, 'models':[{'model':name, 'dye': default_color, 'overrides':{}}]})
             return True
          case 'block_state' | 'charge_type':
             # all of these in vanilla just render completely different sprites
@@ -367,7 +382,7 @@ def main(ctx: beet.Context):
    for name, sprites in overlay_translations.items():
       data = [font.get_sprite(x) for x in sprites]
       for row in range(font.rows):
-         lang.data[f'tryashtar.shulker_preview.layer.{name}.{row}'] = overlay + overlay.join([x['rows'][row] + x['negative'] for x in data]) + next_slot
+         lang.data[f'tryashtar.shulker_preview.overlay.{name}.{row}'] = overlay + overlay.join([x['rows'][row] + x['negative'] for x in data]) + next_slot
 
    # we need the item_model component in a string to run the macro
    # but there's no way to do this if the component is set to the default for that item type (which it almost always is)
@@ -411,7 +426,7 @@ def main(ctx: beet.Context):
       
       model_fn.append(f'execute {check_model([*simple_property.keys(), *case_property.keys()])} run return run function tryashtar.shulker_preview:render/row_{row}/model/property')
       property_fn = [
-         '# models that change based on a component property',
+         "# models that change based on a component property",
       ]
       for model, entry in simple_property.items():
          property_fn.extend([
@@ -427,7 +442,7 @@ def main(ctx: beet.Context):
       
       model_fn.append(f'execute {check_model(simple_tinted.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/tinted')
       tinted_fn = [
-         '# models with a hardcoded color',
+         "# models with a hardcoded color",
       ]
       for model, tint in simple_tinted.items():
          tinted_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
@@ -443,26 +458,45 @@ def main(ctx: beet.Context):
             'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:potion_contents".custom_color',
             'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
             'execute if score #has_color shulker_preview matches 0 run function tryashtar.shulker_preview:render/potion_color',
-            f'function tryashtar.shulker_preview:{fn_name}.macro with storage tryashtar.shulker_preview:data item',
-         ]
-         potionlike_fn2 = [
-            '# potions render with a base layer and a colored layer',
-            f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{translate:"tryashtar.shulker_preview.item.$(model).{row}",color:"#$(red)$(green)$(blue)",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}},{{translate:"tryashtar.shulker_preview.layer.$(model).{row}",color:"white",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}]',
+            f'function tryashtar.shulker_preview:render/row_{row}/model/color_overlay.macro with storage tryashtar.shulker_preview:data item',
          ]
          datapack.functions[fn_name] = beet.Function(potionlike_fn)
-         datapack.functions[f'{fn_name}.macro'] = beet.Function(potionlike_fn2)
       
       model_fn.append(f'execute {check_model([model['model'] for entry in armor for model in entry['models']])} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor')
       armor_fn = [
-         "# armor starts with normal rendering of the base model",
-         'function tryashtar.shulker_preview:render/row_0/model/simple.macro with storage tryashtar.shulker_preview:data item',
+         "# armor starts with the base model",
+         f'function tryashtar.shulker_preview:render/row_{row}/model/armor/base',
          '',
          "# then the trim overlay if present",
       ]
+      armor_base = [
+         "# render the base depending on if the model has colored layers or not",
+      ]
+      dye_configs: dict[int, list[str]] = {}
+      for entry in armor:
+         for model in entry['models']:
+            dye = model['dye']
+            if dye is not None:
+               if dye not in dye_configs:
+                  dye_configs[dye] = []
+               dye_configs[dye].append(model['model'])
+      for default_color, entries in dye_configs.items():
+         group_name = short(entries[0]).split('_')[0]
+         color = color_hex(default_color)
+         armor_base.append(f'execute {check_model(entries)} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor/base/{group_name}')
+         group_fn = [
+            "# dyeable items can be any color, so a macro is needed",
+            f'data modify storage tryashtar.shulker_preview:data item merge value {{red:"{color[1:3]}",green:"{color[3:5]}","blue":"{color[5:7]}"}}',
+            'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:dyed_color"',
+            'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
+            f'function tryashtar.shulker_preview:render/row_{row}/model/color_overlay.macro with storage tryashtar.shulker_preview:data item',
+         ]
+         datapack.functions[f'render/row_{row}/model/armor/base/{group_name}'] = beet.Function(group_fn)
+      armor_base.append(f'function tryashtar.shulker_preview:render/row_{row}/model/simple.macro with storage tryashtar.shulker_preview:data item')
       for entry in armor:
          # kinda lazy way to come up with a name for the categories
          slot_name = entry['models'][0]['model'].split('_')[1]
-         armor_fn.append(f'execute {check_model([model['model'] for model in entry['models']], 'trim')} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor/{slot_name}')
+         armor_fn.append(f'execute {check_model([model['model'] for model in entry['models']], 'trim')} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor/trim/{slot_name}')
          slot_fn = [
             "# render the armor trim overlay based on the material color",
             "# it's not as accurate as the true items which use paletted permutations",
@@ -471,32 +505,48 @@ def main(ctx: beet.Context):
          for model in entry['models']:
             for material, texture in model['overrides'].items():
                color = f',color:"{color_hex(texture['color'])}"' if texture['color'] is not None else ''
-               slot_fn.append(f'execute {check_model([model['model']], f'trim~{{material:"{short(material)}"}}')} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.layer.{texture['texture']}.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+               slot_fn.append(f'execute {check_model([model['model']], f'trim~{{material:"{short(material)}"}}')} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.overlay.{texture['texture']}.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
          for material, texture in entry['trims'].items():
             color = f',color:"{color_hex(texture['color'])}"' if texture['color'] is not None else ''
-            slot_fn.append(f'execute if items entity @s contents *[trim~{{material:"{short(material)}"}}] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.layer.{texture['texture']}.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
-         datapack.functions[f'render/row_{row}/model/armor/{slot_name}'] = beet.Function(slot_fn)
+            slot_fn.append(f'execute if items entity @s contents *[trim~{{material:"{short(material)}"}}] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.overlay.{texture['texture']}.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+         datapack.functions[f'render/row_{row}/model/armor/trim/{slot_name}'] = beet.Function(slot_fn)
       datapack.functions[f'render/row_{row}/model/armor'] = beet.Function(armor_fn)
+      datapack.functions[f'render/row_{row}/model/armor/base'] = beet.Function(armor_base)
       
       model_fn.extend([
          '',
-         'function tryashtar.shulker_preview:render/row_0/model/simple.macro with storage tryashtar.shulker_preview:data item'
+         f'function tryashtar.shulker_preview:render/row_{row}/model/simple.macro with storage tryashtar.shulker_preview:data item'
       ])
       simple_fn = [
          "# macro for simple models that are just one or more uncolored layers",
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.$(model).{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}'
       ]
+      color_overlay = [
+         '# macro for models that render with a colored layer and one or more uncolored overlays',
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{translate:"tryashtar.shulker_preview.item.$(model).{row}",color:"#$(red)$(green)$(blue)",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}},{{translate:"tryashtar.shulker_preview.overlay.$(model).{row}",color:"white",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}]',
+      ]
+
       datapack.functions[f'render/row_{row}/model/simple.macro'] = beet.Function(simple_fn)
+      datapack.functions[f'render/row_{row}/model/color_overlay.macro'] = beet.Function(color_overlay)
       
       datapack.functions[f'render/row_{row}/item'] = beet.Function(item_fn)
       datapack.functions[f'render/row_{row}/model'] = beet.Function(model_fn)
 
+# all textures referenced by item models are entries in the blocks atlas
+# that means they may have different names from the textures they came from
+# (in practice, this only applies to trim textures)
+# regardless, in order to get the texture the entry came from (so the font can reference it),
+# we need to find the atlas source that imported it
 TextureColor = typing.TypedDict('TextureColor', {'texture': str, 'color': int | None})
 def get_texture_from_atlas_entry(textures: beet.NamespaceProxy[beet.Texture], atlas: beet.Atlas, entry: str) -> TextureColor | None:
    entry = canon(entry)
    _namespace, path = entry.split(':')
    for source in atlas.data['sources']:
       match short(source['type']):
+         case 'single':
+            resource = canon(source['resource'])
+            if entry == resource:
+               return {'texture': entry, 'color': None}
          case 'directory':
             prefix = source['source'] + '/'
             if path.startswith(prefix):
