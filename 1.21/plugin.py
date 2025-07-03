@@ -49,10 +49,12 @@ def main(ctx: beet.Context):
    ArmorTrims = typing.TypedDict('ArmorTrims', {'model': str, 'overrides': dict[str, TextureColor]})
    ArmorEntry = typing.TypedDict('ArmorEntry', {'trims': dict[str, TextureColor], 'models': list[ArmorTrims]})
    ModelSprite = typing.TypedDict('ModelSprite', {'sprite': str, 'tint': dict[str, typing.Any] | None})
+   BlockProperties = typing.TypedDict('BlockProperties', {'property': str, 'values': list[str]})
    simple_tinted: dict[str, int] = {}
    simple_property: dict[str, PropertyEntry] = {}
    potionlike: dict[int, dict[str, list[str]]] = {}
    armor: list[ArmorEntry] = []
+   block_states: dict[str, BlockProperties] = {}
    
    # we're going to enumerate every item model in vanilla, to collect their sprites and sort into patterns
    # what follows are some functions for handling particular item models
@@ -209,6 +211,26 @@ def main(ctx: beet.Context):
                   return True
             armor.append({'trims':trims, 'models':[{'model':name, 'overrides':{}}]})
             return True
+         case 'block_state':
+            # all of these in vanilla just render completely different sprites
+            # so we have no better strategy than adding all of them as lang entries and picking the right one
+            fallback = get_model_sprites(item_model['fallback'])
+            if fallback is None:
+               return False
+            if not all(x['tint'] is None for x in fallback):
+               return False
+            fallback_spr = [x['sprite'] for x in fallback]
+            model_translations[name] = fallback_spr
+            for case in item_model['cases']:
+               layers = get_model_sprites(case['model'])
+               if layers is None:
+                  return False
+               if not all(x['tint'] is None for x in layers):
+                  return False
+               case_spr = [x['sprite'] for x in layers]
+               model_translations[name + '.' + case['when']] = case_spr
+            block_states[name] = {'property': item_model['block_state_property'], 'values': [case['when'] for case in item_model['cases']]}
+            return True
          case _:
             return False
    
@@ -328,7 +350,6 @@ def main(ctx: beet.Context):
       for row in range(font.rows):
          lang.data[f'tryashtar.shulker_preview.layer.{name}.{row}'] = overlay + overlay.join([x['rows'][row] + x['negative'] for x in data]) + next_slot
 
-   
    # we need the item_model component in a string to run the macro
    # but there's no way to do this if the component is set to the default for that item type (which it almost always is)
    # so we need to bake into the pack a way to convert an item type to an item_model component
@@ -383,6 +404,14 @@ def main(ctx: beet.Context):
       for model, tint in simple_tinted.items():
          tinted_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
       datapack.functions[f'render/row_{row}/model/tinted'] = beet.Function(tinted_fn)
+      
+      model_fn.append(f'execute {check_model(block_states.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/block_state')
+      block_fn = []
+      for model, data in block_states.items():
+         for value in data['values']:
+            block_fn.append(f'execute {check_model([model])} if data storage tryashtar.shulker_preview:data item.components."minecraft:block_state"{{{data['property']}:"{value}"}} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{value}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+         block_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+      datapack.functions[f'render/row_{row}/model/block_state'] = beet.Function(block_fn)
       
       for default_color, data in potionlike.items():
          fn_name = f'render/row_{row}/model/potion' if len(potionlike) == 1 else f'render/row_{row}/model/potion/{default_color}'
@@ -518,7 +547,7 @@ def squash_conditions(model: dict[str, typing.Any]) -> dict[str, typing.Any]:
                return model['fallback']
             # assume we are in the overworld
             # we could check it, but have no way of updating the lore dynamically
-            # (vanilla doesn't use it anyway)
+            # (vanilla doesn't use this anyway)
             case 'context_dimension':
                for case in model['cases']:
                   if case['when'] == 'overworld' or 'overworld' in case['when']:
@@ -532,6 +561,7 @@ def squash_conditions(model: dict[str, typing.Any]) -> dict[str, typing.Any]:
                   return model['fallback']
             # assume the player is right-handed
             # we have no way of checking or updating the lore dynamically
+            # (vanilla doesn't use this anyway)
             case 'main_hand':
                for case in model['cases']:
                   if case['when'] == 'right' or 'right' in case['when']:
