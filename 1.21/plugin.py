@@ -33,7 +33,8 @@ def main(ctx: beet.Context):
    # instead, we feed it many models with output paths, then it saves them all to the pack at once
    # but we don't want them in the pack, we want them in a big grid
    # so we keep track of the output paths so we can load the generated images, then delete them from the pack
-   generated_sprites: list[str] = []
+   rendered_sprites: list[str] = []
+   atlas_sprites: list[str] = []
    
    font = FontManager(rows=3)
    next_slot = font.get_space(15)
@@ -43,7 +44,7 @@ def main(ctx: beet.Context):
    tooltip_push_fwd = font.get_space(8)
    row_end = font.get_space(-162)
    lang = resourcepack.languages['en_us']
-   for tex, tip, bottom in [('shulker_box', 'shulker', 20), ('generic_54', 'ender', 27)]:
+   for tex, tip, bottom in [('shulker_box', 'shulker_tooltip', 20), ('generic_54', 'ender_tooltip', 27)]:
       ascent = 8
       slices = [{'height':8,'range':[0]},{'height':8,'range':[2,3,4,5,6,7,8,bottom]}]
       text = ''
@@ -59,7 +60,7 @@ def main(ctx: beet.Context):
             font.add_provider({"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": -32768, "height": -section['height'], "chars": negative})
             ascent -= section['height']
             text += pos + neg + overlay
-      lang.data[f"tryashtar.shulker_preview.{tip}_tooltip"] = tooltip_push_back + text + tooltip_push_fwd
+      lang.data[f"tryashtar.shulker_preview.{tip}"] = tooltip_push_back + text + tooltip_push_fwd
    lang.data['tryashtar.shulker_preview.empty_slot'] = empty_slot
    lang.data['tryashtar.shulker_preview.row_end'] = row_end
    missing = font.add_sprite('tryashtar.shulker_preview:missingno')
@@ -70,60 +71,87 @@ def main(ctx: beet.Context):
    # anything we can draw "all at once" gets a lang file entry consisting of its characters
    # most models can be entirely drawn all at once just by looking up their lang file entry with a macro
    # but a few need special command logic written by hand
-   def add_model_translations(model: str, sprites: list[str]):
-      data = [font.add_sprite(x) for x in sprites]
-      for row in range(font.rows):
-         lang.data[f'tryashtar.shulker_preview.item.{model}.{row}'] = overlay.join([x['rows'][row] + x['negative'] for x in data]) + next_slot
-
-   def add_overlay_translations(model: str, sprites: list[str]):
-      for i, sprite in enumerate(sprites):
-         data = font.add_sprite(sprite)
-         for row in range(font.rows):
-            lang.data[f'tryashtar.shulker_preview.layer.{model}.{i}.{row}'] = overlay + data['rows'][row] + data['negative'] + next_slot
+   model_translations: dict[str, list[str]] = {}
+   overlay_translations: dict[str, list[str]] = {}
    
    # even among models that can't be drawn with a simple macro, there are common patterns
    # for example, many models are simply a single texture with a hardcoded color
    # to make the item-drawing function more efficient, we want to detect these models in groups and do the special logic
    # so collect models into these groups with known strategies for special drawing
+   PropertyEntry = typing.TypedDict('PropertyEntry', {'check': str, 'true': str, 'false': str})
+   ArmorTrims = typing.TypedDict('ArmorTrims', {'model': str, 'overrides': dict[str, TextureColor]})
+   ArmorEntry = typing.TypedDict('ArmorEntry', {'trims': dict[str, TextureColor], 'models': list[ArmorTrims]})
    simple_tinted: dict[str, int] = {}
+   simple_property: dict[str, PropertyEntry] = {}
    potionlike: dict[int, dict[str, list[str]]] = {}
-   armor: list[tuple[dict[str, tuple[str, int]], list[tuple[str, dict[str, tuple[str, int]]]]]] = []
+   armor: list[ArmorEntry] = []
    
    vanilla = beet.contrib.vanilla.Vanilla(ctx, minecraft_version=target_version)
    block_atlas = vanilla.assets.atlases['minecraft:blocks']
    
-   def handle_model(name: str, item_model: dict[str, typing.Any]) -> bool:
-      # most item models are this, just a simple model
-      # it could be a 3D model we need to render, or a flat item sprite made of 1 or more layers
-      model_name = canon(item_model['model'])
-      model = vanilla.assets.models[model_name]
-      layers = generated_layers(vanilla.assets.models, model)
-      if layers is None:
-         # this is a 3D model, render it and use that texture as the single layer
-         gen_name = model_name + '.model'
-         layers = [gen_name]
-         if gen_name not in generated_sprites:
-            render.add_model_task(
-               model = model_name,
-               path_ctx = gen_name,
-               animation_mode = 'one_file'
-            )
-            generated_sprites.append(gen_name)
-      for layer in layers:
-         actual_texture = get_texture_from_atlas_entry(block_atlas, layer)
-         if actual_texture is None:
-            return False
-         font.add_sprite(actual_texture)
-      # if it's tinted, we need separate lang entries for each layer so we can draw them with different colors
-      # otherwise, we can just merge all the layers into one simple entry
-      tints = item_model.get('tints')
-      if tints is None:
-         add_model_translations(name, layers)
+   ModelLayer = typing.TypedDict('ModelLayer', {'layer': str, 'tint': dict[str, typing.Any] | None})
+   def get_model_layers(item_model: dict[str, typing.Any]) -> list[ModelLayer] | None:
+      model_type = short(item_model['type'])
+      match model_type:
+         case 'model':
+            tints: list[dict[str, typing.Any]] = item_model.get('tints', [])
+            model_name = canon(item_model['model'])
+            model = vanilla.assets.models[model_name]
+            layers = generated_layers(vanilla.assets.models, model)
+            if layers is None:
+               # this is a 3D model, render it and use that texture as the single layer
+               gen_name = model_name + '.model'
+               if gen_name not in rendered_sprites:
+                  render.add_model_task(
+                     model = model_name,
+                     path_ctx = gen_name,
+                     animation_mode = 'one_file'
+                  )
+                  rendered_sprites.append(gen_name)
+               layers = [gen_name]
+            else:
+               for layer in layers:
+                  if layer not in atlas_sprites:
+                     atlas_sprites.append(layer)
+            if len(tints) > len(layers):
+               return None
+            return [{'layer':layers[i], 'tint':tints[i] if i < len(tints) else None} for i in range(len(layers))]
+         case 'special':
+            match short(item_model['model']['type']):
+               case 'chest' | 'conduit' | 'head' | 'player_head' | 'shulker_box' | 'bed' | 'banner':
+                  gen_name = name + '.item'
+                  if gen_name not in rendered_sprites:
+                     render.add_item_task(
+                        item = model_resolver.Item(id=name, components={'minecraft:item_model':name}),
+                        path_ctx = gen_name,
+                        animation_mode = 'one_file'
+                     )
+                     rendered_sprites.append(gen_name)
+                  return [{'layer':gen_name, 'tint':None}]
+               case _:
+                  return None
+         case 'composite':
+            combined = []
+            for entry in item_model['models']:
+               result = get_model_layers(entry)
+               if result is None:
+                  return None
+               combined.extend(result)
+            return combined
+         case _:
+            return None
+   
+   def handle_layered(name: str, layers: list[ModelLayer]) -> bool:
+      has_tints = [i for i, layer in enumerate(layers) if layer['tint'] is not None]
+      if len(has_tints) == 0:
+         model_translations[name] = [layer['layer'] for layer in layers]
          return True
-      if len(tints) == 1:
-         add_model_translations(name, [layers[0]])
-         add_overlay_translations(name, layers[1:])
-         tint = tints[0]
+      if has_tints == [0]:
+         model_translations[name] = [layers[0]['layer']]
+         if len(layers) > 1:
+            overlay_translations[name] = [layer['layer'] for layer in layers[1:]]
+         tint = layers[0]['tint']
+         assert tint is not None
          # simple trick, vanilla items use this exact configuration which we can precompute
          if short(tint['type']) == 'grass':
             if tint['downfall'] == 1.0 and tint['temperature'] == 0.5:
@@ -136,99 +164,139 @@ def main(ctx: beet.Context):
             case ('potion', 2):
                if tint['default'] not in potionlike:
                   potionlike[tint['default']] = {}
-               potionlike[tint['default']][name] = layers
+               potionlike[tint['default']][name] = [layer['layer'] for layer in layers]
                return True
             case _:
                return False
       return False
    
+   def dict_diff(d1: dict, d2: dict) -> dict:
+      result = {}
+      for key, value in d1.items():
+         if key not in d2 or d2[key] != value:
+            result[key] = value
+      return result
+   
    def handle_select(name: str, item_model: dict[str, typing.Any]) -> bool:
       match short(item_model['property']):
          case 'trim_material':
             # armor tends to follow a specific pattern
-            # with no trim, it renders a single tintless texture
-            # with a trim, it renders that same tintless texture with the trim texture on top
+            # with no trim, it renders some untinted layers
+            # with a trim, it renders those same untinted layers with one trim texture on top
             # (and a slightly different trim texture when the material matches)
             # check that this item matches this exact pattern so we can render it correctly
-            common_base: str | None = None
-            trims: dict[str, tuple[str, int]] = {}
-            if short(item_model['fallback']['type']) == 'model' and item_model['fallback'].get('tints') is None:
-               model_name = canon(item_model['fallback']['model'])
-               model = vanilla.assets.models[model_name]
-               layers = generated_layers(vanilla.assets.models, model)
-               if layers is not None and len(layers) == 1:
-                  common_base = get_texture_from_atlas_entry(block_atlas, layers[0])
+            common_base: list[str] | None = None
+            trims: dict[str, TextureColor] = {}
+            layers = get_model_layers(item_model['fallback'])
+            if layers is not None and all(x['tint'] is None for x in layers):
+               common_base = [x['layer'] for x in layers]
+            if common_base is None:
+               return False
             for case in item_model['cases']:
-               if short(case['model']['type']) == 'model' and case['model'].get('tints') is None:
-                  model_name = canon(case['model']['model'])
-                  model = vanilla.assets.models[model_name]
-                  layers = generated_layers(vanilla.assets.models, model)
-                  if layers is not None and len(layers) == 2:
-                     result = get_colored_permutation(vanilla.assets.textures, block_atlas, layers[1])
-                     if result is None:
-                        return False
-                     trims[canon(case['when'])] = result
-                     bottom_layer = get_texture_from_atlas_entry(block_atlas, layers[0])
-                     if bottom_layer == common_base:
-                        continue
-               common_base = None
-               break
-            if common_base is not None:
-               add_model_translations(name, [common_base])
-               for texture, _ in trims.values():
-                  add_overlay_translations(texture, [texture])
-               for trim_defs, bases in armor:
-                  difference = dict(set(trims.items()) - set(trim_defs.items()))
-                  if len(difference) <= 2:
-                     bases.append((name, difference))
-                     return True
-               armor.append((trims, [(name, {})]))
-               return True
-            return False
-         case _:
-            return False
-   
-   def handle_special(name: str, item_model: dict[str, typing.Any]) -> bool:
-      # some special models are simple and can just be one rendered texture
-      match short(item_model['model']['type']):
-         case 'chest' | 'conduit' | 'head' | 'player_head' | 'shulker_box' | 'bed' | 'banner':
-            gen_name = name + '.item'
-            if gen_name not in generated_sprites:
-               render.add_item_task(
-                  item = model_resolver.Item(id=name, components={'minecraft:item_model':name}),
-                  path_ctx = gen_name,
-                  animation_mode = 'one_file'
-               )
-               generated_sprites.append(gen_name)
-            add_model_translations(name, [gen_name])
+               layers = get_model_layers(case['model'])
+               if layers is None:
+                  return False
+               if not all(x['tint'] is None for x in layers):
+                  return False
+               all_layers = [x['layer'] for x in layers]
+               if len(all_layers) != len(common_base) + 1:
+                  return False
+               if all_layers[:len(common_base)] != common_base:
+                  return False
+               perm = get_texture_from_atlas_entry(vanilla.assets.textures, block_atlas, all_layers[-1])
+               if perm is None:
+                  return False
+               trims[canon(case['when'])] = perm
+            model_translations[name] = common_base
+            for trim in trims.values():
+               overlay_translations[trim['texture']] = [trim['texture']]
+            for entry in armor:
+               difference = dict_diff(trims, entry['trims'])
+               if len(difference) <= 2:
+                  entry['models'].append({'model':name, 'overrides':difference})
+                  return True
+            armor.append({'trims':trims, 'models':[{'model':name, 'overrides':{}}]})
             return True
          case _:
             return False
    
+   def handle_condition(name: str, item_model: dict[str, typing.Any]) -> bool:
+      match short(item_model['property']):
+         case 'broken':
+            check = 'max_damage,!unbreakable,damage~{durability:{max:1}}'
+            true_name = name + '.broken'
+         case 'has_component':
+            component = item_model['component']
+            check = short(component)
+            true_name = name + '.' + check
+         case 'component':
+            component = item_model['predicate']
+            predicate = item_model['value']
+            # to do: convert to SNBT
+            check = f'{short(component)}~{predicate}'
+            true_name = name + '.check'
+            print(f'Model {name} is using component condition! {item_model}')
+         case 'damaged':
+            check = 'max_damage,!unbreakable,damage~{damage:{min:1}}'
+            true_name = name + '.damaged'
+         case _:
+            return False
+      on_true = get_model_layers(item_model['on_true'])
+      on_false = get_model_layers(item_model['on_false'])
+      # all(x['tint'] is None for x in layers)
+      if on_true is not None and on_false is not None:
+         false_name = name
+         model_translations[true_name] = [x['layer'] for x in on_true]
+         model_translations[false_name] = [x['layer'] for x in on_false]
+         simple_property[name] = {'check':check, 'true': true_name, 'false': false_name}
+         return True
+      return False
+   
    for name, entry in vanilla.assets.item_models.items():
       name = canon(name)
       squashed_model = squash_conditions(entry.data['model'])
-      model_type = short(squashed_model['type'])
-      match model_type:
-         case 'model':
-            handled = handle_model(name, squashed_model)
-         case 'select':
-            handled = handle_select(name, squashed_model)
-         case 'special':
-            handled = handle_special(name, squashed_model)
-         case _:
-            handled = False
+      result = get_model_layers(squashed_model)
+      if result is not None:
+         handled = handle_layered(name, result)
+      else:
+         handled = False
+      if not handled:
+         model_type = short(squashed_model['type'])
+         match model_type:
+            case 'select':
+               handled = handle_select(name, squashed_model)
+            case 'condition':
+               handled = handle_condition(name, squashed_model)
+            case _:
+               handled = False
       if not handled:
          print(f'Unhandled item model {name}: {squashed_model}')
 
    render.run()
-   generated_entries = [(ctx.assets.textures[x].image, x) for x in generated_sprites]
+   generated_entries = [(ctx.assets.textures[x].image, x) for x in rendered_sprites]
    grid_img, grid_refs = make_grid(generated_entries, render.default_render_size)
-   for path in generated_sprites:
+   for path in rendered_sprites:
       del ctx.assets.textures[path]
    resourcepack.textures['block_sheet'] = beet.Texture(grid_img)
    font.add_grid('block_sheet', grid_refs)
+   for entry in atlas_sprites:
+      texture = get_texture_from_atlas_entry(vanilla.assets.textures, block_atlas, entry)
+      if texture is not None:
+         font.add_sprite(texture['texture'])
+      else:
+         print(f'Texture not found in atlas {texture}')
    resourcepack.fonts['preview'] = font.build()
+   
+   for model, sprites in model_translations.items():
+      data = [font.get_sprite(x) for x in sprites]
+      for row in range(font.rows):
+         lang.data[f'tryashtar.shulker_preview.item.{model}.{row}'] = overlay.join([x['rows'][row] + x['negative'] for x in data]) + next_slot
+
+   for name, sprites in overlay_translations.items():
+      data = [font.get_sprite(x) for x in sprites]
+      for row in range(font.rows):
+         lang.data[f'tryashtar.shulker_preview.layer.{name}.{row}'] = overlay + overlay.join([x['rows'][row] + x['negative'] for x in data]) + next_slot
+
    
    # we need the item_model component in a string to run the macro
    # but there's no way to do this if the component is set to the default for that item type (which it almost always is)
@@ -270,11 +338,20 @@ def main(ctx: beet.Context):
          "# models that require special rendering, like component checks or colored layers",
       ])
       
-      model_fn.append(f'execute {check_model(simple_tinted.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/simple_tinted')
-      simple_tinted_fn = []
+      model_fn.append(f'execute {check_model(simple_property.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/property')
+      property_fn = []
+      for model, entry in simple_property.items():
+         property_fn.extend([
+            f'execute {check_model([model], entry['check'])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{entry['true']}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}',
+            f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{entry['false']}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}',
+         ])
+      datapack.functions[f'render/row_{row}/model/property'] = beet.Function(property_fn)
+      
+      model_fn.append(f'execute {check_model(simple_tinted.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/tinted')
+      tinted_fn = []
       for model, tint in simple_tinted.items():
-         simple_tinted_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
-      datapack.functions[f'render/row_{row}/model/simple_tinted'] = beet.Function(simple_tinted_fn)
+         tinted_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+      datapack.functions[f'render/row_{row}/model/tinted'] = beet.Function(tinted_fn)
       
       for default_color, data in potionlike.items():
          fn_name = f'render/row_{row}/model/potion' if len(potionlike) == 1 else f'render/row_{row}/model/potion/{default_color}'
@@ -295,27 +372,29 @@ def main(ctx: beet.Context):
          datapack.functions[fn_name] = beet.Function(potionlike_fn)
          datapack.functions[f'{fn_name}.macro'] = beet.Function(potionlike_fn2)
       
-      model_fn.append(f'execute {check_model([x for _, models in armor for x, _ in models])} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor')
+      model_fn.append(f'execute {check_model([model['model'] for entry in armor for model in entry['models']])} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor')
       armor_fn = [
          "# armor starts with normal rendering of the base model",
          'function tryashtar.shulker_preview:render/row_0/model/simple.macro with storage tryashtar.shulker_preview:data item',
          '',
          "# then the trim overlay if present",
       ]
-      for trims, items in armor:
+      for entry in armor:
          # kinda lazy way to come up with a name for the categories
-         slot_name = items[0][0].split('_')[1]
-         armor_fn.append(f'execute {check_model([name for name, _ in items], 'trim')} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor/{slot_name}')
+         slot_name = entry['models'][0]['model'].split('_')[1]
+         armor_fn.append(f'execute {check_model([model['model'] for model in entry['models']], 'trim')} run return run function tryashtar.shulker_preview:render/row_{row}/model/armor/{slot_name}')
          slot_fn = [
             "# render the armor trim overlay based on the material color",
             "# it's not as accurate as the true items which use paletted permutations",
             "# items of a matching material use a darker color",
          ]
-         for name, overrides in items:
-            for material, (texture, color) in overrides.items():
-               slot_fn.append(f'execute {check_model([name], f'trim~{{material:"{short(material)}"}}')} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.layer.{texture}.0.{row}",color:"{color_hex(color)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
-         for material, (texture, color) in trims.items():
-            slot_fn.append(f'execute if items entity @s contents *[trim~{{material:"{short(material)}"}}] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.layer.{texture}.0.{row}",color:"{color_hex(color)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+         for model in entry['models']:
+            for material, texture in model['overrides'].items():
+               color = f',color:"{color_hex(texture['color'])}"' if texture['color'] is not None else ''
+               slot_fn.append(f'execute {check_model([model['model']], f'trim~{{material:"{short(material)}"}}')} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.layer.{texture['texture']}.0.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+         for material, texture in entry['trims'].items():
+            color = f',color:"{color_hex(texture['color'])}"' if texture['color'] is not None else ''
+            slot_fn.append(f'execute if items entity @s contents *[trim~{{material:"{short(material)}"}}] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.layer.{texture['texture']}.0.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
          datapack.functions[f'render/row_{row}/model/armor/{slot_name}'] = beet.Function(slot_fn)
       datapack.functions[f'render/row_{row}/model/armor'] = beet.Function(armor_fn)
       
@@ -332,32 +411,30 @@ def main(ctx: beet.Context):
       datapack.functions[f'render/row_{row}/item'] = beet.Function(item_fn)
       datapack.functions[f'render/row_{row}/model'] = beet.Function(model_fn)
 
-def get_texture_from_atlas_entry(atlas: beet.Atlas, entry: str) -> str | None:
-   _namespace, path = canon(entry).split(':')
+TextureColor = typing.TypedDict('TextureColor', {'texture': str, 'color': int | None})
+def get_texture_from_atlas_entry(textures: beet.NamespaceProxy[beet.Texture], atlas: beet.Atlas, entry: str) -> TextureColor | None:
+   entry = canon(entry)
+   _namespace, path = entry.split(':')
    for source in atlas.data['sources']:
       match short(source['type']):
          case 'directory':
             prefix = source['source'] + '/'
             if path.startswith(prefix):
-               return canon(source['prefix'] + path.removeprefix(prefix))
+               texture = canon(source['prefix'] + path.removeprefix(prefix))
+               return {'texture': texture, 'color': None}
+         case 'paletted_permutations':
+            for base in source['textures']:
+               prefix = canon(base) + '_'
+               if entry.startswith(prefix):
+                  material = entry.removeprefix(prefix)
+                  if material in source['permutations']:
+                     texture = textures[canon(source['permutations'][material])]
+                     # kinda lazy way to get the color for this palette
+                     r,g,b = texture.image.getpixel((0, 0))
+                     color = r * 2**16 + g * 2**8 + b
+                     return {'texture':canon(base), 'color':color}
          case _:
             pass
-   return None
-
-def get_colored_permutation(textures: beet.NamespaceProxy[beet.Texture], atlas: beet.Atlas, entry: str) -> tuple[str, int] | None:
-   entry = canon(entry)
-   for source in atlas.data['sources']:
-      if short(source['type']) == 'paletted_permutations':
-         for base in source['textures']:
-            prefix = canon(base) + '_'
-            if entry.startswith(prefix):
-               material = entry.removeprefix(prefix)
-               if material in source['permutations']:
-                  texture = textures[canon(source['permutations'][material])]
-                  # kinda lazy way to get the color for this palette
-                  r,g,b = texture.image.getpixel((0, 0))
-                  color = r * 2**16 + g * 2**8 + b
-                  return (canon(base), color)
    return None
 
 def color_hex(color: int):
@@ -525,8 +602,8 @@ class FontManager:
    def add_provider(self, provider: dict[str, typing.Any]):
       self.providers.append(provider)
     
-   def get_sprite(self, texture: str) -> SpriteData:
-      return self.sprite_map[texture]
+   def get_sprite(self, name: str) -> SpriteData:
+      return self.sprite_map[name]
    
    def next_char(self):
       char = self.last_char + 1
