@@ -398,7 +398,7 @@ def main(ctx: beet.Context):
          ]
          potionlike_fn2 = [
             '# potions render with a base layer and a colored layer',
-            f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{translate:"tryashtar.shulker_preview.item.$(model).{row}",color:"#$(red)$(green)$(blue)",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}},{{translate:"tryashtar.shulker_preview.layer.$(model).0.{row}",color:"white",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}]',
+            f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{translate:"tryashtar.shulker_preview.item.$(model).{row}",color:"#$(red)$(green)$(blue)",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}},{{translate:"tryashtar.shulker_preview.layer.$(model).{row}",color:"white",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}]',
          ]
          datapack.functions[fn_name] = beet.Function(potionlike_fn)
          datapack.functions[f'{fn_name}.macro'] = beet.Function(potionlike_fn2)
@@ -422,10 +422,10 @@ def main(ctx: beet.Context):
          for model in entry['models']:
             for material, texture in model['overrides'].items():
                color = f',color:"{color_hex(texture['color'])}"' if texture['color'] is not None else ''
-               slot_fn.append(f'execute {check_model([model['model']], f'trim~{{material:"{short(material)}"}}')} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.layer.{texture['texture']}.0.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+               slot_fn.append(f'execute {check_model([model['model']], f'trim~{{material:"{short(material)}"}}')} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.layer.{texture['texture']}.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
          for material, texture in entry['trims'].items():
             color = f',color:"{color_hex(texture['color'])}"' if texture['color'] is not None else ''
-            slot_fn.append(f'execute if items entity @s contents *[trim~{{material:"{short(material)}"}}] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.layer.{texture['texture']}.0.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+            slot_fn.append(f'execute if items entity @s contents *[trim~{{material:"{short(material)}"}}] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.layer.{texture['texture']}.{row}"{color},fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
          datapack.functions[f'render/row_{row}/model/armor/{slot_name}'] = beet.Function(slot_fn)
       datapack.functions[f'render/row_{row}/model/armor'] = beet.Function(armor_fn)
       
