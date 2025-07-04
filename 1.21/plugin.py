@@ -48,6 +48,7 @@ def main(ctx: beet.Context):
    ModelSprite = typing.TypedDict('ModelSprite', {'sprite': str, 'tint': dict[str, typing.Any] | None})
    PropertyCheck = typing.TypedDict('PropertyCheck', {'check': typing.Callable[[str], str], 'values': list[str]})
    simple_tinted: dict[str, int] = {}
+   simple_dye: dict[int, list[str]] = {}
    simple_property: dict[str, PropertyEntry] = {}
    potionlike: dict[int, dict[str, list[str]]] = {}
    firework: dict[int, list[str]] = {}
@@ -170,6 +171,13 @@ def main(ctx: beet.Context):
             case ('constant', 1):
                # only one layer tinted with a hardcoded color, very easy
                simple_tinted[name] = tint['value']
+               return True
+            case ('dye', 1):
+               # only one layer tinted with dye color
+               default = tint['default']
+               if default not in simple_dye:
+                  simple_dye[default] = []
+               simple_dye[default].append(name)
                return True
             case ('potion', 2):
                # one layer tinted with potion tint, and one untinted layer on top
@@ -630,6 +638,20 @@ def main(ctx: beet.Context):
          tinted_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
       datapack.functions[f'render/row_{row}/model/tinted'] = beet.Function(tinted_fn)
       
+      for default_color, entries in simple_dye.items():
+         fn_name = f'render/row_{row}/model/dye' if len(firework) == 1 else f'render/row_{row}/model/dye/{default_color}'
+         model_fn.append(f'execute {check_model(entries)} run return run function tryashtar.shulker_preview:{fn_name}')
+         color = color_hex(default_color)
+         dye_fn = [
+            '# models with a single dyed layer',
+            f'data modify storage tryashtar.shulker_preview:data item merge value {{red:"{color[1:3]}",green:"{color[3:5]}","blue":"{color[5:7]}"}}',
+            'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:dyed_color"',
+            'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
+            f'function tryashtar.shulker_preview:render/row_{row}/model/color.macro with storage tryashtar.shulker_preview:data item',
+         ]
+         datapack.functions[fn_name] = beet.Function(dye_fn)
+
+      
       for default_color, entries in firework.items():
          fn_name = f'render/row_{row}/model/star' if len(firework) == 1 else f'render/row_{row}/model/star/{default_color}'
          model_fn.append(f'execute {check_model(entries)} run return run function tryashtar.shulker_preview:{fn_name}')
@@ -785,6 +807,10 @@ def main(ctx: beet.Context):
          "# macro for simple models that are just one or more uncolored layers",
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.$(model).{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}'
       ]
+      color_fn = [
+         "# macro for models that are just one colored layer",
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.$(model).{row}",color:"#$(red)$(green)$(blue)",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}'
+      ]
       color_base = [
          '# macro for models that render with a colored base and one or more uncolored overlays',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{translate:"tryashtar.shulker_preview.item.$(model).{row}",color:"#$(red)$(green)$(blue)",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}},{{translate:"tryashtar.shulker_preview.overlay.$(model).{row}",color:"white",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}]',
@@ -795,6 +821,7 @@ def main(ctx: beet.Context):
       ]
 
       datapack.functions[f'render/row_{row}/model/simple.macro'] = beet.Function(simple_fn)
+      datapack.functions[f'render/row_{row}/model/color.macro'] = beet.Function(color_fn)
       datapack.functions[f'render/row_{row}/model/color_base.macro'] = beet.Function(color_base)
       datapack.functions[f'render/row_{row}/model/color_overlay.macro'] = beet.Function(color_overlay)
       
