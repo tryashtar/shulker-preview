@@ -16,6 +16,12 @@ def main(ctx: beet.Context):
    resourcepack = ctx.assets['tryashtar.shulker_preview']
    # to do: when https://github.com/mcbeet/beet/pull/472 is merged, use 'minecraft' field
    target_version = ctx.meta['minecraft_version']
+   ctx.meta['model_resolver'] = {
+      'minecraft_version': target_version,
+      'preferred_minecraft_generated': 'java',
+      'special_rendering': True,
+      'use_cache': True
+   }
    
    # every item texture needs to be added to the font
    # flat models (using builtin/generated) are composed of one or more atlas entries as layers
@@ -47,6 +53,7 @@ def main(ctx: beet.Context):
    armor: list[ArmorEntry] = []
    case_property: dict[str, PropertyCheck] = {}
    banners: dict[str, typing.Literal['banner', 'shield']] = {}
+   pots: list[str] = []
    
    # we're going to enumerate every item model in vanilla, to collect their sprites and sort into patterns
    # what follows are some functions for handling particular item models
@@ -68,6 +75,21 @@ def main(ctx: beet.Context):
          banner = banner_result['texture']
          shield = shield_result['texture']
          banner_patterns[pattern] = {'banner':banner, 'shield':shield}
+   
+   # pot patterns aren't data driven, we have to guess them from item names
+   pot_patterns: dict[str, str] = {}
+   pot_atlas = vanilla.assets.atlases['minecraft:decorated_pot']
+   components = model_resolver.utils.get_default_components(ctx)
+   blank = get_texture_from_atlas_entry(vanilla.assets.textures, pot_atlas, 'entity/decorated_pot/decorated_pot_side')
+   if blank is not None:
+      pot_patterns['minecraft:brick'] = blank['texture']
+   for item in components.keys():
+      item = short(item)
+      if item.endswith('_pottery_sherd'):
+         pattern = item.removesuffix('_pottery_sherd')
+         texture = get_texture_from_atlas_entry(vanilla.assets.textures, pot_atlas, f'entity/decorated_pot/{pattern}_pottery_pattern')
+         if texture is not None:
+            pot_patterns[canon(item)] = texture['texture']
 
    # if this item model just consists of sprites (i.e. no conditions), return said sprites
    # many models are like this, and they're easier to render and check for in patterns
@@ -311,10 +333,10 @@ def main(ctx: beet.Context):
       special = short(item_model['model']['type'])
       match special:
          case 'banner' | 'shield':
-            gen_name = name + '.item'
-            rendered_item_sprites[gen_name] = name
+            gen_name_left = name + '.item'
+            rendered_item_sprites[gen_name_left] = name
             # use one lang entry for the base model
-            model_translations[name] = [gen_name]
+            model_translations[name] = [gen_name_left]
             for pattern, textures in banner_patterns.items():
                match special:
                   case 'banner':
@@ -358,10 +380,56 @@ def main(ctx: beet.Context):
                            }
                         ]
                      }
-               gen_name = pattern + '.' + special
-               rendered_fake_sprites[gen_name] = fake_model
-               overlay_translations[special + '.' + pattern] = [gen_name]
+               gen_name_left = pattern + '.' + special
+               rendered_fake_sprites[gen_name_left] = fake_model
+               overlay_translations[special + '.' + pattern] = [gen_name_left]
             banners[name] = special
+            return True
+         case 'decorated_pot':
+            gen_name_left = name + '.item'
+            rendered_item_sprites[gen_name_left] = name
+            # use one lang entry for the base model
+            model_translations[name] = [gen_name_left]
+            for item, pattern in pot_patterns.items():
+               fake_left = {
+                  "parent": item_model['base'],
+                  "textures": {
+                     "0": pattern
+                  },
+                  "elements": [
+                     {
+		               	"from": [1, 0, 1],
+		               	"to": [1, 16, 15],
+		               	"rotation": {"angle": 0, "axis": "y", "origin": [1, 0, 1]},
+		               	"faces": {
+		               		"west": {"uv": [1, 0, 15, 16], "texture": "#0"}
+		               	}
+		               }
+                  ]
+               }
+               fake_right = {
+                  "parent": item_model['base'],
+                  "textures": {
+                     "0": pattern
+                  },
+                  "elements": [
+                     {
+		               	"from": [1, 0, 15],
+		               	"to": [15, 16, 15],
+		               	"rotation": {"angle": 0, "axis": "y", "origin": [1, 0, 1]},
+		               	"faces": {
+		               		"south": {"uv": [1, 0, 15, 16], "texture": "#0"}
+		               	}
+		               }
+                  ]
+               }
+               gen_name_left = pattern + '.left'
+               gen_name_right = pattern + '.right'
+               rendered_fake_sprites[gen_name_left] = fake_left
+               rendered_fake_sprites[gen_name_right] = fake_right
+               overlay_translations['pot.' + item + '.left'] = [gen_name_left]
+               overlay_translations['pot.' + item + '.right'] = [gen_name_right]
+            pots.append(name)
             return True
          case _:
             return False
@@ -395,12 +463,6 @@ def main(ctx: beet.Context):
    for gen_name, fake_model in rendered_fake_sprites.items():
       model_file = beet.Model(fake_model)
       ctx.assets.models[gen_name] = model_file
-   ctx.meta['model_resolver'] = {
-      'minecraft_version': target_version,
-      'preferred_minecraft_generated': 'java',
-      'special_rendering': True,
-      'use_cache': True
-   }
    render = model_resolver.Render(ctx=ctx)
    render.default_render_size = 64
    for gen_name, model_name in rendered_model_sprites.items():
@@ -489,11 +551,10 @@ def main(ctx: beet.Context):
    # so this is a very easy default strategy
    # here we look for any item types that don't have this property
    # any that do can be specifically checked for and the correct item_model string assigned
-   components = model_resolver.utils.get_default_components(ctx)
    unusual_default_models = {}
-   for model, defaults in components.items():
-      if defaults['minecraft:item_model'] != model:
-         unusual_default_models[model] = defaults['minecraft:item_model']
+   for item, defaults in components.items():
+      if defaults['minecraft:item_model'] != item:
+         unusual_default_models[item] = defaults['minecraft:item_model']
    
    def check_model(models: typing.Iterable[str], extra: str | None=None) -> str:
       extra = '' if extra is None else extra + ','
@@ -648,6 +709,26 @@ def main(ctx: beet.Context):
       datapack.functions[f'render/row_{row}/model/banner/shield_base'] = beet.Function(shield_base)
       datapack.functions[f'render/row_{row}/model/banner/pattern_loop'] = beet.Function(banner_loop)
       datapack.functions[f'render/row_{row}/model/banner/pattern'] = beet.Function(banner_one)
+      
+      model_fn.append(f'execute {check_model(pots)} run return run function tryashtar.shulker_preview:render/row_{row}/model/pot')
+      pot_fn = [
+         "# pots start with the base model",
+         f'function tryashtar.shulker_preview:render/row_{row}/model/simple.macro with storage tryashtar.shulker_preview:data item',
+         '',
+         "# then the pattern overlays",
+         "# only the second and fourth are visible on the left and right, respectively",
+         "# each ID is an item name of either a sherd or brick",
+         'execute unless data storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations"[3] run return fail',
+         'data modify storage tryashtar.shulker_preview:data item.left set from storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations"[1]',
+         'data modify storage tryashtar.shulker_preview:data item.right set from storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations"[3]',
+         f'function tryashtar.shulker_preview:render/row_{0}/model/pot/patterns with storage tryashtar.shulker_preview:data item',
+      ]
+      pattern_fn = [
+         "# render both patterns at once with a macro",
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{translate:"tryashtar.shulker_preview.overlay.pot.$(left).left.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}},{{translate:"tryashtar.shulker_preview.overlay.pot.$(right).right.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}]'
+      ]
+      datapack.functions[f'render/row_{row}/model/pot'] = beet.Function(pot_fn)
+      datapack.functions[f'render/row_{row}/model/pot/patterns'] = beet.Function(pattern_fn)
       
       model_fn.extend([
          '',

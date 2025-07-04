@@ -147,7 +147,7 @@ wheels = [
 [[package]]
 name = "model-resolver"
 version = "1.8.2"
-source = { git = "https://github.com/tryashtar/model_resolver#1a673cb97c8b0b8b132f5bc630a9482e4adaacc2" }
+source = { git = "https://github.com/tryashtar/model_resolver#2ab62dd182dc873caa7562795ea6915aa572044c" }
 dependencies = [
     { name = "beet" },
     { name = "pillow" },
