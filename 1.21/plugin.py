@@ -50,6 +50,7 @@ def main(ctx: beet.Context):
    simple_tinted: dict[str, int] = {}
    simple_dye: dict[int, list[str]] = {}
    simple_property: dict[str, PropertyEntry] = {}
+   dyed_overlays: list[str] = []
    potionlike: dict[int, dict[str, list[str]]] = {}
    firework: dict[int, list[str]] = {}
    maps: dict[int, list[str]] = {}
@@ -323,7 +324,8 @@ def main(ctx: beet.Context):
    # models that switch based on a condition
    # we need to decide what to do based on how complex the two options are
    def handle_condition(name: str, item_model: dict[str, typing.Any]) -> bool:
-      match short(item_model['property']):
+      prop = short(item_model['property'])
+      match prop:
          case 'broken':
             # used by elytra in vanilla
             check = 'max_damage,!unbreakable,damage~{durability:{max:1}}'
@@ -347,16 +349,26 @@ def main(ctx: beet.Context):
             true_name = name + '.damaged'
          case _:
             return False
-      # if both alternate models are simply sprites with no tinting, we can simply add lang entries for both
-      # elytra does this
       on_true = get_model_sprites(item_model['on_true'])
       on_false = get_model_sprites(item_model['on_false'])
-      if on_true is not None and on_false is not None and all(x['tint'] is None for x in on_true) and all(x['tint'] is None for x in on_false):
-         false_name = name
-         model_translations[true_name] = [x['sprite'] for x in on_true]
-         model_translations[false_name] = [x['sprite'] for x in on_false]
-         simple_property[name] = {'check':check, 'true': true_name, 'false': false_name}
-         return True
+      if on_true is not None and on_false is not None:
+         # if both alternate models are simply sprites with no tinting, we can simply add lang entries for both
+         # elytra does this
+         if all(x['tint'] is None for x in on_true) and all(x['tint'] is None for x in on_false):
+            false_name = name
+            model_translations[true_name] = [x['sprite'] for x in on_true]
+            model_translations[false_name] = [x['sprite'] for x in on_false]
+            simple_property[name] = {'check':check, 'true': true_name, 'false': false_name}
+            return True
+         # pattern where both alternate models share a common base, but the other has an extra tinted layer
+         # wolf armor does this
+         if len(on_true) == len(on_false) + 1 and all(x['tint'] is None for x in on_false) and on_true[:len(on_false)] == on_false and on_true[-1]['tint'] is not None:
+            tint = on_true[-1]['tint']
+            if short(tint['type']) == 'dye' and prop == 'has_component' and short(item_model['component']) == 'dyed_color':
+               model_translations[name] = [x['sprite'] for x in on_false]
+               overlay_translations[name] = [on_true[-1]['sprite']]
+               dyed_overlays.append(name)
+               return True
       return False
    
    # some special models that render extra stuff based on certain components
@@ -614,7 +626,7 @@ def main(ctx: beet.Context):
          "# models that require special rendering, like component checks or colored layers",
       ])
       
-      model_fn.append(f'execute {check_model([*simple_property.keys(), *case_property.keys()])} run return run function tryashtar.shulker_preview:render/row_{row}/model/property')
+      model_fn.append(f'execute {check_model([*simple_property.keys(), *case_property.keys(), *dyed_overlays])} run return run function tryashtar.shulker_preview:render/row_{row}/model/property')
       property_fn = [
          "# models that change based on a component property",
       ]
@@ -627,6 +639,13 @@ def main(ctx: beet.Context):
          for value in data['values']:
             property_fn.append(f'execute {check_model([model])} if data storage tryashtar.shulker_preview:data item.components.{data['check'](value)} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{value}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
          property_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+      for model in dyed_overlays:
+         property_fn.extend([
+            f'execute {check_model([model], 'dyed_color')} store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:dyed_color"',
+            f'execute {check_model([model], 'dyed_color')} run function tryashtar.shulker_preview:render/convert_color',
+            f'execute {check_model([model], 'dyed_color')} run return run function tryashtar.shulker_preview:render/row_{row}/model/color_overlay.macro with storage tryashtar.shulker_preview:data item',
+            f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}',
+         ])
 
       datapack.functions[f'render/row_{row}/model/property'] = beet.Function(property_fn)
       
