@@ -50,6 +50,8 @@ def main(ctx: beet.Context):
    simple_tinted: dict[str, int] = {}
    simple_property: dict[str, PropertyEntry] = {}
    potionlike: dict[int, dict[str, list[str]]] = {}
+   firework: dict[int, list[str]] = {}
+   maps: dict[int, list[str]] = {}
    armor: list[ArmorEntry] = []
    case_property: dict[str, PropertyCheck] = {}
    banners: dict[str, typing.Literal['banner', 'shield']] = {}
@@ -117,7 +119,8 @@ def main(ctx: beet.Context):
             # I think each tint matches a layer, so it's correct to zip them like this?
             if len(tints) > len(layers):
                return None
-            return [{'sprite':layers[i], 'tint':tints[i] if i < len(tints) else None} for i in range(len(layers))]
+            filtered_tints = [None if short(x['type']) == 'constant' and x['value'] == -1 else x for x in tints]
+            return [{'sprite':layers[i], 'tint':filtered_tints[i] if i < len(tints) else None} for i in range(len(layers))]
          case 'special':
             # some special models are simple and can just be one sprite
             match short(item_model['model']['type']):
@@ -174,6 +177,26 @@ def main(ctx: beet.Context):
                if tint['default'] not in potionlike:
                   potionlike[tint['default']] = {}
                potionlike[tint['default']][name] = [layer['sprite'] for layer in layers]
+               return True
+            case _:
+               return False
+      if len(layers) == 2 and layers[0]['tint'] is None and layers[1]['tint'] is not None:
+         # one entry for the bottom layer, one for the top
+         model_translations[name] = [layers[0]['sprite']]
+         overlay_translations[name] = [layers[1]['sprite']]
+         tint = layers[1]['tint']
+         match short(tint['type']):
+            case 'firework':
+               default = tint['default']
+               if default not in firework:
+                  firework[default] = []
+               firework[default].append(name)
+               return True
+            case 'map_color':
+               default = tint['default']
+               if default not in maps:
+                  maps[default] = []
+               maps[default].append(name)
                return True
             case _:
                return False
@@ -606,7 +629,31 @@ def main(ctx: beet.Context):
       for model, tint in simple_tinted.items():
          tinted_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
       datapack.functions[f'render/row_{row}/model/tinted'] = beet.Function(tinted_fn)
-            
+      
+      for default_color, entries in firework.items():
+         fn_name = f'render/row_{row}/model/star' if len(firework) == 1 else f'render/row_{row}/model/star/{default_color}'
+         model_fn.append(f'execute {check_model(entries)} run return run function tryashtar.shulker_preview:{fn_name}')
+         color = color_hex(default_color)
+         firework_fn = [
+            '# firework stars can be any color, so a macro is needed',
+            f'data modify storage tryashtar.shulker_preview:data item merge value {{red:"{color[1:3]}",green:"{color[3:5]}","blue":"{color[5:7]}"}}',
+            'function tryashtar.shulker_preview:render/star_color',
+            f'function tryashtar.shulker_preview:render/row_{row}/model/color_overlay.macro with storage tryashtar.shulker_preview:data item',
+         ]
+         datapack.functions[fn_name] = beet.Function(firework_fn)
+      for default_color, entries in maps.items():
+         fn_name = f'render/row_{row}/model/map' if len(maps) == 1 else f'render/row_{row}/model/map/{default_color}'
+         model_fn.append(f'execute {check_model(entries)} run return run function tryashtar.shulker_preview:{fn_name}')
+         color = color_hex(default_color)
+         map_fn = [
+            '# maps can be any color, so a macro is needed',
+            f'data modify storage tryashtar.shulker_preview:data item merge value {{red:"{color[1:3]}",green:"{color[3:5]}","blue":"{color[5:7]}"}}',
+            'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:map_color"',
+            'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
+            f'function tryashtar.shulker_preview:render/row_{row}/model/color_overlay.macro with storage tryashtar.shulker_preview:data item',
+         ]
+         datapack.functions[fn_name] = beet.Function(map_fn)
+      
       for default_color, data in potionlike.items():
          fn_name = f'render/row_{row}/model/potion' if len(potionlike) == 1 else f'render/row_{row}/model/potion/{default_color}'
          model_fn.append(f'execute {check_model(data.keys())} run return run function tryashtar.shulker_preview:{fn_name}')
@@ -617,7 +664,7 @@ def main(ctx: beet.Context):
             'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:potion_contents".custom_color',
             'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
             'execute if score #has_color shulker_preview matches 0 run function tryashtar.shulker_preview:render/potion_color',
-            f'function tryashtar.shulker_preview:render/row_{row}/model/color_overlay.macro with storage tryashtar.shulker_preview:data item',
+            f'function tryashtar.shulker_preview:render/row_{row}/model/color_base.macro with storage tryashtar.shulker_preview:data item',
          ]
          datapack.functions[fn_name] = beet.Function(potionlike_fn)
       
@@ -648,7 +695,7 @@ def main(ctx: beet.Context):
             f'data modify storage tryashtar.shulker_preview:data item merge value {{red:"{color[1:3]}",green:"{color[3:5]}","blue":"{color[5:7]}"}}',
             'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:dyed_color"',
             'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
-            f'function tryashtar.shulker_preview:render/row_{row}/model/color_overlay.macro with storage tryashtar.shulker_preview:data item',
+            f'function tryashtar.shulker_preview:render/row_{row}/model/color_base.macro with storage tryashtar.shulker_preview:data item',
          ]
          datapack.functions[f'render/row_{row}/model/armor/base/{group_name}'] = beet.Function(group_fn)
       armor_base.append(f'function tryashtar.shulker_preview:render/row_{row}/model/simple.macro with storage tryashtar.shulker_preview:data item')
@@ -738,12 +785,17 @@ def main(ctx: beet.Context):
          "# macro for simple models that are just one or more uncolored layers",
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.$(model).{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}'
       ]
-      color_overlay = [
-         '# macro for models that render with a colored layer and one or more uncolored overlays',
+      color_base = [
+         '# macro for models that render with a colored base and one or more uncolored overlays',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{translate:"tryashtar.shulker_preview.item.$(model).{row}",color:"#$(red)$(green)$(blue)",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}},{{translate:"tryashtar.shulker_preview.overlay.$(model).{row}",color:"white",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}]',
+      ]
+      color_overlay = [
+         '# macro for models that render with an uncolored base and a colored overlay',
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{translate:"tryashtar.shulker_preview.item.$(model).{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}},{{translate:"tryashtar.shulker_preview.overlay.$(model).{row}",color:"#$(red)$(green)$(blue)",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}]',
       ]
 
       datapack.functions[f'render/row_{row}/model/simple.macro'] = beet.Function(simple_fn)
+      datapack.functions[f'render/row_{row}/model/color_base.macro'] = beet.Function(color_base)
       datapack.functions[f'render/row_{row}/model/color_overlay.macro'] = beet.Function(color_overlay)
       
       datapack.functions[f'render/row_{row}/item'] = beet.Function(item_fn)
