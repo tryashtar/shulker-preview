@@ -46,24 +46,29 @@ def main(ctx: beet.Context):
    potionlike: dict[int, dict[str, list[str]]] = {}
    armor: list[ArmorEntry] = []
    case_property: dict[str, PropertyCheck] = {}
-   banners: list[str] = []
+   banners: dict[str, typing.Literal['banner', 'shield']] = {}
    
    # we're going to enumerate every item model in vanilla, to collect their sprites and sort into patterns
    # what follows are some functions for handling particular item models
    vanilla = beet.contrib.vanilla.Vanilla(ctx, minecraft_version=target_version)
    block_atlas = vanilla.assets.atlases['minecraft:blocks']
    
-   banner_patterns: dict[str, str] = {}
+   BannerShield = typing.TypedDict('BannerShield', {'banner': str, 'shield': str})
+   banner_patterns: dict[str, BannerShield] = {}
    banner_atlas = vanilla.assets.atlases['minecraft:banner_patterns']
+   shield_atlas = vanilla.assets.atlases['minecraft:shield_patterns']
    for pattern, file in vanilla.data.banner_patterns.items():
       asset = file.data['asset_id']
       namespace, path = canon(asset).split(':')
-      final = f'{namespace}:entity/banner/{path}'
-      result = get_texture_from_atlas_entry(vanilla.assets.textures, banner_atlas, final)
-      if result is not None:
-         texture = result['texture']
-         banner_patterns[pattern] = texture
-   
+      final_banner = f'{namespace}:entity/banner/{path}'
+      final_shield = f'{namespace}:entity/shield/{path}'
+      banner_result = get_texture_from_atlas_entry(vanilla.assets.textures, banner_atlas, final_banner)
+      shield_result = get_texture_from_atlas_entry(vanilla.assets.textures, shield_atlas, final_shield)
+      if banner_result is not None and shield_result is not None:
+         banner = banner_result['texture']
+         shield = shield_result['texture']
+         banner_patterns[pattern] = {'banner':banner, 'shield':shield}
+
    # if this item model just consists of sprites (i.e. no conditions), return said sprites
    # many models are like this, and they're easier to render and check for in patterns
    def get_model_sprites(item_model: dict[str, typing.Any]) -> list[ModelSprite] | None:
@@ -310,32 +315,53 @@ def main(ctx: beet.Context):
             rendered_item_sprites[gen_name] = name
             # use one lang entry for the base model
             model_translations[name] = [gen_name]
-            for pattern, texture in banner_patterns.items():
-               fake_model = {
-                  "parent": item_model['base'],
-                  "textures": {
-                     "0": texture
-                  },
-                  "elements": [
-                     {
-                        "from": [8.66667, 2.66667, 1.33333],
-                        "to": [9.66667, 29.33333, 14.66667],
-                        "rotation": {"angle": -90, "axis": "y", "origin": [8, 0, 8]},
-                        "faces": {
-                           "north": {"uv": [5.25, 0.25, 5.5, 10.25], "texture": "#0"},
-                           "east": {"uv": [0.25, 0.25, 5.25, 10.25], "texture": "#0"},
-                           "south": {"uv": [0, 0.25, 0.25, 10.25], "texture": "#0"},
-                           "west": {"uv": [5.5, 0.25, 10.5, 10.25], "texture": "#0"},
-                           "up": {"uv": [5.25, 0, 0.25, 0.25], "rotation": 90, "texture": "#0"},
-                           "down": {"uv": [10.25, 0, 5.25, 0.25], "rotation": 270, "texture": "#0"}
-                        }
+            for pattern, textures in banner_patterns.items():
+               match special:
+                  case 'banner':
+                     fake_model = {
+                        "parent": item_model['base'],
+                        "textures": {
+                           "0": textures['banner']
+                        },
+                        "elements": [
+                           {
+                              "from": [8.66667, 2.66667, 1.33333],
+                              "to": [9.66667, 29.33333, 14.66667],
+                              "rotation": {"angle": -90, "axis": "y", "origin": [8, 0, 8]},
+                              "faces": {
+                                 "north": {"uv": [5.25, 0.25, 5.5, 10.25], "texture": "#0"},
+                                 "east": {"uv": [0.25, 0.25, 5.25, 10.25], "texture": "#0"},
+                                 "south": {"uv": [0, 0.25, 0.25, 10.25], "texture": "#0"},
+                                 "west": {"uv": [5.5, 0.25, 10.5, 10.25], "texture": "#0"},
+                                 "up": {"uv": [5.25, 0, 0.25, 0.25], "rotation": 90, "texture": "#0"},
+                                 "down": {"uv": [10.25, 0, 5.25, 0.25], "rotation": 270, "texture": "#0"}
+                              }
+                           }
+                        ]
                      }
-                  ]
-               }
-               gen_name = pattern + '.banner'
+                  case 'shield':
+                     fake_model = {
+                        "parent": item_model['base'],
+                        "textures": {
+                           "0": textures['shield']
+                        },
+                        "elements": [
+                           {
+                              "from": [-6, -11, 1],
+                              "to": [6, 11, 2],
+                              "faces": {
+                                 "south": {
+                                    "uv": [0.25, 0.25, 3.25, 5.75],
+                                    "texture": "#0"
+                                 }
+                              }
+                           }
+                        ]
+                     }
+               gen_name = pattern + '.' + special
                rendered_fake_sprites[gen_name] = fake_model
-               overlay_translations['banner.' + pattern] = [gen_name]
-            banners.append(name)
+               overlay_translations[special + '.' + pattern] = [gen_name]
+            banners[name] = special
             return True
          case _:
             return False
@@ -585,11 +611,27 @@ def main(ctx: beet.Context):
       datapack.functions[f'render/row_{row}/model/armor'] = beet.Function(armor_fn)
       datapack.functions[f'render/row_{row}/model/armor/base'] = beet.Function(armor_base)
       
-      model_fn.append(f'execute {check_model(banners)} run return run function tryashtar.shulker_preview:render/row_{row}/model/banner')
+      model_fn.append(f'execute {check_model(banners.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/banner')
+      shieldlike = [model for model, kind in banners.items() if kind == 'shield']
       banner_fn = [
-         "# banner models with pattern overlays",
+         "# banners and shields start with the base model",
          f'function tryashtar.shulker_preview:render/row_{row}/model/simple.macro with storage tryashtar.shulker_preview:data item',
-         f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/model/banner/pattern_loop',
+         '',
+         "# shields have a possible base color overlay",
+         f'execute {check_model(shieldlike)} run data modify storage tryashtar.shulker_preview:data item.base set from storage tryashtar.shulker_preview:data item.components."minecraft:base_color"',
+         f'execute {check_model(shieldlike)} if data storage tryashtar.shulker_preview:data item.base run function tryashtar.shulker_preview:render/shield_color with storage tryashtar.shulker_preview:data item',
+         f'execute {check_model(shieldlike)} if data storage tryashtar.shulker_preview:data item.base run function tryashtar.shulker_preview:render/row_{row}/model/banner/shield_base with storage tryashtar.shulker_preview:data item',
+         '',
+         "# then the pattern overlays",
+         "# set a macro value to banner or shield accordingly, to use the matching translation",
+         'execute unless data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run return fail',
+         'data modify storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[].kind set value "banner"',
+         f'execute {check_model(shieldlike)} run data modify storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[].kind set value "shield"',
+         f'function tryashtar.shulker_preview:render/row_{row}/model/banner/pattern_loop',
+      ]
+      shield_base = [
+         "# render the base of a shield with a dye-specific color",
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.overlay.shield.minecraft:base.{row}",color:"$(base)",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}'
       ]
       banner_loop = [
          "# recursively render banner patterns using a macro",
@@ -600,9 +642,10 @@ def main(ctx: beet.Context):
       ]
       banner_one = [
          "# render one banner pattern with a dye-specific color",
-         f'$data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.overlay.banner.$(pattern).{row}",color:"$(color)",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}'
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.overlay.$(kind).$(pattern).{row}",color:"$(color)",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}'
       ]
       datapack.functions[f'render/row_{row}/model/banner'] = beet.Function(banner_fn)
+      datapack.functions[f'render/row_{row}/model/banner/shield_base'] = beet.Function(shield_base)
       datapack.functions[f'render/row_{row}/model/banner/pattern_loop'] = beet.Function(banner_loop)
       datapack.functions[f'render/row_{row}/model/banner/pattern'] = beet.Function(banner_one)
       
