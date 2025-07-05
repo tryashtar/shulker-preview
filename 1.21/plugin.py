@@ -109,6 +109,9 @@ def main(ctx: beet.Context):
             layers = generated_layers(vanilla.assets.models, model)
             if layers is None:
                # this is a 3D model, render it and use that texture as the single sprite
+               tinted = has_tintindex(vanilla.assets.models, model)
+               if tinted == 'some' and len(tints) > 0:
+                  return None
                gen_name = model_name + '.model'
                rendered_model_sprites[gen_name] = model_name
                layers = [gen_name]
@@ -376,10 +379,10 @@ def main(ctx: beet.Context):
       special = short(item_model['model']['type'])
       match special:
          case 'banner' | 'shield':
-            gen_name_left = name + '.item'
-            rendered_item_sprites[gen_name_left] = name
+            gen_name = name + '.item'
+            rendered_item_sprites[gen_name] = name
             # use one lang entry for the base model
-            model_translations[name] = [gen_name_left]
+            model_translations[name] = [gen_name]
             for pattern, textures in banner_patterns.items():
                match special:
                   case 'banner':
@@ -423,16 +426,16 @@ def main(ctx: beet.Context):
                            }
                         ]
                      }
-               gen_name_left = pattern + '.' + special
-               rendered_fake_sprites[gen_name_left] = fake_model
-               overlay_translations[special + '.' + pattern] = [gen_name_left]
+               gen_name = 'banner.' + pattern + '.' + special
+               rendered_fake_sprites[gen_name] = fake_model
+               overlay_translations[special + '.' + pattern] = [gen_name]
             banners[name] = special
             return True
          case 'decorated_pot':
-            gen_name_left = name + '.item'
-            rendered_item_sprites[gen_name_left] = name
+            gen_name = name + '.item'
+            rendered_item_sprites[gen_name] = name
             # use one lang entry for the base model
-            model_translations[name] = [gen_name_left]
+            model_translations[name] = [gen_name]
             for item, pattern in pot_patterns.items():
                fake_left = {
                   "parent": item_model['base'],
@@ -466,8 +469,8 @@ def main(ctx: beet.Context):
 		               }
                   ]
                }
-               gen_name_left = pattern + '.left'
-               gen_name_right = pattern + '.right'
+               gen_name_left = 'pot.' + pattern + '.left'
+               gen_name_right = 'pot.' + pattern + '.right'
                rendered_fake_sprites[gen_name_left] = fake_left
                rendered_fake_sprites[gen_name_right] = fake_right
                overlay_translations['pot.' + item + '.left'] = [gen_name_left]
@@ -477,17 +480,32 @@ def main(ctx: beet.Context):
          case _:
             return False
    
+   def handle_model(name: str, _item_model: dict[str, typing.Any]) -> bool:
+      gen_name = name + '.item'
+      rendered_item_sprites[gen_name] = name
+      # use one lang entry for the base model
+      model_translations[name] = [gen_name]
+      return True
+   
    for name, entry in vanilla.assets.item_models.items():
       name = canon(name)
       squashed_model = squash_conditions(entry.data['model'])
+      model_type = short(squashed_model['type'])
+      # special models ignore gui_light (seems to be a vanilla bug?)
+      #if model_type == 'special':
+      #   base_model_name = squashed_model['base']
+      #   base_model = vanilla.assets.models[canon(base_model_name)]
+      #   if 'gui_light' in base_model.data:
+      #      del base_model.data['gui_light']
       result = get_model_sprites(squashed_model)
       if result is not None:
          handled = handle_layered(name, result)
       else:
          handled = False
       if not handled:
-         model_type = short(squashed_model['type'])
          match model_type:
+            case 'model':
+               handled = handle_model(name, squashed_model)
             case 'select':
                handled = handle_select(name, squashed_model)
             case 'condition':
@@ -527,7 +545,7 @@ def main(ctx: beet.Context):
          animation_mode = 'one_file'
       )
    render.run()
-   all_rendered = [*rendered_model_sprites.keys(), *rendered_item_sprites.keys(), *rendered_fake_sprites.keys()]
+   all_rendered = [*rendered_model_sprites.keys(), *rendered_item_sprites.keys(), *sorted(rendered_fake_sprites.keys())]
    generated_entries = [(ctx.assets.textures[x].image, x) for x in all_rendered]
    grid_img, grid_refs = make_grid(generated_entries, render.default_render_size)
    for gen_name in all_rendered:
@@ -600,7 +618,11 @@ def main(ctx: beet.Context):
    for model, sprites in model_translations.items():
       data = [font.get_sprite(x) for x in sprites]
       for row in range(font.rows):
-         lang.data[f'tryashtar.shulker_preview.item.{model}.{row}'] = between_overlay.join([x['rows'][row] + x['negative'] for x in data]) + after_model
+         if len(data) > 0:
+            text = between_overlay.join([x['rows'][row] + x['negative'] for x in data]) + after_model
+         else:
+            text = empty_slot
+         lang.data[f'tryashtar.shulker_preview.item.{model}.{row}'] = text
 
    for name, sprites in overlay_translations.items():
       data = [font.get_sprite(x) for x in sprites]
@@ -636,6 +658,7 @@ def main(ctx: beet.Context):
          "# in vanilla, every single item has a default item_model that matches its ID",
          "# if there were any exceptions, we could list them here",
          "# when the item stack has a custom item_model component, use it instead",
+         'execute if items entity @s contents *[!item_model] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {translate:"tryashtar.shulker_preview.empty_slot"}',
          'data modify storage tryashtar.shulker_preview:data item.model set from storage tryashtar.shulker_preview:data item.id',
       ]
       for item, model in unusual_default_models.items():
@@ -1091,14 +1114,6 @@ def make_grid(entries: list[tuple[PIL.Image.Image, str]], icon_size: int) -> tup
       x = pos_x * icon_size
       y = pos_y * icon_size
       image.paste(sprite, (x, y, x + icon_size, y + icon_size))
-      # to do: with negatives, is this still necessary?
-      for corner in (0, icon_size - 1):
-         pixel = sprite.getpixel((corner, corner))
-         assert type(pixel) is tuple
-         r,g,b,a = pixel
-         if a == 0:
-            r,g,b = (139, 139, 139)
-         image.putpixel((x + corner, y + corner), (r, g, b, max(a, 18)))
    return (image, path_return)
 
 def grid_dimensions(area: int) -> tuple[int, int]:
@@ -1281,12 +1296,39 @@ def canon(location: str) -> str:
 def short(location: str) -> str:
    return location.removeprefix('minecraft:')
 
+def has_tintindex(source: beet.NamespaceProxy[beet.Model], model: beet.Model) -> typing.Literal['all', 'some', 'none']:
+   current = None
+   while True:
+      if 'elements' in model.data:
+         for element in model.data['elements']:
+            for face in element['faces'].values():
+               if 'tintindex' in face:
+                  if current is None:
+                     current = 'all'
+                  elif current == 'none':
+                     return 'some'
+               else:
+                  if current is None:
+                     current = 'none'
+                  elif current == 'all':
+                     return 'some'
+      if 'parent' in model.data:
+         parent = canon(model.data['parent'])
+         model = source[parent]
+      else:
+         break
+   if current is None:
+      current = 'none'
+   return current
+
 # find all the layers of a flat item sprite model
 # all models of this kind ultimately parent to the builtin/generated model
 # so if we don't find that, this is a 3D model that needs to be rendered instead
 def generated_layers(source: beet.NamespaceProxy[beet.Model], model: beet.Model) -> list[str] | None:
    result: list[str | None] = []
    while 'parent' in model.data:
+      if 'elements' in model.data:
+         return None
       if 'textures' in model.data:
          for name, path in model.data['textures'].items():
             match = re.match(r'layer(\d+)', name)
@@ -1305,4 +1347,6 @@ def generated_layers(source: beet.NamespaceProxy[beet.Model], model: beet.Model)
       if parent == 'minecraft:builtin/generated':
          return [x for x in result if x is not None]
       model = source[parent]
-   return None
+   if 'elements' in model.data:
+      return None
+   return []
