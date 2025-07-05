@@ -2,18 +2,15 @@ name: Shulker Preview
 author: tryashtar
 data_pack:
   load: [in/datapack]
-  name: datapack
   description:
     text: 'Shulker Box tooltip preview: data pack'
     color: '#8fdff7'
 resource_pack:
   load: [in/resourcepack]
-  name: resourcepack
   description:
     text: 'Shulker Box tooltip preview: resource pack'
     color: '#8fdff7'
 pipeline: [plugin.main, mecha]
-output: out
 meta:
   minecraft_version: '1.21.6'
   mecha:

@@ -976,6 +976,16 @@ def main(ctx: beet.Context):
       datapack.functions[f'render/row_{row}/overlay/bundle_bar'] = beet.Function(bundle_fn)
       
       datapack.functions[f'render/row_{row}/item'] = beet.Function(item_fn)
+   
+   ctx.assets.save(path='out/resourcepack', overwrite=True)
+   ctx.assets.save(path=f'Shulker Preview Resource Pack ({target_version}).zip', zipped=True, overwrite=True)
+   ctx.data.save(path='out/datapack', overwrite=True)
+   ctx.data.save(path=f'Shulker Preview Data Pack ({target_version}).zip', zipped=True, overwrite=True)
+   dark_theme = beet.ResourcePack(path='in/resourcepack_dark')
+   dark_theme.pack_format = ctx.assets.pack_format
+   dark_theme.description = '(apply this pack above the normal resource pack)'
+   dark_theme.save(path='out/dark_theme', overwrite=True)
+   dark_theme.save(path=f'Shulker Preview Dark Theme ({target_version}).zip', zipped=True, overwrite=True)
 
 # all textures referenced by item models are entries in the blocks atlas
 # that means they may have different names from the textures they came from
