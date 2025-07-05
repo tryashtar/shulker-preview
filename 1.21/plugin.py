@@ -15,7 +15,7 @@ def main(ctx: beet.Context):
    datapack = ctx.data['tryashtar.shulker_preview']
    resourcepack = ctx.assets['tryashtar.shulker_preview']
    # to do: when https://github.com/mcbeet/beet/pull/472 is merged, use 'minecraft' field
-   target_version = ctx.meta['minecraft_version']
+   target_version: str = ctx.meta['minecraft_version']
    ctx.meta['model_resolver'] = {
       'minecraft_version': target_version,
       'preferred_minecraft_generated': 'java',
@@ -646,6 +646,8 @@ def main(ctx: beet.Context):
       check = extra + '|'.join([f'item_model="{short(x)}"' for x in models])
       return f'if items entity @s contents *[{check}]'
    
+   dyed_color = '"minecraft:dyed_color"' if ctx.data.pack_format >= 64 else '"minecraft:dyed_color".rgb'
+   
    for row in range(font.rows):
       item_fn = [
          "# render the base item model",
@@ -684,7 +686,7 @@ def main(ctx: beet.Context):
          property_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
       for model in dyed_overlays:
          property_fn.extend([
-            f'execute {check_model([model], 'dyed_color')} store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:dyed_color"',
+            f'execute {check_model([model], 'dyed_color')} store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components.{dyed_color}',
             f'execute {check_model([model], 'dyed_color')} run function tryashtar.shulker_preview:render/convert_color',
             f'execute {check_model([model], 'dyed_color')} run return run function tryashtar.shulker_preview:render/row_{row}/model/color_overlay.macro with storage tryashtar.shulker_preview:data item',
             f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}',
@@ -707,7 +709,7 @@ def main(ctx: beet.Context):
          dye_fn = [
             '# models with a single dyed layer',
             f'data modify storage tryashtar.shulker_preview:data item merge value {{red:"{color[1:3]}",green:"{color[3:5]}","blue":"{color[5:7]}"}}',
-            'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:dyed_color"',
+            f'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components.{dyed_color}',
             'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
             f'function tryashtar.shulker_preview:render/row_{row}/model/color.macro with storage tryashtar.shulker_preview:data item',
          ]
@@ -777,7 +779,7 @@ def main(ctx: beet.Context):
          group_fn = [
             "# dyeable items can be any color, so a macro is needed",
             f'data modify storage tryashtar.shulker_preview:data item merge value {{red:"{color[1:3]}",green:"{color[3:5]}","blue":"{color[5:7]}"}}',
-            'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:dyed_color"',
+            f'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components.{dyed_color}',
             'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
             f'function tryashtar.shulker_preview:render/row_{row}/model/color_base.macro with storage tryashtar.shulker_preview:data item',
          ]

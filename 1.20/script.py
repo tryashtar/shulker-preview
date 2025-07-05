@@ -59,7 +59,11 @@ def main():
    lang['tryashtar.shulker_preview.row_end'] = row_end
    lang['tryashtar.shulker_preview.overlay'] = back_a_tad
    lang['tryashtar.shulker_preview.overlay_done'] = small_space
-   char_cache['generated']['tryashtar.shulker_preview:missingno'] = new_sprite(char_cache, True)
+   missingno = new_sprite(char_cache, True)
+   char_cache['generated']['tryashtar.shulker_preview:missingno'] = missingno
+   lang['tryashtar.shulker_preview.missingno.0'] = missingno['rows'][0] + missingno['negative'] + next_slot
+   lang['tryashtar.shulker_preview.missingno.1'] = missingno['rows'][1] + missingno['negative'] + next_slot
+   lang['tryashtar.shulker_preview.missingno.2'] = missingno['rows'][2] + missingno['negative'] + next_slot
    special_render_tag = ['#tryashtar.shulker_preview:special_render/overrides']
    override_items = {}
    hardcoded_items = {
@@ -525,7 +529,7 @@ def main():
                elif check == 'filled':
                   test.append('if items entity @s contents *[bundle_contents~{items:{size:{min:1}}}]')
                elif check == 'broken':
-                  test.append('if items entity @s contents *[damage~{durability:{max:0}}]')
+                  test.append('if items entity @s contents *[damage~{durability:{max:1}}]')
                else:
                   print(f'WARNING: unknown predicate {check} in item {item}')
             specific_fn.append(f'execute {" ".join(test)} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.override.minecraft:{item}.{num}.{row}"}}\'')
