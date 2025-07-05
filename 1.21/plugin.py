@@ -537,12 +537,17 @@ def main(ctx: beet.Context):
    resourcepack.textures['block_sheet'] = beet.Texture(grid_img)
    
    font = FontManager(rows=3)
-   next_slot = font.get_space(15)
+   after_number = font.get_space(1)
+   after_durability = font.get_space(2)
+   after_tooltip = font.get_space(8)
+   after_model = font.get_space(15)
    empty_slot = font.get_space(18)
-   overlay = font.get_space(-3)
-   prev_slot = font.get_space(-18)
-   tooltip_push_back = font.get_space(-4)
-   tooltip_push_fwd = font.get_space(8)
+   between_overlay = font.get_space(-3)
+   before_tooltip = font.get_space(-4)
+   before_shadow2 = font.get_space(-6)
+   before_number2 = font.get_space(-7)
+   before_durability = font.get_space(-16)
+   before_overlay = font.get_space(-18)
    row_end = font.get_space(-162)
    lang = resourcepack.languages['en_us']
    for tex, tip, bottom in [('shulker_box', 'shulker_tooltip', 20), ('generic_54', 'ender_tooltip', 27)]:
@@ -560,14 +565,29 @@ def main(ctx: beet.Context):
             font.add_provider({"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": ascent, "height": section['height'], "chars": positive})
             font.add_provider({"type": "bitmap", "file": f"minecraft:gui/container/{tex}.png", "ascent": -32768, "height": -section['height'], "chars": negative})
             ascent -= section['height']
-            text += pos + neg + overlay
-      lang.data[f"tryashtar.shulker_preview.{tip}"] = tooltip_push_back + text + tooltip_push_fwd
+            text += pos + neg + between_overlay
+      lang.data[f"tryashtar.shulker_preview.{tip}"] = before_tooltip + text + after_tooltip
    lang.data['tryashtar.shulker_preview.empty_slot'] = empty_slot
    lang.data['tryashtar.shulker_preview.row_end'] = row_end
    missing = font.add_sprite('tryashtar.shulker_preview:missingno')
+   numbers = font.add_numbers()
    for row in range(font.rows):
-      lang.data[f'tryashtar.shulker_preview.missingno.{row}'] = missing['rows'][row] + missing['negative'] + next_slot
-
+      lang.data[f'tryashtar.shulker_preview.missingno.{row}'] = missing['rows'][row] + missing['negative'] + after_model
+   for row in range(font.rows):
+      # shadow has to be a separate translation so we can color it
+      for num in range(1, 10):
+         lang.data[f'tryashtar.shulker_preview.number.{num}.{row}'] = before_tooltip + numbers[num]['negative'] + numbers[num]['normal'][row] + after_number
+         lang.data[f'tryashtar.shulker_preview.number_shadow.{num}.{row}'] = between_overlay + numbers[num]['negative'] + numbers[num]['shadow'][row]
+      for num in range(10, 100):
+         d1 = num // 10
+         d2 = num % 10
+         lang.data[f'tryashtar.shulker_preview.number.{num}.{row}'] = before_number2 + numbers[d1]['negative'] + numbers[d2]['negative'] + numbers[d1]['normal'][row] + numbers[d2]['normal'][row] + after_number
+         lang.data[f'tryashtar.shulker_preview.number_shadow.{num}.{row}'] = before_shadow2 + numbers[d1]['negative'] + numbers[d2]['negative'] + numbers[d1]['shadow'][row] + numbers[d2]['shadow'][row]
+   for row in range(font.rows):
+      durability = ''.join([font.next_char() for _ in range(14)])
+      font.add_provider({"type":"bitmap","file":"tryashtar.shulker_preview:durability.png","ascent":-18*row-15,"height":2,"chars":[durability[0:5], durability[5:10], durability[10:14] + '\u0000']})
+      for num in range(14):
+         lang.data[f"tryashtar.shulker_preview.durability.{num}.{row}"] = before_durability + durability[num] + after_durability
    font.add_grid('tryashtar.shulker_preview:block_sheet', grid_refs)
    for entry in atlas_sprites:
       asset = get_texture_from_atlas_entry(vanilla.assets.textures, block_atlas, entry)
@@ -580,12 +600,12 @@ def main(ctx: beet.Context):
    for model, sprites in model_translations.items():
       data = [font.get_sprite(x) for x in sprites]
       for row in range(font.rows):
-         lang.data[f'tryashtar.shulker_preview.item.{model}.{row}'] = overlay.join([x['rows'][row] + x['negative'] for x in data]) + next_slot
+         lang.data[f'tryashtar.shulker_preview.item.{model}.{row}'] = between_overlay.join([x['rows'][row] + x['negative'] for x in data]) + after_model
 
    for name, sprites in overlay_translations.items():
       data = [font.get_sprite(x) for x in sprites]
       for row in range(font.rows):
-         lang.data[f'tryashtar.shulker_preview.overlay.{name}.{row}'] = prev_slot + overlay.join([x['rows'][row] + x['negative'] for x in data]) + next_slot
+         lang.data[f'tryashtar.shulker_preview.overlay.{name}.{row}'] = before_overlay + between_overlay.join([x['rows'][row] + x['negative'] for x in data]) + after_model
 
    # we need the item_model component in a string to run the macro
    # but there's no way to do this if the component is set to the default for that item type (which it almost always is)
@@ -844,8 +864,93 @@ def main(ctx: beet.Context):
       datapack.functions[f'render/row_{row}/model/color_base.macro'] = beet.Function(color_base)
       datapack.functions[f'render/row_{row}/model/color_overlay.macro'] = beet.Function(color_overlay)
       
-      datapack.functions[f'render/row_{row}/item'] = beet.Function(item_fn)
       datapack.functions[f'render/row_{row}/model'] = beet.Function(model_fn)
+      
+      item_fn.extend([
+         '',
+         "# render bar and number overlays",
+         "# bundle is last since checking the weight involves overwriting the weapon item",
+         f'execute if items entity @s contents *[max_damage,!unbreakable,damage~{{damage:{{min:1}}}}] run function tryashtar.shulker_preview:render/row_{row}/overlay/durability',
+         f'execute if items entity @s contents *[count~{{min:2}}] run function tryashtar.shulker_preview:render/row_{row}/overlay/count with storage tryashtar.shulker_preview:data item',
+         f'execute if items entity @s contents *[bundle_contents~{{items:{{size:{{min:1}}}}}}] run function tryashtar.shulker_preview:render/row_{row}/overlay/bundle_bar',
+      ])
+      
+      durability_fn = [
+         "# render the durability bar",
+         "# first we get the current damage of the item, then see what the damage would be if set to a specific ratio",
+         "# if the current damage is less than these thresholds, use that corresponding bar width and color",
+         'execute store result score #damage shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:damage"',
+         'item modify entity @s contents {function:"set_damage",damage:0.9615384615384616}',
+         'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.0.{row}",color:"#00ff00"}}',
+         'item modify entity @s contents {function:"set_damage",damage:0.8846153846153846}',
+         'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.1.{row}",color:"#27ff00"}}',
+         'item modify entity @s contents {function:"set_damage",damage:0.8076923076923077}',
+         'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.2.{row}",color:"#4eff00"}}',
+         'item modify entity @s contents {function:"set_damage",damage:0.7307692307692308}',
+         'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.3.{row}",color:"#75ff00"}}',
+         'item modify entity @s contents {function:"set_damage",damage:0.6538461538461539}',
+         'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.4.{row}",color:"#9cff00"}}',
+         'item modify entity @s contents {function:"set_damage",damage:0.5769230769230769}',
+         'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.5.{row}",color:"#c4ff00"}}',
+         'item modify entity @s contents {function:"set_damage",damage:0.5}',
+         'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.6.{row}",color:"#ebff00"}}',
+         'item modify entity @s contents {function:"set_damage",damage:0.42307692307692313}',
+         'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.7.{row}",color:"#ffeb00"}}',
+         'item modify entity @s contents {function:"set_damage",damage:0.34615384615384615}',
+         'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.8.{row}",color:"#ffc400"}}',
+         'item modify entity @s contents {function:"set_damage",damage:0.2692307692307693}',
+         'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.9.{row}",color:"#ff9c00"}}',
+         'item modify entity @s contents {function:"set_damage",damage:0.1923076923076923}',
+         'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.10.{row}",color:"#ff7500"}}',
+         'item modify entity @s contents {function:"set_damage",damage:0.11538461538461542}',
+         'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.11.{row}",color:"#ff4e00"}}',
+         'item modify entity @s contents {function:"set_damage",damage:0.038461538461538436}',
+         'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.12.{row}",color:"#ff2700"}}',
+         f'data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.13.{row}"}}',
+      ]
+      datapack.functions[f'render/row_{row}/overlay/durability'] = beet.Function(durability_fn)
+      count_fn = [
+         "# render the item count numbers",
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{translate:"tryashtar.shulker_preview.number_shadow.$(count).{row}",color:"#3e3e3e"}},{{translate:"tryashtar.shulker_preview.number.$(count).{row}",color:"white"}}]',
+      ]
+      datapack.functions[f'render/row_{row}/overlay/count'] = beet.Function(count_fn)
+      bundle_fn = [
+         "# render the fullness bar of a bundle",
+         "# set up a stack to be used in case of bundle nesting, get the weight, then check against some thresholds to get the bar width",
+         'scoreboard players set #fullness shulker_preview 0',
+         'data modify storage tryashtar.shulker_preview:data bundle_stack set value [{fullness:0}]',
+         'data modify storage tryashtar.shulker_preview:data bundle_stack[0].contents set from storage tryashtar.shulker_preview:data item.components."minecraft:bundle_contents"',
+         'function tryashtar.shulker_preview:render/bundle_weight',
+         f'execute if score #fullness shulker_preview matches 64000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.0.{row}",color:"#6666ff"}}',
+         f'execute if score #fullness shulker_preview matches 59000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.1.{row}",color:"#6666ff"}}',
+         f'execute if score #fullness shulker_preview matches 54000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.2.{row}",color:"#6666ff"}}',
+         f'execute if score #fullness shulker_preview matches 48000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.3.{row}",color:"#6666ff"}}',
+         f'execute if score #fullness shulker_preview matches 43000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.4.{row}",color:"#6666ff"}}',
+         f'execute if score #fullness shulker_preview matches 38000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.5.{row}",color:"#6666ff"}}',
+         f'execute if score #fullness shulker_preview matches 32000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.6.{row}",color:"#6666ff"}}',
+         f'execute if score #fullness shulker_preview matches 27000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.7.{row}",color:"#6666ff"}}',
+         f'execute if score #fullness shulker_preview matches 22000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.8.{row}",color:"#6666ff"}}',
+         f'execute if score #fullness shulker_preview matches 16000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.9.{row}",color:"#6666ff"}}',
+         f'execute if score #fullness shulker_preview matches 11000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.10.{row}",color:"#6666ff"}}',
+         f'execute if score #fullness shulker_preview matches 6000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.11.{row}",color:"#6666ff"}}',
+         f'data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.durability.12.{row}",color:"#6666ff"}}',
+      ]
+      datapack.functions[f'render/row_{row}/overlay/bundle_bar'] = beet.Function(bundle_fn)
+      
+      datapack.functions[f'render/row_{row}/item'] = beet.Function(item_fn)
 
 # all textures referenced by item models are entries in the blocks atlas
 # that means they may have different names from the textures they came from
@@ -1011,6 +1116,7 @@ def grid_dimensions(area: int) -> tuple[int, int]:
 # note that the block grid for example has named texture entries, but the provider makes no mention of them, just the final grid
 GridData = typing.TypedDict('GridData', {'rows': list[list[str]], 'negative': list[str]})
 SpriteData = typing.TypedDict('SpriteData', {'rows': list[str], 'negative': str})
+NumberData = typing.TypedDict('NumberData', {'normal': list[str], 'shadow': list[str], 'negative': str})
 class FontManager:
    def __init__(self, rows: int):
       self.rows: int = rows
@@ -1019,6 +1125,7 @@ class FontManager:
       self.sprites: dict[str, SpriteData] = {}
       self.grids: dict[str, GridData] = {}
       self.sprite_map: dict[str, SpriteData] = {}
+      self.numbers: list[list[NumberData]] = []
       self.providers: list[dict[str, typing.Any]] = []
    
    def add_sprite(self, texture: str) -> SpriteData:
@@ -1028,7 +1135,7 @@ class FontManager:
          self.sprite_map[texture] = data
       return self.sprite_map[texture]
    
-   def add_grid(self, grid: str, textures: list[list[str | None]]):
+   def add_grid(self, grid: str, textures: list[list[str | None]]) -> GridData:
       rows: list[list[str]] = [[] for _ in range(self.rows)]
       negative: list[str] = []
       for row in textures:
@@ -1051,10 +1158,23 @@ class FontManager:
                negative[-1] += '\u0000'
       data: GridData = {'rows': rows, 'negative': negative}
       self.grids[grid + '.png'] = data
-     
+      return data
+   
    def add_provider(self, provider: dict[str, typing.Any]):
       self.providers.append(provider)
-    
+   
+   def add_numbers(self) -> list[NumberData]:
+      result: list[NumberData] = []
+      for _ in range(10):
+         data: NumberData = {
+            'normal': [self.next_char() for _ in range(self.rows)],
+            'shadow': [self.next_char() for _ in range(self.rows)],
+            'negative': self.next_char()
+         }
+         result.append(data)
+      self.numbers.append(result)
+      return result
+   
    def get_sprite(self, name: str) -> SpriteData:
       return self.sprite_map[name]
    
@@ -1084,6 +1204,66 @@ class FontManager:
             spaces[char] = width
          providers.append({'type':'space','advances':spaces})
       providers.extend(self.providers)
+      empty_row = ''.join(['\u0000'] * 16)
+      for data in self.numbers:
+         negatives = ''.join([x['negative'] for x in data])
+         for row in range(self.rows):
+            normals = ''.join([x['normal'][row] for x in data])
+            shadows = ''.join([x['shadow'][row] for x in data])
+            providers.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -(18 * row) - 11, "height": 8, "chars": [
+               empty_row,
+               empty_row,
+               empty_row,
+               normals + '\u0000\u0000\u0000\u0000\u0000\u0000',
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row
+            ]})
+            providers.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -(18 * row) - 12, "height": 8, "chars": [
+               empty_row,
+               empty_row,
+               empty_row,
+               shadows + '\u0000\u0000\u0000\u0000\u0000\u0000',
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row
+            ]})
+            providers.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -32768, "height": -8, "chars": [
+               empty_row,
+               empty_row,
+               empty_row,
+               negatives + '\u0000\u0000\u0000\u0000\u0000\u0000',
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row
+            ]})
       for path, data in self.sprites.items():
          for row, entry in enumerate(data['rows']):
             providers.append({'type':'bitmap','file':path,'ascent':-2 + (row * -18),'height':16,'chars':[entry]})
