@@ -323,7 +323,7 @@ def main(ctx: beet.Context):
       for length in lengths:
          lines.append(f"execute if score #length shulker_preview matches {length} run function tryashtar.shulker_preview:row_{row}/process_item/length_{length}")
          sublines=process_item_lines(length_dict[length], row)
-         ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/process_item\\length_{length}'] = beet.Function(sublines)
+         ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/process_item/length_{length}'] = beet.Function(sublines)
       lines.extend([
          "",
          "# summon in count entity",
