@@ -1,0 +1,21 @@
+{
+   "pools": [
+      {
+         "rolls": 1,
+         "entries": [
+            {
+               "type": "minecraft:item",
+               "name": "minecraft:tnt",
+               "functions": [
+                  {
+                     "function": "minecraft:set_lore",
+                     "entity": "this",
+                     "replace": true,
+                     "lore": [""]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
