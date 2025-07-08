@@ -16,10 +16,13 @@ from collections import OrderedDict
 
 specials=["broken_elytra","crossbow_arrow","crossbow_firework","spawn_egg","spawn_egg_overlay","firework_star_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","potion_overlay","tipped_arrow_base","tipped_arrow_head", "filled_map_markings"]
 def main(ctx: beet.Context):
+   
+   minecraft_version = '1.16.2'
+   
    # load item textures from two sources
    print("Loading icons...")
-   vanilla = beet.contrib.vanilla.Vanilla(ctx=ctx)
-   vanilla_items = [x.removeprefix('minecraft:') for x in get_items(ctx, vanilla, ctx.minecraft_version).keys()]
+   vanilla = beet.contrib.vanilla.Vanilla(ctx=ctx, minecraft_version=minecraft_version)
+   vanilla_items = [x.removeprefix('minecraft:') for x in get_items(ctx, vanilla, minecraft_version).keys()]
    vanilla_items.extend(['broken_elytra','crossbow_arrow','crossbow_firework','spawn_egg','spawn_egg_overlay','firework_star_overlay','leather_boots_overlay','leather_leggings_overlay','leather_chestplate_overlay','leather_helmet_overlay','potion_overlay','tipped_arrow_base','tipped_arrow_head','filled_map_markings','dirt_path'])
 
    mcitems = {}
@@ -460,19 +463,19 @@ def main(ctx: beet.Context):
    icon = beet.PngFile(Image.open('in/pack.png'))
    ctx.assets.icon = icon
    ctx.data.icon = icon
-   ctx.assets.pack_format = 5
+   ctx.assets.pack_format = 6
    ctx.assets.description = {'text':'Shulker Box tooltip preview: resource pack','color':'#8fdff7'}
    ctx.assets.save(path='out/resourcepack', overwrite=True)
-   ctx.assets.save(path=f'out/Shulker Preview Resource Pack ({ctx.minecraft_version}).zip', zipped=True, overwrite=True)
-   ctx.data.pack_format = 5
+   ctx.assets.save(path=f'out/Shulker Preview Resource Pack ({minecraft_version}).zip', zipped=True, overwrite=True)
+   ctx.data.pack_format = 6
    ctx.data.description = {'text':'Shulker Box tooltip preview: data pack','color':'#8fdff7'}
    ctx.data.save(path='out/datapack', overwrite=True)
-   ctx.data.save(path=f'out/Shulker Preview Data Pack ({ctx.minecraft_version}).zip', zipped=True, overwrite=True)
+   ctx.data.save(path=f'out/Shulker Preview Data Pack ({minecraft_version}).zip', zipped=True, overwrite=True)
    dark_theme = beet.ResourcePack(path='in/resourcepack_dark')
    dark_theme.pack_format = ctx.assets.pack_format
    dark_theme.description = '(apply this pack above the normal resource pack)'
    dark_theme.save(path='out/dark_theme', overwrite=True)
-   dark_theme.save(path=f'out/Shulker Preview Dark Theme ({ctx.minecraft_version}).zip', zipped=True, overwrite=True)
+   dark_theme.save(path=f'out/Shulker Preview Dark Theme ({minecraft_version}).zip', zipped=True, overwrite=True)
 
 
 def get_items(ctx: beet.Context, vanilla: beet.contrib.vanilla.Vanilla, version: str):
@@ -771,6 +774,7 @@ spawn_egg_colors={
    "phantom_spawn_egg": (4411786, 8978176),
    "pig_spawn_egg": (15771042, 14377823),
    "piglin_spawn_egg": (10051392, 16380836),
+   "piglin_brute_spawn_egg": (5843472, 16380836),
    "pillager_spawn_egg": (5451574, 9804699),
    "polar_bear_spawn_egg": (15921906, 9803152),
    "pufferfish_spawn_egg": (16167425, 3654642),
