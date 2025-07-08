@@ -14,14 +14,6 @@ def main(ctx: beet.Context):
    ctx.data.icon = icon
    datapack = ctx.data['tryashtar.shulker_preview']
    resourcepack = ctx.assets['tryashtar.shulker_preview']
-   # to do: when https://github.com/mcbeet/beet/pull/472 is merged, use 'minecraft' field
-   target_version: str = ctx.meta['minecraft_version']
-   ctx.meta['model_resolver'] = {
-      'minecraft_version': target_version,
-      'preferred_minecraft_generated': 'java',
-      'special_rendering': True,
-      'use_cache': True
-   }
    
    # every item texture needs to be added to the font
    # flat models (using builtin/generated) are composed of one or more atlas entries as layers
@@ -61,7 +53,7 @@ def main(ctx: beet.Context):
    
    # we're going to enumerate every item model in vanilla, to collect their sprites and sort into patterns
    # what follows are some functions for handling particular item models
-   vanilla = beet.contrib.vanilla.Vanilla(ctx, minecraft_version=target_version)
+   vanilla = beet.contrib.vanilla.Vanilla(ctx)
    block_atlas = vanilla.assets.atlases['minecraft:blocks']
    
    BannerShield = typing.TypedDict('BannerShield', {'banner': str, 'shield': str})
@@ -978,14 +970,14 @@ def main(ctx: beet.Context):
       datapack.functions[f'render/row_{row}/item'] = beet.Function(item_fn)
    
    ctx.assets.save(path='out/resourcepack', overwrite=True)
-   ctx.assets.save(path=f'Shulker Preview Resource Pack ({target_version}).zip', zipped=True, overwrite=True)
+   ctx.assets.save(path=f'out/Shulker Preview Resource Pack ({ctx.minecraft_version}).zip', zipped=True, overwrite=True)
    ctx.data.save(path='out/datapack', overwrite=True)
-   ctx.data.save(path=f'Shulker Preview Data Pack ({target_version}).zip', zipped=True, overwrite=True)
+   ctx.data.save(path=f'out/Shulker Preview Data Pack ({ctx.minecraft_version}).zip', zipped=True, overwrite=True)
    dark_theme = beet.ResourcePack(path='in/resourcepack_dark')
    dark_theme.pack_format = ctx.assets.pack_format
    dark_theme.description = '(apply this pack above the normal resource pack)'
    dark_theme.save(path='out/dark_theme', overwrite=True)
-   dark_theme.save(path=f'Shulker Preview Dark Theme ({target_version}).zip', zipped=True, overwrite=True)
+   dark_theme.save(path=f'out/Shulker Preview Dark Theme ({ctx.minecraft_version}).zip', zipped=True, overwrite=True)
 
 # all textures referenced by item models are entries in the blocks atlas
 # that means they may have different names from the textures they came from

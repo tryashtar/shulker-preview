@@ -1,3 +1,4 @@
+minecraft: '1.21.6'
 name: Shulker Preview
 author: tryashtar
 data_pack:
@@ -12,6 +13,9 @@ resource_pack:
     color: '#8fdff7'
 pipeline: [plugin.main, mecha]
 meta:
-  minecraft_version: '1.21.6'
   mecha:
     readonly: true
+  model_resolver:
+    preferred_minecraft_generated: java
+    special_rendering: true
+    use_cache: true
