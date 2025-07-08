@@ -165,6 +165,7 @@ def main(ctx: beet.Context):
    "potion_liquid.weakness": colorize(potion, rgba(0x484D48)),
    }
    
+   banner = model_resolver.item_model.special.SpecialModelBanner(type='banner', color='red')
    for entry in blocknames:
       if 'shulker_box' in entry:
          tx = ('shulker_' + entry.removesuffix('shulker_box')).removesuffix('_')
@@ -173,10 +174,10 @@ def main(ctx: beet.Context):
          ctx.assets.models[f'minecraft:item/{entry}'] = beet.Model(model)
       if 'banner' in entry:
          color = '_'.join(entry.split('_')[:-1])
-         banner = model_resolver.item_model.special.SpecialModelBanner(type='banner', color=color)
          display = vanilla.assets.models['minecraft:item/template_banner'].data
          model = banner.get_model(None, None)
          model['display'] = display['display']
+         model['textures']['0'] = f'render:banner_{color}'
          ctx.assets.models[f'minecraft:item/{entry}'] = beet.Model(model)
       if '_bed' in entry:
          bed = model_resolver.item_model.special.SpecialModelBed(type='bed', texture=entry.removesuffix('_bed'))
@@ -190,10 +191,13 @@ def main(ctx: beet.Context):
          else:
             head = model_resolver.item_model.special.SpecialModelHead(type='head', kind=entry.removesuffix('_head').removesuffix('_skull'))
             model = head.get_model(None, None)
-         display = copy.deepcopy(vanilla.assets.models['minecraft:item/template_skull'].data)
-         model['display'] = display['display']
          if entry == 'dragon_head':
-            model['display']['gui']['scale'] = [0.5, 0.5, 0.5]
+            display = copy.deepcopy(vanilla.assets.models['minecraft:item/dragon_head'].data)
+            model['display'] = display['display']
+            model['display']['gui']['scale'] = [0.6 * 0.75, 0.6 * 0.75, 0.6 * 0.75]
+         else:
+            display = copy.deepcopy(vanilla.assets.models['minecraft:item/template_skull'].data)
+            model['display'] = display['display']
          ctx.assets.models[f'minecraft:item/{entry}'] = beet.Model(model)
       if entry == 'conduit':
          conduit = model_resolver.item_model.special.SpecialModelConduit(type='conduit')
@@ -210,11 +214,19 @@ def main(ctx: beet.Context):
       if 'chest' in entry:
          tx = {'chest':'normal','trapped_chest':'trapped','ender_chest':'ender'}[entry]
          display = vanilla.assets.models['minecraft:item/chest'].data
-         chest = model_resolver.item_model.special.SpecialModelChest(type='chest', texture=tx)
          model = {"textures":{"0":f"entity/chest/{tx}"},"elements":[{"from":[1, 0, 1],"to":[15, 10, 15],"faces":{"north":{"uv":[14, 10.75, 10.5, 8.25],"rotation":180,"texture":"#0"},"east":{"uv":[3.5, 10.75, 0, 8.25],"rotation":180,"texture":"#0"},"south":{"uv":[7, 10.75, 3.5, 8.25],"rotation":180,"texture":"#0"},"west":{"uv":[10.5, 10.75, 7, 8.25],"rotation":180,"texture":"#0"},"up":{"uv":[3.5, 4.75, 7, 8.25],"rotation":180,"texture":"#0"},"down":{"uv":[7, 4.75, 10.5, 8.25],"rotation":180,"texture":"#0"}}},{"from":[1, 9, 1],"to":[15, 14, 15],"rotation":{"angle":0,"axis":"x","origin":[8, 10, 1]},"faces":{"north":{"uv":[14, 4.75, 10.5, 3.5],"rotation":180,"texture":"#0"},"east":{"uv":[3.5, 4.75, 0, 3.5],"rotation":180,"texture":"#0"},"south":{"uv":[7, 4.75, 3.5, 3.5],"rotation":180,"texture":"#0"},"west":{"uv":[10.5, 4.75, 7, 3.5],"rotation":180,"texture":"#0"},"up":{"uv":[7, 3.5, 3.5, 0],"rotation":180,"texture":"#0"},"down":{"uv":[7, 0, 10.5, 3.5],"rotation":180,"texture":"#0"}}},{"from":[7, 7, 14],"to":[9, 11, 16],"rotation":{"angle":0,"axis":"x","origin":[8, 10, 1]},"faces":{"north":{"uv":[0.75, 1.25, 0.25, 0.25],"rotation":180,"texture":"#0"},"east":{"uv":[1, 1.25, 0.75, 0.25],"rotation":180,"texture":"#0"},"south":{"uv":[1.5, 1.25, 1, 0.25],"rotation":180,"texture":"#0"},"west":{"uv":[0.25, 1.25, 0, 0.25],"rotation":180,"texture":"#0"},"up":{"uv":[0.25, 0, 0.75, 0.25],"texture":"#0"},"down":{"uv":[0.75, 0, 1.25, 0.25],"texture":"#0"}}}]}
          model['display'] = display['display']
          ctx.assets.models[f'minecraft:item/{entry}'] = beet.Model(model)
 
+   ctx.assets.textures['minecraft:block/grass_block_top'] = beet.Texture(colorize(vanilla.assets.textures['minecraft:block/grass_block_top'].image, rgba(0x7bbd6b)))
+   banner_base = vanilla.assets.textures['minecraft:entity/banner_base'].image
+   banner_base2 = vanilla.assets.textures['minecraft:entity/banner/base'].image
+   for n,color in banner.COLOR_STRING_TO_ARGB.items():
+      final = Image.new('RGBA', banner_base.size)
+      final.paste(banner_base, (0, 0))
+      colored = colorize(banner_base2, rgba(color))
+      final.paste(colored, (0, 0), colored)
+      ctx.assets.textures[f'render:banner_{n}'] = beet.Texture(final)
    renderer = model_resolver.Render(ctx=ctx)
    renderer.default_render_size = 64
    for entry in blocknames:         
@@ -224,6 +236,10 @@ def main(ctx: beet.Context):
          animation_mode = 'one_file'
       )
    renderer.run()
+   del ctx.assets.textures['minecraft:block/grass_block_top']
+   for n,color in banner.COLOR_STRING_TO_ARGB.items():
+      del ctx.assets.textures[f'render:banner_{n}']
+   
    mcblocks = {}
    for entry in blocknames:
       tx = ctx.assets.textures[f'render:{entry}'].image.convert('RGBA')
@@ -377,8 +393,12 @@ def main(ctx: beet.Context):
       command += "]}"
       print(command)
 
+   ctx.assets.pack_format = 4
+   ctx.assets.description = 'Shulker Box tooltip preview: resource pack'
    ctx.assets.save(path='out/resourcepack', overwrite=True)
    ctx.assets.save(path=f'out/Shulker Preview Resource Pack ({ctx.minecraft_version}).zip', zipped=True, overwrite=True)
+   ctx.data.pack_format = 4
+   ctx.data.description = 'Shulker Box tooltip preview: data pack'
    ctx.data.save(path='out/datapack', overwrite=True)
    ctx.data.save(path=f'out/Shulker Preview Data Pack ({ctx.minecraft_version}).zip', zipped=True, overwrite=True)
    dark_theme = beet.ResourcePack(path='in/resourcepack_dark')
