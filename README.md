@@ -11,6 +11,8 @@
 |Minecraft 1.15|• [Data Pack](1.15/Shulker%20Preview%20Data%20Pack%20(1.15).zip?raw=1)<br>• [Resource Pack](1.15/Shulker%20Preview%20Resource%20Pack%20(1.15).zip?raw=1)|
 |Minecraft 1.14.3|• [Data Pack](1.14/Shulker%20Preview%20Data%20Pack%20(1.14).zip?raw=1)<br>• [Resource Pack](1.14/Shulker%20Preview%20Resource%20Pack%20(1.14).zip?raw=1)|
 
+[This pack is also available on Modrinth!](https://modrinth.com/datapack/shulker-preview-datapack/versions) When downloading from that page, make sure to click the version you want, and download both the data pack and resource pack. If you just click the download button in the list view, [you'll only get the data pack.](https://github.com/modrinth/code/issues/2277)
+
 ---
 
 ### How to use
@@ -64,21 +66,29 @@
       * The `shulker_preview` scoreboard objective. This can be removed with `/scoreboard objectives remove shulker_preview`.
       * The temporary values saved to NBT storage. This can be removed by deleting the `command_storage_tryashtar.shulker_preview.dat` file from your world's `data` folder.
       * Any existing shulker boxes will still show the preview in the tooltip. To remove it, simply place and break the shulker box after the pack has been disabled.
+* What is the dark theme pack?
+  * That's an extra resource pack you can apply on top of the normal one. All it does is remove the container texture from the tooltip preview, so items appear directly on the vanilla tooltip background.
 * It's not working for me!
    * First, please [follow these instructions](https://imgur.com/a/rBukto5) to diagnose and solve some very common issues.
    * If that didn't fix your problem, feel free to message me on twitter ([@tryashtar](https://twitter.com/tryashtar)) or discord (@tryashtar) and I will be happy to help.
 
 ### Changelog
 ```diff
-Current 1.21 version
-+ All 1.21 items
-+ Bee nests/hives show honey when full
+1.21.6
++ All 1.21.6 items
 + Settings menu now uses custom dialog instead of chat
 
-Current 1.20 version
-+ All 1.20 items
-+ Use "fallback" feature instead of old translation-detection trick
-+ Fixed artifacts in some mangrove block textures
+1.21.5
++ All 1.21.4 items
++ All 1.21.5 items
+
+1.21.2
++ Bee nests/hives show honey when full
+
+1.21
++ All 1.21 items
+
+1.20.5
 + Armor trims show on trimmed items
 + Decorated pots show their patterns
 + All colorable items show exact colors
@@ -89,18 +99,25 @@ Current 1.20 version
 + Use macros instead of function trees to generate translations
 + Tooltip and number textures come from your resource pack
 
-Current 1.19 version
+1.20.3
++ Grass item was renamed
+
+1.20
++ All 1.20 items
++ Use "fallback" feature instead of old translation-detection trick
+
+1.19
 + All 1.19 items
 
-Current 1.18 version
+1.18
 + All 1.18 items (all one of them)
 
-Current 1.17 version
+1.17
 + All 1.17 items
 + Unknown items show a missing texture instead of messing up the order
 + No longer requires forceloaded chunk
 
-Current 1.16 version
+1.16
 + All 1.16 items
 + Now uses custom font, preventing potential private use conflicts
 + Item textures use the player's current resource pack
@@ -109,12 +126,12 @@ Current 1.16 version
 + When ender chest previews are enabled, ender chests showing the same preview can stack
 + New settings menu for toggling previews for shulker boxes and ender chests
 
-Current 1.15 version
+1.15
 + All 1.15 items
 + When Bukkit server is detected, switches to slower but fewer-character lore generation method
 + Detects when Bukkit mangles lore, and adds text to the tooltip notifying you
 
-Current 1.14 version
+1.14
 + All 1.14 items
 + Option to preview ender chests
 + Optifine compatibility
