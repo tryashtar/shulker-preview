@@ -1,0 +1,16 @@
+minecraft: '1.14'
+data_pack:
+  load: [in/datapack]
+  description: 'Shulker Box tooltip preview: data pack'
+  pack_format: 4
+resource_pack:
+  load: [in/resourcepack]
+  description: 'Shulker Box tooltip preview: resource pack'
+  pack_format: 4
+pipeline: [plugin.main]
+meta:
+  model_resolver:
+    preferred_minecraft_generated: java
+    special_rendering: true
+    use_cache: true
+    minecraft_version: '1.14'
