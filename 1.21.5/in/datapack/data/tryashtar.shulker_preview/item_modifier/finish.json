@@ -1,0 +1,14 @@
+[
+   {
+      "function": "set_components",
+      "components": {
+         "tooltip_display": {
+            "hidden_components": ["container"]
+         }
+      }
+   },
+   {
+      "function": "set_custom_data",
+      "tag": "{\"shulker_preview.processed\":1b}"
+   }
+]
