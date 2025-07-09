@@ -3,8 +3,10 @@ data_pack:
   load: [in/datapack]
 resource_pack:
   load: [in/resourcepack]
-pipeline: [plugin.main]
+pipeline: [plugin.main, mecha]
 meta:
+  mecha:
+    readonly: true
   model_resolver:
     preferred_minecraft_generated: java
     special_rendering: true
