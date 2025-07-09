@@ -1,0 +1,23 @@
+{
+   "function": "set_lore",
+   "entity": "this",
+   "mode": "replace_all",
+   "lore": [
+      {
+         "translate": "tryashtar.shulker_preview.translate",
+         "fallback": "%1$s",
+         "with": [
+            "",
+            {
+               "storage": "tryashtar.shulker_preview:data",
+               "nbt": "tooltip[]",
+               "interpret": true,
+               "separator": "",
+               "font": "tryashtar.shulker_preview:preview",
+               "color": "white",
+               "italic": false
+            }
+         ]
+      }
+   ]
+}

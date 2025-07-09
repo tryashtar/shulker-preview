@@ -1,0 +1,17 @@
+{
+   "function": "set_lore",
+   "entity": "this",
+   "mode": "replace_all",
+   "lore": [
+      {
+         "text": "Bukkit prevented this shulker tooltip",
+         "color": "#f06e6e",
+         "italic": false
+      },
+      {
+         "text": "from displaying correctly. Sorry!",
+         "color": "#f06e6e",
+         "italic": false
+      }
+   ]
+}

@@ -1,0 +1,32 @@
+{
+   "function": "set_lore",
+   "entity": "this",
+   "mode": "append",
+   "lore": [
+      {
+         "translate": "tryashtar.shulker_preview.translate",
+         "fallback": "%1$s",
+         "with": [
+            {
+               "translate": "container.shulkerBox.itemCount",
+               "with": [
+                  {
+                     "entity": "7368756c-6b65-7220-7072-657669657721",
+                     "nbt": "Item.components.\"minecraft:custom_name\"",
+                     "interpret": true
+                  },
+                  {
+                     "score": {
+                        "name": "#amount",
+                        "objective": "shulker_preview"
+                     }
+                  }
+               ],
+               "color": "gray",
+               "italic": false
+            },
+            ""
+         ]
+      }
+   ]
+}

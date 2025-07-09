@@ -1,0 +1,38 @@
+{
+   "function": "set_lore",
+   "entity": "this",
+   "mode": "replace_all",
+   "lore": [
+      {
+         "translate": "tryashtar.shulker_preview.translate",
+         "fallback": "%1$s",
+         "with": [
+            {
+               "translate": "container.shulkerBox.itemCount",
+               "with": [
+                  {
+                     "selector": "7368756c-6b65-7220-7072-657669657721"
+                  },
+                  {
+                     "score": {
+                        "name": "#amount",
+                        "objective": "shulker_preview"
+                     }
+                  }
+               ],
+               "color": "gray",
+               "italic": false
+            },
+            {
+               "storage": "tryashtar.shulker_preview:data",
+               "nbt": "tooltip[]",
+               "interpret": true,
+               "separator": "",
+               "font": "tryashtar.shulker_preview:preview",
+               "color": "white",
+               "italic": false
+            }
+         ]
+      }
+   ]
+}
