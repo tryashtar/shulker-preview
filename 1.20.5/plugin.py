@@ -158,6 +158,7 @@ def main(ctx: beet.Context):
                display_model = vanilla.assets.models['minecraft:item/template_banner'].data
                fake_model['display'] = display_model['display']
                fake_model['textures']['0'] = f'render:banner/{color}'
+               out_name = f'render:{item}'
                ctx.assets.models[out_name] = beet.Model(fake_model)
                banner_base = vanilla.assets.textures['minecraft:entity/banner_base'].image.convert('RGBA')
                banner_base2 = vanilla.assets.textures['minecraft:entity/banner/base'].image.convert('RGBA')
@@ -281,6 +282,19 @@ def main(ctx: beet.Context):
       positive = new_sprite(char_cache, True)
       add_overlay_translations('trim', armor, [positive], lang, banner_overlay, almost_next_slot)
       char_cache['generated'][f'minecraft:trims/items/{armor}_trim'] = positive
+   
+   colorized = {
+      'block/grass_block_top': 0x7bbd6b,
+      'block/acacia_leaves': 0x48b518,
+      'block/birch_leaves': 0x80a755,
+      'block/dark_oak_leaves': 0x48b518,
+      'block/jungle_leaves': 0x48b518,
+      'block/oak_leaves': 0x48b518,
+      'block/spruce_leaves': 0x619961,
+      'block/mangrove_leaves': 0x92C648,
+   }
+   for name, color in colorized.items():
+      ctx.assets.textures[f'minecraft:{name}'] = beet.Texture(colorize(vanilla.assets.textures[f'minecraft:{name}'].image.convert('RGBA'), rgba(color)))
    renderer = model_resolver.Render(ctx=ctx)
    renderer.default_render_size = 64
    for model, path in model_tasks:
@@ -291,6 +305,13 @@ def main(ctx: beet.Context):
       )
    renderer.run()
    char_cache['external'] = {k:(v,ctx.assets.textures[t].image.convert('RGBA')) for k,(v,t) in char_cache['external'].items()}
+   for name in colorized.keys():
+      del ctx.assets.textures[f'minecraft:{name}']
+   for model in list(ctx.assets['render'].models.keys()):
+      del ctx.assets['render'].models[model]
+   for texture in list(ctx.assets['render'].textures.keys()):
+      del ctx.assets['render'].textures[texture]
+   
    grid = create_grid(char_cache['external'])
    for texture,sprites in char_cache['generated'].items():
       append_sprites(font, texture, {'rows':[[x] for x in sprites['rows']], 'negative':[sprites['negative']]}, sprites.get('anim_height', 1))
