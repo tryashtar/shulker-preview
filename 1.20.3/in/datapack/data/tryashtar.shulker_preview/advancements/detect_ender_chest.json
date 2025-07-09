@@ -1,0 +1,17 @@
+{
+  "rewards": {
+    "function": "tryashtar.shulker_preview:ender_chest/detect"
+  },
+  "criteria": {
+    "has_ender_chest": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:ender_chest"
+          }
+        ]
+      }
+    }
+  }
+}
