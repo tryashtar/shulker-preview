@@ -1,4 +1,4 @@
-minecraft: '1.20'
+minecraft: '1.21'
 data_pack:
   load: [in/datapack]
 resource_pack:
@@ -11,4 +11,4 @@ meta:
     preferred_minecraft_generated: java
     special_rendering: true
     use_cache: true
-    minecraft_version: '1.20.5'
+    minecraft_version: '1.21'
