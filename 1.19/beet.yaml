@@ -1,0 +1,14 @@
+minecraft: '1.19'
+data_pack:
+  load: [in/datapack]
+resource_pack:
+  load: [in/resourcepack]
+pipeline: [plugin.main, mecha]
+meta:
+  mecha:
+    readonly: true
+  model_resolver:
+    preferred_minecraft_generated: java
+    special_rendering: true
+    use_cache: true
+    minecraft_version: '1.19'
