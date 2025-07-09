@@ -32,7 +32,7 @@ def main(ctx: beet.Context):
          if itemname in vanilla_items:
             mcitems[itemname] = texture.image.convert('RGBA')
    mcitems['clock'] = vanilla.assets.textures['minecraft:item/clock_00'].image.convert('RGBA')
-   mcitems['compass'] = vanilla.assets.textures['minecraft:item/clock_00'].image.convert('RGBA')
+   mcitems['compass'] = vanilla.assets.textures['minecraft:item/compass_16'].image.convert('RGBA')
    mcitems['crossbow'] = vanilla.assets.textures['minecraft:item/crossbow_standby'].image.convert('RGBA')
    mcitems['bundle_filled'] = vanilla.assets.textures['minecraft:item/bundle_filled'].image.convert('RGBA')
    mcitems['light_00'] = vanilla.assets.textures['minecraft:item/light_00'].image.convert('RGBA')
