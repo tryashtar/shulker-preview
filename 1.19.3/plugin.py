@@ -497,11 +497,11 @@ def main(ctx: beet.Context):
    icon = beet.PngFile(Image.open('in/pack.png'))
    ctx.assets.icon = icon
    ctx.data.icon = icon
-   ctx.assets.pack_format = 13 # 1.19.4
+   ctx.assets.pack_format = 12
    ctx.assets.description = {'text':'Shulker Box tooltip preview: resource pack','color':'#8fdff7'}
    ctx.assets.save(path='out/resourcepack', overwrite=True)
    ctx.assets.save(path=f'out/Shulker Preview Resource Pack ({minecraft_version}).zip', zipped=True, overwrite=True)
-   ctx.data.pack_format = 12 # 1.19.4
+   ctx.data.pack_format = 10
    ctx.data.description = {'text':'Shulker Box tooltip preview: data pack','color':'#8fdff7'}
    ctx.data.save(path='out/datapack', overwrite=True)
    ctx.data.save(path=f'out/Shulker Preview Data Pack ({minecraft_version}).zip', zipped=True, overwrite=True)
