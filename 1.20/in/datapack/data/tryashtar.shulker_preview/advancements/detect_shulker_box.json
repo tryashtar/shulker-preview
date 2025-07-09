@@ -1,0 +1,18 @@
+{
+  "rewards": {
+    "function": "tryashtar.shulker_preview:shulker_box/detect"
+  },
+  "criteria": {
+    "has_shulker_box": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "tryashtar.shulker_preview:shulker_boxes",
+            "nbt": "{BlockEntityTag:{Items:[{}]}}"
+          }
+        ]
+      }
+    }
+  }
+}

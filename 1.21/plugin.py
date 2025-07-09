@@ -3,6 +3,7 @@ import re
 import typing
 import unicodedata
 import PIL.Image
+import types
 import beet
 import beet.contrib.vanilla
 import model_resolver
@@ -53,7 +54,7 @@ def main(ctx: beet.Context):
    
    # we're going to enumerate every item model in vanilla, to collect their sprites and sort into patterns
    # what follows are some functions for handling particular item models
-   vanilla = beet.contrib.vanilla.Vanilla(ctx)
+   vanilla = good_vanilla(ctx, ctx.minecraft_version)
    block_atlas = vanilla.assets.atlases['minecraft:blocks']
    
    BannerShield = typing.TypedDict('BannerShield', {'banner': str, 'shield': str})
@@ -978,6 +979,18 @@ def main(ctx: beet.Context):
    dark_theme.description = '(apply this pack above the normal resource pack)'
    dark_theme.save(path='out/dark_theme', overwrite=True)
    dark_theme.save(path=f'out/Shulker Preview Dark Theme ({ctx.minecraft_version}).zip', zipped=True, overwrite=True)
+
+def good_vanilla(ctx: beet.Context, version: str) -> beet.contrib.vanilla.Release:
+   bad_vanilla = beet.contrib.vanilla.Vanilla(ctx=ctx)
+   def fix_lookup(self, key: str) -> beet.contrib.vanilla.Release:
+      for version in self.manifest.data["versions"]:
+         if version["id"] == key:
+             info = beet.JsonFile(source_path=self.cache.download(version["url"]))
+             return beet.contrib.vanilla.Release(self.cache, info)
+      raise KeyError(key)
+   bad_vanilla.releases.missing = types.MethodType(fix_lookup, bad_vanilla.releases)
+   vanilla = bad_vanilla.releases[version]
+   return vanilla
 
 # all textures referenced by item models are entries in the blocks atlas
 # that means they may have different names from the textures they came from
