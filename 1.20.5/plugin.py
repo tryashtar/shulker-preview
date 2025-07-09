@@ -182,8 +182,8 @@ def main(ctx: beet.Context):
                fake_model = special.get_model(None, None)
                if item == 'dragon_head':
                   display_model = copy.deepcopy(vanilla.assets.models['minecraft:item/dragon_head'].data)
-                  model['display'] = display_model['display']
-                  model['display']['gui']['scale'] = [0.6 * 0.75, 0.6 * 0.75, 0.6 * 0.75]
+                  fake_model['display'] = display_model['display']
+                  fake_model['display']['gui']['scale'] = [0.6 * 0.75, 0.6 * 0.75, 0.6 * 0.75]
                else:
                   display_model = copy.deepcopy(vanilla.assets.models['minecraft:item/template_skull'].data)
                   fake_model['display'] = display_model['display']
