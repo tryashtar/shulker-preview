@@ -4,7 +4,8 @@
    "replace": false,
    "lore": [
       {
-         "translate": "%1$s%418634357$s",
+         "translate": "tryashtar.shulker_preview.translate",
+         "fallback": "%1$s",
          "with": [
             [
                {
