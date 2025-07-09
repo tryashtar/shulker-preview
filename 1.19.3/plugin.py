@@ -18,7 +18,7 @@ from collections import OrderedDict
 specials=["broken_elytra","crossbow_arrow","crossbow_firework","spawn_egg","spawn_egg_overlay","firework_star_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","potion_overlay","tipped_arrow_base","tipped_arrow_head","filled_map_markings","bundle_filled","light_00","light_01","light_02","light_03","light_04","light_05","light_06","light_07","light_08","light_09","light_10","light_11","light_12","light_13","light_14","light_15"]
 def main(ctx: beet.Context):
    
-   minecraft_version = '1.19'
+   minecraft_version = '1.19.3'
    
    # load item textures from two sources
    print("Loading icons...")
@@ -497,11 +497,11 @@ def main(ctx: beet.Context):
    icon = beet.PngFile(Image.open('in/pack.png'))
    ctx.assets.icon = icon
    ctx.data.icon = icon
-   ctx.assets.pack_format = 9
+   ctx.assets.pack_format = 13 # 1.19.4
    ctx.assets.description = {'text':'Shulker Box tooltip preview: resource pack','color':'#8fdff7'}
    ctx.assets.save(path='out/resourcepack', overwrite=True)
    ctx.assets.save(path=f'out/Shulker Preview Resource Pack ({minecraft_version}).zip', zipped=True, overwrite=True)
-   ctx.data.pack_format = 10
+   ctx.data.pack_format = 12 # 1.19.4
    ctx.data.description = {'text':'Shulker Box tooltip preview: data pack','color':'#8fdff7'}
    ctx.data.save(path='out/datapack', overwrite=True)
    ctx.data.save(path=f'out/Shulker Preview Data Pack ({minecraft_version}).zip', zipped=True, overwrite=True)
@@ -790,6 +790,10 @@ banner_pattern_ids={
 }
 
 spawn_egg_colors={
+   "ender_dragon_spawn_egg":(0x1C1C1C,14711290),
+   "wither_spawn_egg":(0x141414,5075616),
+   "snow_golem_spawn_egg":(14283506,8496292),
+   "iron_golem_spawn_egg":(14405058,7643954),
    "allay_spawn_egg": (56063, 44543),
    "axolotl_spawn_egg": (16499171, 10890612),
    "bat_spawn_egg": (4996656, 986895),
