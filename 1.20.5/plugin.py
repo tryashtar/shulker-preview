@@ -248,33 +248,38 @@ def main(ctx: beet.Context):
       else:
          print(f'WARNING: {item} not handled!')
    for pattern in banner_list:
-      image1 = f'../../block images/banner/{pattern}.png'
-      image2 = f'../../block images/shield/{pattern}.png'
-      if os.path.exists(image1) and os.path.exists(image2):
-         chars1 = new_sprite(char_cache, False)
-         chars2 = new_sprite(char_cache, False)
-         char_cache['external'][hash(pattern + '.banner')] = (chars1, image1)
-         char_cache['external'][hash(pattern + '.shield')] = (chars2, image2)
-         add_overlay_translations('banner', with_namespace(pattern), [chars1], lang, banner_overlay, '')
-         add_overlay_translations('shield', with_namespace(pattern), [chars2], lang, banner_overlay, '')
-      else:
-         print(f'WARNING: banner pattern {pattern} not handled!')
+      banner_texture = f'entity/banner/{pattern}'
+      shield_texture = f'entity/shield/{pattern}'
+      fake_banner = {"parent":"minecraft:item/template_banner","textures":{"0":banner_texture},"elements":[{"from":[8.66667, 2.66667, 1.33333],"to":[9.66667, 29.33333, 14.66667],"rotation":{"angle":-90,"axis":"y","origin":[8, 0, 8]},"faces":{"north":{"uv":[5.25, 0.25, 5.5, 10.25],"texture":"#0"},"east":{"uv":[0.25, 0.25, 5.25, 10.25],"texture":"#0"},"south":{"uv":[0, 0.25, 0.25, 10.25],"texture":"#0"},"west":{"uv":[5.5, 0.25, 10.5, 10.25],"texture":"#0"},"up":{"uv":[5.25, 0, 0.25, 0.25],"rotation":90,"texture":"#0"},"down":{"uv":[10.25, 0, 5.25, 0.25],"rotation":270,"texture":"#0"}}}]}
+      fake_shield = {"parent":"minecraft:item/shield","textures":{"0":shield_texture},"elements":[{"from":[-6, -11, 1],"to":[6, 11, 2],"faces":{"south":{"uv":[0.25, 0.25, 3.25, 5.75],"texture":"#0"}}}]}
+      ctx.assets.models[f'render:banner/{pattern}'] = beet.Model(fake_banner)
+      ctx.assets.models[f'render:shield/{pattern}'] = beet.Model(fake_shield)
+      banner_chars = new_sprite(char_cache, False)
+      shield_chars = new_sprite(char_cache, False)
+      char_cache['external'][hash(pattern + '.banner')] = (banner_chars, f'render:banner/{pattern}')
+      char_cache['external'][hash(pattern + '.shield')] = (shield_chars, f'render:shield/{pattern}')
+      model_tasks.append((f'render:banner/{pattern}', f'render:banner/{pattern}'))
+      model_tasks.append((f'render:shield/{pattern}', f'render:shield/{pattern}'))
+      add_overlay_translations('banner', with_namespace(pattern), [banner_chars], lang, banner_overlay, '')
+      add_overlay_translations('shield', with_namespace(pattern), [shield_chars], lang, banner_overlay, '')
    for pattern in pot_list:
       if pattern in ('decorated_pot_base', 'decorated_pot_side'):
          continue
       simple_name = pattern.removesuffix('_pottery_pattern')
+      texture = f'entity/decorated_pot/{pattern}'
       item_name = f'{simple_name}_pottery_sherd'
-      image1 = f'../../block images/pot/{simple_name}.left.png'
-      image2 = f'../../block images/pot/{simple_name}.right.png'
-      if os.path.exists(image1) and os.path.exists(image2):
-         chars1 = new_sprite(char_cache, False)
-         chars2 = new_sprite(char_cache, False)
-         char_cache['external'][hash(item_name + '.left')] = (chars1, image1)
-         char_cache['external'][hash(item_name + '.right')] = (chars2, image2)
-         add_overlay_translations('pot', with_namespace(item_name) + '.left', [chars1], lang, banner_overlay, '')
-         add_overlay_translations('pot', with_namespace(item_name) + '.right', [chars2], lang, banner_overlay, '')
-      else:
-         print(f'WARNING: pot pattern {simple_name} not handled!')
+      fake_left = {"parent":"minecraft:item/decorated_pot","textures":{"0":texture},"elements":[{"from":[1, 0, 1],"to":[1, 16, 15],"rotation":{"angle":0,"axis":"y","origin":[1, 0, 1]},"faces":{"west":{"uv":[1, 0, 15, 16],"texture":"#0"}}}]}
+      fake_right = {"parent":"minecraft:item/decorated_pot","textures":{"0":texture},"elements":[{"from":[1, 0, 15],"to":[15, 16, 15],"rotation":{"angle":0,"axis":"y","origin":[1, 0, 1]},"faces":{"south":{"uv":[1, 0, 15, 16],"texture":"#0"}}}]}
+      ctx.assets.models[f'render:pot/{pattern}_left'] = beet.Model(fake_left)
+      ctx.assets.models[f'render:pot/{pattern}_right'] = beet.Model(fake_right)
+      left_chars = new_sprite(char_cache, False)
+      right_chars = new_sprite(char_cache, False)
+      char_cache['external'][hash(item_name + '.left')] = (left_chars, f'render:pot/{pattern}_left')
+      char_cache['external'][hash(item_name + '.right')] = (right_chars, f'render:pot/{pattern}_right')
+      model_tasks.append((f'render:pot/{pattern}_left', f'render:pot/{pattern}_left'))
+      model_tasks.append((f'render:pot/{pattern}_right', f'render:pot/{pattern}_right'))
+      add_overlay_translations('pot', with_namespace(item_name) + '.left', [left_chars], lang, banner_overlay, '')
+      add_overlay_translations('pot', with_namespace(item_name) + '.right', [right_chars], lang, banner_overlay, '')
    add_overlay_translations('pot', 'minecraft:brick.left', [{'rows':['', '', '']}], lang, '', '')
    add_overlay_translations('pot', 'minecraft:brick.right', [{'rows':['', '', '']}], lang, '', '')
    trim_patterns.append(list(vanilla.data.trim_pattern.keys())[0])
@@ -430,29 +435,29 @@ def main(ctx: beet.Context):
       ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/item'] = beet.Function(process_item)
       ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/simple'] = beet.Function(simple_render)
       ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/special'] = beet.Function(special_render)
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/special_render/grass_colored'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/special_render/grass_colored'] = beet.Function([
          '# certain grass items render like normal, but with their entire texture colored',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.$(id).{row}","color":"$(color)"}}\''
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/special_render/spawn_eggs'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/special_render/spawn_eggs'] = beet.Function([
          '# spawn eggs render with two separately colored layers',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.spawn_egg.0.{row}","color":"$(base)"}},{{"translate":"tryashtar.shulker_preview.layer.spawn_egg.1.{row}","color":"$(overlay)"}}]\''
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/special_render/dyeable1'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/special_render/dyeable1'] = beet.Function([
          '# dyeable items can be any color, so a macro is needed',
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"a0",green:"65",blue:"40"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:dyed_color".rgb',
          'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
          f'function tryashtar.shulker_preview:render/row_{row}/special_render/dyeable2 with storage tryashtar.shulker_preview:data item',
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/special_render/dyeable2'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/special_render/dyeable2'] = beet.Function([
          '# dyeable items render with a base layer and a colored layer',
          '# wolf armor uniquely doesn\'t render its top layer when not dyed',
          f'$execute if score #has_color shulker_preview matches 1 if items entity @s contents wolf_armor run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}"}},{{"translate":"tryashtar.shulker_preview.layer.minecraft:wolf_armor.1.{row}","color":"#$(red)$(green)$(blue)"}}]\'',
          f'execute if score #has_color shulker_preview matches 0 if items entity @s contents wolf_armor run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.minecraft:wolf_armor.{row}"}}\'',
          f'$execute unless items entity @s contents wolf_armor run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}","color":"#$(red)$(green)$(blue)"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"white"}}]\''
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/special_render/potion1'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/special_render/potion1'] = beet.Function([
          '# potions can be any color, so a macro is needed',
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"38",green:"5d","blue":"c6"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:potion_contents".custom_color',
@@ -460,68 +465,68 @@ def main(ctx: beet.Context):
          'execute if score #has_color shulker_preview matches 0 run function tryashtar.shulker_preview:render/potion_color',
          f'function tryashtar.shulker_preview:render/row_{row}/special_render/potion2 with storage tryashtar.shulker_preview:data item',
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/special_render/potion2'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/special_render/potion2'] = beet.Function([
          '# potions render with a base layer and a colored layer',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}","color":"#$(red)$(green)$(blue)"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"white"}}]\''
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/special_render/map1'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/special_render/map1'] = beet.Function([
          '# maps can be any color, so a macro is needed',
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"46",green:"40","blue":"2e"}',
          'execute store success score #has_color shulker_preview store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:map_color"',
          'execute if score #has_color shulker_preview matches 1 run function tryashtar.shulker_preview:render/convert_color',
          f'function tryashtar.shulker_preview:render/row_{row}/special_render/map2 with storage tryashtar.shulker_preview:data item',
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/special_render/map2'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/special_render/map2'] = beet.Function([
          '# maps render with a base layer and a colored layer',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"#$(red)$(green)$(blue)"}}]\''
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/special_render/star1'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/special_render/star1'] = beet.Function([
          '# firework stars can be any color, so a macro is needed',
          'data modify storage tryashtar.shulker_preview:data item merge value {red:"8a",green:"8a","blue":"8a"}',
          'function tryashtar.shulker_preview:render/star_color',
          f'function tryashtar.shulker_preview:render/row_{row}/special_render/star2 with storage tryashtar.shulker_preview:data item',
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/special_render/star2'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/special_render/star2'] = beet.Function([
          '# firework stars render with a base layer and a colored layer',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.layer.$(id).0.{row}"}},{{"translate":"tryashtar.shulker_preview.layer.$(id).1.{row}","color":"#$(red)$(green)$(blue)"}}]\''
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/overlay/count'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/overlay/count'] = beet.Function([
          '# render the item count numbers',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.number_shadow.$(count).{row}","color":"#3e3e3e"}},{{"translate":"tryashtar.shulker_preview.number.$(count).{row}","color":"white"}}]\''
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/overlay/banner_patterns'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns'] = beet.Function([
          '# render banner patterns as overlays',
          '# first move the cursor back on top of the item, then draw the overlays, then put the cursor after the item again',
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay"}\'',
          f'function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns_loop',
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\''
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/overlay/banner_patterns_loop'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns_loop'] = beet.Function([
          '# recursively render banner patterns using a macro',
          'function tryashtar.shulker_preview:render/banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          f'function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns_one with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          'data remove storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns_loop'
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/overlay/banner_patterns_one'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/overlay/banner_patterns_one'] = beet.Function([
          '# render one banner pattern with a dye-specific color',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.banner.$(pattern).{row}","color":"$(color)"}}\''
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/overlay/shield_patterns'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns'] = beet.Function([
          '# render banner patterns as overlays',
          '# first move the cursor back on top of the item, then draw the overlays, then put the cursor after the item again',
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay"}\'',
          f'function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns_loop',
          'data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.overlay_done"}\''
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/overlay/shield_patterns_loop'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns_loop'] = beet.Function([
          '# recursively render banner patterns using a macro',
          'function tryashtar.shulker_preview:render/banner_color with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          f'function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns_one with storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          'data remove storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0]',
          f'execute if data storage tryashtar.shulker_preview:data item.components."minecraft:banner_patterns"[0] run function tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns_loop'
       ])
-      ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/overlay/shield_patterns_one'] = beet.Function([
+      ctx.data.functions[f'tryashtar.shulker_preview:render/row_{row}/overlay/shield_patterns_one'] = beet.Function([
          '# render one banner pattern with a dye-specific color',
          f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.shield.$(pattern).{row}","color":"$(color)"}}\''
       ])
