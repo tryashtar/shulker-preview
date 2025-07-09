@@ -106,6 +106,12 @@
 + All 1.20 items
 + Use "fallback" feature instead of old translation-detection trick
 
+1.19.4
++ All 1.19.4 items
+
+1.19.3
++ All 1.19.3 items
+
 1.19
 + All 1.19 items
 
