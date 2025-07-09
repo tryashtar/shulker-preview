@@ -1,16 +1,18 @@
 import os
-import io
 import json
 import types
-import model_resolver
 import numpy
 import math
 import unicodedata
 import subprocess
+import copy
 import PIL.Image
+import PIL.ImageChops
 import colorsys
 import beet
 import beet.contrib.vanilla
+import model_resolver
+import model_resolver.item_model.special
 
 def main(ctx: beet.Context):
    target_version = '1.20.5'
@@ -72,10 +74,7 @@ def main(ctx: beet.Context):
       'grass_colored': {"vine":0x48b518,"lily_pad":0x71c35c,"short_grass":0x7bbd6b,"fern":0x7bbd6b,"tall_grass":0x7bbd6b,"large_fern":0x7bbd6b},
       'spawn_eggs': {f'{k}_spawn_egg':v for k,v in {"bogged":(9084018,3231003),"armadillo":(11366765,0x824848),"wither":(0x141414,5075616),"snow_golem":(14283506,8496292),"sniffer":(8855049,2468720),"iron_golem":(14405058,7643954),"ender_dragon":(0x1C1C1C,14711290),"camel":(16565097,13341495),"allay":(56063,44543),"axolotl":(16499171,10890612),"bat":(4996656,986895),"bee":(15582019,4400155),"blaze":(16167425,16775294),"breeze":(11506911,9529055),"cat":(15714446,9794134),"cave_spider":(803406,11013646),"chicken":(10592673,16711680),"cod":(12691306,15058059),"cow":(4470310,10592673),"creeper":(894731,0),"dolphin":(2243405,16382457),"donkey":(5457209,8811878),"drowned":(9433559,7969893),"elder_guardian":(13552826,7632531),"enderman":(1447446,0),"endermite":(1447446,7237230),"evoker":(9804699,1973274),"frog":(13661252,0xFFC77C),"fox":(14005919,13396256),"ghast":(16382457,12369084),"glow_squid":(611926,8778172),"goat":(10851452,5589310),"guardian":(5931634,15826224),"hoglin":(13004373,6251620),"horse":(12623485,15656192),"husk":(7958625,15125652),"llama":(12623485,10051392),"magma_cube":(3407872,16579584),"mooshroom":(10489616,12040119),"mule":(1769984,5321501),"ocelot":(15720061,5653556),"panda":(15198183,1776418),"parrot":(894731,16711680),"phantom":(4411786,8978176),"pig":(15771042,14377823),"piglin":(10051392,16380836),"piglin_brute":(5843472,16380836),"pillager":(5451574,9804699),"polar_bear":(0xEEEEDE,14014157),"pufferfish":(16167425,3654642),"rabbit":(10051392,7555121),"ravager":(7697520,5984329),"salmon":(10489616,951412),"sheep":(15198183,16758197),"shulker":(9725844,5060690),"silverfish":(7237230,3158064),"skeleton":(12698049,4802889),"skeleton_horse":(6842447,15066584),"slime":(5349438,8306542),"spider":(3419431,11013646),"squid":(2243405,7375001),"stray":(6387319,14543594),"strider":(10236982,5065037),"tadpole":(7164733,1444352),"trader_llama":(15377456,4547222),"tropical_fish":(15690005,16775663),"turtle":(15198183,44975),"vex":(8032420,15265265),"villager":(5651507,12422002),"vindicator":(9804699,2580065),"wandering_trader":(4547222,15377456),"warden":(1001033,3790560),"witch":(3407872,5349438),"wither_skeleton":(1315860,4672845),"wolf":(14144467,13545366),"zoglin":(13004373,15132390),"zombie":(44975,7969893),"zombie_horse":(3232308,9945732),"zombified_piglin":(15373203,5009705),"zombie_villager":(5651507,7969893)}.items()}
    }
-   potion_colors = {"speed":3402751,"slowness":9154528,"haste":14270531,"mining_fatigue":4866583,"strength":16762624,"instant_health":16262179,"instant_damage":11101546,"jump_boost":16646020,"nausea":5578058,"regeneration":13458603,"resistance":9520880,"fire_resistance":0xFF9900,"water_breathing":10017472,"invisibility":0xF6F6F6,"blindness":2039587,"night_vision":12779366,"hunger":5797459,"weakness":0x484D48,"poison":8889187,"wither":7561558,"health_boost":16284963,"absorption":0x2552A5,"saturation":16262179,"glowing":9740385,"levitation":0xCEFFFF,"luck":5882118,"unluck":12624973,"slow_falling":15978425,"conduit_power":1950417,"dolphins_grace":8954814,"bad_omen":745784,"hero_of_the_village":0x44FF44,"darkness":2696993,"trial_omen":0x16A6A6,"raid_omen":14565464,"wind_charged":12438015,"weaving":7891290,"oozing":10092451,"infested":9214860}
-   for name in potion_colors:
-      color = potion_colors[name]
-      potion_colors[name] = ((color//256//256)%256, (color//256)%256, color%256, 1)
+   potion_colors = {name:((color//256//256)%256, (color//256)%256, color%256, 1) for name, color in {"speed":3402751,"slowness":9154528,"haste":14270531,"mining_fatigue":4866583,"strength":16762624,"instant_health":16262179,"instant_damage":11101546,"jump_boost":16646020,"nausea":5578058,"regeneration":13458603,"resistance":9520880,"fire_resistance":0xFF9900,"water_breathing":10017472,"invisibility":0xF6F6F6,"blindness":2039587,"night_vision":12779366,"hunger":5797459,"weakness":0x484D48,"poison":8889187,"wither":7561558,"health_boost":16284963,"absorption":0x2552A5,"saturation":16262179,"glowing":9740385,"levitation":0xCEFFFF,"luck":5882118,"unluck":12624973,"slow_falling":15978425,"conduit_power":1950417,"dolphins_grace":8954814,"bad_omen":745784,"hero_of_the_village":0x44FF44,"darkness":2696993,"trial_omen":0x16A6A6,"raid_omen":14565464,"wind_charged":12438015,"weaving":7891290,"oozing":10092451,"infested":9214860}.items()}
    potion_contents = {"water":{},"mundane":{},"thick":{},"awkward":{},"night_vision":{"night_vision":1},"long_night_vision":{"night_vision":1},"invisibility":{"invisibility":1},"long_invisibility":{"invisibility":1},"leaping":{"jump_boost":1},"long_leaping":{"jump_boost":1},"strong_leaping":{"jump_boost":2},"fire_resistance":{"fire_resistance":1},"long_fire_resistance":{"fire_resistance":1},"swiftness":{"speed":1},"long_swiftness":{"speed":1},"strong_swiftness":{"speed":2},"slowness":{"slowness":1},"long_slowness":{"slowness":1},"strong_slowness":{"slowness":4},"turtle_master":{"slowness":4,"resistance":3},"long_turtle_master":{"slowness":4,"resistance":3},"strong_turtle_master":{"slowness":6,"resistance":4},"water_breathing":{"water_breathing":1},"long_water_breathing":{"water_breathing":1},"healing":{"instant_health":1},"strong_healing":{"instant_health":2},"harming":{"instant_damage":1},"strong_harming":{"instant_damage":2},"poison":{"poison":1},"long_poison":{"poison":1},"strong_poison":{"poison":2},"regeneration":{"regeneration":1},"long_regeneration":{"regeneration":1},"strong_regeneration":{"regeneration":2},"strength":{"strength":1},"long_strength":{"strength":1},"strong_strength":{"strength":2},"weakness":{"weakness":1},"long_weakness":{"weakness":1},"luck":{"luck":1},"slow_falling":{"slow_falling":1},"long_slow_falling":{"slow_falling":1},"wind_charged":{"wind_charged":1},"weaving":{"weaving":1},"oozing":{"oozing":1},"infested":{"infested":1}}
    for name,effects in potion_contents.items():
       if name not in potion_colors:
@@ -87,7 +86,7 @@ def main(ctx: beet.Context):
             total[1] += g * level
             total[2] += b * level
             count += level
-         potion_colors[name] = (*total, count)
+         potion_colors[name] = (total[0], total[1], total[2], count)
    colorable_items = {"potion":["potion","splash_potion","lingering_potion","tipped_arrow"],"star":["firework_star"],"map":["filled_map"]}
    init_data = []
    for name,values in hardcoded_items.items():
@@ -95,7 +94,8 @@ def main(ctx: beet.Context):
       special_render_tag.append(f'#tryashtar.shulker_preview:special_render/{name}')
       for item,color in values.items():
          if isinstance(color, tuple):
-            init_data.append(f'"minecraft:{item}":{{base:"{color_hex(color[0])}",overlay:"{color_hex(color[1])}"}}')
+            c1, c2 = color
+            init_data.append(f'"minecraft:{item}":{{base:"{color_hex(c1)}",overlay:"{color_hex(c2)}"}}')
          else:
             init_data.append(f'"minecraft:{item}":{{color:"{color_hex(color)}"}}')
    special_render_tag.append("#dyeable")
@@ -116,9 +116,8 @@ def main(ctx: beet.Context):
    ])
    trim_materials = {'amethyst':'#c98ff3','copper':'#e3826c','diamond':('#cbfff5','#15b3a1'),'emerald':'#82f6ad','gold':('#fffd90','#c29c2a'),'iron':('#c5d2d4','#a2b0b3'),'lapis':'#416e97','netherite':('#5a575a','#2e2829'),'quartz':'#f2efed','redstone':'#e62008'}
    trim_patterns = []
+   model_tasks = []
    vanilla_dyeables = vanilla.data.item_tags['minecraft:dyeable'].data['values']
-   renderer = model_resolver.Render(ctx=ctx)
-   renderer.default_render_size = 64
    def load_textures(item, model_name, model):
       result = {'base':[],'overrides':[]}
       if model.get('generated', False):
@@ -137,11 +136,80 @@ def main(ctx: beet.Context):
          if appearance_hash in char_cache['external']:
             result['base'].append(char_cache['external'][appearance_hash][0])
          else:
-            renderer.add_model_task(
-               model=model_name,
-               path_ctx=f'render:{item}',
-               animation_mode = 'one_file'
-            )
+            out_name = model_name
+            if 'chest' in item:
+               tx = {'chest':'normal','trapped_chest':'trapped','ender_chest':'ender'}[item]
+               special = model_resolver.item_model.special.SpecialModelChest(type='chest', texture=tx, openness=0)
+               fake_model = special.get_model(None, None)
+               display_model = vanilla.assets.models['minecraft:item/chest'].data
+               fake_model['display'] = display_model['display']
+               out_name = f'render:{item}'
+               ctx.assets.models[out_name] = beet.Model(fake_model)
+            elif 'shulker_box' in item:
+               tx = ('shulker_' + item.removesuffix('shulker_box')).removesuffix('_')
+               special = model_resolver.item_model.special.SpecialModelShulkerBox(type='shulker_box', texture=tx)
+               fake_model = special.get_model(None, None)
+               out_name = f'render:{item}'
+               ctx.assets.models[out_name] = beet.Model(fake_model)
+            elif '_banner' in item:
+               color = '_'.join(item.split('_')[:-1])
+               special = model_resolver.item_model.special.SpecialModelBanner(type='banner', color=color)
+               fake_model = special.get_model(None, None)
+               display_model = vanilla.assets.models['minecraft:item/template_banner'].data
+               fake_model['display'] = display_model['display']
+               fake_model['textures']['0'] = f'render:banner/{color}'
+               ctx.assets.models[out_name] = beet.Model(fake_model)
+               banner_base = vanilla.assets.textures['minecraft:entity/banner_base'].image.convert('RGBA')
+               banner_base2 = vanilla.assets.textures['minecraft:entity/banner/base'].image.convert('RGBA')
+               for name,color in special.COLOR_STRING_TO_ARGB.items():
+                  final = PIL.Image.new('RGBA', banner_base.size)
+                  final.paste(banner_base, (0, 0))
+                  colored = colorize(banner_base2, rgba(color))
+                  final.paste(colored, (0, 0), colored)
+                  ctx.assets.textures[f'render:banner/{name}'] = beet.Texture(final)
+            elif '_bed' in item:
+               tx = item.removesuffix('_bed')
+               special = model_resolver.item_model.special.SpecialModelBed(type='bed', texture=tx)
+               fake_model = special.get_model(None, None)
+               display_model = vanilla.assets.models['minecraft:item/template_bed'].data
+               fake_model['display'] = display_model['display']
+               out_name = f'render:{item}'
+               ctx.assets.models[out_name] = beet.Model(fake_model)
+            elif '_head' in item or '_skull' in item:
+               kind = item.removesuffix('_head').removesuffix('_skull')
+               special = model_resolver.item_model.special.SpecialModelHead(type='head', kind=kind)
+               fake_model = special.get_model(None, None)
+               if item == 'dragon_head':
+                  display_model = copy.deepcopy(vanilla.assets.models['minecraft:item/dragon_head'].data)
+                  model['display'] = display_model['display']
+                  model['display']['gui']['scale'] = [0.6 * 0.75, 0.6 * 0.75, 0.6 * 0.75]
+               else:
+                  display_model = copy.deepcopy(vanilla.assets.models['minecraft:item/template_skull'].data)
+                  fake_model['display'] = display_model['display']
+               out_name = f'render:{item}'
+               ctx.assets.models[out_name] = beet.Model(fake_model)
+            elif item == 'decorated_pot':
+               special = model_resolver.item_model.special.SpecialModelDecoratedPot(type='decorated_pot')
+               fake_model = special.get_model(None, None)
+               display_model = vanilla.assets.models['minecraft:item/decorated_pot'].data
+               fake_model['display'] = display_model['display']
+               out_name = f'render:{item}'
+               ctx.assets.models[out_name] = beet.Model(fake_model)
+            elif item == 'conduit':
+               special = model_resolver.item_model.special.SpecialModelConduit(type='conduit')
+               fake_model = special.get_model(None, None)
+               display_model = vanilla.assets.models['minecraft:item/conduit'].data
+               fake_model['display'] = display_model['display']
+               out_name = f'render:{item}'
+               ctx.assets.models[out_name] = beet.Model(fake_model)
+            elif item == 'shield':
+               special = model_resolver.item_model.special.SpecialModelShield(type='shield')
+               fake_model = special.get_model(None, model_resolver.Item(id='shield', components={}))
+               display_model = vanilla.assets.models['minecraft:item/shield'].data
+               fake_model['display'] = display_model['display']
+               out_name = f'render:{item}'
+               ctx.assets.models[out_name] = beet.Model(fake_model)
+            model_tasks.append((out_name, f'render:{item}'))
             chars = new_sprite(char_cache, False)
             char_cache['external'][appearance_hash] = (chars, f'render:{item}')
             result['base'].append(chars)
@@ -213,6 +281,14 @@ def main(ctx: beet.Context):
       positive = new_sprite(char_cache, True)
       add_overlay_translations('trim', armor, [positive], lang, banner_overlay, almost_next_slot)
       char_cache['generated'][f'minecraft:trims/items/{armor}_trim'] = positive
+   renderer = model_resolver.Render(ctx=ctx)
+   renderer.default_render_size = 64
+   for model, path in model_tasks:
+      renderer.add_model_task(
+         model=model,
+         path_ctx=path,
+         animation_mode='one_file'
+      )
    renderer.run()
    char_cache['external'] = {k:(v,ctx.assets.textures[t].image.convert('RGBA')) for k,(v,t) in char_cache['external'].items()}
    grid = create_grid(char_cache['external'])
@@ -604,6 +680,15 @@ def calculate_appearance_hash(item, model):
 def color_hex(int_color):
    return f'#{format(int_color, '06x')}'
 
+def colorize(image, color):
+   return PIL.ImageChops.multiply(image, PIL.Image.new('RGBA', image.size, color))
+
+def rgba(color):
+   r = color // 256 // 256 % 256
+   g = color // 256 % 256
+   b = color % 256
+   return (r, g, b, 255)
+
 def add_layered_translations(name, textures, lang, next_slot, overlay_offset):
    result = []
    for row in range(0, 3):
@@ -706,8 +791,8 @@ def get_space(provider, cache, size):
       cache['spaces'][size] = char
    return cache['spaces'][size]
 
-def new_sprite(cache, negative):
-   result = {
+def new_sprite(cache, negative) -> dict:
+   result: dict = {
       'rows': [next_char(cache), next_char(cache), next_char(cache)]
    }
    if negative:
