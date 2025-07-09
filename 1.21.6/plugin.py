@@ -10,9 +10,8 @@ import model_resolver
 import model_resolver.utils
 
 def main(ctx: beet.Context):
-   icon = beet.PngFile(PIL.Image.open('in/pack.png'))
-   ctx.assets.icon = icon
-   ctx.data.icon = icon
+   target_version = '1.21.6'
+   
    datapack = ctx.data['tryashtar.shulker_preview']
    resourcepack = ctx.assets['tryashtar.shulker_preview']
    
@@ -54,7 +53,7 @@ def main(ctx: beet.Context):
    
    # we're going to enumerate every item model in vanilla, to collect their sprites and sort into patterns
    # what follows are some functions for handling particular item models
-   vanilla = good_vanilla(ctx, ctx.minecraft_version)
+   vanilla = good_vanilla(ctx, target_version)
    block_atlas = vanilla.assets.atlases['minecraft:blocks']
    
    BannerShield = typing.TypedDict('BannerShield', {'banner': str, 'shield': str})
@@ -970,15 +969,22 @@ def main(ctx: beet.Context):
       
       datapack.functions[f'render/row_{row}/item'] = beet.Function(item_fn)
    
+   icon = beet.PngFile(PIL.Image.open('in/pack.png'))
+   ctx.assets.icon = icon
+   ctx.data.icon = icon
+   ctx.assets.pack_format = 63 # 1.21.6
+   ctx.assets.supported_formats = [63, 63] # 1.21.6
    ctx.assets.save(path='out/resourcepack', overwrite=True)
-   ctx.assets.save(path=f'out/Shulker Preview Resource Pack ({ctx.minecraft_version}).zip', zipped=True, overwrite=True)
+   ctx.assets.save(path=f'out/Shulker Preview Resource Pack ({target_version}).zip', zipped=True, overwrite=True)
+   ctx.data.pack_format = 80 # 1.21.6
+   ctx.data.supported_formats = [80, 80] # 1.21.6
    ctx.data.save(path='out/datapack', overwrite=True)
-   ctx.data.save(path=f'out/Shulker Preview Data Pack ({ctx.minecraft_version}).zip', zipped=True, overwrite=True)
+   ctx.data.save(path=f'out/Shulker Preview Data Pack ({target_version}).zip', zipped=True, overwrite=True)
    dark_theme = beet.ResourcePack(path='in/resourcepack_dark')
    dark_theme.pack_format = ctx.assets.pack_format
    dark_theme.description = '(apply this pack above the normal resource pack)'
    dark_theme.save(path='out/dark_theme', overwrite=True)
-   dark_theme.save(path=f'out/Shulker Preview Dark Theme ({ctx.minecraft_version}).zip', zipped=True, overwrite=True)
+   dark_theme.save(path=f'out/Shulker Preview Dark Theme ({target_version}).zip', zipped=True, overwrite=True)
 
 def good_vanilla(ctx: beet.Context, version: str) -> beet.contrib.vanilla.Release:
    bad_vanilla = beet.contrib.vanilla.Vanilla(ctx=ctx)
