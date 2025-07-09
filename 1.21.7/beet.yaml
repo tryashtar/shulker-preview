@@ -11,4 +11,4 @@ meta:
     preferred_minecraft_generated: java
     special_rendering: true
     use_cache: true
-    minecraft_version: '1.21.6'
+    minecraft_version: '1.21.7'

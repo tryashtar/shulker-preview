@@ -10,7 +10,7 @@ import model_resolver
 import model_resolver.utils
 
 def main(ctx: beet.Context):
-   target_version = '1.21.6'
+   target_version = '1.21.4'
    
    datapack = ctx.data['tryashtar.shulker_preview']
    resourcepack = ctx.assets['tryashtar.shulker_preview']
@@ -972,12 +972,12 @@ def main(ctx: beet.Context):
    icon = beet.PngFile(PIL.Image.open('in/pack.png'))
    ctx.assets.icon = icon
    ctx.data.icon = icon
-   ctx.assets.pack_format = 63 # 1.21.6
-   ctx.assets.supported_formats = [63, 63] # 1.21.6
+   ctx.assets.pack_format = 46 # 1.21.4
+   ctx.assets.supported_formats = [46, 46] # 1.21.4
    ctx.assets.save(path='out/resourcepack', overwrite=True)
    ctx.assets.save(path=f'out/Shulker Preview Resource Pack ({target_version}).zip', zipped=True, overwrite=True)
-   ctx.data.pack_format = 80 # 1.21.6
-   ctx.data.supported_formats = [80, 80] # 1.21.6
+   ctx.data.pack_format = 61 # 1.21.4
+   ctx.data.supported_formats = [61, 61] # 1.21.4
    ctx.data.save(path='out/datapack', overwrite=True)
    ctx.data.save(path=f'out/Shulker Preview Data Pack ({target_version}).zip', zipped=True, overwrite=True)
    dark_theme = beet.ResourcePack(path='in/resourcepack_dark')
