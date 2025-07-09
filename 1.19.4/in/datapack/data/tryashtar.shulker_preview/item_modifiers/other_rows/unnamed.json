@@ -1,0 +1,27 @@
+{
+   "function": "minecraft:set_lore",
+   "entity": "this",
+   "replace": false,
+   "lore": [
+      {
+         "translate": "%1$s%418634357$s",
+         "with": [
+            [
+               {
+                  "selector": "0-1c9-c369-0-2668",
+                  "color": "gray",
+                  "italic": false
+               },
+               " x",
+               {
+                  "score": {
+                     "name": "#amount",
+                     "objective": "shulker_preview"
+                  }
+               }
+            ],
+            ""
+         ]
+      }
+   ]
+}
