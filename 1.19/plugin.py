@@ -174,7 +174,7 @@ def main(ctx: beet.Context):
    mcblocks = {}
    for entry in blocknames:
       tx = ctx.assets.textures[f'render:{entry}'].image.convert('RGBA')
-      color = {"acacia_leaves":0x48b518,"birch_leaves":0x80a755,"dark_oak_leaves":0x48b518,"fern":0x7bbd6b,"jungle_leaves":0x48b518,"large_fern":0x7bbd6b,"lily_pad":0x71c35c,"oak_leaves":0x48b518,"grass":0x7bbd6b,"spruce_leaves":0x619961,"tall_grass":0x7bbd6b,"vine":0x48b518}.get(entry)
+      color = {"acacia_leaves":0x48b518,"birch_leaves":0x80a755,"dark_oak_leaves":0x48b518,"fern":0x7bbd6b,"jungle_leaves":0x48b518,"large_fern":0x7bbd6b,"lily_pad":0x71c35c,"oak_leaves":0x48b518,"grass":0x7bbd6b,"spruce_leaves":0x619961,"tall_grass":0x7bbd6b,"vine":0x48b518,"mangrove_leaves":0x92C648}.get(entry)
       if color is not None:
          tx = colorize(tx, rgba(color))
       mcblocks[entry] = tx
