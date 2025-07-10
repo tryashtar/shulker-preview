@@ -2,9 +2,7 @@
    {
       "function": "set_components",
       "components": {
-         "tooltip_display": {
-            "hidden_components": ["container"]
-         }
+         "hide_additional_tooltip": {}
       }
    },
    {

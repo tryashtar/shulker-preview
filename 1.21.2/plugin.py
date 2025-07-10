@@ -683,7 +683,7 @@ def main(ctx: beet.Context):
       'execute if score #modded shulker_preview matches 0 store success score #modded shulker_preview run data get entity @a[limit=1] "Bukkit.updateLevel"',
       'execute if score #modded shulker_preview matches 0 store success score #modded shulker_preview run data get entity @a[limit=1] "Paper.SpawnReason"',
       '',
-      'execute if score #modded shulker_preview matches 1 run tellraw @a [{"text":"\\n⚠ ","color":"#ebdd23"},{"text":"Modded server detected!","color":"#d11b1b"},{"text":" ⚠\\n","color":"#ebdd23"},{"text":"Bukkit and its derivatives break vanilla behavior that shulker previews relies on, specifically long lore on items.\\nAs a workaround, the pack will attempt to switch to a slightly slower method that generates shorter lore.","color":"#f06e6e"},{"text":"\\n⚠ ","color":"#ebdd23"},{"text":"There is no guarantee this will work!","color":"#d11b1b"},{"text":" ⚠\\n","color":"#ebdd23"}]',
+      'execute if score #modded shulker_preview matches 1 run tellraw @a [{"text":"\\n⚠ ","color":"#ebdd23"},{"text":"Modded server detected!","color":"#d11b1b"},{"text":" ⚠\\n","color":"#ebdd23"},{"text":"Bukkit and its derivatives can break vanilla behavior that shulker previews relies on.","color":"#f06e6e"},{"text":"\\n⚠ ","color":"#ebdd23"},{"text":"There is no guarantee it will work!","color":"#d11b1b"},{"text":" ⚠\\n","color":"#ebdd23"}]',
       'execute if score #modded shulker_preview matches 1 run scoreboard players set #modded shulker_preview 2',
    ])
 

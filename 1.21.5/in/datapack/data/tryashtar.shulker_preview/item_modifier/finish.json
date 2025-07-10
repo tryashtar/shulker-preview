@@ -1,10 +1,8 @@
 [
    {
-      "function": "set_components",
-      "components": {
-         "tooltip_display": {
-            "hidden_components": ["container"]
-         }
+      "function": "toggle_tooltips",
+      "toggles": {
+         "container": false
       }
    },
    {
