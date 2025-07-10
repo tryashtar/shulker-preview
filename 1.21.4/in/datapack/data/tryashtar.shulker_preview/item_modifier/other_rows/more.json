@@ -8,7 +8,7 @@
          "fallback": "%1$s",
          "with": [
             {
-               "translate": "item.container.more_items",
+               "translate": "container.shulkerBox.more",
                "with": [
                   {
                      "score": {

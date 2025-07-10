@@ -43,7 +43,9 @@ def main(ctx: beet.Context):
    ArmorEntry = typing.TypedDict('ArmorEntry', {'trims': dict[str, Trim], 'models': list[ArmorTrims]})
    ModelSprite = typing.TypedDict('ModelSprite', {'sprite': str, 'tint': dict[str, typing.Any] | None})
    PropertyCheck = typing.TypedDict('PropertyCheck', {'check': typing.Callable[[str], str], 'values': list[str]})
+   DoubleTint = typing.TypedDict('DoubleTint', {'base':int, 'overlay':int})
    simple_tinted: dict[str, int] = {}
+   double_tinted: dict[str, DoubleTint] = {}
    simple_dye: dict[int, list[str]] = {}
    simple_property: dict[str, PropertyEntry] = {}
    dyed_overlays: list[str] = []
@@ -187,24 +189,31 @@ def main(ctx: beet.Context):
                return True
             case _:
                return False
-      if len(layers) == 2 and layers[0]['tint'] is None and layers[1]['tint'] is not None:
+      if len(layers) == 2:
          # one entry for the bottom layer, one for the top
          model_translations[name] = [layers[0]['sprite']]
          overlay_translations[name] = [layers[1]['sprite']]
-         tint = layers[1]['tint']
-         match short(tint['type']):
-            case 'firework':
-               default = tint['default']
-               if default not in firework:
-                  firework[default] = []
-               firework[default].append(name)
-               return True
-            case 'map_color':
-               default = tint['default']
-               if default not in maps:
-                  maps[default] = []
-               maps[default].append(name)
-               return True
+         match (layers[0]['tint'], layers[1]['tint']):
+            case (None, tint) if tint is not None:
+               match short(tint['type']):
+                  case 'firework':
+                     default = tint['default']
+                     if default not in firework:
+                        firework[default] = []
+                     firework[default].append(name)
+                     return True
+                  case 'map_color':
+                     default = tint['default']
+                     if default not in maps:
+                        maps[default] = []
+                     maps[default].append(name)
+                     return True
+                  case _:
+                     return False
+            case (base, overlay) if base is not None and overlay is not None:
+               if short(base['type']) == 'constant' and short(overlay['type']) == 'constant':
+                  double_tinted[name] = {'base':base['value'], 'overlay':overlay['value']}
+                  return True
             case _:
                return False
       return False
@@ -475,7 +484,7 @@ def main(ctx: beet.Context):
          case _:
             return False
    
-   def handle_model(name: str, _item_model: dict[str, typing.Any]) -> bool:
+   def handle_unpleasant(name: str, _item_model: dict[str, typing.Any]) -> bool:
       gen_name = name + '.item'
       rendered_item_sprites[gen_name] = name
       # use one lang entry for the base model
@@ -495,12 +504,12 @@ def main(ctx: beet.Context):
       result = get_model_sprites(squashed_model)
       if result is not None:
          handled = handle_layered(name, result)
+         if not handled and short(name) == 'grass_block':
+            handled = handle_unpleasant(name, squashed_model)
       else:
          handled = False
       if not handled:
          match model_type:
-            case 'model':
-               handled = handle_model(name, squashed_model)
             case 'select':
                handled = handle_select(name, squashed_model)
             case 'condition':
@@ -655,7 +664,7 @@ def main(ctx: beet.Context):
          "# in vanilla, every single item has a default item_model that matches its ID",
          "# if there were any exceptions, we could list them here",
          "# when the item stack has a custom item_model component, use it instead",
-         'execute if items entity @s contents *[!item_model] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {"translate":"tryashtar.shulker_preview.empty_slot"}',
+         'execute if items entity @s contents *[!item_model] run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{"translate":"tryashtar.shulker_preview.empty_slot"}\'',
          'data modify storage tryashtar.shulker_preview:data item.model set from storage tryashtar.shulker_preview:data item.id',
       ]
       for item, model in unusual_default_models.items():
@@ -672,29 +681,31 @@ def main(ctx: beet.Context):
       ]
       for model, entry in simple_property.items():
          property_fn.extend([
-            f'execute {check_model([model], entry['check'])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.item.{entry['true']}.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}',
-            f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.item.{entry['false']}.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}',
+            f'execute {check_model([model], entry['check'])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.{entry['true']}.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\'',
+            f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.{entry['false']}.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\'',
          ])
       for model, data in case_property.items():
          for value in data['values']:
-            property_fn.append(f'execute {check_model([model])} if data storage tryashtar.shulker_preview:data item.components.{data['check'](value)} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.item.{model}.{value}.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}')
-         property_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.item.{model}.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+            property_fn.append(f'execute {check_model([model])} if data storage tryashtar.shulker_preview:data item.components.{data['check'](value)} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.{model}.{value}.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\'')
+         property_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.{model}.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\'')
       for model in dyed_overlays:
          property_fn.extend([
             f'execute {check_model([model], 'dyed_color')} store result score #color shulker_preview run data get storage tryashtar.shulker_preview:data item.components.{dyed_color}',
             f'execute {check_model([model], 'dyed_color')} run function tryashtar.shulker_preview:render/convert_color',
             f'execute {check_model([model], 'dyed_color')} run return run function tryashtar.shulker_preview:render/row_{row}/model/color_overlay.macro with storage tryashtar.shulker_preview:data item',
-            f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.item.{model}.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}',
+            f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.{model}.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\'',
          ])
 
       datapack.functions[f'render/row_{row}/model/property'] = beet.Function(property_fn)
       
-      model_fn.append(f'execute {check_model(simple_tinted.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/tinted')
+      model_fn.append(f'execute {check_model([*simple_tinted.keys(), *double_tinted.keys()])} run return run function tryashtar.shulker_preview:render/row_{row}/model/tinted')
       tinted_fn = [
          "# models with a hardcoded color",
       ]
       for model, tint in simple_tinted.items():
-         tinted_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.item.{model}.{row}","color":"{color_hex(tint)}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+         tinted_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.{model}.{row}","color":"{color_hex(tint)}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\'')
+      for model, tint in double_tinted.items():
+         tinted_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.item.{model}.{row}","color":"{color_hex(tint['base'])}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}},{{"translate":"tryashtar.shulker_preview.overlay.{model}.{row}","color":"{color_hex(tint['overlay'])}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}]\'')
       datapack.functions[f'render/row_{row}/model/tinted'] = beet.Function(tinted_fn)
       
       for default_color, entries in simple_dye.items():
@@ -792,10 +803,10 @@ def main(ctx: beet.Context):
          for model in entry['models']:
             for material, asset in model['overrides'].items():
                color = f',"color":"{color_hex(asset['color'])}"' if asset['color'] is not None else ''
-               slot_fn.append(f'execute {check_model([model['model']], f'trim~{{material:"{short(material)}"}}')} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.overlay.{asset['name']}.{row}"{color},"fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+               slot_fn.append(f'execute {check_model([model['model']], f'trim~{{material:"{short(material)}"}}')} run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.{asset['name']}.{row}"{color},"fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\'')
          for material, asset in entry['trims'].items():
             color = f',"color":"{color_hex(asset['color'])}"' if asset['color'] is not None else ''
-            slot_fn.append(f'execute if items entity @s contents *[trim~{{material:"{short(material)}"}}] run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.overlay.{asset['name']}.{row}"{color},"fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+            slot_fn.append(f'execute if items entity @s contents *[trim~{{material:"{short(material)}"}}] run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.{asset['name']}.{row}"{color},"fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\'')
          datapack.functions[f'render/row_{row}/model/armor/trim/{slot_name}'] = beet.Function(slot_fn)
       datapack.functions[f'render/row_{row}/model/armor'] = beet.Function(armor_fn)
       datapack.functions[f'render/row_{row}/model/armor/base'] = beet.Function(armor_base)
@@ -820,7 +831,7 @@ def main(ctx: beet.Context):
       ]
       shield_base = [
          "# render the base of a shield with a dye-specific color",
-         f'$data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.overlay.shield.minecraft:base.{row}","color":"$(base)","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}'
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.shield.minecraft:base.{row}","color":"$(base)","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\''
       ]
       banner_loop = [
          "# recursively render banner patterns using a macro",
@@ -831,7 +842,7 @@ def main(ctx: beet.Context):
       ]
       banner_one = [
          "# render one banner pattern with a dye-specific color",
-         f'$data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.overlay.$(kind).$(pattern).{row}","color":"$(color)","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}'
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.overlay.$(kind).$(pattern).{row}","color":"$(color)","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\''
       ]
       datapack.functions[f'render/row_{row}/model/banner'] = beet.Function(banner_fn)
       datapack.functions[f'render/row_{row}/model/banner/shield_base'] = beet.Function(shield_base)
@@ -853,7 +864,7 @@ def main(ctx: beet.Context):
       ]
       pattern_fn = [
          "# render both patterns at once with a macro",
-         f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{"translate":"tryashtar.shulker_preview.overlay.pot.$(left).left.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}},{{"translate":"tryashtar.shulker_preview.overlay.pot.$(right).right.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}]'
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.overlay.pot.$(left).left.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}},{{"translate":"tryashtar.shulker_preview.overlay.pot.$(right).right.{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}]\''
       ]
       datapack.functions[f'render/row_{row}/model/pot'] = beet.Function(pot_fn)
       datapack.functions[f'render/row_{row}/model/pot/patterns'] = beet.Function(pattern_fn)
@@ -864,19 +875,19 @@ def main(ctx: beet.Context):
       ])
       simple_fn = [
          "# macro for simple models that are just one or more uncolored layers",
-         f'$data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.item.$(model).{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}'
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.$(model).{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\''
       ]
       color_fn = [
          "# macro for models that are just one colored layer",
-         f'$data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.item.$(model).{row}","color":"#$(red)$(green)$(blue)","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}'
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.item.$(model).{row}","color":"#$(red)$(green)$(blue)","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}\''
       ]
       color_base = [
          '# macro for models that render with a colored base and one or more uncolored overlays',
-         f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{"translate":"tryashtar.shulker_preview.item.$(model).{row}","color":"#$(red)$(green)$(blue)","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}},{{"translate":"tryashtar.shulker_preview.overlay.$(model).{row}","color":"white","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}]',
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.item.$(model).{row}","color":"#$(red)$(green)$(blue)","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}},{{"translate":"tryashtar.shulker_preview.overlay.$(model).{row}","color":"white","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}]\'',
       ]
       color_overlay = [
          '# macro for models that render with an uncolored base and a colored overlay',
-         f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{"translate":"tryashtar.shulker_preview.item.$(model).{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}},{{"translate":"tryashtar.shulker_preview.overlay.$(model).{row}","color":"#$(red)$(green)$(blue)","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}]',
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.item.$(model).{row}","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}},{{"translate":"tryashtar.shulker_preview.overlay.$(model).{row}","color":"#$(red)$(green)$(blue)","fallback":"%s","with":[{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}]}}]\'',
       ]
 
       datapack.functions[f'render/row_{row}/model/simple.macro'] = beet.Function(simple_fn)
@@ -902,49 +913,49 @@ def main(ctx: beet.Context):
          'execute store result score #damage shulker_preview run data get storage tryashtar.shulker_preview:data item.components."minecraft:damage"',
          'item modify entity @s contents {function:"set_damage",damage:0.9615384615384616}',
          'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
-         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.0.{row}","color":"#00ff00"}}',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.0.{row}","color":"#00ff00"}}\'',
          'item modify entity @s contents {function:"set_damage",damage:0.8846153846153846}',
          'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
-         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.1.{row}","color":"#27ff00"}}',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.1.{row}","color":"#27ff00"}}\'',
          'item modify entity @s contents {function:"set_damage",damage:0.8076923076923077}',
          'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
-         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.2.{row}","color":"#4eff00"}}',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.2.{row}","color":"#4eff00"}}\'',
          'item modify entity @s contents {function:"set_damage",damage:0.7307692307692308}',
          'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
-         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.3.{row}","color":"#75ff00"}}',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.3.{row}","color":"#75ff00"}}\'',
          'item modify entity @s contents {function:"set_damage",damage:0.6538461538461539}',
          'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
-         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.4.{row}","color":"#9cff00"}}',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.4.{row}","color":"#9cff00"}}\'',
          'item modify entity @s contents {function:"set_damage",damage:0.5769230769230769}',
          'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
-         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.5.{row}","color":"#c4ff00"}}',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.5.{row}","color":"#c4ff00"}}\'',
          'item modify entity @s contents {function:"set_damage",damage:0.5}',
          'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
-         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.6.{row}","color":"#ebff00"}}',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.6.{row}","color":"#ebff00"}}\'',
          'item modify entity @s contents {function:"set_damage",damage:0.42307692307692313}',
          'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
-         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.7.{row}","color":"#ffeb00"}}',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.7.{row}","color":"#ffeb00"}}\'',
          'item modify entity @s contents {function:"set_damage",damage:0.34615384615384615}',
          'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
-         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.8.{row}","color":"#ffc400"}}',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.8.{row}","color":"#ffc400"}}\'',
          'item modify entity @s contents {function:"set_damage",damage:0.2692307692307693}',
          'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
-         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.9.{row}","color":"#ff9c00"}}',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.9.{row}","color":"#ff9c00"}}\'',
          'item modify entity @s contents {function:"set_damage",damage:0.1923076923076923}',
          'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
-         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.10.{row}","color":"#ff7500"}}',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.10.{row}","color":"#ff7500"}}\'',
          'item modify entity @s contents {function:"set_damage",damage:0.11538461538461542}',
          'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
-         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.11.{row}","color":"#ff4e00"}}',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.11.{row}","color":"#ff4e00"}}\'',
          'item modify entity @s contents {function:"set_damage",damage:0.038461538461538436}',
          'execute store result score #threshold shulker_preview run data get entity @s Item.components."minecraft:damage"',
-         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.12.{row}","color":"#ff2700"}}',
-         f'data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.13.{row}"}}',
+         f'execute if score #damage shulker_preview <= #threshold shulker_preview run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.12.{row}","color":"#ff2700"}}\'',
+         f'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.13.{row}"}}\'',
       ]
       datapack.functions[f'render/row_{row}/overlay/durability'] = beet.Function(durability_fn)
       count_fn = [
          "# render the item count numbers",
-         f'$data modify storage tryashtar.shulker_preview:data tooltip append value [{{"translate":"tryashtar.shulker_preview.number_shadow.$(count).{row}","color":"#3e3e3e"}},{{"translate":"tryashtar.shulker_preview.number.$(count).{row}","color":"white"}}]',
+         f'$data modify storage tryashtar.shulker_preview:data tooltip append value \'[{{"translate":"tryashtar.shulker_preview.number_shadow.$(count).{row}","color":"#3e3e3e"}},{{"translate":"tryashtar.shulker_preview.number.$(count).{row}","color":"white"}}]\'',
       ]
       datapack.functions[f'render/row_{row}/overlay/count'] = beet.Function(count_fn)
       bundle_fn = [
@@ -954,19 +965,19 @@ def main(ctx: beet.Context):
          'data modify storage tryashtar.shulker_preview:data bundle_stack set value [{fullness:0}]',
          'data modify storage tryashtar.shulker_preview:data bundle_stack[0].contents set from storage tryashtar.shulker_preview:data item.components."minecraft:bundle_contents"',
          'function tryashtar.shulker_preview:render/bundle_weight',
-         f'execute if score #fullness shulker_preview matches 64000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.0.{row}","color":"#6666ff"}}',
-         f'execute if score #fullness shulker_preview matches 59000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.1.{row}","color":"#6666ff"}}',
-         f'execute if score #fullness shulker_preview matches 54000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.2.{row}","color":"#6666ff"}}',
-         f'execute if score #fullness shulker_preview matches 48000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.3.{row}","color":"#6666ff"}}',
-         f'execute if score #fullness shulker_preview matches 43000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.4.{row}","color":"#6666ff"}}',
-         f'execute if score #fullness shulker_preview matches 38000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.5.{row}","color":"#6666ff"}}',
-         f'execute if score #fullness shulker_preview matches 32000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.6.{row}","color":"#6666ff"}}',
-         f'execute if score #fullness shulker_preview matches 27000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.7.{row}","color":"#6666ff"}}',
-         f'execute if score #fullness shulker_preview matches 22000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.8.{row}","color":"#6666ff"}}',
-         f'execute if score #fullness shulker_preview matches 16000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.9.{row}","color":"#6666ff"}}',
-         f'execute if score #fullness shulker_preview matches 11000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.10.{row}","color":"#6666ff"}}',
-         f'execute if score #fullness shulker_preview matches 6000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.11.{row}","color":"#6666ff"}}',
-         f'data modify storage tryashtar.shulker_preview:data tooltip append value {{"translate":"tryashtar.shulker_preview.durability.12.{row}","color":"#6666ff"}}',
+         f'execute if score #fullness shulker_preview matches 64000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.0.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 59000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.1.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 54000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.2.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 48000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.3.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 43000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.4.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 38000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.5.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 32000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.6.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 27000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.7.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 22000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.8.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 16000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.9.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 11000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.10.{row}","color":"#6666ff"}}\'',
+         f'execute if score #fullness shulker_preview matches 6000.. run return run data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.11.{row}","color":"#6666ff"}}\'',
+         f'data modify storage tryashtar.shulker_preview:data tooltip append value \'{{"translate":"tryashtar.shulker_preview.durability.12.{row}","color":"#6666ff"}}\'',
       ]
       datapack.functions[f'render/row_{row}/overlay/bundle_bar'] = beet.Function(bundle_fn)
       
