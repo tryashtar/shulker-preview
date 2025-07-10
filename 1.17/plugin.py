@@ -355,7 +355,6 @@ def main(ctx: beet.Context):
             single_s_pattern_lines.append(line.replace("banner_pattern","shield_pattern"))
          ctx.data.functions[f"tryashtar.shulker_preview:row_{row}/overlay/banner/{cname}"] = beet.Function(single_b_pattern_lines)
          ctx.data.functions[f"tryashtar.shulker_preview:row_{row}/overlay/shield/{cname}"] = beet.Function(single_s_pattern_lines)
-      shield_base.append(f'execute positioned ~ ~0.02 ~ run function tryashtar.shulker_preview:row_{row}/overlay/shield')
       ctx.data.functions[f"tryashtar.shulker_preview:row_{row}/overlay/shield_base"] = beet.Function(shield_base)
 
       # dyed armor
@@ -947,6 +946,8 @@ def process_item_lines(items, row):
       lines.append(f'execute if data storage tryashtar.shulker_preview:data item.tag.BlockEntityTag.Patterns[0] positioned ~ ~0.7 ~ run function tryashtar.shulker_preview:row_{row}/overlay/banner')
    if shield:
       lines.append(f'execute if data storage tryashtar.shulker_preview:data item.tag.BlockEntityTag.Base positioned ~ ~0.7 ~ run function tryashtar.shulker_preview:row_{row}/overlay/shield_base')
+      lines.append(f'execute if data storage tryashtar.shulker_preview:data item.tag.BlockEntityTag.Patterns[0] positioned ~ ~0.71 ~ run function tryashtar.shulker_preview:row_{row}/overlay/shield')
+
    if durability:
       lines.extend([
          f'execute store result score #durability shulker_preview run data get storage tryashtar.shulker_preview:data item.tag.Damage',

@@ -132,6 +132,7 @@ When downloading from that page, make sure to click the version you want, then d
 + Number textures are referenced directly
 + Tooltip textures are referenced directly
 - Modded lore workaround and broken lore detection no longer performed
+- Removed larger tooltip for items without a custom name
 + Use storage instead of entities for text components (vanilla 19w39a)
 + Use space provider instead of bitmap negative space (vanilla 22w11a)
 + Use macros instead of function trees (vanilla 23w31a)
@@ -163,6 +164,7 @@ When downloading from that page, make sure to click the version you want, then d
 + Increased crossbow durability (vanilla 21w37a)
 
 1.17
++ All 1.17 items
 + Missing texture shown for unknown items
 + Same namespace for storage as pack
 + Use item command instead of shulker box loot table trick (vanilla 20w46a)
