@@ -100,7 +100,7 @@ def main(ctx: beet.Context):
          image.paste(arrow_base, (0, 0, 16,16), arrow_base)
          image.paste(colorize(arrow_overlay, rgba(0x385dc6)), (0, 0, 16,16), arrow_overlay)
       else:
-         lookup = {'crossbow':'crossbow_standby','clock':'clock_00','compass':'compass_00','debug_stick':'stick','enchanted_golden_apple':'golden_apple','large_fern':'large_fern_top','lilac':'lilac_top','peony':'peony_top','rose_bush':'rose_bush_top','sunflower':'sunflower_front','tall_grass':'tall_grass_top'}.get(entry, entry)
+         lookup = {'crossbow':'crossbow_standby','clock':'clock_00','compass':'compass_16','debug_stick':'stick','enchanted_golden_apple':'golden_apple','large_fern':'large_fern_top','lilac':'lilac_top','peony':'peony_top','rose_bush':'rose_bush_top','sunflower':'sunflower_front','tall_grass':'tall_grass_top'}.get(entry, entry)
          lookup = lookup.replace('glass_pane', 'glass')
          texture = vanilla.assets.textures.get(f'minecraft:item/{lookup}')
          if texture is None:

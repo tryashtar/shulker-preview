@@ -33,7 +33,7 @@ def main(ctx: beet.Context):
          if itemname in vanilla_items:
             mcitems[itemname] = texture.image.convert('RGBA')
    mcitems['clock'] = vanilla.assets.textures['minecraft:item/clock_00'].image.convert('RGBA')
-   mcitems['compass'] = vanilla.assets.textures['minecraft:item/compass_00'].image.convert('RGBA')
+   mcitems['compass'] = vanilla.assets.textures['minecraft:item/compass_16'].image.convert('RGBA')
    mcitems['crossbow'] = vanilla.assets.textures['minecraft:item/crossbow_standby'].image.convert('RGBA')
    
    for item in reused_textures:
@@ -598,7 +598,7 @@ def register_items(items, row, ascent, height, real_version):
       if "_spawn_egg" in item or item in reused_textures:
          continue
       location=item.replace("glass_pane","glass")
-      location={"large_fern":"large_fern_top","lilac":"lilac_top","peony":"peony_top","rose_bush":"rose_bush_top","sunflower":"sunflower_front","clock":"clock_00","compass":"compass_00","crossbow":"crossbow_standby","tall_grass":"tall_grass_top","tipped_arrow":"tipped_arrow_base","twisting_vines":"twisting_vines_plant","weeping_vines":"weeping_vines_plant"}.get(location,location)
+      location={"large_fern":"large_fern_top","lilac":"lilac_top","peony":"peony_top","rose_bush":"rose_bush_top","sunflower":"sunflower_front","clock":"clock_00","compass":"compass_16","crossbow":"crossbow_standby","tall_grass":"tall_grass_top","tipped_arrow":"tipped_arrow_base","twisting_vines":"twisting_vines_plant","weeping_vines":"weeping_vines_plant"}.get(location,location)
       itype="block" if v=="block" else "item"
       thingtype="item"
       if item in ["tipped_arrow_head","spawn_egg_overlay","potion_overlay","leather_boots_overlay","leather_chestplate_overlay","leather_helmet_overlay","leather_leggings_overlay","firework_star_overlay","filled_map_markings"]:
