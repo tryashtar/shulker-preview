@@ -370,32 +370,6 @@ def main(ctx: beet.Context):
       ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/process_potion'] = beet.Function(lines1)
       ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/process_arrow'] = beet.Function(lines2)
 
-   # generate all items for testing
-   index = 0
-   chest_items=list(all_items.keys())
-   while index < len(chest_items):
-      boxes = 0
-      boxslot = 0
-      command = "setblock ~ ~1 ~ chest{Items:["
-      while index < len(chest_items) and len(command) < 32000:
-         item = chest_items[index]
-         if boxslot == 0:
-            command += "{id:shulker_box,Count:1b,Slot:" +str(boxes)+ "b,tag:{BlockEntityTag:{Items:["
-            boxes += 1
-         command += "{id:\"" +item+ "\",Count:1b,Slot:" +str(boxslot)+ "b},"
-         index += 1
-         boxslot +=1
-         if boxslot >= 27:
-            boxslot = 0
-         if boxslot == 0:
-            command += "]}}},"
-            if boxes >= 27:
-               break
-      if boxslot != 0:
-         command += "]}}},"
-      command += "]}"
-      print(command)
-
    ctx.assets.pack_format = 5
    ctx.assets.description = 'Shulker Box tooltip preview: resource pack'
    ctx.assets.save(path='out/resourcepack', overwrite=True)
