@@ -504,10 +504,10 @@ def main(ctx: beet.Context):
       result = get_model_sprites(squashed_model)
       if result is not None:
          handled = handle_layered(name, result)
-         if not handled and short(name) == 'grass_block':
-            handled = handle_unpleasant(name, squashed_model)
       else:
          handled = False
+      if not handled and short(name) == 'grass_block':
+         handled = handle_unpleasant(name, squashed_model)
       if not handled:
          match model_type:
             case 'select':

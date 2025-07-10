@@ -43,7 +43,9 @@ def main(ctx: beet.Context):
    ArmorEntry = typing.TypedDict('ArmorEntry', {'trims': dict[str, Trim], 'models': list[ArmorTrims]})
    ModelSprite = typing.TypedDict('ModelSprite', {'sprite': str, 'tint': dict[str, typing.Any] | None})
    PropertyCheck = typing.TypedDict('PropertyCheck', {'check': typing.Callable[[str], str], 'values': list[str]})
+   DoubleTint = typing.TypedDict('DoubleTint', {'base':int, 'overlay':int})
    simple_tinted: dict[str, int] = {}
+   double_tinted: dict[str, DoubleTint] = {}
    simple_dye: dict[int, list[str]] = {}
    simple_property: dict[str, PropertyEntry] = {}
    dyed_overlays: list[str] = []
@@ -187,24 +189,31 @@ def main(ctx: beet.Context):
                return True
             case _:
                return False
-      if len(layers) == 2 and layers[0]['tint'] is None and layers[1]['tint'] is not None:
+      if len(layers) == 2:
          # one entry for the bottom layer, one for the top
          model_translations[name] = [layers[0]['sprite']]
          overlay_translations[name] = [layers[1]['sprite']]
-         tint = layers[1]['tint']
-         match short(tint['type']):
-            case 'firework':
-               default = tint['default']
-               if default not in firework:
-                  firework[default] = []
-               firework[default].append(name)
-               return True
-            case 'map_color':
-               default = tint['default']
-               if default not in maps:
-                  maps[default] = []
-               maps[default].append(name)
-               return True
+         match (layers[0]['tint'], layers[1]['tint']):
+            case (None, tint) if tint is not None:
+               match short(tint['type']):
+                  case 'firework':
+                     default = tint['default']
+                     if default not in firework:
+                        firework[default] = []
+                     firework[default].append(name)
+                     return True
+                  case 'map_color':
+                     default = tint['default']
+                     if default not in maps:
+                        maps[default] = []
+                     maps[default].append(name)
+                     return True
+                  case _:
+                     return False
+            case (base, overlay) if base is not None and overlay is not None:
+               if short(base['type']) == 'constant' and short(overlay['type']) == 'constant':
+                  double_tinted[name] = {'base':base['value'], 'overlay':overlay['value']}
+                  return True
             case _:
                return False
       return False
@@ -475,7 +484,7 @@ def main(ctx: beet.Context):
          case _:
             return False
    
-   def handle_model(name: str, _item_model: dict[str, typing.Any]) -> bool:
+   def handle_unpleasant(name: str, _item_model: dict[str, typing.Any]) -> bool:
       gen_name = name + '.item'
       rendered_item_sprites[gen_name] = name
       # use one lang entry for the base model
@@ -497,10 +506,10 @@ def main(ctx: beet.Context):
          handled = handle_layered(name, result)
       else:
          handled = False
+      if not handled and short(name) == 'grass_block':
+         handled = handle_unpleasant(name, squashed_model)
       if not handled:
          match model_type:
-            case 'model':
-               handled = handle_model(name, squashed_model)
             case 'select':
                handled = handle_select(name, squashed_model)
             case 'condition':
@@ -689,12 +698,14 @@ def main(ctx: beet.Context):
 
       datapack.functions[f'render/row_{row}/model/property'] = beet.Function(property_fn)
       
-      model_fn.append(f'execute {check_model(simple_tinted.keys())} run return run function tryashtar.shulker_preview:render/row_{row}/model/tinted')
+      model_fn.append(f'execute {check_model([*simple_tinted.keys(), *double_tinted.keys()])} run return run function tryashtar.shulker_preview:render/row_{row}/model/tinted')
       tinted_fn = [
          "# models with a hardcoded color",
       ]
       for model, tint in simple_tinted.items():
          tinted_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value {{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint)}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}')
+      for model, tint in double_tinted.items():
+         tinted_fn.append(f'execute {check_model([model])} run return run data modify storage tryashtar.shulker_preview:data tooltip append value [{{translate:"tryashtar.shulker_preview.item.{model}.{row}",color:"{color_hex(tint['base'])}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}},{{translate:"tryashtar.shulker_preview.overlay.{model}.{row}",color:"{color_hex(tint['overlay'])}",fallback:"%s",with:[{{translate:"tryashtar.shulker_preview.missingno.{row}"}}]}}]')
       datapack.functions[f'render/row_{row}/model/tinted'] = beet.Function(tinted_fn)
       
       for default_color, entries in simple_dye.items():
