@@ -9,4 +9,15 @@ meta:
     preferred_minecraft_generated: java
     special_rendering: true
     use_cache: true
-    minecraft_version: '1.15'
+  shulker_preview:
+    target_version:
+      from:
+        version: '1.15'
+        datapack: 5
+        resourcepack: 5
+        data: 2225
+      to:
+        version: '1.15.2'
+        datapack: 5
+        resourcepack: 5
+        data: 2230

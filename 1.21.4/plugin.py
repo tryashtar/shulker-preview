@@ -10,7 +10,11 @@ import model_resolver
 import model_resolver.utils
 
 def main(ctx: beet.Context):
-   target_version = '1.21.4'
+   target_version = ctx.meta['shulker_preview']['target_version']
+   version_first = target_version['from']
+   version_last = target_version['to']
+   ctx.meta['model_resolver']['minecraft_version'] = version_last['version']
+   vanilla = good_vanilla(ctx, version_last['version'])
    
    datapack = ctx.data['tryashtar.shulker_preview']
    resourcepack = ctx.assets['tryashtar.shulker_preview']
@@ -53,7 +57,6 @@ def main(ctx: beet.Context):
    
    # we're going to enumerate every item model in vanilla, to collect their sprites and sort into patterns
    # what follows are some functions for handling particular item models
-   vanilla = good_vanilla(ctx, target_version)
    block_atlas = vanilla.assets.atlases['minecraft:blocks']
    
    BannerShield = typing.TypedDict('BannerShield', {'banner': str, 'shield': str})
@@ -638,7 +641,7 @@ def main(ctx: beet.Context):
       check = extra + '|'.join([f'item_model="{short(x)}"' for x in models])
       return f'if items entity @s contents *[{check}]'
    
-   dyed_color = '"minecraft:dyed_color"' if ctx.data.pack_format >= 64 else '"minecraft:dyed_color".rgb'
+   dyed_color = '"minecraft:dyed_color"' if version_last['datapack'] >= 64 else '"minecraft:dyed_color".rgb'
    
    for row in range(font.rows):
       item_fn = [
@@ -969,33 +972,63 @@ def main(ctx: beet.Context):
       
       datapack.functions[f'render/row_{row}/item'] = beet.Function(item_fn)
    
+   outdated_range = f'tellraw @a [{{"text":"\\n⚠ ","color":"#ebdd23"}},{{"text":"Outdated Minecraft version!","color":"#d11b1b"}},{{"text":" ⚠\\n","color":"#ebdd23"}},{{"text":"This shulker preview data pack is for versions {version_first['version']} - {version_last['version']}.\\n","color":"#f06e6e"}},{{"text":"Download for other versions here","color":"#468beb","underlined":true,"clickEvent":{{"action":"open_url","value":"https://tryashtar.github.io/shulker-preview"}}}},"\\n"]'
+   outdated_single = f'tellraw @a [{{"text":"\\n⚠ ","color":"#ebdd23"}},{{"text":"Outdated Minecraft version!","color":"#d11b1b"}},{{"text":" ⚠\\n","color":"#ebdd23"}},{{"text":"This shulker preview data pack is for version {version_first['version']}.\\n","color":"#f06e6e"}},{{"text":"Download for other versions here","color":"#468beb","underlined":true,"clickEvent":{{"action":"open_url","value":"https://tryashtar.github.io/shulker-preview"}}}},"\\n"]'
+   pack_old_range = f'tellraw @a [{{"text":"\\n⚠ ","color":"#ebdd23"}},{{"text":"Outdated Shulker Preview version!","color":"#d11b1b"}},{{"text":" ⚠\\n","color":"#ebdd23"}},{{"text":"This data pack is for versions {version_first['version']} - {version_last['version']}.\\n","color":"#f06e6e"}},{{"text":"Download for other versions here","color":"#468beb","underlined":true,"clickEvent":{{"action":"open_url","value":"https://tryashtar.github.io/shulker-preview"}}}},"\\n"]'
+   pack_old_single = f'tellraw @a [{{"text":"\\n⚠ ","color":"#ebdd23"}},{{"text":"Outdated Shulker Preview version!","color":"#d11b1b"}},{{"text":" ⚠\\n","color":"#ebdd23"}},{{"text":"This data pack is for version {version_first['version']}.\\n","color":"#f06e6e"}},{{"text":"Download for other versions here","color":"#468beb","underlined":true,"clickEvent":{{"action":"open_url","value":"https://tryashtar.github.io/shulker-preview"}}}},"\\n"]'
+   ctx.data.functions['tryashtar.shulker_preview:meta/player_online'] = beet.Function([
+      "# check for sufficient Minecraft version",
+      'execute store result score #version shulker_preview run data get entity @a[limit=1] DataVersion',
+      f'execute if score #version shulker_preview matches 1..{version_first['data']-1} run {outdated_single if version_last['version'] == version_first['version'] else outdated_range}',
+      f'execute if score #version shulker_preview matches 1..{version_first['data']-1} run scoreboard players set #install shulker_preview -1',
+      f'execute if score #version shulker_preview matches {version_last['data']+1}.. run {pack_old_single if version_last['version'] == version_first['version'] else pack_old_range}',
+      f'execute if score #version shulker_preview matches {version_last['data']+1}.. run scoreboard players set #install shulker_preview -1',
+      f'execute if score #version shulker_preview matches {version_first['data']}..{version_last['data']} if score #install shulker_preview matches -1 run scoreboard players set #install shulker_preview 0',
+      '',
+      "# check for resource pack equipped/success message",
+      'scoreboard players add #install shulker_preview 0',
+      'execute if score #install shulker_preview matches 0 run function tryashtar.shulker_preview:meta/install',
+      '',
+      "# check for modded server",
+      'scoreboard players add #modded shulker_preview 0',
+      'execute if score #modded shulker_preview matches 0 store success score #modded shulker_preview run data get entity @a[limit=1] "Spigot.ticksLived"',
+      'execute if score #modded shulker_preview matches 0 store success score #modded shulker_preview run data get entity @a[limit=1] "Bukkit.updateLevel"',
+      'execute if score #modded shulker_preview matches 0 store success score #modded shulker_preview run data get entity @a[limit=1] "Paper.SpawnReason"',
+      '',
+      'execute if score #modded shulker_preview matches 1 run tellraw @a [{"text":"\\n⚠ ","color":"#ebdd23"},{"text":"Modded server detected!","color":"#d11b1b"},{"text":" ⚠\\n","color":"#ebdd23"},{"text":"Bukkit and its derivatives can break vanilla behavior that shulker previews relies on.","color":"#f06e6e"},{"text":"\\n⚠ ","color":"#ebdd23"},{"text":"There is no guarantee it will work!","color":"#d11b1b"},{"text":" ⚠\\n","color":"#ebdd23"}]',
+      'execute if score #modded shulker_preview matches 1 run scoreboard players set #modded shulker_preview 2',
+   ])
+
    icon = beet.PngFile(PIL.Image.open('in/pack.png'))
    ctx.assets.icon = icon
    ctx.data.icon = icon
-   ctx.assets.pack_format = 46 # 1.21.4
-   ctx.assets.supported_formats = [46, 46] # 1.21.4
+   ctx.assets.pack_format = version_last['resourcepack']
+   ctx.assets.supported_formats = [version_first['resourcepack'], version_last['resourcepack']]
+   ctx.assets.description = 'Shulker Box tooltip preview: resource pack'
    ctx.assets.save(path='out/resourcepack', overwrite=True)
-   ctx.assets.save(path=f'out/Shulker Preview Resource Pack ({target_version}).zip', zipped=True, overwrite=True)
-   ctx.data.pack_format = 61 # 1.21.4
-   ctx.data.supported_formats = [61, 61] # 1.21.4
+   ctx.assets.save(path=f'out/Shulker Preview Resource Pack ({version_first['version']}).zip', zipped=True, overwrite=True)
+   ctx.data.pack_format = version_last['datapack']
+   ctx.data.supported_formats = [version_first['datapack'], version_last['datapack']]
+   ctx.data.description = 'Shulker Box tooltip preview: data pack'
    ctx.data.save(path='out/datapack', overwrite=True)
-   ctx.data.save(path=f'out/Shulker Preview Data Pack ({target_version}).zip', zipped=True, overwrite=True)
+   ctx.data.save(path=f'out/Shulker Preview Data Pack ({version_first['version']}).zip', zipped=True, overwrite=True)
    dark_theme = beet.ResourcePack(path='in/resourcepack_dark')
    dark_theme.pack_format = ctx.assets.pack_format
+   dark_theme.supported_formats = ctx.assets.supported_formats
    dark_theme.description = '(apply this pack above the normal resource pack)'
    dark_theme.save(path='out/dark_theme', overwrite=True)
-   dark_theme.save(path=f'out/Shulker Preview Dark Theme ({target_version}).zip', zipped=True, overwrite=True)
+   dark_theme.save(path=f'out/Shulker Preview Dark Theme ({version_first['version']}).zip', zipped=True, overwrite=True)
 
 def good_vanilla(ctx: beet.Context, version: str) -> beet.contrib.vanilla.Release:
-   bad_vanilla = beet.contrib.vanilla.Vanilla(ctx=ctx)
+   releases = beet.contrib.vanilla.ReleaseRegistry(ctx.cache["vanilla"], None)
    def fix_lookup(self, key: str) -> beet.contrib.vanilla.Release:
       for version in self.manifest.data["versions"]:
          if version["id"] == key:
              info = beet.JsonFile(source_path=self.cache.download(version["url"]))
              return beet.contrib.vanilla.Release(self.cache, info)
       raise KeyError(key)
-   bad_vanilla.releases.missing = types.MethodType(fix_lookup, bad_vanilla.releases)
-   vanilla = bad_vanilla.releases[version]
+   releases.missing = types.MethodType(fix_lookup, releases)
+   vanilla = releases[version]
    return vanilla
 
 # all textures referenced by item models are entries in the blocks atlas

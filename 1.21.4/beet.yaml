@@ -11,4 +11,15 @@ meta:
     preferred_minecraft_generated: java
     special_rendering: true
     use_cache: true
-    minecraft_version: '1.21.4'
+  shulker_preview:
+    target_version:
+      from:
+        version: '1.21.4'
+        datapack: 61
+        resourcepack: 46
+        data: 4189
+      to:
+        version: '1.21.4'
+        datapack: 61
+        resourcepack: 46
+        data: 4189
