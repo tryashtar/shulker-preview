@@ -660,13 +660,13 @@ def main(ctx: beet.Context):
    icon = beet.PngFile(PIL.Image.open('in/pack.png'))
    ctx.assets.icon = icon
    ctx.data.icon = icon
-   ctx.assets.pack_format = 57 # 1.21.2 - 1.21.3
-   ctx.assets.supported_formats = [57, 57]
+   ctx.assets.pack_format = 42 # 1.21.2 - 1.21.3
+   ctx.assets.supported_formats = [42, 42]
    ctx.assets.description = {'text':'Shulker Box tooltip preview: resource pack','color':'#8fdff7'}
    ctx.assets.save(path='out/resourcepack', overwrite=True)
    ctx.assets.save(path=f'out/Shulker Preview Resource Pack ({target_version}).zip', zipped=True, overwrite=True)
-   ctx.data.pack_format = 42 # 1.21.2 - 1.21.3
-   ctx.data.supported_formats = [42, 42]
+   ctx.data.pack_format = 57 # 1.21.2 - 1.21.3
+   ctx.data.supported_formats = [57, 57]
    ctx.data.description = {'text':'Shulker Box tooltip preview: data pack','color':'#8fdff7'}
    ctx.data.save(path='out/datapack', overwrite=True)
    ctx.data.save(path=f'out/Shulker Preview Data Pack ({target_version}).zip', zipped=True, overwrite=True)
