@@ -20,7 +20,7 @@ def main(ctx: beet.Context):
    vanilla = good_vanilla(ctx, target_version)
    item_list = [x.removeprefix('minecraft:') for x in get_registry(vanilla, 'minecraft:item').keys()]
    banner_list = [x.removeprefix('minecraft:') for x in vanilla.data.banner_patterns.keys()]
-   pot_list = [x.removeprefix('minecraft:') for x in get_registry(vanilla, 'minecraft:decorated_pot_patterns').keys()]
+   pot_list = [x.removeprefix('minecraft:') for x in get_registry(vanilla, 'minecraft:decorated_pot_pattern').keys()]
    item_list.remove('air')
    space_provider = {}
    font = [{"type":"space","advances":space_provider}]
@@ -300,7 +300,7 @@ def main(ctx: beet.Context):
    }
    for name, color in colorized.items():
       ctx.assets.textures[f'minecraft:{name}'] = beet.Texture(colorize(vanilla.assets.textures[f'minecraft:{name}'].image.convert('RGBA'), rgba(color)))
-   renderer = model_resolver.Render(ctx=ctx)
+   renderer = model_resolver.Render(ctx, vanilla)
    renderer.default_render_size = 64
    for model, path in model_tasks:
       renderer.add_model_task(

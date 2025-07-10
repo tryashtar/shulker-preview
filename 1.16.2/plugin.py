@@ -11,6 +11,7 @@ import model_resolver.utils
 import model_resolver.item_model.special
 import numpy
 import beet
+import types
 from PIL import Image, ImageChops
 from collections import OrderedDict
 
@@ -21,8 +22,8 @@ def main(ctx: beet.Context):
    
    # load item textures from two sources
    print("Loading icons...")
-   vanilla = beet.contrib.vanilla.Vanilla(ctx=ctx, minecraft_version=minecraft_version)
-   vanilla_items = [x.removeprefix('minecraft:') for x in get_items(ctx, vanilla, minecraft_version).keys()]
+   vanilla = good_vanilla(ctx, minecraft_version)
+   vanilla_items = [x.removeprefix('minecraft:') for x in get_items(ctx, vanilla).keys()]
    vanilla_items.extend(['broken_elytra','crossbow_arrow','crossbow_firework','spawn_egg','spawn_egg_overlay','firework_star_overlay','leather_boots_overlay','leather_leggings_overlay','leather_chestplate_overlay','leather_helmet_overlay','potion_overlay','tipped_arrow_base','tipped_arrow_head','filled_map_markings','dirt_path'])
 
    mcitems = {}
@@ -119,7 +120,7 @@ def main(ctx: beet.Context):
       ctx.assets.models[f'render:banner_{pattern}'] = beet.Model(fake_banner)
       ctx.assets.models[f'render:shield_{pattern}'] = beet.Model(fake_shield)
       
-   renderer = model_resolver.Render(ctx=ctx)
+   renderer = model_resolver.Render(ctx, vanilla)
    renderer.default_render_size = 64
    for entry in blocknames:         
       renderer.add_model_task(
@@ -478,8 +479,19 @@ def main(ctx: beet.Context):
    dark_theme.save(path=f'out/Shulker Preview Dark Theme ({minecraft_version}).zip', zipped=True, overwrite=True)
 
 
-def get_items(ctx: beet.Context, vanilla: beet.contrib.vanilla.Vanilla, version: str):
-   release = vanilla.releases[version]
+def good_vanilla(ctx: beet.Context, version: str) -> beet.contrib.vanilla.Release:
+   bad_vanilla = beet.contrib.vanilla.Vanilla(ctx=ctx)
+   def fix_lookup(self, key: str) -> beet.contrib.vanilla.Release:
+      for version in self.manifest.data["versions"]:
+         if version["id"] == key:
+             info = beet.JsonFile(source_path=self.cache.download(version["url"]))
+             return beet.contrib.vanilla.Release(self.cache, info)
+      raise KeyError(key)
+   bad_vanilla.releases.missing = types.MethodType(fix_lookup, bad_vanilla.releases)
+   vanilla = bad_vanilla.releases[version]
+   return vanilla
+
+def get_items(ctx: beet.Context, release: beet.contrib.vanilla.Release):
    jar = release.cache.download(
       release.info.data["downloads"]["server"]["url"]
    )

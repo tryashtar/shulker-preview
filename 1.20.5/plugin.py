@@ -300,7 +300,7 @@ def main(ctx: beet.Context):
    }
    for name, color in colorized.items():
       ctx.assets.textures[f'minecraft:{name}'] = beet.Texture(colorize(vanilla.assets.textures[f'minecraft:{name}'].image.convert('RGBA'), rgba(color)))
-   renderer = model_resolver.Render(ctx=ctx)
+   renderer = model_resolver.Render(ctx, vanilla)
    renderer.default_render_size = 64
    for model, path in model_tasks:
       renderer.add_model_task(

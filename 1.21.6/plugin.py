@@ -75,7 +75,7 @@ def main(ctx: beet.Context):
    # pot patterns aren't data driven, we have to guess them from item names
    pot_patterns: dict[str, str] = {}
    pot_atlas = vanilla.assets.atlases['minecraft:decorated_pot']
-   components = model_resolver.utils.get_default_components(ctx)
+   components = model_resolver.utils.get_default_components(ctx, vanilla)
    blank = get_texture_from_atlas_entry(vanilla.assets.textures, pot_atlas, 'entity/decorated_pot/decorated_pot_side')
    if blank is not None:
       pot_patterns['minecraft:brick'] = blank['texture']
@@ -516,7 +516,7 @@ def main(ctx: beet.Context):
    for gen_name, fake_model in rendered_fake_sprites.items():
       model_file = beet.Model(fake_model)
       ctx.assets.models[gen_name] = model_file
-   render = model_resolver.Render(ctx=ctx)
+   render = model_resolver.Render(ctx, vanilla)
    render.default_render_size = 64
    for gen_name, model_name in rendered_model_sprites.items():
       render.add_model_task(
