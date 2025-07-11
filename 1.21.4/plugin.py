@@ -860,7 +860,7 @@ def main(ctx: beet.Context):
          'execute unless data storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations"[3] run return fail',
          'data modify storage tryashtar.shulker_preview:data item.left set from storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations"[1]',
          'data modify storage tryashtar.shulker_preview:data item.right set from storage tryashtar.shulker_preview:data item.components."minecraft:pot_decorations"[3]',
-         f'function tryashtar.shulker_preview:render/row_{0}/model/pot/patterns with storage tryashtar.shulker_preview:data item',
+         f'function tryashtar.shulker_preview:render/row_{row}/model/pot/patterns with storage tryashtar.shulker_preview:data item',
       ]
       pattern_fn = [
          "# render both patterns at once with a macro",
