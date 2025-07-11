@@ -15,16 +15,9 @@ import model_resolver
 import model_resolver.item_model.special
 
 def main(ctx: beet.Context):
-   target_version = ctx.meta['shulker_preview']['target_version']
-   version_first = target_version['from']
-   version_last = target_version['to']
-   ctx.meta['model_resolver']['minecraft_version'] = version_last['version']
-   vanilla = good_vanilla(ctx, version_last['version'])
-   
-   item_list = [x.removeprefix('minecraft:') for x in get_registry(vanilla, 'minecraft:item').keys()]
    banner_list = [x.removeprefix('minecraft:') for x in vanilla.data.banner_patterns.keys()]
    pot_list = [x.removeprefix('minecraft:') for x in get_registry(vanilla, 'minecraft:decorated_pot_patterns').keys()]
-   item_list.remove('air')
+   
    space_provider = {}
    font = [{"type":"space","advances":space_provider}]
    model_cache = {}

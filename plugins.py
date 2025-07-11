@@ -1,10 +1,12 @@
 import json
+import math
 import os
 import pathlib
 import subprocess
 import typing
 import types
 import re
+import unicodedata
 import zipfile
 import dataclasses
 import PIL.Image
@@ -74,20 +76,36 @@ def version_info(jar: beet.contrib.vanilla.ClientJar) -> dict[str, typing.Any]:
    with zipfile.ZipFile(jar.path) as file:
       return json.load(file.open('version.json'))
 
-def plugin_v1_full(ctx: beet.Context):
+def plugin_full(ctx: beet.Context):
    registry = fixed_release_registry(ctx)
    target = load_version_range(registry, ctx.meta['shulker_preview']['target_version'])
-   plugin_v1(ctx, registry, target)
+   ctx.meta['model_resolver']['minecraft_version'] = target.last.version
+   plugin_version = ctx.meta['shulker_preview']['plugin']
+   match plugin_version:
+      case 1:
+         plugin_v1(ctx, registry, target)
+      case 2:
+         plugin_v2(ctx, registry, target)
+      case _:
+         raise ValueError(plugin_version)
    export(ctx, target)
 
 def plugin_v1(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, target: VersionRange):
    target_version = target.last.version
    data_version = target.last.data
-   ctx.meta['model_resolver']['minecraft_version'] = target_version
    vanilla = registry[target_version]
    items = [short(x) for x in get_registry(vanilla, 'minecraft:item').keys()]
    items.remove('air')
    eggs = spawn_egg_colors(registry['1.21.4'].assets, data_version)
+   colored = item_colors(registry['1.21.4'].assets, data_version)
+   colormap: dict[str, list[int | None]] = dict([
+      *[(short(name), [value.base, value.overlay]) for name, value in eggs.items()],
+      *[(short(name), [color]) for name, color in colored.items()],
+      *[(short(name), [0xa06540]) for name in ['leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots', 'leather_horse_armor']],
+      *[(short(name), [0x385dc6]) for name in ['tipped_arrow', 'potion', 'splash_potion', 'lingering_potion']],
+      ('firework_star', [None, 0x8A8A8A]),
+      ('filled_map', [None, 0x46402E]),
+   ])
    durability = item_durability(registry['1.21.4'], data_version)
    flat_items: dict[str, PIL.Image.Image] = {}
    overlays: dict[str, PIL.Image.Image] = {}
@@ -101,20 +119,58 @@ def plugin_v1(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry,
          image_layers = [vanilla.assets.textures[x].image.convert('RGBA') for x in layers]
          image = PIL.Image.new('RGBA', image_layers[0].size)
          for i, layer in enumerate(image_layers):
-            if (color := eggs.get(canon(item))) is not None:
-               color = eggs[canon(item)]
-               if i == 0:
-                  layer = colorize(layer, rgba(color.base))
-               elif i == 1:
-                  layer = colorize(layer, rgba(color.overlay))
+            if (tints := colormap.get(short(item))) is not None:
+               if i < len(tints) and (tint := tints[i]) is not None:
+                  layer = colorize(layer, rgba(tint))
             image.paste(layer, (0, 0), layer)
          flat_items[item] = image
+   arrow_overlay = vanilla.assets.textures['minecraft:item/tipped_arrow_head'].image.convert('RGBA')
+   potion_overlay = vanilla.assets.textures['minecraft:item/potion_overlay'].image.convert('RGBA')
+   potions = invert_dict(potion_colors(data_version))
+   for color, potions in potions.items():
+      if color is not None:
+         potion_name = short(potions[0])
+         overlays[f'arrow_dust.{potion_name}'] = colorize(arrow_overlay, rgba(color))
+         overlays[f'potion_liquid.{potion_name}'] = colorize(potion_overlay, rgba(color))
+   item_image, item_grid = make_grid(flat_items, 16)
+   #block_image, block_grid = make_grid(block_items, 16)
+   overlay_image, overlay_grid = make_grid(overlays, 16)
+   ctx.assets.textures['tryashtar.shulker_preview:item_sheet'] = beet.Texture(item_image)
+   #ctx.assets.textures['tryashtar.shulker_preview:block_sheet'] = beet.Texture(blocksheet)
+   ctx.assets.textures['tryashtar.shulker_preview:overlay_sheet'] = beet.Texture(overlay_image)
+
+def plugin_v2(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, target: VersionRange):
+   target_version = target.last.version
+   data_version = target.last.data
+   vanilla = registry[target_version]
+   items = [short(x) for x in get_registry(vanilla, 'minecraft:item').keys()]
+   items.remove('air')
+
+def make_grid(entries: dict[str, PIL.Image.Image], icon_size: int) -> tuple[PIL.Image.Image, list[list[str | None]]]:
+   width, height = grid_dimensions(len(entries))
+   image = PIL.Image.new('RGBA', (width * icon_size, height * icon_size))
+   name_return: list[list[str | None]] = [[None] * width for _ in range(height)]
+   for i, (name, sprite) in enumerate(entries.items()):
+      pos_x = i % width
+      pos_y = i // width
+      name_return[pos_y][pos_x] = name
+      x = pos_x * icon_size
+      y = pos_y * icon_size
+      image.paste(sprite, (x, y, x + icon_size, y + icon_size))
+   return (image, name_return)
+
+def grid_dimensions(area: int) -> tuple[int, int]:
+   width = math.ceil(math.sqrt(area))
+   height = width
+   if width * (height - 1) >= area:
+      height -= 1
+   return (width, height)
 
 def rgba(color: int):
    r = color // 256 // 256 % 256
    g = color // 256 % 256
    b = color % 256
-   return (r, g, b, 255)
+   return (r, g, b, 255)   
 
 def colorize(image: PIL.Image.Image, color) -> PIL.Image.Image:
    return PIL.ImageChops.multiply(image, PIL.Image.new('RGBA', image.size, color))
@@ -204,130 +260,153 @@ def canon(location: str) -> str:
 def short(location: str) -> str:
    return location.removeprefix('minecraft:')
 
-@dataclasses.dataclass
-class PotionEffect:
-   id: str
-   level: int
-
-def potion_effects(data_version: int) -> dict[str, list[PotionEffect]]:
+def potion_effects(data_version: int) -> dict[str, dict[str, int]]:
    if data_version < 100:
       raise ValueError(data_version)
-   result: dict[str, list[PotionEffect]] = {
-      'minecraft:empty': [],
-      'minecraft:water': [],
-      'minecraft:mundane': [],
-      'minecraft:thick': [],
-      'minecraft:awkward': [],
-      'minecraft:night_vision': [PotionEffect(id='minecraft:night_vision', level=1)],
-      'minecraft:long_night_vision': [PotionEffect(id='minecraft:night_vision', level=1)],
-      'minecraft:invisibility': [PotionEffect(id='minecraft:invisibility', level=1)],
-      'minecraft:long_invisibility': [PotionEffect(id='minecraft:invisibility', level=1)],
-      'minecraft:leaping': [PotionEffect(id='minecraft:jump_boost', level=1)],
-      'minecraft:long_leaping': [PotionEffect(id='minecraft:jump_boost', level=1)],
-      'minecraft:strong_leaping': [PotionEffect(id='minecraft:jump_boost', level=2)],
-      'minecraft:fire_resistance': [PotionEffect(id='minecraft:fire_resistance', level=1)],
-      'minecraft:long_fire_resistance': [PotionEffect(id='minecraft:fire_resistance', level=1)],
-      'minecraft:swiftness': [PotionEffect(id='minecraft:speed', level=1)],
-      'minecraft:long_swiftness': [PotionEffect(id='minecraft:speed', level=1)],
-      'minecraft:strong_swiftness': [PotionEffect(id='minecraft:speed', level=2)],
-      'minecraft:slowness': [PotionEffect(id='minecraft:slowness', level=1)],
-      'minecraft:long_slowness': [PotionEffect(id='minecraft:slowness', level=1)],
-      'minecraft:strong_slowness': [PotionEffect(id='minecraft:slowness', level=5)],
-      'minecraft:water_breathing': [PotionEffect(id='minecraft:water_breathing', level=1)],
-      'minecraft:long_water_breathing': [PotionEffect(id='minecraft:water_breathing', level=1)],
-      'minecraft:healing': [PotionEffect(id='minecraft:instant_health', level=1)],
-      'minecraft:strong_healing': [PotionEffect(id='minecraft:instant_health', level=2)],
-      'minecraft:harming': [PotionEffect(id='minecraft:instant_damage', level=1)],
-      'minecraft:strong_harming': [PotionEffect(id='minecraft:instant_damage', level=2)],
-      'minecraft:poison': [PotionEffect(id='minecraft:poison', level=1)],
-      'minecraft:long_poison': [PotionEffect(id='minecraft:poison', level=1)],
-      'minecraft:strong_poison': [PotionEffect(id='minecraft:poison', level=2)],
-      'minecraft:regeneration': [PotionEffect(id='minecraft:regeneration', level=1)],
-      'minecraft:long_regeneration': [PotionEffect(id='minecraft:regeneration', level=1)],
-      'minecraft:strong_regeneration': [PotionEffect(id='minecraft:regeneration', level=2)],
-      'minecraft:strength': [PotionEffect(id='minecraft:strength', level=1)],
-      'minecraft:long_strength': [PotionEffect(id='minecraft:strength', level=1)],
-      'minecraft:strong_strength': [PotionEffect(id='minecraft:strength', level=2)],
-      'minecraft:weakness': [PotionEffect(id='minecraft:weakness', level=1)],
-      'minecraft:long_weakness': [PotionEffect(id='minecraft:weakness', level=1)]
+   result: dict[str, dict[str, int]] = {
+      'empty': {},
+      'water': {},
+      'mundane': {},
+      'thick': {},
+      'awkward': {},
+      'night_vision': {'night_vision': 1},
+      'long_night_vision': {'night_vision': 1},
+      'invisibility': {'invisibility': 1},
+      'long_invisibility': {'invisibility': 1},
+      'leaping': {'jump_boost': 1},
+      'long_leaping': {'jump_boost': 1},
+      'strong_leaping': {'jump_boost': 2},
+      'fire_resistance': {'fire_resistance': 1},
+      'long_fire_resistance': {'fire_resistance': 1},
+      'swiftness': {'speed': 1},
+      'long_swiftness': {'speed': 1},
+      'strong_swiftness': {'speed': 2},
+      'slowness': {'slowness': 1},
+      'long_slowness': {'slowness': 1},
+      'strong_slowness': {'slowness': 5},
+      'water_breathing': {'water_breathing': 1},
+      'long_water_breathing': {'water_breathing': 1},
+      'healing': {'instant_health': 1},
+      'strong_healing': {'instant_health': 2},
+      'harming': {'instant_damage': 1},
+      'strong_harming': {'instant_damage': 2},
+      'poison': {'poison': 1},
+      'long_poison': {'poison': 1},
+      'strong_poison': {'poison': 2},
+      'regeneration': {'regeneration': 1},
+      'long_regeneration': {'regeneration': 1},
+      'strong_regeneration': {'regeneration': 2},
+      'strength': {'strength': 1},
+      'long_strength': {'strength': 1},
+      'strong_strength': {'strength': 2},
+      'weakness': {'weakness': 1},
+      'long_weakness': {'weakness': 1}
    }
    if data_version >= 143: # 15w44b
-      result['minecraft:luck'] = [PotionEffect(id='minecraft:luck', level=1)]
+      result['luck'] = {'luck': 1}
    if data_version >= 1467: # 18w07a
-      result['minecraft:turtle_master'] = [PotionEffect(id='minecraft:slowness', level=4), PotionEffect(id='minecraft:resistance', level=4)]
-      result['minecraft:long_turtle_master'] = [PotionEffect(id='minecraft:slowness', level=4), PotionEffect(id='minecraft:resistance', level=4)]
-      result['minecraft:strong_turtle_master'] = [PotionEffect(id='minecraft:slowness', level=6), PotionEffect(id='minecraft:resistance', level=6)]
+      result['turtle_master'] = {'slowness': 4, 'resistance': 4}
+      result['long_turtle_master'] = {'slowness': 4, 'resistance': 4}
+      result['strong_turtle_master'] = {'slowness': 6, 'resistance': 6}
    if data_version >= 1479: # 18w14a
-      result['minecraft:slow_falling'] = [PotionEffect(id='minecraft:slow_falling', level=1)]
-      result['minecraft:long_slow_falling'] = [PotionEffect(id='minecraft:slow_falling', level=1)]
+      result['slow_falling'] = {'slow_falling': 1}
+      result['long_slow_falling'] = {'slow_falling': 1}
    if data_version >= 1483: # 18w16a
-      result['minecraft:turtle_master'] = [PotionEffect(id='minecraft:slowness', level=4), PotionEffect(id='minecraft:resistance', level=3)]
-      result['minecraft:long_turtle_master'] = [PotionEffect(id='minecraft:slowness', level=4), PotionEffect(id='minecraft:resistance', level=3)]
-      result['minecraft:strong_turtle_master'] = [PotionEffect(id='minecraft:slowness', level=6), PotionEffect(id='minecraft:resistance', level=4)]
+      result['turtle_master'] = {'slowness': 4, 'resistance': 3}
+      result['long_turtle_master'] = {'slowness': 4, 'resistance': 3}
+      result['strong_turtle_master'] = {'slowness': 6, 'resistance': 4}
    if data_version >= 1484: # 18w19a
-      result['minecraft:strong_slowness'] = [PotionEffect(id='minecraft:slowness', level=4)]
+      result['strong_slowness'] = {'slowness': 4}
    if data_version >= 3826: # 24w13a
-      result['minecraft:wind_charged'] = [PotionEffect(id='minecraft:wind_charged', level=1)]
-      result['minecraft:weaving'] = [PotionEffect(id='minecraft:weaving', level=1)]
-      result['minecraft:oozing'] = [PotionEffect(id='minecraft:oozing', level=1)]
-      result['minecraft:infested'] = [PotionEffect(id='minecraft:infested', level=1)]
-   return result
+      result['wind_charged'] = {'wind_charged': 1}
+      result['weaving'] = {'weaving': 1}
+      result['oozing'] = {'oozing': 1}
+      result['infested'] = {'infested': 1}
+   return {canon(name): {canon(effect): level for effect, level in value.items()} for name, value in result.items()}
 
 def effect_colors(data_version: int) -> dict[str, int]:
    result: dict[str, int] = {
-      'minecraft:speed': 0x33ebff,
-      'minecraft:slowness': 0x8bafe0,
-      'minecraft:haste': 0xd9c043,
-      'minecraft:mining_fatigue': 0x4a4217,
-      'minecraft:strength': 0xffc700,
-      'minecraft:instant_health': 0xf82423,
-      'minecraft:instant_damage': 0xa9656a,
-      'minecraft:jump_boost': 0xfdff84,
-      'minecraft:nausea': 0x551d4a,
-      'minecraft:regeneration': 0xcd5cab,
-      'minecraft:resistance': 0x9146f0,
-      'minecraft:fire_resistance': 0xff9900,
-      'minecraft:water_breathing': 0x98dac0,
-      'minecraft:invisibility': 0xf6f6f6,
-      'minecraft:blindness': 0x1f1f23,
-      'minecraft:night_vision': 0xc2ff66,
-      'minecraft:hunger': 0x587653,
-      'minecraft:weakness': 0x484d48,
-      'minecraft:poison': 0x87a363,
-      'minecraft:wither': 0x736156,
-      'minecraft:health_boost': 0xf87d23,
-      'minecraft:absorption': 0x2552a5,
-      'minecraft:saturation': 0xf82423,
-      'minecraft:glowing': 0x94a061,
-      'minecraft:levitation': 0xceffff,
-      'minecraft:luck': 0x59c106,
-      'minecraft:unluck': 0xc0a44d,
-      'minecraft:slow_falling': 0xf3cfb9,
-      'minecraft:conduit_power': 0x1dc2d1,
-      'minecraft:dolphins_grace': 0x88a3be,
-      'minecraft:bad_omen': 0xb6138,
-      'minecraft:hero_of_the_village': 0x44ff44,
-      'minecraft:darkness': 0x292721,
-      'minecraft:trial_omen': 0x16a6a6,
-      'minecraft:raid_omen': 0xde4058,
-      'minecraft:wind_charged': 0xbdc9ff,
-      'minecraft:weaving': 0x78695a,
-      'minecraft:oozing': 0x99ffa3,
-      'minecraft:infested': 0x8c9b8c,
+      'speed': 0x33ebff,
+      'slowness': 0x8bafe0,
+      'haste': 0xd9c043,
+      'mining_fatigue': 0x4a4217,
+      'strength': 0xffc700,
+      'instant_health': 0xf82423,
+      'instant_damage': 0xa9656a,
+      'jump_boost': 0xfdff84,
+      'nausea': 0x551d4a,
+      'regeneration': 0xcd5cab,
+      'resistance': 0x9146f0,
+      'fire_resistance': 0xff9900,
+      'water_breathing': 0x98dac0,
+      'invisibility': 0xf6f6f6,
+      'blindness': 0x1f1f23,
+      'night_vision': 0xc2ff66,
+      'hunger': 0x587653,
+      'weakness': 0x484d48,
+      'poison': 0x87a363,
+      'wither': 0x736156,
+      'health_boost': 0xf87d23,
+      'absorption': 0x2552a5,
+      'saturation': 0xf82423,
+      'glowing': 0x94a061,
+      'levitation': 0xceffff,
+      'luck': 0x59c106,
+      'unluck': 0xc0a44d,
+      'slow_falling': 0xf3cfb9,
+      'conduit_power': 0x1dc2d1,
+      'dolphins_grace': 0x88a3be,
+      'bad_omen': 0xb6138,
+      'hero_of_the_village': 0x44ff44,
+      'darkness': 0x292721,
+      'trial_omen': 0x16a6a6,
+      'raid_omen': 0xde4058,
+      'wind_charged': 0xbdc9ff,
+      'weaving': 0x78695a,
+      'oozing': 0x99ffa3,
+      'infested': 0x8c9b8c,
    }
    if data_version < 3332: # 1.19.4-pre3
-      result['minecraft:speed'] = 0x7cafc6
-      result['minecraft:slowness'] = 0x5a6c81
-      result['minecraft:strength'] = 0x932423
-      result['minecraft:instant_damage'] = 0x430a09
-      result['minecraft:jump_boost'] = 0x22ff4c
-      result['minecraft:resistance'] = 0x99453a
-      result['minecraft:fire_resistance'] = 0xe49a3a
-      result['minecraft:water_breathing'] = 0x2e5299
-      result['minecraft:invisibility'] = 0x7f8392
-      result['minecraft:night_vision'] = 0x1f1fa1
-      result['minecraft:poison'] = 0x4e9331
-      result['minecraft:luck'] = 0x339900
+      result['speed'] = 0x7cafc6
+      result['slowness'] = 0x5a6c81
+      result['strength'] = 0x932423
+      result['instant_damage'] = 0x430a09
+      result['jump_boost'] = 0x22ff4c
+      result['resistance'] = 0x99453a
+      result['fire_resistance'] = 0xe49a3a
+      result['water_breathing'] = 0x2e5299
+      result['invisibility'] = 0x7f8392
+      result['night_vision'] = 0x1f1fa1
+      result['poison'] = 0x4e9331
+      result['luck'] = 0x339900
+   return {canon(name): color for name, color in result.items()}
+
+def potion_colors(data_version: int) -> dict[str, int | None]:
+   result: dict[str, int | None] = {}
+   potions = potion_effects(data_version)
+   colors = effect_colors(data_version)
+   for potion, contents in potions.items():
+      if len(contents) == 0:
+         result[potion] = None
+      else:
+         red, green, blue, total = (0, 0, 0, 0)
+         for name, level in contents.items():
+            r, g, b, _ = rgba(colors[name])
+            red += r * level
+            green += g * level
+            blue += b * level
+            total += level
+         result[potion] = (red * 256 * 256 // total) + (green * 256 // total) + (blue // total)
+   return result
+
+K = typing.TypeVar('K')
+V = typing.TypeVar('V')
+def invert_dict(dictionary: dict[K, V]) -> dict[V, list[K]]:
+   result: dict[V, list[K]] = {}
+   for key, value in dictionary.items():
+      if value not in result:
+         result[value] = []
+      result[value].append(key)
    return result
 
 @dataclasses.dataclass
@@ -359,6 +438,23 @@ def spawn_egg_colors(pack: beet.ResourcePack, data_version: int) -> dict[str, Do
       result['minecraft:armadillo_spawn_egg'] = DoubleTint(base=0xa67775, overlay=0x734b4f)
    return result
 
+def item_colors(pack: beet.ResourcePack, data_version: int) -> dict[str, int]:
+   result: dict[str, int] = {}
+   for name, model in pack.item_models.items():
+      if (tints := model.data['model'].get('tints')) is not None and len(tints) == 1:
+         tint = tints[0]
+         if short(tint['type']) == 'grass':
+            if tint['downfall'] == 1.0 and tint['temperature'] == 0.5:
+               tint['type'] = 'minecraft:constant'
+               tint['value'] = 0xff7bbd6b
+         if short(tint['type']) == 'constant':
+            final_name = short(name)
+            if data_version < 3693: # 1.20.3-pre1
+               if final_name == 'short_grass':
+                  final_name = 'grass'
+            result[canon(final_name)] = tint['value']
+   return result
+
 def item_durability(release: beet.contrib.vanilla.Release, data_version: int) -> dict[str, int]:
    entries = get_item_components(release)
    result: dict[str, int] = {}
@@ -368,3 +464,177 @@ def item_durability(release: beet.contrib.vanilla.Release, data_version: int) ->
    if data_version < 2834: # 21w37a
       result['minecraft:crossbow'] = 465
    return result
+
+@dataclasses.dataclass
+class GridData:
+   rows: list[list[str]]
+   negative: list[str]
+
+@dataclasses.dataclass
+class SpriteData:
+   rows: list[str]
+   negative: str
+   
+@dataclasses.dataclass
+class NumberData:
+   normal: list[str]
+   shadow: list[str]
+   negative: str
+
+class FontManager:
+   def __init__(self, rows: int):
+      self.rows: int = rows
+      self.last_char: int = 0
+      self.spaces: dict[int, str] = {}
+      self.sprites: dict[str, SpriteData] = {}
+      self.grids: dict[str, GridData] = {}
+      self.sprite_map: dict[str, SpriteData] = {}
+      self.numbers: list[list[NumberData]] = []
+      self.providers: list[dict[str, typing.Any]] = []
+   
+   def add_sprite(self, texture: str) -> SpriteData:
+      if texture not in self.sprite_map:
+         data = SpriteData(rows=[self.next_char() for _ in range(self.rows)], negative=self.next_char())
+         self.sprites[texture + '.png'] = data
+         self.sprite_map[texture] = data
+      return self.sprite_map[texture]
+   
+   def add_grid(self, grid: str, textures: list[list[str | None]]) -> GridData:
+      rows: list[list[str]] = [[] for _ in range(self.rows)]
+      negative: list[str] = []
+      for row in textures:
+         for x in rows:
+            x.append('')
+         negative.append('')
+         for texture in row:
+            if texture is not None:
+               rowchars = []
+               for x in rows:
+                  ch = self.next_char()
+                  x[-1] += ch
+                  rowchars.append(ch)
+               n = self.next_char()
+               negative[-1] += n
+               self.sprite_map[texture] = SpriteData(rows=rowchars, negative=n)
+            else:
+               for x in rows:
+                  x[-1] += '\u0000'
+               negative[-1] += '\u0000'
+      data = GridData(rows=rows, negative=negative)
+      self.grids[grid + '.png'] = data
+      return data
+   
+   def add_provider(self, provider: dict[str, typing.Any]):
+      self.providers.append(provider)
+   
+   def add_numbers(self) -> list[NumberData]:
+      result: list[NumberData] = []
+      for _ in range(10):
+         data = NumberData(
+            normal=[self.next_char() for _ in range(self.rows)],
+            shadow=[self.next_char() for _ in range(self.rows)],
+            negative=self.next_char(),
+         )
+         result.append(data)
+      self.numbers.append(result)
+      return result
+   
+   def get_sprite(self, name: str) -> SpriteData:
+      return self.sprite_map[name]
+   
+   def next_char(self):
+      char = self.last_char + 1
+      for low, high in [(0xd800, 0xdbff), (0xdc00, 0xdfff), (0x05c8, 0x05d2), (0x05e8, 0x06ff), (0x070b, 0x0710), (0x072d, 0x072f), (0x074b, 0x074f), (0x07a4, 0x07a5), (0x07b1, 0x07c2), (0x07f4, 0x07f5), (0x07fa, 0x07fc), (0x07fe, 0x0800), (0x082e, 0x0832), (0x083c, 0x0842), (0x0856, 0x0858), (0x085c, 0x0862), (0x0868, 0x0897), (0x08a0, 0x08a2), (0x08b2, 0x08b8), (0x08c5, 0x08c9), (0xfb34, 0xfb48), (0xfbbf, 0xfbd5), (0xfd8d, 0xfd94), (0xfdc5, 0xfdce), (0xfdf0, 0xfdf2), (0xfe72, 0xfe78), (0xfefa, 0xfefe)]:
+         if low <= char <= high:
+            char = high + 1
+      while char in [0x0000, 0x000a, 0x00a7, 0x0025, 0x0590, 0x05be, 0x05c0, 0x05c3, 0x05c6, 0x0608, 0x060b, 0x060d, 0x0712, 0x081a, 0x0824, 0x0828, 0x200f, 0xfb1d, 0xfb1f] or unicodedata.bidirectional(chr(char)) in ['AL', 'R', 'NSM']:
+         char += 1
+      self.last_char = char
+      return chr(char)
+      
+   def get_space(self, width: int) -> str:
+      if width in self.spaces:
+         return self.spaces[width]
+      char = self.next_char()
+      self.spaces[width] = char
+      return char
+   
+   def build(self) -> beet.Font:
+      result = beet.Font()
+      providers = []
+      if len(self.spaces) > 0:
+         spaces = {}
+         for width, char in self.spaces.items():
+            spaces[char] = width
+         providers.append({'type':'space','advances':spaces})
+      providers.extend(self.providers)
+      empty_row = ''.join(['\u0000'] * 16)
+      for data in self.numbers:
+         negatives = ''.join([x.negative for x in data])
+         for row in range(self.rows):
+            normals = ''.join([x.normal[row] for x in data])
+            shadows = ''.join([x.shadow[row] for x in data])
+            providers.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -(18 * row) - 11, "height": 8, "chars": [
+               empty_row,
+               empty_row,
+               empty_row,
+               normals + '\u0000\u0000\u0000\u0000\u0000\u0000',
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row
+            ]})
+            providers.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -(18 * row) - 12, "height": 8, "chars": [
+               empty_row,
+               empty_row,
+               empty_row,
+               shadows + '\u0000\u0000\u0000\u0000\u0000\u0000',
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row
+            ]})
+            providers.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -32768, "height": -8, "chars": [
+               empty_row,
+               empty_row,
+               empty_row,
+               negatives + '\u0000\u0000\u0000\u0000\u0000\u0000',
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row,
+               empty_row
+            ]})
+      for path, data in self.sprites.items():
+         for row, entry in enumerate(data.rows):
+            providers.append({'type':'bitmap','file':path,'ascent':-2 + (row * -18),'height':16,'chars':[entry]})
+         providers.append({'type':'bitmap','file':path,'ascent':-32768,'height':-16,'chars':[data.negative]})
+      for path, data in self.grids.items():
+         for row, entry in enumerate(data.rows):
+            providers.append({'type':'bitmap','file':path,'ascent':-2 + (row * -18),'height':16,'chars':entry})
+         providers.append({'type':'bitmap','file':path,'ascent':-32768,'height':-16,'chars':data.negative})
+      result.data['providers'] = providers
+      return result

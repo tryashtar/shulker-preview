@@ -3,7 +3,7 @@ data_pack:
   load: [in/datapack]
 resource_pack:
   load: [in/resourcepack]
-pipeline: [plugin.main, mecha]
+pipeline: [plugins.plugin_full, mecha]
 meta:
   mecha:
     readonly: true
@@ -15,3 +15,4 @@ meta:
     target_version:
       from: '1.20.5'
       to: '1.20.6'
+    plugin: 2
