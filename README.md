@@ -115,6 +115,7 @@ When downloading from that page, make sure to click the version you want, then d
 1.21.2
 + All 1.21.2 items
 + All 1.21.2 experimental items
++ Changed bundle open texture (vanilla 24w33a)
 + Show honey for full beehives/nests (vanilla 24w35a)
 
 1.21

@@ -268,9 +268,8 @@ def main(ctx: beet.Context):
    for pattern in pot_list:
       if pattern in ('decorated_pot_base', 'decorated_pot_side'):
          continue
-      simple_name = pattern.removesuffix('_pottery_pattern')
-      texture = f'entity/decorated_pot/{pattern}'
-      item_name = f'{simple_name}_pottery_sherd'
+      texture = f'entity/decorated_pot/{pattern}_pottery_pattern'
+      item_name = f'{pattern}_pottery_sherd'
       fake_left = {"parent":"minecraft:item/decorated_pot","textures":{"0":texture},"elements":[{"from":[1, 0, 1],"to":[1, 16, 15],"rotation":{"angle":0,"axis":"y","origin":[1, 0, 1]},"faces":{"west":{"uv":[1, 0, 15, 16],"texture":"#0"}}}]}
       fake_right = {"parent":"minecraft:item/decorated_pot","textures":{"0":texture},"elements":[{"from":[1, 0, 15],"to":[15, 16, 15],"rotation":{"angle":0,"axis":"y","origin":[1, 0, 1]},"faces":{"south":{"uv":[1, 0, 15, 16],"texture":"#0"}}}]}
       ctx.assets.models[f'render:pot/{pattern}_left'] = beet.Model(fake_left)
