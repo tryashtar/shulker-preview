@@ -107,6 +107,7 @@ When downloading from that page, make sure to click the version you want, then d
 
 1.21.4
 + All 1.21.4 items
++ Use negative image trick instead of fixed-width pixels for block sheet
 + Resin trims (vanilla 24w44a)
 + Support items with custom item_model components (vanilla 24w45a)
 + Hide text shadow of tooltip (vanilla 24w44a)
@@ -180,6 +181,7 @@ When downloading from that page, make sure to click the version you want, then d
 1.16
 + All 1.16 items
 + Item textures are referenced directly
++ Use negative image trick instead of fixed-width pixels
 + Banners and shields show their patterns
 + Ender chests with preview tooltips now stack
 + Settings menu function

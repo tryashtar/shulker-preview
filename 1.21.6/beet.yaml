@@ -12,14 +12,4 @@ meta:
     special_rendering: true
     use_cache: true
   shulker_preview:
-    target_version:
-      from:
-        version: '1.21.6'
-        datapack: 80
-        resourcepack: 63
-        data: 4435
-      to:
-        version: '1.21.6'
-        datapack: 80
-        resourcepack: 63
-        data: 4435
+    target_version: '1.21.6'

@@ -13,13 +13,5 @@ meta:
     use_cache: true
   shulker_preview:
     target_version:
-      from:
-        version: '1.16'
-        datapack: 5
-        resourcepack: 5
-        data: 2566
-      to:
-        version: '1.16.1'
-        datapack: 5
-        resourcepack: 5
-        data: 2567
+      from: '1.16'
+      to: '1.16.1'

@@ -3,21 +3,11 @@ data_pack:
   load: [in/datapack]
 resource_pack:
   load: [in/resourcepack]
-pipeline: [plugin.main]
+pipeline: [plugins.plugin_v1_full]
 meta:
   model_resolver:
     preferred_minecraft_generated: java
     special_rendering: true
     use_cache: true
   shulker_preview:
-    target_version:
-      from:
-        version: '1.14.4'
-        datapack: 4
-        resourcepack: 4
-        data: 1976
-      to:
-        version: '1.14.4'
-        datapack: 4
-        resourcepack: 4
-        data: 1976
+    target_version: '1.14.4'

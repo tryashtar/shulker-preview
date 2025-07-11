@@ -4,6 +4,6 @@ do
    if [ -f "$dir/beet.yaml" ]
    then
       printf '%s\n' "$dir"
-      (cd "$dir" && uv run -m beet)
+      uv run -m beet --project "$dir"
    fi
 done
