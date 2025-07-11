@@ -6,52 +6,68 @@ import typing
 import types
 import re
 import zipfile
+import dataclasses
 import PIL.Image
 import PIL.ImageChops
 import beet
 import beet.contrib.vanilla
 
-VersionDef = typing.TypedDict('VersionDef', {'version': str, 'datapack': int, 'resourcepack': int, 'data': int})
-VersionRange = typing.TypedDict('VersionRange', {'from': VersionDef, 'to': VersionDef})
-DoubleTint = typing.TypedDict('DoubleTint', {'base':int, 'overlay':int})
+@dataclasses.dataclass
+class VersionDef:
+   version: str
+   datapack: int
+   resourcepack: int
+   data: int
 
-def load_version_def(registry: beet.contrib.vanilla.ReleaseRegistry, target: str | VersionDef) -> VersionDef:
+@dataclasses.dataclass
+class VersionRange:
+   first: VersionDef
+   last: VersionDef
+
+def load_version_def(registry: beet.contrib.vanilla.ReleaseRegistry, target: str | dict) -> VersionDef:
    if isinstance(target, str):
       release = registry[target]
       info = version_info(release.client_jar)
-      pack_version = info['pack_version']
-      if isinstance(pack_version, int):
-         datapack = pack_version
-         resourcepack = pack_version
-      else:
-         datapack = pack_version['data']
-         resourcepack = pack_version['resource']
-      return {'version': target, 'datapack': datapack, 'resourcepack': resourcepack, 'data': info['world_version']}
+      return VersionDef(
+         version=info['id'],
+         datapack=pack_version(info, 'data'),
+         resourcepack=pack_version(info, 'resource'),
+         data=info['world_version']
+      )
    if isinstance(target, dict):
-      if 'version' in target:
-         if 'data' not in target:
-            release = registry[target['version']]
-            info = version_info(release.client_jar)
-            target['data'] = info['world_version']
-         return target
+      if (version := target.get('version')) is not None:
+         release = registry[target['version']]
+         info = version_info(release.client_jar)
+         return VersionDef(
+            version=version,
+            datapack=target.get('datapack', pack_version(info, 'data')),
+            resourcepack=target.get('resourcepack', pack_version(info, 'resource')),
+            data=target.get('data', info['world_version'])
+         )
    raise ValueError(target)
 
-def load_version_range(registry: beet.contrib.vanilla.ReleaseRegistry, target: str | VersionDef | VersionRange | tuple[str | VersionDef, str | VersionDef] | list[str | VersionDef]) -> VersionRange:
+def pack_version(info: dict[str, typing.Any], key: typing.Literal['data', 'resource']) -> int:
+   value = info['pack_version']
+   if isinstance(value, int):
+      return value
+   return value[key]
+
+def load_version_range(registry: beet.contrib.vanilla.ReleaseRegistry, target: str | dict | tuple[str | dict, str | dict] | list[str | dict]) -> VersionRange:
    if isinstance(target, str):
       both = load_version_def(registry, target)
-      return {'from': both, 'to': both}
+      return VersionRange(first=both, last=both)
    if isinstance(target, tuple) or isinstance(target, list):
       def1 = load_version_def(registry, target[0])
-      def2 = load_version_def(registry, target[1])
-      return {'from': def1, 'to': def2}
+      def2 = load_version_def(registry, target[-1])
+      return VersionRange(first=def1, last=def2)
    if isinstance(target, dict):
       if 'from' in target and 'to' in target:
          def1 = load_version_def(registry, target['from'])
          def2 = load_version_def(registry, target['to'])
-         return {'from': def1, 'to': def2}
+         return VersionRange(first=def1, last=def2)
       if 'version' in target:
          both = load_version_def(registry, target)
-         return {'from': both, 'to': both}
+         return VersionRange(first=both, last=both)
    raise ValueError(target)
 
 def version_info(jar: beet.contrib.vanilla.ClientJar) -> dict[str, typing.Any]:
@@ -65,11 +81,11 @@ def plugin_v1_full(ctx: beet.Context):
    export(ctx, target)
 
 def plugin_v1(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, target: VersionRange):
-   target_version = target['to']['version']
-   data_version = target['to']['data']
+   target_version = target.last.version
+   data_version = target.last.data
    ctx.meta['model_resolver']['minecraft_version'] = target_version
    vanilla = registry[target_version]
-   items = [short(x) for x in get_registry(vanilla, data_version, 'minecraft:item').keys()]
+   items = [short(x) for x in get_registry(vanilla, 'minecraft:item').keys()]
    items.remove('air')
    eggs = spawn_egg_colors(registry['1.21.4'].assets, data_version)
    durability = item_durability(registry['1.21.4'], data_version)
@@ -88,9 +104,9 @@ def plugin_v1(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry,
             if (color := eggs.get(canon(item))) is not None:
                color = eggs[canon(item)]
                if i == 0:
-                  layer = colorize(layer, rgba(color['base']))
+                  layer = colorize(layer, rgba(color.base))
                elif i == 1:
-                  layer = colorize(layer, rgba(color['overlay']))
+                  layer = colorize(layer, rgba(color.overlay))
             image.paste(layer, (0, 0), layer)
          flat_items[item] = image
 
@@ -126,40 +142,41 @@ def generated_layers(source: beet.NamespaceProxy[beet.Model], model: beet.Model)
    return []
 
 def export(ctx: beet.Context, target: VersionRange):
-   first = target['from']
-   last = target['to']
-   ctx.assets.pack_format = last['resourcepack']
-   ctx.assets.supported_formats = [first['resourcepack'], last['resourcepack']]
+   ctx.assets.pack_format = target.last.resourcepack
+   ctx.assets.supported_formats = [target.first.resourcepack, target.last.resourcepack]
    ctx.assets.description = 'Shulker Box tooltip preview: resource pack'
    ctx.assets.save(path=ctx.directory / 'out/resourcepack', overwrite=True)
-   ctx.assets.save(path=ctx.directory / f'out/Shulker Preview Resource Pack ({first['version']}).zip', zipped=True, overwrite=True)
-   ctx.data.pack_format = last['datapack']
-   ctx.data.supported_formats = [first['datapack'], last['datapack']]
+   ctx.assets.save(path=ctx.directory / f'out/Shulker Preview Resource Pack ({target.first.version}).zip', zipped=True, overwrite=True)
+   ctx.data.pack_format = target.last.datapack
+   ctx.data.supported_formats = [target.first.datapack, target.last.datapack]
    ctx.data.description = 'Shulker Box tooltip preview: data pack'
    ctx.data.save(path=ctx.directory / 'out/datapack', overwrite=True)
-   ctx.data.save(path=ctx.directory / f'out/Shulker Preview Data Pack ({first['version']}).zip', zipped=True, overwrite=True)
+   ctx.data.save(path=ctx.directory / f'out/Shulker Preview Data Pack ({target.first.version}).zip', zipped=True, overwrite=True)
    dark_theme = beet.ResourcePack(path='in/resourcepack_dark')
    dark_theme.pack_format = ctx.assets.pack_format
-   dark_theme.supported_formats = [first['resourcepack'], last['resourcepack']]
+   dark_theme.supported_formats = [target.first.resourcepack, target.last.resourcepack]
    dark_theme.description = '(apply this pack above the normal resource pack)'
    dark_theme.save(path=ctx.directory / 'out/dark_theme', overwrite=True)
-   dark_theme.save(path=ctx.directory / f'out/Shulker Preview Dark Theme ({first['version']}).zip', zipped=True, overwrite=True)
+   dark_theme.save(path=ctx.directory / f'out/Shulker Preview Dark Theme ({target.first.version}).zip', zipped=True, overwrite=True)
 
 def fixed_release_registry(ctx: beet.Context) -> beet.contrib.vanilla.ReleaseRegistry:
-   releases = beet.contrib.vanilla.ReleaseRegistry(ctx.cache["vanilla"], None)
+   releases = beet.contrib.vanilla.ReleaseRegistry(ctx.cache['vanilla'], None)
    def fix_lookup(self, key: str) -> beet.contrib.vanilla.Release:
-      for version in self.manifest.data["versions"]:
-         if version["id"] == key:
-             info = beet.JsonFile(source_path=self.cache.download(version["url"]))
+      for version in self.manifest.data['versions']:
+         if version['id'] == key:
+             info = beet.JsonFile(source_path=self.cache.download(version['url']))
              return beet.contrib.vanilla.Release(self.cache, info)
       raise KeyError(key)
    releases.missing = types.MethodType(fix_lookup, releases)
    return releases
 
-def generate_reports(release: beet.contrib.vanilla.Release, data_version: int) -> pathlib.Path:
+def generate_reports(release: beet.contrib.vanilla.Release) -> pathlib.Path:
+   info = version_info(release.client_jar)
+   data_version = info['world_version']
+   version_name = info['id']
    server_jar_url = release.info.data['downloads']['server']['url']
    jar = release.cache.download(server_jar_url)
-   path = release.cache.get_path('minecraft_reports')
+   path = release.cache.get_path(f'reports for {version_name}')
    if not path.is_dir():
       os.makedirs(path, exist_ok=True)
       if data_version >= 2836: # 21w39a
@@ -169,14 +186,14 @@ def generate_reports(release: beet.contrib.vanilla.Release, data_version: int) -
       subprocess.run(data_command, cwd=path, check=True)
    return path / 'generated/reports'
 
-def get_registry(release: beet.contrib.vanilla.Release, data_version: int, registry: str) -> dict[str, typing.Any]:
-   path = generate_reports(release, data_version)
+def get_registry(release: beet.contrib.vanilla.Release, registry: str) -> dict[str, typing.Any]:
+   path = generate_reports(release)
    with open(path / 'registries.json', encoding='utf-8') as file:
       data = json.load(file)[registry]['entries']
    return data
 
-def get_item_components(release: beet.contrib.vanilla.Release, data_version: int) -> dict[str, typing.Any]:
-   path = generate_reports(release, data_version)
+def get_item_components(release: beet.contrib.vanilla.Release) -> dict[str, typing.Any]:
+   path = generate_reports(release)
    with open(path / 'items.json', encoding='utf-8') as file:
       items = json.load(file)
    return {name: value['components'] for name, value in items.items()}
@@ -187,7 +204,11 @@ def canon(location: str) -> str:
 def short(location: str) -> str:
    return location.removeprefix('minecraft:')
 
-PotionEffect = typing.TypedDict('PotionEffect', {'id':str, 'level':int})
+@dataclasses.dataclass
+class PotionEffect:
+   id: str
+   level: int
+
 def potion_effects(data_version: int) -> dict[str, list[PotionEffect]]:
    if data_version < 100:
       raise ValueError(data_version)
@@ -197,59 +218,59 @@ def potion_effects(data_version: int) -> dict[str, list[PotionEffect]]:
       'minecraft:mundane': [],
       'minecraft:thick': [],
       'minecraft:awkward': [],
-      'minecraft:night_vision': [{'id':'minecraft:night_vision', 'level':1}],
-      'minecraft:long_night_vision': [{'id':'minecraft:night_vision', 'level':1}],
-      'minecraft:invisibility': [{'id':'minecraft:invisibility', 'level':1}],
-      'minecraft:long_invisibility': [{'id':'minecraft:invisibility', 'level':1}],
-      'minecraft:leaping': [{'id':'minecraft:jump_boost', 'level':1}],
-      'minecraft:long_leaping': [{'id':'minecraft:jump_boost', 'level':1}],
-      'minecraft:strong_leaping': [{'id':'minecraft:jump_boost', 'level':2}],
-      'minecraft:fire_resistance': [{'id':'minecraft:fire_resistance', 'level':1}],
-      'minecraft:long_fire_resistance': [{'id':'minecraft:fire_resistance', 'level':1}],
-      'minecraft:swiftness': [{'id':'minecraft:speed', 'level':1}],
-      'minecraft:long_swiftness': [{'id':'minecraft:speed', 'level':1}],
-      'minecraft:strong_swiftness': [{'id':'minecraft:speed', 'level':2}],
-      'minecraft:slowness': [{'id':'minecraft:slowness', 'level':1}],
-      'minecraft:long_slowness': [{'id':'minecraft:slowness', 'level':1}],
-      'minecraft:strong_slowness': [{'id':'minecraft:slowness', 'level':5}],
-      'minecraft:water_breathing': [{'id':'minecraft:water_breathing', 'level':1}],
-      'minecraft:long_water_breathing': [{'id':'minecraft:water_breathing', 'level':1}],
-      'minecraft:healing': [{'id':'minecraft:instant_health', 'level':1}],
-      'minecraft:strong_healing': [{'id':'minecraft:instant_health', 'level':2}],
-      'minecraft:harming': [{'id':'minecraft:instant_damage', 'level':1}],
-      'minecraft:strong_harming': [{'id':'minecraft:instant_damage', 'level':2}],
-      'minecraft:poison': [{'id':'minecraft:poison', 'level':1}],
-      'minecraft:long_poison': [{'id':'minecraft:poison', 'level':1}],
-      'minecraft:strong_poison': [{'id':'minecraft:poison', 'level':2}],
-      'minecraft:regeneration': [{'id':'minecraft:regeneration', 'level':1}],
-      'minecraft:long_regeneration': [{'id':'minecraft:regeneration', 'level':1}],
-      'minecraft:strong_regeneration': [{'id':'minecraft:regeneration', 'level':2}],
-      'minecraft:strength': [{'id':'minecraft:strength', 'level':1}],
-      'minecraft:long_strength': [{'id':'minecraft:strength', 'level':1}],
-      'minecraft:strong_strength': [{'id':'minecraft:strength', 'level':2}],
-      'minecraft:weakness': [{'id':'minecraft:weakness', 'level':1}],
-      'minecraft:long_weakness': [{'id':'minecraft:weakness', 'level':1}]
+      'minecraft:night_vision': [PotionEffect(id='minecraft:night_vision', level=1)],
+      'minecraft:long_night_vision': [PotionEffect(id='minecraft:night_vision', level=1)],
+      'minecraft:invisibility': [PotionEffect(id='minecraft:invisibility', level=1)],
+      'minecraft:long_invisibility': [PotionEffect(id='minecraft:invisibility', level=1)],
+      'minecraft:leaping': [PotionEffect(id='minecraft:jump_boost', level=1)],
+      'minecraft:long_leaping': [PotionEffect(id='minecraft:jump_boost', level=1)],
+      'minecraft:strong_leaping': [PotionEffect(id='minecraft:jump_boost', level=2)],
+      'minecraft:fire_resistance': [PotionEffect(id='minecraft:fire_resistance', level=1)],
+      'minecraft:long_fire_resistance': [PotionEffect(id='minecraft:fire_resistance', level=1)],
+      'minecraft:swiftness': [PotionEffect(id='minecraft:speed', level=1)],
+      'minecraft:long_swiftness': [PotionEffect(id='minecraft:speed', level=1)],
+      'minecraft:strong_swiftness': [PotionEffect(id='minecraft:speed', level=2)],
+      'minecraft:slowness': [PotionEffect(id='minecraft:slowness', level=1)],
+      'minecraft:long_slowness': [PotionEffect(id='minecraft:slowness', level=1)],
+      'minecraft:strong_slowness': [PotionEffect(id='minecraft:slowness', level=5)],
+      'minecraft:water_breathing': [PotionEffect(id='minecraft:water_breathing', level=1)],
+      'minecraft:long_water_breathing': [PotionEffect(id='minecraft:water_breathing', level=1)],
+      'minecraft:healing': [PotionEffect(id='minecraft:instant_health', level=1)],
+      'minecraft:strong_healing': [PotionEffect(id='minecraft:instant_health', level=2)],
+      'minecraft:harming': [PotionEffect(id='minecraft:instant_damage', level=1)],
+      'minecraft:strong_harming': [PotionEffect(id='minecraft:instant_damage', level=2)],
+      'minecraft:poison': [PotionEffect(id='minecraft:poison', level=1)],
+      'minecraft:long_poison': [PotionEffect(id='minecraft:poison', level=1)],
+      'minecraft:strong_poison': [PotionEffect(id='minecraft:poison', level=2)],
+      'minecraft:regeneration': [PotionEffect(id='minecraft:regeneration', level=1)],
+      'minecraft:long_regeneration': [PotionEffect(id='minecraft:regeneration', level=1)],
+      'minecraft:strong_regeneration': [PotionEffect(id='minecraft:regeneration', level=2)],
+      'minecraft:strength': [PotionEffect(id='minecraft:strength', level=1)],
+      'minecraft:long_strength': [PotionEffect(id='minecraft:strength', level=1)],
+      'minecraft:strong_strength': [PotionEffect(id='minecraft:strength', level=2)],
+      'minecraft:weakness': [PotionEffect(id='minecraft:weakness', level=1)],
+      'minecraft:long_weakness': [PotionEffect(id='minecraft:weakness', level=1)]
    }
    if data_version >= 143: # 15w44b
-      result['minecraft:luck'] = [{'id':'minecraft:luck', 'level':1}]
+      result['minecraft:luck'] = [PotionEffect(id='minecraft:luck', level=1)]
    if data_version >= 1467: # 18w07a
-      result['minecraft:turtle_master'] = [{'id':'minecraft:slowness', 'level':4}, {'id':'minecraft:resistance', 'level':4}]
-      result['minecraft:long_turtle_master'] = [{'id':'minecraft:slowness', 'level':4}, {'id':'minecraft:resistance', 'level':4}]
-      result['minecraft:strong_turtle_master'] = [{'id':'minecraft:slowness', 'level':6}, {'id':'minecraft:resistance', 'level':6}]
+      result['minecraft:turtle_master'] = [PotionEffect(id='minecraft:slowness', level=4), PotionEffect(id='minecraft:resistance', level=4)]
+      result['minecraft:long_turtle_master'] = [PotionEffect(id='minecraft:slowness', level=4), PotionEffect(id='minecraft:resistance', level=4)]
+      result['minecraft:strong_turtle_master'] = [PotionEffect(id='minecraft:slowness', level=6), PotionEffect(id='minecraft:resistance', level=6)]
    if data_version >= 1479: # 18w14a
-      result['minecraft:slow_falling'] = [{'id':'minecraft:slow_falling', 'level':1}]
-      result['minecraft:long_slow_falling'] = [{'id':'minecraft:slow_falling', 'level':1}]
+      result['minecraft:slow_falling'] = [PotionEffect(id='minecraft:slow_falling', level=1)]
+      result['minecraft:long_slow_falling'] = [PotionEffect(id='minecraft:slow_falling', level=1)]
    if data_version >= 1483: # 18w16a
-      result['minecraft:turtle_master'] = [{'id':'minecraft:slowness', 'level':4}, {'id':'minecraft:resistance', 'level':3}]
-      result['minecraft:long_turtle_master'] = [{'id':'minecraft:slowness', 'level':4}, {'id':'minecraft:resistance', 'level':3}]
-      result['minecraft:strong_turtle_master'] = [{'id':'minecraft:slowness', 'level':6}, {'id':'minecraft:resistance', 'level':4}]
+      result['minecraft:turtle_master'] = [PotionEffect(id='minecraft:slowness', level=4), PotionEffect(id='minecraft:resistance', level=3)]
+      result['minecraft:long_turtle_master'] = [PotionEffect(id='minecraft:slowness', level=4), PotionEffect(id='minecraft:resistance', level=3)]
+      result['minecraft:strong_turtle_master'] = [PotionEffect(id='minecraft:slowness', level=6), PotionEffect(id='minecraft:resistance', level=4)]
    if data_version >= 1484: # 18w19a
-      result['minecraft:strong_slowness'] = [{'id':'minecraft:slowness', 'level':4}]
+      result['minecraft:strong_slowness'] = [PotionEffect(id='minecraft:slowness', level=4)]
    if data_version >= 3826: # 24w13a
-      result['minecraft:wind_charged'] = [{'id':'minecraft:wind_charged', 'level':1}]
-      result['minecraft:weaving'] = [{'id':'minecraft:weaving', 'level':1}]
-      result['minecraft:oozing'] = [{'id':'minecraft:oozing', 'level':1}]
-      result['minecraft:infested'] = [{'id':'minecraft:infested', 'level':1}]
+      result['minecraft:wind_charged'] = [PotionEffect(id='minecraft:wind_charged', level=1)]
+      result['minecraft:weaving'] = [PotionEffect(id='minecraft:weaving', level=1)]
+      result['minecraft:oozing'] = [PotionEffect(id='minecraft:oozing', level=1)]
+      result['minecraft:infested'] = [PotionEffect(id='minecraft:infested', level=1)]
    return result
 
 def effect_colors(data_version: int) -> dict[str, int]:
@@ -309,32 +330,37 @@ def effect_colors(data_version: int) -> dict[str, int]:
       result['minecraft:luck'] = 0x339900
    return result
 
+@dataclasses.dataclass
+class DoubleTint:
+   base: int
+   overlay: int
+
 def spawn_egg_colors(pack: beet.ResourcePack, data_version: int) -> dict[str, DoubleTint]:
    if data_version < 100:
       raise ValueError(data_version)
-   result = {}
+   result: dict[str, DoubleTint] = {}
    for name, model in pack.item_models.items():
       if name.endswith('_spawn_egg'):
          tints = model.data['model']['tints']
-         result[canon(name)] = {'base':tints[0]['value'], 'overlay':tints[1]['value']}
+         result[canon(name)] = DoubleTint(base=tints[0]['value'], overlay=tints[1]['value'])
    if data_version < 1484: # 18w19a
-      result['minecraft:phantom_spawn_egg'] = {'base': 0x353043, 'overlay': 0x79be46}
+      result['minecraft:phantom_spawn_egg'] = DoubleTint(base=0x353043, overlay=0x79be46)
    if data_version < 2210: # 19w41a
-      result['minecraft:bee_spawn_egg'] = {'base': 0xffe55e, 'overlay': 0x262630}
+      result['minecraft:bee_spawn_egg'] = DoubleTint(base=0xffe55e, overlay=0x262630)
    if data_version < 2506: # 20w07a
-      result['minecraft:hoglin_spawn_egg'] = {'base': 0xea9393, 'overlay': 0x4c7129}
+      result['minecraft:hoglin_spawn_egg'] = DoubleTint(base=0xea9393, overlay=0x4c7129)
    if data_version < 3206: # 22w43a
-      result['minecraft:camel_spawn_egg'] = {'base': 0x9c6a1a, 'overlay': 0xe3b771}
+      result['minecraft:camel_spawn_egg'] = DoubleTint(base=0x9c6a1a, overlay=0xe3b771)
    if data_version < 3207: # 22w44a
-      result['minecraft:polar_bear_spawn_egg'] = {'base': 0xf2f2f2, 'overlay': 0x959590}
+      result['minecraft:polar_bear_spawn_egg'] = DoubleTint(base=0xf2f2f2, overlay=0x959590)
    if data_version < 3330: # 1.19.4-pre1
-      result['minecraft:sniffer_spawn_egg'] = {'base': 0x962930, 'overlay': 0x4d9960}
+      result['minecraft:sniffer_spawn_egg'] = DoubleTint(base=0x962930, overlay=0x4d9960)
    if data_version < 3804: # 24w03a
-      result['minecraft:armadillo_spawn_egg'] = {'base': 0xa67775, 'overlay': 0x734b4f}
+      result['minecraft:armadillo_spawn_egg'] = DoubleTint(base=0xa67775, overlay=0x734b4f)
    return result
 
 def item_durability(release: beet.contrib.vanilla.Release, data_version: int) -> dict[str, int]:
-   entries = get_item_components(release, data_version)
+   entries = get_item_components(release)
    result: dict[str, int] = {}
    for item, components in entries.items():
       if (damage := components.get('minecraft:max_damage')) is not None:
