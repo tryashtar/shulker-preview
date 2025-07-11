@@ -324,7 +324,7 @@ def main(ctx: beet.Context):
       # process_item
       lines=[
       "# get the length of this item and call the appropriate function",
-      "execute store result score #length shulker_preview run data get storage tryashtar:shulker_preview item.id"
+      "execute store result score #length shulker_preview run data get storage tryashtar.shulker_preview:data item.id"
       ]
       lengths=list(length_dict.keys())
       lengths.sort()
@@ -335,7 +335,7 @@ def main(ctx: beet.Context):
       lines.extend([
          "",
          "# summon in count entity",
-         "execute store result score #count shulker_preview run data get storage tryashtar:shulker_preview item.Count",
+         "execute store result score #count shulker_preview run data get storage tryashtar.shulker_preview:data item.Count",
          f"execute if score #count shulker_preview matches 2.. run function tryashtar.shulker_preview:row_{row}/process_count"
          ])
       ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/process_item'] = beet.Function(lines)
@@ -370,8 +370,8 @@ def main(ctx: beet.Context):
       lines1=["# create an entity that draws the proper potion overlay color"]
       lines2=["# create an entity that draws the proper tipped arrow overlay color"]
       for potionname, colorname in potion_dict.items():
-         lines1.append("execute if data storage tryashtar:shulker_preview item{tag:{Potion:\"minecraft:"+potionname+"\"}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.overlay.potion_liquid."+colorname+"."+str(row)+"\"}'}")
-         lines2.append("execute if data storage tryashtar:shulker_preview item{tag:{Potion:\"minecraft:"+potionname+"\"}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.overlay.arrow_dust."+colorname+"."+str(row)+"\"}'}")
+         lines1.append("execute if data storage tryashtar.shulker_preview:data item{tag:{Potion:\"minecraft:"+potionname+"\"}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.overlay.potion_liquid."+colorname+"."+str(row)+"\"}'}")
+         lines2.append("execute if data storage tryashtar.shulker_preview:data item{tag:{Potion:\"minecraft:"+potionname+"\"}} run summon area_effect_cloud ~ ~0.1 ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.overlay.arrow_dust."+colorname+"."+str(row)+"\"}'}")
       ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/process_potion'] = beet.Function(lines1)
       ctx.data.functions[f'tryashtar.shulker_preview:row_{row}/process_arrow'] = beet.Function(lines2)
 
@@ -570,31 +570,31 @@ def process_item_lines(items, row):
       name="minecraft:"+item
       if item == "elytra":
          lines.extend([
-            "execute if data storage tryashtar:shulker_preview item{id:\"minecraft:elytra\",tag:{Damage:431}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.broken_elytra."+str(row)+"\"}'}",
-            "execute if data storage tryashtar:shulker_preview item{id:\"minecraft:elytra\"} unless data storage tryashtar:shulker_preview item{id:\"minecraft:elytra\",tag:{Damage:431}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.elytra."+str(row)+"\"}'}"
+            "execute if data storage tryashtar.shulker_preview:data item{id:\"minecraft:elytra\",tag:{Damage:431}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.broken_elytra."+str(row)+"\"}'}",
+            "execute if data storage tryashtar.shulker_preview:data item{id:\"minecraft:elytra\"} unless data storage tryashtar.shulker_preview:data item{id:\"minecraft:elytra\",tag:{Damage:431}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.elytra."+str(row)+"\"}'}"
             ])
       elif item == "crossbow":
          lines.extend([
-            "execute if data storage tryashtar:shulker_preview item{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:arrow\"}]}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.crossbow_arrow."+str(row)+"\"}'}",
-            "execute if data storage tryashtar:shulker_preview item{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:firework_rocket\"}]}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.crossbow_firework."+str(row)+"\"}'}",
-            "execute if data storage tryashtar:shulker_preview item{id:\"minecraft:crossbow\"} unless data storage tryashtar:shulker_preview item{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{}]}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.crossbow."+str(row)+"\"}'}"
+            "execute if data storage tryashtar.shulker_preview:data item{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:arrow\"}]}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.crossbow_arrow."+str(row)+"\"}'}",
+            "execute if data storage tryashtar.shulker_preview:data item{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{id:\"minecraft:firework_rocket\"}]}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.crossbow_firework."+str(row)+"\"}'}",
+            "execute if data storage tryashtar.shulker_preview:data item{id:\"minecraft:crossbow\"} unless data storage tryashtar.shulker_preview:data item{id:\"minecraft:crossbow\",tag:{ChargedProjectiles:[{}]}} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview.item.crossbow."+str(row)+"\"}'}"
             ])
       else:
-         lines.append("execute if data storage tryashtar:shulker_preview item{id:\""+name+"\"} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview."+itemtype+"."+item+"."+str(row)+"\"}'}")
+         lines.append("execute if data storage tryashtar.shulker_preview:data item{id:\""+name+"\"} run summon area_effect_cloud ~ ~ ~ {Tags:[\"tryashtar.shulker_preview\"],CustomName:'{\"translate\":\"tryashtar.shulker_preview."+itemtype+"."+item+"."+str(row)+"\"}'}")
       if item in ("potion","splash_potion","lingering_potion"):
          potion=True
       if item in durability_dict:
-         lines.append("execute if data storage tryashtar:shulker_preview item{id:\""+name+"\"} run scoreboard players set #max shulker_preview "+str(durability_dict[item]))
+         lines.append("execute if data storage tryashtar.shulker_preview:data item{id:\""+name+"\"} run scoreboard players set #max shulker_preview "+str(durability_dict[item]))
          durability = True
       if item == "tipped_arrow":
          arrow = True
    if potion:
-      lines.append("execute if data storage tryashtar:shulker_preview item.tag.Potion run function tryashtar.shulker_preview:row_"+str(row)+"/process_potion")
+      lines.append("execute if data storage tryashtar.shulker_preview:data item.tag.Potion run function tryashtar.shulker_preview:row_"+str(row)+"/process_potion")
    if durability:
       lines.extend([
-         "execute store result score #durability shulker_preview run data get storage tryashtar:shulker_preview item.tag.Damage",
-         "execute if data storage tryashtar:shulker_preview item.tag.Damage run function tryashtar.shulker_preview:row_"+str(row)+"/process_durability"
+         "execute store result score #durability shulker_preview run data get storage tryashtar.shulker_preview:data item.tag.Damage",
+         "execute if data storage tryashtar.shulker_preview:data item.tag.Damage run function tryashtar.shulker_preview:row_"+str(row)+"/process_durability"
          ])
    if arrow:
-      lines.append("execute if data storage tryashtar:shulker_preview item.tag.Potion run function tryashtar.shulker_preview:row_"+str(row)+"/process_arrow")
+      lines.append("execute if data storage tryashtar.shulker_preview:data item.tag.Potion run function tryashtar.shulker_preview:row_"+str(row)+"/process_arrow")
    return lines

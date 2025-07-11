@@ -166,7 +166,6 @@ When downloading from that page, make sure to click the version you want, then d
 1.17
 + All 1.17 items
 + Missing texture shown for unknown items
-+ Same namespace for storage as pack
 + Use item command instead of shulker box loot table trick (vanilla 20w46a)
 + Use item command instead loot tables to resolve text components (vanilla 20w46a)
 + Use markers instead of area effect clouds (vanilla 21w15a)
