@@ -13,6 +13,7 @@ import PIL.Image
 import PIL.ImageChops
 import beet
 import beet.contrib.vanilla
+import model_resolver
 
 @dataclasses.dataclass
 class VersionDef:
@@ -103,20 +104,18 @@ def plugin_v1(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry,
       *[(short(name), [color]) for name, color in colored.items()],
       *[(short(name), [0xa06540]) for name in ['leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots', 'leather_horse_armor']],
       *[(short(name), [0x385dc6]) for name in ['tipped_arrow', 'potion', 'splash_potion', 'lingering_potion']],
-      ('firework_star', [None, 0x8A8A8A]),
-      ('filled_map', [None, 0x46402E]),
+      ('firework_star', [None, 0x8a8a8a]),
+      ('filled_map', [None, 0x46402e]),
    ])
-   durability = item_durability(registry['1.21.4'], data_version)
    flat_items: dict[str, PIL.Image.Image] = {}
    overlays: dict[str, PIL.Image.Image] = {}
-   block_items: list[str] = []
+   render_models: dict[str, str] = {}
    for item in items:
-      model = vanilla.assets.models[f'minecraft:item/{item}']
-      layers = generated_layers(vanilla.assets.models, model)
-      if layers is None or len(layers) == 0:
-         block_items.append(item)
-      else:
-         image_layers = [vanilla.assets.textures[x].image.convert('RGBA') for x in layers]
+      model_name = f'minecraft:item/{item}'
+      model = vanilla.assets.models[model_name]
+      data = model_data(vanilla.assets.models, model)
+      if isinstance(data, LayeredModel):
+         image_layers = [vanilla.assets.textures[x].image.convert('RGBA') for x in data.layers]
          image = PIL.Image.new('RGBA', image_layers[0].size)
          for i, layer in enumerate(image_layers):
             if (tints := colormap.get(short(item))) is not None:
@@ -124,6 +123,26 @@ def plugin_v1(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry,
                   layer = colorize(layer, rgba(tint))
             image.paste(layer, (0, 0), layer)
          flat_items[item] = image
+      elif isinstance(data, ElementModel):
+         render_models[item] = model_name
+      elif isinstance(data, EntityModel):
+         fake_model = get_fake_model(item)
+         if fake_model is None:
+            print(f'Unhandled item: {item}')
+         else:
+            fake_model['display'] = data.display
+            ctx.assets.models[f'render:{item}'] = beet.Model(fake_model)
+            render_models[item] = f'render:{item}'
+   renderer = model_resolver.Render(ctx, vanilla)
+   renderer.default_render_size = 64
+   for item, model in render_models.items():
+      renderer.add_model_task(
+         model=model,
+         path_ctx=f'render:{item}',
+         animation_mode='one_file',
+      )
+   renderer.run()
+   block_items = {item: ctx.assets.textures[f'render:{item}'].image.convert('RGBA') for item, model in render_models.items()}
    arrow_overlay = vanilla.assets.textures['minecraft:item/tipped_arrow_head'].image.convert('RGBA')
    potion_overlay = vanilla.assets.textures['minecraft:item/potion_overlay'].image.convert('RGBA')
    potions = invert_dict(potion_colors(data_version))
@@ -133,11 +152,70 @@ def plugin_v1(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry,
          overlays[f'arrow_dust.{potion_name}'] = colorize(arrow_overlay, rgba(color))
          overlays[f'potion_liquid.{potion_name}'] = colorize(potion_overlay, rgba(color))
    item_image, item_grid = make_grid(flat_items, 16)
-   #block_image, block_grid = make_grid(block_items, 16)
+   block_image, block_grid = make_grid(block_items, 64)
    overlay_image, overlay_grid = make_grid(overlays, 16)
    ctx.assets.textures['tryashtar.shulker_preview:item_sheet'] = beet.Texture(item_image)
-   #ctx.assets.textures['tryashtar.shulker_preview:block_sheet'] = beet.Texture(blocksheet)
+   ctx.assets.textures['tryashtar.shulker_preview:block_sheet'] = beet.Texture(block_image)
    ctx.assets.textures['tryashtar.shulker_preview:overlay_sheet'] = beet.Texture(overlay_image)
+
+def get_fake_model(item: str) -> dict[str, typing.Any] | None:
+   print(item)
+   if item == 'shield':
+      with open('fake_models/shield.json', 'r', encoding='utf-8') as file:
+         model = json.load(file)
+      return model
+   if item == 'conduit':
+      with open('fake_models/conduit.json', 'r', encoding='utf-8') as file:
+         model = json.load(file)
+      return model
+   if item.endswith('shulker_box'):
+      color = item.removesuffix('shulker_box').removesuffix('_')
+      texture = f'minecraft:entity/shulker/shulker_{color}'
+      with open('fake_models/shulker_box.json', 'r', encoding='utf-8') as file:
+         model = json.load(file)
+      model['textures']['0'] = texture
+      return model
+   if item.endswith('_banner'):
+      color = item.removesuffix('_banner')
+      with open('fake_models/banner.json', 'r', encoding='utf-8') as file:
+         model = json.load(file)
+      return model
+   if item.endswith('_bed'):
+      color = item.removesuffix('_bed')
+      texture = f'minecraft:entity/bed/{color}'
+      with open('fake_models/bed.json', 'r', encoding='utf-8') as file:
+         model = json.load(file)
+      model['textures']['0'] = texture
+      return model
+   if item.endswith('chest'):
+      kind = {'chest':'normal','trapped_chest':'trapped','ender_chest':'ender'}[item]
+      texture = f'minecraft:entity/chest/{kind}'
+      with open('fake_models/chest.json', 'r', encoding='utf-8') as file:
+         model = json.load(file)
+      model['textures']['0'] = texture
+      return model
+   if item.endswith('_head') or item.endswith('_skull'):
+      kind = item.removesuffix('_head').removesuffix('_skull')
+      match kind:
+         case 'player' | 'dragon' | 'piglin' | 'zombie':
+            path = kind + '_head'
+            texture = None
+         case 'creeper':
+            path = 'generic_head'
+            texture = 'entity/creeper/creeper'
+         case 'skeleton':
+            path = 'generic_head'
+            texture = 'entity/skeleton/skeleton'
+         case 'wither_skeleton':
+            path = 'generic_head'
+            texture = 'entity/skeleton/wither_skeleton'
+         case _:
+            raise ValueError(kind)
+      with open(f'fake_models/{path}.json', 'r', encoding='utf-8') as file:
+         model = json.load(file)
+      if texture is not None:
+         model['textures']['0'] = texture
+      return model
 
 def plugin_v2(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, target: VersionRange):
    target_version = target.last.version
@@ -170,16 +248,35 @@ def rgba(color: int):
    r = color // 256 // 256 % 256
    g = color // 256 % 256
    b = color % 256
-   return (r, g, b, 255)   
+   return (r, g, b, 255)
 
 def colorize(image: PIL.Image.Image, color) -> PIL.Image.Image:
    return PIL.ImageChops.multiply(image, PIL.Image.new('RGBA', image.size, color))
 
-def generated_layers(source: beet.NamespaceProxy[beet.Model], model: beet.Model) -> list[str] | None:
+@dataclasses.dataclass
+class LayeredModel:
+   display: dict[str, typing.Any]
+   layers: list[str]
+
+@dataclasses.dataclass
+class ElementModel:
+   display: dict[str, typing.Any]
+   elements: list[dict[str, typing.Any]]
+
+@dataclasses.dataclass
+class EntityModel:
+   display: dict[str, typing.Any]
+
+def model_data(source: beet.NamespaceProxy[beet.Model], model: beet.Model) -> LayeredModel | ElementModel | EntityModel:
+   display: dict[str, typing.Any] = {}
    result: list[str | None] = []
-   while 'parent' in model.data:
-      if 'elements' in model.data:
-         return None
+   while True:
+      if (model_display := model.data.get('display')) is not None:
+         for key, value in model_display.items():
+            if key not in display:
+               display[key] = value
+      if (elements := model.data.get('elements')) is not None:
+         return ElementModel(display=display, elements=elements)
       if 'textures' in model.data:
          for name, path in model.data['textures'].items():
             match = re.match(r'layer(\d+)', name)
@@ -189,13 +286,15 @@ def generated_layers(source: beet.NamespaceProxy[beet.Model], model: beet.Model)
                   result.extend([None] * (index - len(result) + 1))
                if result[index] is None:
                   result[index] = canon(path)
-      parent = canon(model.data['parent'])
-      if parent == 'minecraft:builtin/generated' or parent == 'minecraft:builtin/entity':
-         return [x for x in result if x is not None]
-      model = source[parent]
-   if 'elements' in model.data:
-      return None
-   return []
+      if (parent := model.data.get('parent')) is not None:
+         parent = canon(parent)
+         if parent == 'minecraft:builtin/entity':
+            return EntityModel(display=display)
+         if parent == 'minecraft:builtin/generated':
+            return LayeredModel(display=display, layers=[x for x in result if x is not None])
+         model = source[parent]
+         continue
+      return LayeredModel(display=display, layers=[])
 
 def export(ctx: beet.Context, target: VersionRange):
    ctx.assets.pack_format = target.last.resourcepack
@@ -323,6 +422,26 @@ def potion_effects(data_version: int) -> dict[str, dict[str, int]]:
       result['oozing'] = {'oozing': 1}
       result['infested'] = {'infested': 1}
    return {canon(name): {canon(effect): level for effect, level in value.items()} for name, value in result.items()}
+
+def dye_colors() -> dict[str, int]:
+   return {
+      'white': 0xf9fffe,
+      'light_gray': 0x9d9d97,
+      'gray': 0x474f52,
+      'black': 0x1d1d21,
+      'brown': 0x835432,
+      'red': 0xb02e26,
+      'orange': 0xf9801d,
+      'yellow': 0xfed83d,
+      'lime': 0x80c71f,
+      'green': 0x5e7c16,
+      'cyan': 0x169c9c,
+      'light_blue': 0x3ab3da,
+      'blue': 0x3c44aa,
+      'purple': 0x8932b8,
+      'magenta': 0xc74ebd,
+      'pink': 0xf38baa,
+   }
 
 def effect_colors(data_version: int) -> dict[str, int]:
    result: dict[str, int] = {
@@ -474,7 +593,7 @@ class GridData:
 class SpriteData:
    rows: list[str]
    negative: str
-   
+
 @dataclasses.dataclass
 class NumberData:
    normal: list[str]
