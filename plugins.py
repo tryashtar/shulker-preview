@@ -92,9 +92,13 @@ def plugin_full(ctx: beet.Context):
    export(ctx, target)
 
 def plugin_v1(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, target: VersionRange):
+   datapack = ctx.data['tryashtar.shulker_preview']
+   resourcepack = ctx.assets['tryashtar.shulker_preview']
+   
    target_version = target.last.version
    data_version = target.last.data
    vanilla = registry[target_version]
+   
    items = [short(x) for x in get_registry(vanilla, 'minecraft:item').keys()]
    items.remove('air')
    eggs = spawn_egg_colors(registry['1.21.4'].assets, data_version)
@@ -154,9 +158,66 @@ def plugin_v1(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry,
    item_image, item_grid = make_grid(flat_items, 16)
    block_image, block_grid = make_grid(block_items, 64)
    overlay_image, overlay_grid = make_grid(overlays, 16)
-   ctx.assets.textures['tryashtar.shulker_preview:item_sheet'] = beet.Texture(item_image)
-   ctx.assets.textures['tryashtar.shulker_preview:block_sheet'] = beet.Texture(block_image)
-   ctx.assets.textures['tryashtar.shulker_preview:overlay_sheet'] = beet.Texture(overlay_image)
+   resourcepack.textures['item_sheet'] = beet.Texture(item_image)
+   resourcepack.textures['block_sheet'] = beet.Texture(block_image)
+   resourcepack.textures['overlay_sheet'] = beet.Texture(overlay_image)
+   
+   lang = resourcepack.languages['en_us']
+   font = FontManager(rows=3)
+   font.legacy_space_texture = 'tryashtar.shulker_preview:space'
+   font.upcoming_char = ord('\uf800')
+   widths = [32768, 1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128, 256, 512, 1024]
+   for width in widths:
+      font.get_space(-width)
+   font.upcoming_char = ord('\uf820')
+   for width in widths:
+      font.get_space(width)
+   font.upcoming_char = ord('\ue000')
+   font.add_provider({
+      'type': 'bitmap',
+      'file': 'tryashtar.shulker_preview:comma.png',
+      'ascent': 7,
+      'chars': [',']
+   })
+   for texture, tooltip, bottom in [('shulker_box', 'shulker_tooltip', 20), ('generic_54', 'ender_tooltip', 27)]:
+      text = add_tooltip(font, f'minecraft:gui/container/{texture}', bottom)
+      lang.data[f'tryashtar.shulker_preview.{tooltip}'] = get_space(font, -4) + text + get_space(font, 8)
+   missing = font.add_sprite('tryashtar.shulker_preview:missingno')
+   for row in range(font.rows):
+      lang.data[f'tryashtar.shulker_preview.missingno.{row}'] = missing.rows[row] + missing.negative + get_space(font, 15)
+   numbers = add_numbers(font)
+   for row in range(font.rows):
+      for num in range(1, 10):
+         lang.data[f'tryashtar.shulker_preview.number.{num}.{row}'] = get_space(font, -4) + numbers[num].negative + numbers[num].normal[row] + get_space(font, 1)
+         lang.data[f'tryashtar.shulker_preview.number_shadow.{num}.{row}'] = get_space(font, -3) + numbers[num].negative + numbers[num].shadow[row]
+      for num in range(10, 100):
+         d1 = num // 10
+         d2 = num % 10
+         lang.data[f'tryashtar.shulker_preview.number.{num}.{row}'] = get_space(font, -7) + numbers[d1].negative + numbers[d2].negative + numbers[d1].normal[row] + numbers[d2].normal[row] + get_space(font, 1)
+         lang.data[f'tryashtar.shulker_preview.number_shadow.{num}.{row}'] = get_space(font, -6) + numbers[d1].negative + numbers[d2].negative + numbers[d1].shadow[row] + numbers[d2].shadow[row]
+   for row in range(font.rows):
+      durability = ''.join([font.next_char() for _ in range(14)])
+      font.add_provider({
+         'type': 'bitmap',
+         'file': 'tryashtar.shulker_preview:durability.png',
+         'ascent': -18 * row - 15,
+         'height': 2,
+         'chars': [
+            durability[0:5],
+            durability[5:10],
+            durability[10:14] + '\u0000'
+         ]})
+      for num in range(14):
+         lang.data[f"tryashtar.shulker_preview.durability.{num}.{row}"] = get_space(font, -16) + durability[num] + get_space(font, 2)
+   font.add_grid('tryashtar.shulker_preview:item_sheet', item_grid)
+   font.add_grid('tryashtar.shulker_preview:block_sheet', block_grid)
+   font.add_grid('tryashtar.shulker_preview:overlay_sheet', overlay_grid)
+   lang.data['tryashtar.shulker_preview.empty_slot'] = get_space(font, 18)
+   lang.data['tryashtar.shulker_preview.row_end'] = get_space(font, -162)
+
+   font_result = font.build()
+   font_result.data['providers'][0] = {'comment':'Many thanks to AmberW for this invaluable concept'} | font_result.data['providers'][0]
+   ctx.assets.fonts['minecraft:default'] = font_result
 
 def get_fake_model(item: str) -> dict[str, typing.Any] | None:
    print(item)
@@ -486,18 +547,20 @@ def effect_colors(data_version: int) -> dict[str, int]:
       'infested': 0x8c9b8c,
    }
    if data_version < 3332: # 1.19.4-pre3
-      result['speed'] = 0x7cafc6
-      result['slowness'] = 0x5a6c81
-      result['strength'] = 0x932423
-      result['instant_damage'] = 0x430a09
-      result['jump_boost'] = 0x22ff4c
-      result['resistance'] = 0x99453a
-      result['fire_resistance'] = 0xe49a3a
-      result['water_breathing'] = 0x2e5299
-      result['invisibility'] = 0x7f8392
-      result['night_vision'] = 0x1f1fa1
-      result['poison'] = 0x4e9331
-      result['luck'] = 0x339900
+      result |= {
+         'speed': 0x7cafc6,
+         'slowness': 0x5a6c81,
+         'strength': 0x932423,
+         'instant_damage': 0x430a09,
+         'jump_boost': 0x22ff4c,
+         'resistance': 0x99453a,
+         'fire_resistance': 0xe49a3a,
+         'water_breathing': 0x2e5299,
+         'invisibility': 0x7f8392,
+         'night_vision': 0x1f1fa1,
+         'poison': 0x4e9331,
+         'luck': 0x339900,
+      }
    return {canon(name): color for name, color in result.items()}
 
 def potion_colors(data_version: int) -> dict[str, int | None]:
@@ -594,21 +657,15 @@ class SpriteData:
    rows: list[str]
    negative: str
 
-@dataclasses.dataclass
-class NumberData:
-   normal: list[str]
-   shadow: list[str]
-   negative: str
-
 class FontManager:
    def __init__(self, rows: int):
+      self.legacy_space_texture: str | None = None
       self.rows: int = rows
-      self.last_char: int = 0
+      self.upcoming_char: int = 1
       self.spaces: dict[int, str] = {}
       self.sprites: dict[str, SpriteData] = {}
       self.grids: dict[str, GridData] = {}
       self.sprite_map: dict[str, SpriteData] = {}
-      self.numbers: list[list[NumberData]] = []
       self.providers: list[dict[str, typing.Any]] = []
    
    def add_sprite(self, texture: str) -> SpriteData:
@@ -645,30 +702,18 @@ class FontManager:
    
    def add_provider(self, provider: dict[str, typing.Any]):
       self.providers.append(provider)
-   
-   def add_numbers(self) -> list[NumberData]:
-      result: list[NumberData] = []
-      for _ in range(10):
-         data = NumberData(
-            normal=[self.next_char() for _ in range(self.rows)],
-            shadow=[self.next_char() for _ in range(self.rows)],
-            negative=self.next_char(),
-         )
-         result.append(data)
-      self.numbers.append(result)
-      return result
-   
+      
    def get_sprite(self, name: str) -> SpriteData:
       return self.sprite_map[name]
    
    def next_char(self):
-      char = self.last_char + 1
+      char = self.upcoming_char
       for low, high in [(0xd800, 0xdbff), (0xdc00, 0xdfff), (0x05c8, 0x05d2), (0x05e8, 0x06ff), (0x070b, 0x0710), (0x072d, 0x072f), (0x074b, 0x074f), (0x07a4, 0x07a5), (0x07b1, 0x07c2), (0x07f4, 0x07f5), (0x07fa, 0x07fc), (0x07fe, 0x0800), (0x082e, 0x0832), (0x083c, 0x0842), (0x0856, 0x0858), (0x085c, 0x0862), (0x0868, 0x0897), (0x08a0, 0x08a2), (0x08b2, 0x08b8), (0x08c5, 0x08c9), (0xfb34, 0xfb48), (0xfbbf, 0xfbd5), (0xfd8d, 0xfd94), (0xfdc5, 0xfdce), (0xfdf0, 0xfdf2), (0xfe72, 0xfe78), (0xfefa, 0xfefe)]:
          if low <= char <= high:
             char = high + 1
       while char in [0x0000, 0x000a, 0x00a7, 0x0025, 0x0590, 0x05be, 0x05c0, 0x05c3, 0x05c6, 0x0608, 0x060b, 0x060d, 0x0712, 0x081a, 0x0824, 0x0828, 0x200f, 0xfb1d, 0xfb1f] or unicodedata.bidirectional(chr(char)) in ['AL', 'R', 'NSM']:
          char += 1
-      self.last_char = char
+      self.upcoming_char = char + 1
       return chr(char)
       
    def get_space(self, width: int) -> str:
@@ -682,71 +727,22 @@ class FontManager:
       result = beet.Font()
       providers = []
       if len(self.spaces) > 0:
-         spaces = {}
-         for width, char in self.spaces.items():
-            spaces[char] = width
-         providers.append({'type':'space','advances':spaces})
+         if self.legacy_space_texture is None:
+            spaces = {}
+            for width, char in self.spaces.items():
+               spaces[char] = width
+            providers.append({'type':'space','advances':spaces})
+         else:
+            for width, char in self.spaces.items():
+               height = width - 1 if width >= 0 else width - 2
+               providers.append({
+                  'type':'bitmap',
+                  'file': self.legacy_space_texture + '.png',
+                  'ascent': -65536,
+                  'height': height,
+                  'chars': [char],
+               })
       providers.extend(self.providers)
-      empty_row = ''.join(['\u0000'] * 16)
-      for data in self.numbers:
-         negatives = ''.join([x.negative for x in data])
-         for row in range(self.rows):
-            normals = ''.join([x.normal[row] for x in data])
-            shadows = ''.join([x.shadow[row] for x in data])
-            providers.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -(18 * row) - 11, "height": 8, "chars": [
-               empty_row,
-               empty_row,
-               empty_row,
-               normals + '\u0000\u0000\u0000\u0000\u0000\u0000',
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row
-            ]})
-            providers.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -(18 * row) - 12, "height": 8, "chars": [
-               empty_row,
-               empty_row,
-               empty_row,
-               shadows + '\u0000\u0000\u0000\u0000\u0000\u0000',
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row
-            ]})
-            providers.append({"type": "bitmap", "file": "minecraft:font/ascii.png", "ascent": -32768, "height": -8, "chars": [
-               empty_row,
-               empty_row,
-               empty_row,
-               negatives + '\u0000\u0000\u0000\u0000\u0000\u0000',
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row,
-               empty_row
-            ]})
       for path, data in self.sprites.items():
          for row, entry in enumerate(data.rows):
             providers.append({'type':'bitmap','file':path,'ascent':-2 + (row * -18),'height':16,'chars':[entry]})
@@ -757,3 +753,107 @@ class FontManager:
          providers.append({'type':'bitmap','file':path,'ascent':-32768,'height':-16,'chars':data.negative})
       result.data['providers'] = providers
       return result
+
+def add_tooltip(font: FontManager, texture: str, bottom: int) -> str:
+   ascent = 8
+   slices: list[tuple[int, list[int]]] = [(8, [0]), (8, [2,3,4,5,6,7,8,bottom])]
+   text = ''
+   for height, ranges in slices:
+      for include in ranges:
+         positive = ['\u0000'] * (256 // height)
+         negative = ['\u0000'] * (256 // height)
+         pos = font.next_char()
+         neg = font.next_char()
+         positive[include] = pos
+         negative[include] = neg
+         font.add_provider({
+            'type': 'bitmap',
+            'file': texture + '.png',
+            'ascent': ascent,
+            'height': height,
+            'chars': positive
+         })
+         font.add_provider({
+            'type': 'bitmap',
+            'file': texture + '.png',
+            'ascent': -32768,
+            'height': height,
+            'chars': negative
+         })
+         ascent -= height
+         text += pos + neg + get_space(font, -3)
+   return text
+
+@dataclasses.dataclass
+class NumberData:
+   normal: list[str]
+   shadow: list[str]
+   negative: str
+
+def add_numbers(font: FontManager) -> list[NumberData]:
+   result: list[NumberData] = []
+   for _ in range(10):
+      data = NumberData(
+         normal=[font.next_char() for _ in range(font.rows)],
+         shadow=[font.next_char() for _ in range(font.rows)],
+         negative=font.next_char(),
+      )
+      result.append(data)
+   empty_row = '\u0000' * 16
+   negatives = ''.join([x.negative for x in result])
+   for row in range(font.rows):
+      normals = ''.join([x.normal[row] for x in result])
+      shadows = ''.join([x.shadow[row] for x in result])
+      def get_grid(numbers: str):
+         return [*([empty_row] * 3), numbers + ('\u0000' * 6), *([empty_row] * 12)]
+      font.add_provider({
+         'type': 'bitmap',
+         'file': 'minecraft:font/ascii.png',
+         'ascent': -(18 * row) - 11,
+         'height': 8,
+         'chars': get_grid(normals)
+      })
+      font.add_provider({
+         'type': 'bitmap',
+         'file': 'minecraft:font/ascii.png',
+         'ascent': -(18 * row) - 12,
+         'height': 8,
+         'chars': get_grid(shadows)
+      })
+      font.add_provider({
+         'type': 'bitmap',
+         'file': 'minecraft:font/ascii.png',
+         'ascent': -32768,
+         'height': -8,
+         'chars': get_grid(negatives)
+      })
+   return result
+
+def get_space(font: FontManager, width: int) -> str:
+   if (exact := font.spaces.get(width)) is not None:
+      return exact
+   current_width = 0
+   result_str = ''
+   if width > 0:
+      while current_width < width:
+         small_enough = [(w, char) for w, char in font.spaces.items() if current_width + w <= width]
+         if len(small_enough) == 0:
+            raise ValueError(width)
+         w, char = max(small_enough, key=lambda tup: tup[0])
+         if w < 1:
+            raise ValueError(width)
+         current_width += w
+         result_str += char
+      return result_str
+   if width < 0:
+      while current_width > width:
+         small_enough = [(w, char) for w, char in font.spaces.items() if current_width + w >= width]
+         if len(small_enough) == 0:
+            raise ValueError(width)
+         w, char = min(small_enough, key=lambda tup: tup[0])
+         if w > -1:
+            raise ValueError(width)
+         current_width += w
+         result_str += char
+      return result_str
+   return ''
