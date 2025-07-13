@@ -1,7 +1,7 @@
 import beet
 import beet.contrib.vanilla
 from plugins.util import short
-from plugins.plugin import VersionRange
+from plugins.version import VersionRange
 from plugins.info import get_registry
 
 def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, target: VersionRange):

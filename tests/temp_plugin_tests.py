@@ -1,6 +1,6 @@
 import beet
 import mecha
-from plugins.plugin import fixed_release_registry, load_version_range
+from plugins.version import fixed_release_registry, load_version_range
 from plugins.util import short, model_data, LayeredModel
 from plugins.info import get_registry
 

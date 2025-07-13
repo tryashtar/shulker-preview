@@ -2,7 +2,7 @@ import PIL.Image
 import beet
 import beet.contrib.vanilla
 import model_resolver
-from plugins.plugin import VersionRange
+from plugins.version import VersionRange
 from plugins.util import short, canon, model_data, colorize, rgba, LayeredModel, ElementModel, EntityModel, make_grid, invert_dict, FontManager, add_numbers, add_tooltip, get_space
 from plugins.info import get_fake_model, get_registry, spawn_egg_colors, potion_colors, item_colors
 
