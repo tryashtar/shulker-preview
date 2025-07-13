@@ -1,6 +1,8 @@
 import beet
 import mecha
-import plugins
+from plugins.plugin import fixed_release_registry, load_version_range
+from plugins.util import short, model_data, LayeredModel
+from plugins.info import get_registry
 
 def main(ctx: beet.Context):
    m = mecha.Mecha()
@@ -14,19 +16,19 @@ def main(ctx: beet.Context):
 
 def check_items(ctx: beet.Context, version: str, expected_blocks: list[str], expected_items: list[str]):
    print(version)
-   registry = plugins.fixed_release_registry(ctx)
-   target = plugins.load_version_range(registry, version)
+   registry = fixed_release_registry(ctx)
+   target = load_version_range(registry, version)
    target_version = target.last.version
    data_version = target.last.version
    vanilla = registry[target_version]
-   items = [plugins.short(x) for x in plugins.get_registry(vanilla, 'minecraft:item').keys()]
+   items = [short(x) for x in get_registry(vanilla, 'minecraft:item').keys()]
    items.remove('air')
    found_blocks = []
    found_items = []
    for item in items:
       model = vanilla.assets.models[f'minecraft:item/{item}']
-      data = plugins.model_data(vanilla.assets.models, model)
-      if isinstance(data, plugins.LayeredModel):
+      data = model_data(vanilla.assets.models, model)
+      if isinstance(data, LayeredModel):
          found_items.append(item)
       else:
          found_blocks.append(item)
@@ -41,4 +43,3 @@ def check(expected: list[str], found: list[str]):
       print('Missing', list(sorted(missing)))
    if len(extra) > 0:
       print('Extra', list(sorted(extra)))
-   

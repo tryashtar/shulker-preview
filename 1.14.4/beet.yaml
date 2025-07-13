@@ -3,7 +3,7 @@ data_pack:
   load: [in/datapack]
 resource_pack:
   load: [in/resourcepack]
-pipeline: [plugins.plugin_full]
+pipeline: [plugins.plugin.full]
 meta:
   model_resolver:
     preferred_minecraft_generated: java
