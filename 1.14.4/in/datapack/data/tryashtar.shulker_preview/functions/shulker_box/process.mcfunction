@@ -3,7 +3,7 @@ data modify block ~ 1 ~ Items set value [{id:tnt,Count:1b}]
 data modify block ~ 1 ~ Items[0].tag.shulker_items append from entity @s Inventory[{tag:{BlockEntityTag:{Items:[{}]}}}]
 
 # filter out containers that have already been processed
-data remove block ~ 1 ~ Items[0].tag.shulker_items[{tag:{shulker_processed:1b}}]
+data remove block ~ 1 ~ Items[0].tag.shulker_items[{tag:{"shulker_preview.processed":1b}}]
 scoreboard players set #uuid shulker_preview -1
 
 # save which slot first remaining container came from

@@ -1,33 +1,34 @@
 {
-  "type": "minecraft:block",
+  "type": "block",
   "pools": [
     {
       "rolls": 1,
       "entries": [
         {
-          "type": "minecraft:alternatives",
+          "type": "alternatives",
           "children": [
             {
-              "type": "minecraft:dynamic",
-              "name": "minecraft:contents",
+              "type": "dynamic",
+              "name": "contents",
               "conditions": [
                 {
-                  "condition": "minecraft:match_tool",
+                  "condition": "match_tool",
                   "predicate": {
-                    "nbt": "{drop_contents:true}"
+                    "nbt": "{drop_contents:1b}"
                   }
                 }
               ]
             },
             {
-              "type": "minecraft:item",
+              "type": "item",
+              "name": "shulker_box",
               "functions": [
                 {
-                  "function": "minecraft:copy_name",
+                  "function": "copy_name",
                   "source": "block_entity"
                 },
                 {
-                  "function": "minecraft:copy_nbt",
+                  "function": "copy_nbt",
                   "source": "block_entity",
                   "ops": [
                     {
@@ -48,16 +49,15 @@
                   ]
                 },
                 {
-                  "function": "minecraft:set_contents",
+                  "function": "set_contents",
                   "entries": [
                     {
-                      "type": "minecraft:dynamic",
-                      "name": "minecraft:contents"
+                      "type": "dynamic",
+                      "name": "contents"
                     }
                   ]
                 }
-              ],
-              "name": "minecraft:shulker_box"
+              ]
             }
           ]
         }

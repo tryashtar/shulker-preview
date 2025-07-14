@@ -1,3 +1,5 @@
+# main load function
+# set up scoreboard and data
 scoreboard objectives add shulker_preview dummy "Shulker Box Preview"
 scoreboard players set #13000 shulker_preview 13000
 
@@ -10,8 +12,12 @@ setblock 29999978 1 9832 jukebox
 setblock 29999979 1 9832 birch_sign{Text1:'""',Text2:'"tryashtar"',Text3:'"Evaluation Sign®"',Text4:'""'}
 setblock 29999980 1 9832 birch_sign{Text1:'""',Text2:'"tryashtar"',Text3:'"Evaluation Sign®"',Text4:'""'}
 
+# wait until a player is online to show status messages
 function tryashtar.shulker_preview:meta/await_player
 
-execute if score #ender_enabled shulker_preview matches 1 run function tryashtar.shulker_preview:ender_tick
+# start up schedule loop for ender chest checking function
+execute if score #ender_enabled shulker_preview matches 1 run function tryashtar.shulker_preview:ender_chest/tick
+
+# these are supposed to revoke themselves, but clear them here too in case any get stuck
 advancement revoke @a only tryashtar.shulker_preview:detect_shulker_box
 advancement revoke @a only tryashtar.shulker_preview:detect_ender_chest
