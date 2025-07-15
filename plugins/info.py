@@ -14,7 +14,6 @@ def version_info(jar: beet.contrib.vanilla.ClientJar) -> dict[str, typing.Any]:
       return json.load(file.open('version.json'))
 
 def get_fake_model(item: str) -> dict[str, typing.Any] | None:
-   print(item)
    if item == 'shield':
       with open('fake_models/shield.json', 'r', encoding='utf-8') as file:
          model = json.load(file)

@@ -1,6 +1,7 @@
 import math
 import typing
 import re
+import collections
 import unicodedata
 import dataclasses
 import PIL.Image
@@ -39,27 +40,31 @@ def colorize(image: PIL.Image.Image, color) -> PIL.Image.Image:
 @dataclasses.dataclass
 class LayeredModel:
    display: dict[str, typing.Any]
+   overrides: list
    layers: list[str]
 
 @dataclasses.dataclass
 class ElementModel:
    display: dict[str, typing.Any]
+   overrides: list
    elements: list[dict[str, typing.Any]]
 
 @dataclasses.dataclass
 class EntityModel:
    display: dict[str, typing.Any]
+   overrides: list
 
 def model_data(source: beet.NamespaceProxy[beet.Model], model: beet.Model) -> LayeredModel | ElementModel | EntityModel:
    display: dict[str, typing.Any] = {}
    result: list[str | None] = []
+   overrides = model.data.get('overrides', [])
    while True:
       if (model_display := model.data.get('display')) is not None:
          for key, value in model_display.items():
             if key not in display:
                display[key] = value
       if (elements := model.data.get('elements')) is not None:
-         return ElementModel(display=display, elements=elements)
+         return ElementModel(display=display, overrides=overrides, elements=elements)
       if 'textures' in model.data:
          for name, path in model.data['textures'].items():
             match = re.match(r'layer(\d+)', name)
@@ -72,12 +77,12 @@ def model_data(source: beet.NamespaceProxy[beet.Model], model: beet.Model) -> La
       if (parent := model.data.get('parent')) is not None:
          parent = canon(parent)
          if parent == 'minecraft:builtin/entity':
-            return EntityModel(display=display)
+            return EntityModel(display=display, overrides=overrides)
          if parent == 'minecraft:builtin/generated':
-            return LayeredModel(display=display, layers=[x for x in result if x is not None])
+            return LayeredModel(display=display, overrides=overrides, layers=[x for x in result if x is not None])
          model = source[parent]
          continue
-      return LayeredModel(display=display, layers=[])
+      return LayeredModel(display=display, overrides=overrides, layers=[])
 
 def canon(location: str) -> str:
    return f'minecraft:{location}' if ':' not in location else location
@@ -88,12 +93,10 @@ def short(location: str) -> str:
 K = typing.TypeVar('K')
 V = typing.TypeVar('V')
 def invert_dict(dictionary: dict[K, V]) -> dict[V, list[K]]:
-   result: dict[V, list[K]] = {}
+   result: dict[V, list[K]] = collections.defaultdict(list)
    for key, value in dictionary.items():
-      if value not in result:
-         result[value] = []
       result[value].append(key)
-   return result
+   return dict(result)
 
 @dataclasses.dataclass
 class GridData:
