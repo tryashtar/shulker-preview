@@ -23,8 +23,11 @@ def get_fake_model(item: str) -> dict[str, typing.Any] | None:
          model = json.load(file)
       return model
    if item.endswith('shulker_box'):
-      color = item.removesuffix('shulker_box').removesuffix('_')
-      texture = f'minecraft:entity/shulker/shulker_{color}'
+      if item == 'shulker_box':
+         texture = 'minecraft:entity/shulker/shulker'
+      else:
+         color = item.removesuffix('shulker_box').removesuffix('_')
+         texture = f'minecraft:entity/shulker/shulker_{color}'
       with open('fake_models/shulker_box.json', 'r', encoding='utf-8') as file:
          model = json.load(file)
       model['textures']['0'] = texture

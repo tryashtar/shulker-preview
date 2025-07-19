@@ -7,6 +7,6 @@
    },
    {
       "function": "set_custom_data",
-      "tag": "{\"shulker_preview.processed\":1b}"
+      "tag": "{'shulker_preview.processed':1b}"
    }
 ]

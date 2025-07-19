@@ -1,0 +1,23 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "name": "tnt",
+          "functions": [
+            {
+              "function": "set_lore",
+              "entity": "this",
+              "replace": true,
+              "lore": [
+                ""
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
