@@ -37,7 +37,7 @@ data modify block ~1 1 ~ RecordItem set from block ~ 1 ~ Items[0].tag.BlockEntit
 execute if data block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:8b}] positioned ~ 10 ~ run function tryashtar.shulker_preview:render/row_0/item
 execute unless data block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:8b}] run summon area_effect_cloud ~ 10 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.empty_slot"}'}
 
-summon area_effect_cloud ~ 10.99 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.render/row_end"}'}
+summon area_effect_cloud ~ 10.99 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.row_end"}'}
 
 data modify block ~1 1 ~ RecordItem set from block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:9b}]
 execute if data block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:9b}] positioned ~ 11 ~ run function tryashtar.shulker_preview:render/row_1/item
@@ -75,7 +75,7 @@ data modify block ~1 1 ~ RecordItem set from block ~ 1 ~ Items[0].tag.BlockEntit
 execute if data block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:17b}] positioned ~ 19 ~ run function tryashtar.shulker_preview:render/row_1/item
 execute unless data block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:17b}] run summon area_effect_cloud ~ 19 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.empty_slot"}'}
 
-summon area_effect_cloud ~ 19.99 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.render/row_end"}'}
+summon area_effect_cloud ~ 19.99 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.row_end"}'}
 
 data modify block ~1 1 ~ RecordItem set from block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:18b}]
 execute if data block ~ 1 ~ Items[0].tag.BlockEntityTag.Items[{Slot:18b}] positioned ~ 20 ~ run function tryashtar.shulker_preview:render/row_2/item

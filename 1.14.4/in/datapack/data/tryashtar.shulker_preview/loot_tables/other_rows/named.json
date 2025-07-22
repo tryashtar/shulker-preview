@@ -18,7 +18,7 @@
                     [
                       {
                         "nbt": "Item.tag.display.Name",
-                        "entity": "7368756c-6b65-7220-7072-65766965773f",
+                        "entity": "@s",
                         "interpret": true,
                         "color": "gray",
                         "italic": false
