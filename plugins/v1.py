@@ -36,11 +36,11 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
          print(item, overrides)
       if isinstance(data, LayeredModel):
          image_layers = [vanilla.assets.textures[x].image.convert('RGBA') for x in data.layers]
+         tint_layers = colormap.get(short(item))
          image = PIL.Image.new('RGBA', image_layers[0].size)
          for i, layer in enumerate(image_layers):
-            if (tints := colormap.get(short(item))) is not None:
-               if i < len(tints) and (tint := tints[i]) is not None:
-                  layer = colorize(layer, rgba(tint))
+            if tint_layers is not None and i < len(tint_layers) and (tint := tint_layers[i]) is not None:
+               layer = colorize(layer, rgba(tint))
             image.paste(layer, (0, 0), layer)
          flat_items[item] = image
       elif isinstance(data, ElementModel):
@@ -93,24 +93,26 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
       'ascent': 7,
       'chars': [','],
    })
-   lang.data['tryashtar.shulker_preview.empty_slot'] = get_space(font, 18)
-   lang.data['tryashtar.shulker_preview.row_end'] = get_space(font, -162)
+   comma_forward = 32767
+   comma_back = -32773
+   lang.data['tryashtar.shulker_preview.empty_slot'] = get_space(font, 18 + comma_forward + comma_back)
+   lang.data['tryashtar.shulker_preview.row_end'] = get_space(font, -162 + comma_forward + comma_back)
+   lang.data['tryashtar.shulker_preview.start'] = get_space(font, comma_back)
    for texture, tooltip, bottom in [('shulker_box', 'shulker_tooltip', 20), ('generic_54', 'ender_tooltip', 27)]:
       text = add_tooltip(font, f'minecraft:gui/container/{texture}', bottom)
-      lang.data[f'tryashtar.shulker_preview.{tooltip}'] = get_space(font, -4) + text + get_space(font, 8)
+      lang.data[f'tryashtar.shulker_preview.{tooltip}'] = get_space(font, -4 + comma_forward) + text + get_space(font, 8 + comma_back)
    missing = font.add_sprite('tryashtar.shulker_preview:missingno')
    for row in range(font.rows):
-      lang.data[f'tryashtar.shulker_preview.missingno.{row}'] = missing.rows[row] + missing.negative + get_space(font, 15)
+      lang.data[f'tryashtar.shulker_preview.missingno.{row}'] = get_space(font, comma_forward) + missing.rows[row] + missing.negative + get_space(font, 15 + comma_back)
    numbers = add_numbers(font)
    for row in range(font.rows):
       for num in range(1, 10):
-         lang.data[f'tryashtar.shulker_preview.number.{num}.{row}'] = get_space(font, -4) + numbers[num].negative + numbers[num].normal[row] + get_space(font, 1)
-         lang.data[f'tryashtar.shulker_preview.number_shadow.{num}.{row}'] = get_space(font, -3) + numbers[num].negative + numbers[num].shadow[row]
+         lang.data[f'tryashtar.shulker_preview.number.{num}.{row}'] = get_space(font, -4 + comma_forward) + numbers[num].negative + numbers[num].normal[row] + get_space(font, 1 + comma_back)
+         lang.data[f'tryashtar.shulker_preview.number_shadow.{num}.{row}'] = get_space(font, -3 + comma_forward) + numbers[num].negative + numbers[num].shadow[row] + get_space(font, comma_back)
       for num in range(10, 100):
-         d1 = num // 10
-         d2 = num % 10
-         lang.data[f'tryashtar.shulker_preview.number.{num}.{row}'] = get_space(font, -7) + numbers[d1].negative + numbers[d2].negative + numbers[d1].normal[row] + numbers[d2].normal[row] + get_space(font, 1)
-         lang.data[f'tryashtar.shulker_preview.number_shadow.{num}.{row}'] = get_space(font, -6) + numbers[d1].negative + numbers[d2].negative + numbers[d1].shadow[row] + numbers[d2].shadow[row]
+         d1, d2 = divmod(num, 10)
+         lang.data[f'tryashtar.shulker_preview.number.{num}.{row}'] = get_space(font, -7 + comma_forward) + numbers[d1].negative + numbers[d2].negative + numbers[d1].normal[row] + numbers[d2].normal[row] + get_space(font, 1 + comma_back)
+         lang.data[f'tryashtar.shulker_preview.number_shadow.{num}.{row}'] = get_space(font, -6 + comma_forward) + numbers[d1].negative + numbers[d2].negative + numbers[d1].shadow[row] + numbers[d2].shadow[row] + get_space(font, comma_back)
    for row in range(font.rows):
       durability = ''.join([font.next_char() for _ in range(14)])
       font.add_provider({
@@ -124,23 +126,23 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
             durability[10:14] + '\u0000'
          ]})
       for num in range(14):
-         lang.data[f"tryashtar.shulker_preview.durability.{num}.{row}"] = get_space(font, -16) + durability[num] + get_space(font, 2)
+         lang.data[f"tryashtar.shulker_preview.durability.{num}.{row}"] = get_space(font, -16 + comma_forward) + durability[num] + get_space(font, 2 + comma_back)
    font.add_grid('tryashtar.shulker_preview:item_sheet', item_grid)
    font.add_grid('tryashtar.shulker_preview:block_sheet', block_grid)
    for item in flat_items.keys():
       sprite = font.get_sprite(item)
       for row in range(font.rows):
-         text = sprite.rows[row] + sprite.negative + get_space(font, 15)
+         text = get_space(font, comma_forward) + sprite.rows[row] + sprite.negative + get_space(font, 15) + get_space(font, comma_back)
          lang.data[f'tryashtar.shulker_preview.item.{canon(item)}.{row}'] = text
    for item in block_items.keys():
       sprite = font.get_sprite(item)
       for row in range(font.rows):
-         text = sprite.rows[row] + sprite.negative + get_space(font, 15)
+         text = get_space(font, comma_forward) + sprite.rows[row] + sprite.negative + get_space(font, 15) + get_space(font, comma_back)
          lang.data[f'tryashtar.shulker_preview.item.{canon(item)}.{row}'] = text
    for overlay in overlays.keys():
       sprite = font.get_sprite(overlay)
       for row in range(font.rows):
-         text = sprite.rows[row] + sprite.negative + get_space(font, 15)
+         text = get_space(font, comma_forward) + sprite.rows[row] + sprite.negative + get_space(font, 15) + get_space(font, comma_back)
          lang.data[f'tryashtar.shulker_preview.overlay.{overlay}.{row}'] = text
    font_result = font.build()
    font_result.data['providers'][0] = {'comment':'Many thanks to AmberW for this invaluable concept'} | font_result.data['providers'][0]
@@ -167,10 +169,7 @@ def trim_overrides(overrides: list) -> list:
    result = []
    for override in overrides:
       pred = override['predicate']
-      for impossible in ['pulling', 'pull', 'angle', 'cast', 'time', 'blocking']:
-         if impossible in pred:
-            break
-      else:
+      if not any(x in pred for x in ['pulling', 'pull', 'angle', 'cast', 'time', 'blocking']):
          result.append(override)
    return result
 
@@ -187,7 +186,7 @@ def process_item_lines(items: list[str], row: int, durability_info: dict[str, in
             f'execute if block ~1 1 ~ jukebox{{RecordItem:{{id:"minecraft:elytra",tag:{{Damage:{damage - 1}}}}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.broken_elytra.{row}"}}\'}}',
             f'execute {if_item} unless block ~1 1 ~ jukebox{{RecordItem:{{id:"minecraft:elytra",tag:{{Damage:431}}}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.elytra.{row}"}}\'}}',
          ])
-      elif short(item) == "crossbow":
+      elif short(item) == 'crossbow':
          lines.extend([
             f'execute if block ~1 1 ~ jukebox{{RecordItem:{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{id:"minecraft:arrow"}}]}}}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow_arrow.{row}"}}\'}}',
             f'execute if block ~1 1 ~ jukebox{{RecordItem:{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{id:"minecraft:firework_rocket"}}]}}}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow_firework.{row}"}}\'}}',

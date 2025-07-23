@@ -228,7 +228,7 @@ def add_tooltip(font: FontManager, texture: str, bottom: int) -> str:
             'type': 'bitmap',
             'file': texture + '.png',
             'ascent': -32768,
-            'height': height,
+            'height': -height,
             'chars': negative
          })
          ascent -= height
@@ -280,31 +280,26 @@ def add_numbers(font: FontManager) -> list[NumberData]:
       })
    return result
 
+def make_change(coins: list[int], target: int) -> dict[int, int]:
+   queue: collections.deque[tuple[int, dict[int, int]]] = collections.deque([(0, {})])
+   visited: set[int] = {0}
+   while len(queue) > 0:
+      current_total, used = queue.popleft()
+      for coin in coins:
+         new_total = current_total + coin
+         new_used = used.copy()
+         new_used[coin] = new_used.get(coin, 0) + 1
+         if new_total == target:
+            return new_used
+         if new_total not in visited:
+            visited.add(new_total)
+            queue.append((new_total, new_used))
+   raise ValueError(target)
+
 def get_space(font: FontManager, width: int) -> str:
-   if (exact := font.spaces.get(width)) is not None:
-      return exact
-   current_width = 0
-   result_str = ''
-   if width > 0:
-      while current_width < width:
-         small_enough = [(w, char) for w, char in font.spaces.items() if current_width + w <= width]
-         if len(small_enough) == 0:
-            raise ValueError(width)
-         w, char = max(small_enough, key=lambda tup: tup[0])
-         if w < 1:
-            raise ValueError(width)
-         current_width += w
-         result_str += char
-      return result_str
-   if width < 0:
-      while current_width > width:
-         small_enough = [(w, char) for w, char in font.spaces.items() if current_width + w >= width]
-         if len(small_enough) == 0:
-            raise ValueError(width)
-         w, char = min(small_enough, key=lambda tup: tup[0])
-         if w > -1:
-            raise ValueError(width)
-         current_width += w
-         result_str += char
-      return result_str
-   return ''
+   coins = list(font.spaces.keys())
+   change = make_change(coins, width)
+   result = ''
+   for entry, amount in change.items():
+      result += font.spaces[entry] * amount
+   return result

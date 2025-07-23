@@ -1,6 +1,7 @@
 # summon tooltip background
-#execute if score #ender_header shulker_preview matches 1 run summon area_effect_cloud ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.ender_tooltip"}'}
-#execute if score #ender_header shulker_preview matches 0 run summon area_effect_cloud ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip"}'}
+summon area_effect_cloud ~ 1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.start"}'}
+execute if score #ender_header shulker_preview matches 1 run summon area_effect_cloud ~ 1.1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.ender_tooltip"}'}
+execute if score #ender_header shulker_preview matches 0 run summon area_effect_cloud ~ 1.1 ~ {Tags:["tryashtar.shulker_preview"],CustomName:'{"translate":"tryashtar.shulker_preview.shulker_tooltip"}'}
 
 function tryashtar.shulker_preview:analyze
 
