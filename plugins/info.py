@@ -9,7 +9,9 @@ import beet.contrib.vanilla
 import zipfile
 from plugins.util import short, canon, rgba
 
-def version_info(jar: beet.contrib.vanilla.ClientJar) -> dict[str, typing.Any]:
+PackVersionInfo = typing.TypedDict('PackVersionInfo', {'resource': int, 'data': int})
+VersionInfo = typing.TypedDict('VersionInfo', {'id': str, 'world_version': int, 'pack_version': int | PackVersionInfo})
+def version_info(jar: beet.contrib.vanilla.ClientJar) -> VersionInfo:
    with zipfile.ZipFile(jar.path) as file:
       return json.load(file.open('version.json'))
 

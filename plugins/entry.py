@@ -18,19 +18,19 @@ def main(ctx: beet.Context):
    export(ctx, target)
 
 def export(ctx: beet.Context, target: VersionRange):
-   ctx.assets.pack_format = target.last.resourcepack
-   ctx.assets.supported_formats = [target.first.resourcepack, target.last.resourcepack]
+   ctx.assets.pack_format = target.last.pack.resourcepack
+   ctx.assets.supported_formats = [target.first.pack.resourcepack, target.last.pack.resourcepack]
    ctx.assets.description = 'Shulker Box tooltip preview: resource pack'
    ctx.assets.save(path=ctx.directory / 'out/resourcepack', overwrite=True)
    ctx.assets.save(path=ctx.directory / f'out/Shulker Preview Resource Pack ({target.first.version}).zip', zipped=True, overwrite=True)
-   ctx.data.pack_format = target.last.datapack
-   ctx.data.supported_formats = [target.first.datapack, target.last.datapack]
+   ctx.data.pack_format = target.last.pack.datapack
+   ctx.data.supported_formats = [target.first.pack.datapack, target.last.pack.datapack]
    ctx.data.description = 'Shulker Box tooltip preview: data pack'
    ctx.data.save(path=ctx.directory / 'out/datapack', overwrite=True)
    ctx.data.save(path=ctx.directory / f'out/Shulker Preview Data Pack ({target.first.version}).zip', zipped=True, overwrite=True)
    dark_theme = beet.ResourcePack(path='in/resourcepack_dark')
    dark_theme.pack_format = ctx.assets.pack_format
-   dark_theme.supported_formats = [target.first.resourcepack, target.last.resourcepack]
+   dark_theme.supported_formats = [target.first.pack.resourcepack, target.last.pack.resourcepack]
    dark_theme.description = '(apply this pack above the normal resource pack)'
    dark_theme.save(path=ctx.directory / 'out/dark_theme', overwrite=True)
    dark_theme.save(path=ctx.directory / f'out/Shulker Preview Dark Theme ({target.first.version}).zip', zipped=True, overwrite=True)

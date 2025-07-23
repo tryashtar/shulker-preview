@@ -3,7 +3,7 @@ import types
 import dataclasses
 import beet
 import beet.contrib.vanilla
-from plugins.info import version_info
+from plugins.info import version_info, VersionInfo
 
 def fixed_release_registry(ctx: beet.Context) -> beet.contrib.vanilla.ReleaseRegistry:
    releases = beet.contrib.vanilla.ReleaseRegistry(ctx.cache['vanilla'], None)
@@ -17,52 +17,74 @@ def fixed_release_registry(ctx: beet.Context) -> beet.contrib.vanilla.ReleaseReg
    return releases
 
 @dataclasses.dataclass
-class VersionDef:
-   version: str
+class PackVersion:
    datapack: int
    resourcepack: int
-   data: int
+
+@dataclasses.dataclass
+class VersionDef:
+   version: str
+   pack: PackVersion
+   world: int
 
 @dataclasses.dataclass
 class VersionRange:
    first: VersionDef
    last: VersionDef
 
-def load_version_def(registry: beet.contrib.vanilla.ReleaseRegistry, target: str | dict) -> VersionDef:
+RawVersionDict = typing.TypedDict('RawVersionDict', {'version': str, 'datapack': typing.NotRequired[int], 'resourcepack': typing.NotRequired[int], 'world': typing.NotRequired[int]})
+RawVersion = str | RawVersionDict
+
+def load_version_def(registry: beet.contrib.vanilla.ReleaseRegistry, target: RawVersion) -> VersionDef:
    if isinstance(target, str):
       release = registry[target]
       info_data = version_info(release.client_jar)
+      pack = pack_version(info_data)
       return VersionDef(
          version=info_data['id'],
-         datapack=pack_version(info_data, 'data'),
-         resourcepack=pack_version(info_data, 'resource'),
-         data=info_data['world_version']
+         pack=pack,
+         world=info_data['world_version']
       )
    if isinstance(target, dict):
-      if (version := target.get('version')) is not None:
-         release = registry[target['version']]
-         info_data = version_info(release.client_jar)
+      version = target['version']
+      datapack = target.get('datapack')
+      resourcepack = target.get('resourcepack')
+      world = target.get('world')
+      if datapack is not None and resourcepack is not None and world is not None:
          return VersionDef(
             version=version,
-            datapack=target.get('datapack', pack_version(info_data, 'data')),
-            resourcepack=target.get('resourcepack', pack_version(info_data, 'resource')),
-            data=target.get('data', info_data['world_version'])
+            pack=PackVersion(datapack=datapack, resourcepack=resourcepack),
+            world=world
          )
+      release = registry[version]
+      info_data = version_info(release.client_jar)
+      pack = pack_version(info_data)
+      if datapack is not None:
+         pack.datapack = datapack
+      if resourcepack is not None:
+         pack.resourcepack = resourcepack
+      if world is None:
+         world = info_data['world_version']
+      return VersionDef(
+         version=version,
+         pack=pack,
+         world=world
+      )
    raise ValueError(target)
 
-def pack_version(info_data: dict[str, typing.Any], key: typing.Literal['data', 'resource']) -> int:
+def pack_version(info_data: VersionInfo) -> PackVersion:
    value = info_data['pack_version']
    if isinstance(value, int):
-      return value
-   return value[key]
+      return PackVersion(datapack=value, resourcepack=value)
+   return PackVersion(datapack=value['data'], resourcepack=value['resource'])
 
-def load_version_range(registry: beet.contrib.vanilla.ReleaseRegistry, target: str | dict | tuple[str | dict, str | dict] | list[str | dict]) -> VersionRange:
+def load_version_range(registry: beet.contrib.vanilla.ReleaseRegistry, target: RawVersion | tuple[RawVersion, RawVersion] | list[RawVersion]) -> VersionRange:
    if isinstance(target, str):
       both = load_version_def(registry, target)
       return VersionRange(first=both, last=both)
-   if isinstance(target, tuple) or isinstance(target, list):
+   if isinstance(target, (list, tuple)) and len(target) == 2:
       def1 = load_version_def(registry, target[0])
-      def2 = load_version_def(registry, target[-1])
+      def2 = load_version_def(registry, target[1])
       return VersionRange(first=def1, last=def2)
    if isinstance(target, dict):
       if 'from' in target and 'to' in target:
