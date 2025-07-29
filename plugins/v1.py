@@ -77,7 +77,9 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
    resourcepack.textures['item_sheet'] = beet.Texture(item_image)
    resourcepack.textures['block_sheet'] = beet.Texture(block_image)
    
-   lang = resourcepack.languages['en_us']
+   lang = beet.Language()
+   lang.data['%1$s%418634357$s'] = '%2$s'
+   resourcepack.languages['en_us'] = lang
    font = FontManager(rows=3)
    font.legacy_space_texture = 'tryashtar.shulker_preview:space'
    font.upcoming_char = ord('\uf800')
@@ -88,6 +90,10 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
    for width in widths:
       font.get_space(width)
    font.upcoming_char = ord('\ue000')
+   resourcepack.textures['comma'] = beet.Texture(source_path='shared/comma.png')
+   resourcepack.textures['durability'] = beet.Texture(source_path='shared/durability_color.png')
+   resourcepack.textures['missingno'] = beet.Texture(source_path='shared/missingno.png')
+   resourcepack.textures['space'] = beet.Texture(source_path='shared/space.png')
    font.add_provider({
       'type': 'bitmap',
       'file': 'tryashtar.shulker_preview:comma.png',
