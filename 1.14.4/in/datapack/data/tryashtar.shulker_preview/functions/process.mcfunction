@@ -64,8 +64,8 @@ execute unless score #more shulker_preview matches 1.. as 7368756c-6b65-7220-707
 data modify block ~ 1 ~ Items[0].tag.display.Lore append from block ~ 1 ~ Items[1].tag.display.Lore[]
 
 # hide the original tooltip lines, and mark this box as processed
-data modify block ~ ~1 ~ Items[0].tag.HideFlags set value 32
-data modify block ~ ~1 ~ Items[0].tag."shulker_preview.processed" set value 1b
+data modify block ~ 1 ~ Items[0].tag.HideFlags set value 32
+data modify block ~ 1 ~ Items[0].tag."shulker_preview.processed" set value 1b
 
 # don't process any more boxes this tick
 scoreboard players set #ready shulker_preview 0

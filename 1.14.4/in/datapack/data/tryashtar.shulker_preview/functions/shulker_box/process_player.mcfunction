@@ -6,4 +6,4 @@ data remove block ~1 1 ~ RecordItem.tag.shulker_boxes[{tag:{"shulker_preview.pro
 
 # only process the first shulker box
 execute store result score #slot shulker_preview store success score #has_slot shulker_preview run data get block ~1 1 ~ RecordItem.tag.shulker_boxes[0].Slot
-execute if score #has_slot shulker_preview matches 1 run function tryashtar.shulker_preview:process_player2
+execute if score #has_slot shulker_preview matches 1 run function tryashtar.shulker_preview:shulker_box/process_player2
