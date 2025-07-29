@@ -169,6 +169,14 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
 
 def player_online(version: VersionRange) -> list[str]:
    result = [
+      "# check for integrity of loot table override",
+      'replaceitem block 29999977 1 9832 container.0 tnt{loot_integrity:1b}',
+      'loot replace block 29999977 1 9832 container.0 mine 29999977 1 9832 golden_pickaxe{drop_contents:1b}',
+      'execute store success score #loot_table shulker_preview if data block 29999977 1 9832 {Items:[{tag:{loot_integrity:1b}}]}',
+      'execute if score #loot_table shulker_preview matches 0 run tellraw @a [{"text":"\\n⚠ ","color":"yellow"},{"text":"Broken loot table!","color":"red"},{"text":" ⚠\\n","color":"yellow"},{"text":"The shulker box loot table appears to have been modified by another data pack. This prevents shulker previews from working.\\n","color":"red"}]',
+      'execute if score #loot_table shulker_preview matches 0 run scoreboard players set #install shulker_preview -2',
+      'execute if score #loot_table shulker_preview matches 1 if score #install shulker_preview matches -2 run scoreboard players set #install shulker_preview 0',
+      '',
       "# check for sufficient Minecraft version",
       'execute store result score #version shulker_preview run data get entity @a[limit=1] DataVersion',
       f'execute if score #version shulker_preview matches 1..{version.last.world-1} run tellraw @a [{{"text":"\\n⚠ ","color":"yellow"}},{{"text":"Outdated Minecraft version!","color":"red"}},{{"text":" ⚠\\n","color":"yellow"}},{{"text":"This shulker preview data pack is for version {version.first.name}.\\n","color":"red"}},{{"text":"Download for other versions here","color":"blue","underlined":true,"clickEvent":{{"action":"open_url","value":"https://tryashtar.github.io/shulker-preview"}}}},"\\n"]',
