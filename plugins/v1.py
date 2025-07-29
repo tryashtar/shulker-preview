@@ -1,4 +1,5 @@
 import collections
+import typing
 import PIL.Image
 import beet
 import beet.contrib.vanilla
@@ -11,7 +12,7 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
    datapack = ctx.data['tryashtar.shulker_preview']
    resourcepack = ctx.assets['tryashtar.shulker_preview']
    
-   target_version = target.last.version
+   target_version = target.last.name
    data_version = target.last.world
    vanilla = registry[target_version]
    
@@ -164,8 +165,34 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
          lines = process_item_lines(length_dict[length], row, durability_dict)
          datapack.functions[f'render/row_{row}/item/length_{length}'] = beet.Function(lines)
       datapack.functions[f'render/row_{row}/item'] = beet.Function(process_item)
+   datapack.functions['meta/player_online'] = beet.Function(player_online(target))
 
-def trim_overrides(overrides: list) -> list:
+def player_online(version: VersionRange) -> list[str]:
+   result = [
+      "# check for sufficient Minecraft version",
+      'execute store result score #version shulker_preview run data get entity @a[limit=1] DataVersion',
+      f'execute if score #version shulker_preview matches 1..{version.last.world-1} run tellraw @a [{{"text":"\\n⚠ ","color":"yellow"}},{{"text":"Outdated Minecraft version!","color":"red"}},{{"text":" ⚠\\n","color":"yellow"}},{{"text":"This shulker preview data pack is for version {version.first.name}.\\n","color":"red"}},{{"text":"Download for other versions here","color":"blue","underlined":true,"clickEvent":{{"action":"open_url","value":"https://tryashtar.github.io/shulker-preview"}}}},"\\n"]',
+      f'execute if score #version shulker_preview matches 1..{version.first.world-1} run scoreboard players set #install shulker_preview -1',
+      f'execute if score #version shulker_preview matches {version.last.world+1}.. run tellraw @a [{{"text":"\\n⚠ ","color":"yellow"}},{{"text":"Outdated Shulker Preview version!","color":"red"}},{{"text":" ⚠\\n","color":"yellow"}},{{"text":"This data pack is for version {version.first.name}.\\n","color":"red"}},{{"text":"Download for other versions here","color":"blue","underlined":true,"clickEvent":{{"action":"open_url","value":"https://tryashtar.github.io/shulker-preview"}}}},"\\n"]',
+      f'execute if score #version shulker_preview matches {version.last.world+1}.. run scoreboard players set #install shulker_preview -1',
+      f'execute if score #version shulker_preview matches {version.first.world}..{version.last.world} if score #install shulker_preview matches -1 run scoreboard players set #install shulker_preview 0',
+      '',
+      "# check for resource pack equipped/success message",
+      'scoreboard players add #install shulker_preview 0',
+      'execute if score #install shulker_preview matches 0 run function tryashtar.shulker_preview:meta/install',
+      '',
+      "# check for modded server",
+      'scoreboard players add #modded shulker_preview 0',
+      'execute if score #modded shulker_preview matches 0 store success score #modded shulker_preview run data get entity @a[limit=1] "Spigot.ticksLived"',
+      'execute if score #modded shulker_preview matches 0 store success score #modded shulker_preview run data get entity @a[limit=1] "Bukkit.updateLevel"',
+      'execute if score #modded shulker_preview matches 0 store success score #modded shulker_preview run data get entity @a[limit=1] "Paper.SpawnReason"',
+      '',
+      'execute if score #modded shulker_preview matches 1 run tellraw @a [{"text":"\\n⚠ ","color":"yellow"},{"text":"Modded server detected!","color":"red"},{"text":" ⚠\\n","color":"yellow"},{"text":"Bukkit and its derivatives can break vanilla behavior that shulker previews relies on.","color":"red"},{"text":"\\n⚠ ","color":"yellow"},{"text":"There is no guarantee it will work!","color":"red"},{"text":" ⚠\\n","color":"yellow"}]',
+      'execute if score #modded shulker_preview matches 1 run scoreboard players set #modded shulker_preview 2',
+   ]
+   return result
+
+def trim_overrides(overrides: list[dict[str, typing.Any]]) -> list[dict[str, typing.Any]]:
    result = []
    for override in overrides:
       pred = override['predicate']

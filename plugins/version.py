@@ -23,7 +23,7 @@ class PackVersion:
 
 @dataclasses.dataclass
 class VersionDef:
-   version: str
+   name: str
    pack: PackVersion
    world: int
 
@@ -41,7 +41,7 @@ def load_version_def(registry: beet.contrib.vanilla.ReleaseRegistry, target: Raw
       info_data = version_info(release.client_jar)
       pack = pack_version(info_data)
       return VersionDef(
-         version=info_data['id'],
+         name=info_data['id'],
          pack=pack,
          world=info_data['world_version']
       )
@@ -52,7 +52,7 @@ def load_version_def(registry: beet.contrib.vanilla.ReleaseRegistry, target: Raw
       world = target.get('world')
       if datapack is not None and resourcepack is not None and world is not None:
          return VersionDef(
-            version=version,
+            name=version,
             pack=PackVersion(datapack=datapack, resourcepack=resourcepack),
             world=world
          )
@@ -66,7 +66,7 @@ def load_version_def(registry: beet.contrib.vanilla.ReleaseRegistry, target: Raw
       if world is None:
          world = info_data['world_version']
       return VersionDef(
-         version=version,
+         name=version,
          pack=pack,
          world=world
       )

@@ -18,8 +18,8 @@ def check_items(ctx: beet.Context, version: str, expected_blocks: list[str], exp
    print(version)
    registry = fixed_release_registry(ctx)
    target = load_version_range(registry, version)
-   target_version = target.last.version
-   data_version = target.last.version
+   target_version = target.last.name
+   data_version = target.last.name
    vanilla = registry[target_version]
    items = [short(x) for x in get_registry(vanilla, 'minecraft:item').keys()]
    items.remove('air')
