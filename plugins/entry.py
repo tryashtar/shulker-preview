@@ -28,9 +28,10 @@ def export(ctx: beet.Context, target: VersionRange):
    ctx.data.description = 'Shulker Box tooltip preview: data pack'
    ctx.data.save(path=ctx.directory / 'out/datapack', overwrite=True)
    ctx.data.save(path=ctx.directory / f'out/Shulker Preview Data Pack ({target.first.name}).zip', zipped=True, overwrite=True)
-   dark_theme = beet.ResourcePack(path='in/resourcepack_dark')
+   dark_theme = beet.ResourcePack()
    dark_theme.pack_format = ctx.assets.pack_format
    dark_theme.supported_formats = [target.first.pack.resourcepack, target.last.pack.resourcepack]
    dark_theme.description = '(apply this pack above the normal resource pack)'
+   dark_theme.languages['tryashtar.shulker_preview:en_us'] = beet.Language({'tryashtar.shulker_preview.shulker_tooltip':'','tryashtar.shulker_preview.ender_tooltip':''})
    dark_theme.save(path=ctx.directory / 'out/dark_theme', overwrite=True)
    dark_theme.save(path=ctx.directory / f'out/Shulker Preview Dark Theme ({target.first.name}).zip', zipped=True, overwrite=True)
