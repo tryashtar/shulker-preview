@@ -164,6 +164,11 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
          process_item.append(f'execute if score #length shulker_preview matches {length} run function tryashtar.shulker_preview:render/row_{row}/item/length_{length}')
          lines = process_item_lines(length_dict[length], row, durability_dict)
          datapack.functions[f'render/row_{row}/item/length_{length}'] = beet.Function(lines)
+      process_item.extend([
+         '',
+         "# placeholder if item was not found",
+         f'execute unless entity @e[type=area_effect_cloud,tag=tryashtar.shulker_preview,distance=..0.0001] run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}\'}}',
+      ])
       datapack.functions[f'render/row_{row}/item'] = beet.Function(process_item)
    datapack.functions['meta/player_online'] = beet.Function(player_online(target))
 
