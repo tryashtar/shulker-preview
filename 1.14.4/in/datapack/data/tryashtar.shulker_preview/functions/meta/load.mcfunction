@@ -1,5 +1,5 @@
-# main load function
-# set up scoreboard and data
+# set up scoreboard
+# it's mostly #-prefixed fake players, but is also used to cache players' ender chest contents size
 scoreboard objectives add shulker_preview dummy "Shulker Box Preview"
 scoreboard players set #13000 shulker_preview 13000
 

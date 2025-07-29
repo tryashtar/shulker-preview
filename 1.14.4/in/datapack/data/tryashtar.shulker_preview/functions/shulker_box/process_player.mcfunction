@@ -1,13 +1,9 @@
-# copy all containers in inventory to arbitrary NBT area (item tag)
-data modify block ~ 1 ~ Items set value [{id:"tnt",Count:1b}]
-data modify block ~ 1 ~ Items[0].tag.shulker_items append from entity @s Inventory[{tag:{BlockEntityTag:{Items:[{}]}}}]
+# use the jukebox as a temporary storage location for unprocessed containers in the player's inventory
+# checking for shulker box IDs would be too expensive here
+data modify block ~1 1 ~ RecordItem set value {id:"tnt",Count:1b}
+data modify block ~1 1 ~ RecordItem.tag.shulker_boxes append from entity @s Inventory[{tag:{BlockEntityTag:{Items:[{}]}}}]
+data remove block ~1 1 ~ RecordItem.tag.shulker_boxes[{tag:{"shulker_preview.processed":1b}}]
 
-# filter out containers that have already been processed
-data remove block ~ 1 ~ Items[0].tag.shulker_items[{tag:{"shulker_preview.processed":1b}}]
-
-# save which slot first remaining container came from
-execute store result score #slot shulker_preview store success score #has_slot shulker_preview run data get block ~ 1 ~ Items[0].tag.shulker_items[0].Slot
-
-# workaround for the fact that /clear can find items in the cursor, but Inventory[] cannot
-# without this sub-function, picking up a lone unprocessed shulker box puts the placeholder TNT in your inventory
+# only process the first shulker box
+execute store result score #slot shulker_preview store success score #has_slot shulker_preview run data get block ~1 1 ~ RecordItem.tag.shulker_boxes[0].Slot
 execute if score #has_slot shulker_preview matches 1 run function tryashtar.shulker_preview:process_player2
