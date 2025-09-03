@@ -10,15 +10,50 @@ def process_item(row: int):
       execute store result score #length shulker_preview run data get block ~1 1 ~ RecordItem.id
       for length in sorted(length_dict.keys()):
          execute if score #length shulker_preview matches length run function f"tryashtar.shulker_preview:render/row_{row}/item/length_{length}":
+            has_durability = False
             for item in length_dict[length]:
+               durability = durability_dict.get(item)
                for override in item_overrides[item]:
-                  pos, neg = override_check(item, override.predicate, durability_dict.get(item))
+                  pos, neg = override_check(item, override.predicate, durability)
                   if neg is None:
                      execute if block ~1 1 ~ jukebox{RecordItem:pos} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.item.{override.sprite}.{row}"}}'}
                   else:
                      execute if block ~1 1 ~ jukebox{RecordItem:pos} unless block ~1 1 ~ jukebox{RecordItem:neg} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.item.{override.sprite}.{row}"}}'}
-      
+               if durability is not None:
+                  has_durability = True
+                  execute if block ~1 1 ~ jukebox{RecordItem:{id:item}} run scoreboard players set #max shulker_preview durability
+            if has_durability:
+               execute store result score #durability shulker_preview run data get block ~1 1 ~ RecordItem.tag.Damage
+               execute if data block ~1 1 ~ RecordItem.tag.Damage run function f"tryashtar.shulker_preview:render/row_{row}/overlay/durability"
       execute unless entity @e[type=area_effect_cloud,tag=tryashtar.shulker_preview,distance=..0.0001,limit=1] run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}'}
+      execute store result score #count shulker_preview run data get block ~1 1 ~ RecordItem.Count
+      execute if score #count shulker_preview matches 2.. run function f"tryashtar.shulker_preview:render/row_{row}/overlay/count"
+
+def process_count(row: int):
+   function f"tryashtar.shulker_preview:render/row_{row}/overlay/count":
+      for i in range(2, 65):
+         if i < 64:
+            n = i
+         else:
+            n = (i, None)
+         execute if score #count shulker_preview matches n run summon area_effect_cloud ~ ~0.2 ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'[{{"translate":"tryashtar.shulker_preview.number_shadow.{i}.{row}","color":"dark_gray"}},", ",{{"translate":"tryashtar.shulker_preview.number.{i}.{row}","color":"white"}}]'}
+
+def process_durability(row: int):
+   function f"tryashtar.shulker_preview:render/row_{row}/overlay/durability":
+      scoreboard players operation #durability shulker_preview *= #13000 shulker_preview
+      scoreboard players operation #durability shulker_preview /= #max shulker_preview
+      for i in range(0, 14):
+         lower = 1000*i-500
+         upper = 1000*i+499
+         if i == 13:
+            check = (lower, None)
+         elif i == 0:
+            check = (1, upper)
+         else:
+            check = (lower, upper)
+         execute if score #durability shulker_preview matches check run summon area_effect_cloud ~ ~0.3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.durability.{i}.{row}"}}'}
 
 for row in range(3):
    process_item(row)
+   process_count(row)
+   process_durability(row)
