@@ -3,7 +3,7 @@ import dataclasses
 import PIL.Image
 import beet
 import beet.contrib.vanilla
-import model_resolver
+import model_resolver.render
 from plugins.version import VersionRange
 from plugins.util import short, canon, model_data, colorize, rgba, LayeredModel, ElementModel, EntityModel, make_grid, invert_dict, FontManager, add_numbers, add_tooltip, get_space, JsonDict, NbtCompound
 from plugins.info import get_fake_model, get_registry, item_durability, spawn_egg_colors, potion_colors, item_colors
@@ -26,7 +26,7 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
       *[(short(name), [0xa06540]) for name in ['leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots', 'leather_horse_armor']],
    ])
    flat_items: dict[str, PIL.Image.Image] = {}
-   render_models: dict[str, str] = {}
+   render_models: dict[str, str | JsonDict] = {}
    def handle_model(name: str, model_name: str):
       model = vanilla.assets.models[canon(model_name)]
       data = model_data(vanilla.assets.models, model)
@@ -44,11 +44,11 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
       elif isinstance(data, EntityModel):
          fake_model = get_fake_model(name)
          if fake_model is None:
-            print(f'Unhandled item: {name}')
-         else:
-            fake_model['display'] = data.display
-            ctx.assets.models[f'render:{name}'] = beet.Model(fake_model)
-            render_models[name] = f'render:{name}'
+            raise ValueError(name)
+         fake_model['display'] = data.display
+         render_models[name] = fake_model
+      else:
+         raise ValueError(name)
       return data
    item_overrides: dict[str, list[ModelOverride]] = {}
    for item in items:
@@ -65,16 +65,22 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
          for key,value in override['predicate'].items():
             final_override[key] = not value
       item_overrides[item].append(ModelOverride(sprite=item, predicate=final_override))
-   renderer = model_resolver.Render(ctx, vanilla)
+   renderer = model_resolver.render.Render(ctx)
+   renderer.getter._vanilla = vanilla
    renderer.default_render_size = 64
    for item, model in render_models.items():
-      renderer.add_model_task(
-         model=model,
-         path_ctx=f'render:{item}',
-         animation_mode='one_file',
-      )
+      if isinstance(model, str):
+         renderer.add_model_task(
+            model=model,
+            animation_mode='one_file',
+         )
+      else:
+         renderer.add_model_dict_task(
+            model=model,
+            animation_mode='one_file',
+         )
    renderer.run()
-   block_items = {item: ctx.assets.textures[f'render:{item}'].image.convert('RGBA') for item, model in render_models.items()}
+   block_items = {item: task.saved_img for item, task in zip(render_models.keys(), renderer.tasks)}
    overlays: dict[str, PIL.Image.Image] = {}
    arrow_overlay = vanilla.assets.textures['minecraft:item/tipped_arrow_head'].image.convert('RGBA')
    potion_overlay = vanilla.assets.textures['minecraft:item/potion_overlay'].image.convert('RGBA')

@@ -14,4 +14,4 @@ dependencies = [
 
 [tool.uv.sources]
 pyopengl = { git = "https://github.com/tryashtar/pyopengl" }
-model-resolver = { git = "https://github.com/tryashtar/model_resolver" }
+model-resolver = { git = "https://github.com/edayot/model_resolver" }
