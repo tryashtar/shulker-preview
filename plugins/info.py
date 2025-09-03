@@ -7,7 +7,7 @@ import dataclasses
 import beet
 import beet.contrib.vanilla
 import zipfile
-from plugins.util import short, canon, rgba
+from plugins.util import short, canon, rgba, JsonDict
 
 PackVersionInfo = typing.TypedDict('PackVersionInfo', {'resource': int, 'data': int})
 VersionInfo = typing.TypedDict('VersionInfo', {'id': str, 'world_version': int, 'pack_version': int | PackVersionInfo})
@@ -15,7 +15,7 @@ def version_info(jar: beet.contrib.vanilla.ClientJar) -> VersionInfo:
    with zipfile.ZipFile(jar.path) as file:
       return json.load(file.open('version.json'))
 
-def get_fake_model(item: str) -> dict[str, typing.Any] | None:
+def get_fake_model(item: str) -> JsonDict | None:
    item = short(item)
    if item == 'shield':
       with open('resources/fake_models/shield.json', 'r', encoding='utf-8') as file:
@@ -93,16 +93,16 @@ def generate_reports(release: beet.contrib.vanilla.Release) -> pathlib.Path:
       subprocess.run(data_command, cwd=path, check=True)
    return path / 'generated/reports'
 
-def get_registry(release: beet.contrib.vanilla.Release, registry: str) -> dict[str, typing.Any]:
+def get_registry(release: beet.contrib.vanilla.Release, registry: str) -> JsonDict:
    path = generate_reports(release)
    with open(path / 'registries.json', encoding='utf-8') as file:
-      data: dict[str, typing.Any] = json.load(file)[registry]['entries']
+      data: JsonDict = json.load(file)[registry]['entries']
    return data
 
-def get_item_components(release: beet.contrib.vanilla.Release) -> dict[str, typing.Any]:
+def get_item_components(release: beet.contrib.vanilla.Release) -> JsonDict:
    path = generate_reports(release)
    with open(path / 'items.json', encoding='utf-8') as file:
-      items: dict[str, typing.Any] = json.load(file)
+      items: JsonDict = json.load(file)
    return {name: value['components'] for name, value in items.items()}
 
 def potion_effects(data_version: int) -> dict[str, dict[str, int]]:

@@ -1,12 +1,11 @@
 import collections
 import dataclasses
-import typing
 import PIL.Image
 import beet
 import beet.contrib.vanilla
 import model_resolver
 from plugins.version import VersionRange
-from plugins.util import short, canon, model_data, colorize, rgba, LayeredModel, ElementModel, EntityModel, make_grid, invert_dict, FontManager, add_numbers, add_tooltip, get_space
+from plugins.util import short, canon, model_data, colorize, rgba, LayeredModel, ElementModel, EntityModel, make_grid, invert_dict, FontManager, add_numbers, add_tooltip, get_space, JsonDict, NbtCompound
 from plugins.info import get_fake_model, get_registry, item_durability, spawn_egg_colors, potion_colors, item_colors
 
 def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, target: VersionRange):
@@ -27,9 +26,7 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
       *[(short(name), [0xa06540]) for name in ['leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots', 'leather_horse_armor']],
    ])
    flat_items: dict[str, PIL.Image.Image] = {}
-   overlays: dict[str, PIL.Image.Image] = {}
    render_models: dict[str, str] = {}
-   item_overrides: dict[str, list[ModelOverride]] = {}
    def handle_model(name: str, model_name: str):
       model = vanilla.assets.models[canon(model_name)]
       data = model_data(vanilla.assets.models, model)
@@ -53,6 +50,7 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
             ctx.assets.models[f'render:{name}'] = beet.Model(fake_model)
             render_models[name] = f'render:{name}'
       return data
+   item_overrides: dict[str, list[ModelOverride]] = {}
    for item in items:
       nspace, path = canon(item).split(':')
       model_name = f'{nspace}:item/{path}'
@@ -63,10 +61,10 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
       for override in overrides:
          sprite_name = item + '.' + '.'.join(override['predicate'].keys())
          handle_model(sprite_name, override['model'])
-         item_overrides[item].append(ModelOverride(sprite_name, override['predicate']))
+         item_overrides[item].append(ModelOverride(sprite=sprite_name, predicate=override['predicate']))
          for key,value in override['predicate'].items():
             final_override[key] = not value
-      item_overrides[item].append(ModelOverride(item, final_override))
+      item_overrides[item].append(ModelOverride(sprite=item, predicate=final_override))
    renderer = model_resolver.Render(ctx, vanilla)
    renderer.default_render_size = 64
    for item, model in render_models.items():
@@ -77,6 +75,7 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
       )
    renderer.run()
    block_items = {item: ctx.assets.textures[f'render:{item}'].image.convert('RGBA') for item, model in render_models.items()}
+   overlays: dict[str, PIL.Image.Image] = {}
    arrow_overlay = vanilla.assets.textures['minecraft:item/tipped_arrow_head'].image.convert('RGBA')
    potion_overlay = vanilla.assets.textures['minecraft:item/potion_overlay'].image.convert('RGBA')
    potions = invert_dict(potion_colors(data_version))
@@ -173,28 +172,34 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
 @dataclasses.dataclass
 class ModelOverride:
    sprite: str
-   predicate: dict[str, typing.Any]
+   predicate: JsonDict
 
-def override_check(item: str, predicate: dict, durability: int | None):
+def override_check(item: str, predicate: JsonDict, durability: int | None) -> tuple[NbtCompound, NbtCompound | None]:
    item = canon(item)
    if len(predicate) == 0:
       return ({'id':item}, None)
    positive = {'id':item,'tag':{}}
    negative = {'tag':{}}
-   if (broken := predicate.get('broken')) is not None and durability is not None:
-      if broken:
-         positive['tag']['Damage'] = durability - 1
-      else:
-         negative['tag']['Damage'] = durability - 1
-   if (charged := predicate.get('charged')) is not None:
-      if (firework := predicate.get('firework')) is None:
-         firework = 0
-      if firework:
-         positive['tag']['ChargedProjectiles'] = [{'id':"minecraft:firework_rocket"}]
-      elif charged:
-         positive['tag']['ChargedProjectiles'] = [{'id':"minecraft:arrow"}]
-      else:
-         negative['tag']['ChargedProjectiles'] = [{}]
+   for key, value in predicate.items():
+      match key:
+         case 'broken':
+            if durability is not None:
+               if value:
+                  positive['tag']['Damage'] = durability - 1
+               else:
+                  negative['tag']['Damage'] = durability - 1
+         case 'charged':
+            firework = predicate.get('firework', 0)
+            if firework:
+               positive['tag']['ChargedProjectiles'] = [{'id':"minecraft:firework_rocket"}]
+            elif value:
+               positive['tag']['ChargedProjectiles'] = [{'id':"minecraft:arrow"}]
+            else:
+               negative['tag']['ChargedProjectiles'] = [{}]      
+         case 'firework':
+            pass
+         case _:
+            raise ValueError(key)
    if len(positive['tag']) == 0:
       del positive['tag']
    if len(negative['tag']) == 0:
@@ -213,7 +218,7 @@ def amber_spaces(font: FontManager):
    for width in widths:
       font.get_space(width)
 
-def trim_overrides(overrides: list[dict[str, typing.Any]]) -> list[dict[str, typing.Any]]:
+def trim_overrides(overrides: list[JsonDict]) -> list[JsonDict]:
    result = []
    for override in overrides:
       pred = override['predicate']

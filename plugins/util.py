@@ -37,25 +37,28 @@ def rgba(color: int):
 def colorize(image: PIL.Image.Image, color) -> PIL.Image.Image:
    return PIL.ImageChops.multiply(image, PIL.Image.new('RGBA', image.size, color))
 
+JsonDict = dict[str, typing.Any]
+NbtCompound = dict[str, typing.Any]
+
 @dataclasses.dataclass
 class LayeredModel:
-   display: dict[str, typing.Any]
+   display: JsonDict
    overrides: list
    layers: list[str]
 
 @dataclasses.dataclass
 class ElementModel:
-   display: dict[str, typing.Any]
+   display: JsonDict
    overrides: list
-   elements: list[dict[str, typing.Any]]
+   elements: list[JsonDict]
 
 @dataclasses.dataclass
 class EntityModel:
-   display: dict[str, typing.Any]
+   display: JsonDict
    overrides: list
 
 def model_data(source: beet.NamespaceProxy[beet.Model], model: beet.Model) -> LayeredModel | ElementModel | EntityModel:
-   display: dict[str, typing.Any] = {}
+   display: JsonDict = {}
    result: list[str | None] = []
    overrides = model.data.get('overrides', [])
    while True:
@@ -117,7 +120,7 @@ class FontManager:
       self.sprites: dict[str, SpriteData] = {}
       self.grids: dict[str, GridData] = {}
       self.sprite_map: dict[str, SpriteData] = {}
-      self.providers: list[dict[str, typing.Any]] = []
+      self.providers: list[JsonDict] = []
    
    def add_sprite(self, texture: str) -> SpriteData:
       if texture not in self.sprite_map:
@@ -151,13 +154,13 @@ class FontManager:
       self.grids[grid + '.png'] = data
       return data
    
-   def add_provider(self, provider: dict[str, typing.Any]):
+   def add_provider(self, provider: JsonDict):
       self.providers.append(provider)
       
    def get_sprite(self, name: str) -> SpriteData:
       return self.sprite_map[name]
    
-   def next_char(self):
+   def next_char(self) -> str:
       char = self.upcoming_char
       for low, high in [(0xd800, 0xdbff), (0xdc00, 0xdfff), (0x05c8, 0x05d2), (0x05e8, 0x06ff), (0x070b, 0x0710), (0x072d, 0x072f), (0x074b, 0x074f), (0x07a4, 0x07a5), (0x07b1, 0x07c2), (0x07f4, 0x07f5), (0x07fa, 0x07fc), (0x07fe, 0x0800), (0x082e, 0x0832), (0x083c, 0x0842), (0x0856, 0x0858), (0x085c, 0x0862), (0x0868, 0x0897), (0x08a0, 0x08a2), (0x08b2, 0x08b8), (0x08c5, 0x08c9), (0xfb34, 0xfb48), (0xfbbf, 0xfbd5), (0xfd8d, 0xfd94), (0xfdc5, 0xfdce), (0xfdf0, 0xfdf2), (0xfe72, 0xfe78), (0xfefa, 0xfefe)]:
          if low <= char <= high:
