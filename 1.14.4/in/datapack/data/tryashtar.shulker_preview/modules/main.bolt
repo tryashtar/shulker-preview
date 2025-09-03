@@ -1,0 +1,29 @@
+from plugins.util import canon, short
+from plugins.v1 import override_check
+
+macro // comment=brigadier:string{"type": "greedy"}:
+   raw f"# {comment.value}"
+
+length_dict = ctx.meta['shulker_preview']['length_dict']
+durability_dict = ctx.meta['shulker_preview']['durability_dict']
+item_overrides = ctx.meta['shulker_preview']['item_overrides']
+
+def process_item(row: int):
+   function f"tryashtar.shulker_preview:render/row_{row}/item":
+      // get the length of this item and call the appropriate function
+      execute store result score #length shulker_preview run data get block ~1 1 ~ RecordItem.id
+      for length in sorted(length_dict.keys()):
+         execute if score #length shulker_preview matches length run function f"tryashtar.shulker_preview:render/row_{row}/item/length_{length}":
+            for item in length_dict[length]:
+               for override in item_overrides[item]:
+                  pos, neg = override_check(item, override.predicate, durability_dict.get(item))
+                  if neg is None:
+                     execute if block ~1 1 ~ jukebox{RecordItem:pos} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.item.{override.sprite}.{row}"}}'}
+                  else:
+                     execute if block ~1 1 ~ jukebox{RecordItem:pos} unless block ~1 1 ~ jukebox{RecordItem:neg} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.item.{override.sprite}.{row}"}}'}
+      
+      // placeholder if item was not found
+      execute unless entity @e[type=area_effect_cloud,tag=tryashtar.shulker_preview,distance=..0.0001,limit=1] run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}'}
+
+for row in range(3):
+   process_item(row)

@@ -3,12 +3,22 @@ data_pack:
   load: [in/datapack]
 resource_pack:
   load: [in/resourcepack]
-pipeline: [plugins.entry.main]
+require: [bolt]
+pipeline: [plugins.entry.main, mecha, plugins.entry.finish]
 meta:
+  shulker_preview:
+    target_version: '1.14.4'
+    plugin: 1
   model_resolver:
     preferred_minecraft_generated: java
     special_rendering: true
     use_cache: true
-  shulker_preview:
-    target_version: '1.14.4'
-    plugin: 1
+  mecha:
+    commands: in/commands.json
+    formatting:
+      layout: dense
+      cmd_compact: true
+      nbt_compact: true
+      json_compact: true
+  bolt:
+    entrypoint: '*'

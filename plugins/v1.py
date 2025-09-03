@@ -1,4 +1,5 @@
 import collections
+import dataclasses
 import typing
 import PIL.Image
 import beet
@@ -16,8 +17,8 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
    data_version = target.last.world
    vanilla = registry[target_version]
    
-   items = [short(x) for x in get_registry(vanilla, 'minecraft:item').keys()]
-   items.remove('air')
+   items = [canon(x) for x in get_registry(vanilla, 'minecraft:item').keys()]
+   items.remove('minecraft:air')
    eggs = spawn_egg_colors(registry['1.21.4'].assets, data_version)
    colored = item_colors(registry['1.21.4'].assets, data_version)
    colormap: dict[str, list[int | None]] = dict([
@@ -28,32 +29,44 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
    flat_items: dict[str, PIL.Image.Image] = {}
    overlays: dict[str, PIL.Image.Image] = {}
    render_models: dict[str, str] = {}
-   for item in items:
-      model_name = f'minecraft:item/{item}'
-      model = vanilla.assets.models[model_name]
+   item_overrides: dict[str, list[ModelOverride]] = {}
+   def handle_model(name: str, model_name: str):
+      model = vanilla.assets.models[canon(model_name)]
       data = model_data(vanilla.assets.models, model)
-      overrides = trim_overrides(data.overrides)
-      if len(overrides) > 0:
-         print(item, overrides)
       if isinstance(data, LayeredModel):
          image_layers = [vanilla.assets.textures[x].image.convert('RGBA') for x in data.layers]
-         tint_layers = colormap.get(short(item))
+         tint_layers = colormap.get(short(name))
          image = PIL.Image.new('RGBA', image_layers[0].size)
          for i, layer in enumerate(image_layers):
             if tint_layers is not None and i < len(tint_layers) and (tint := tint_layers[i]) is not None:
                layer = colorize(layer, rgba(tint))
             image.paste(layer, (0, 0), layer)
-         flat_items[item] = image
+         flat_items[name] = image
       elif isinstance(data, ElementModel):
-         render_models[item] = model_name
+         render_models[name] = model_name
       elif isinstance(data, EntityModel):
-         fake_model = get_fake_model(item)
+         fake_model = get_fake_model(name)
          if fake_model is None:
-            print(f'Unhandled item: {item}')
+            print(f'Unhandled item: {name}')
          else:
             fake_model['display'] = data.display
-            ctx.assets.models[f'render:{item}'] = beet.Model(fake_model)
-            render_models[item] = f'render:{item}'
+            ctx.assets.models[f'render:{name}'] = beet.Model(fake_model)
+            render_models[name] = f'render:{name}'
+      return data
+   for item in items:
+      nspace, path = canon(item).split(':')
+      model_name = f'{nspace}:item/{path}'
+      data = handle_model(item, model_name)
+      overrides = trim_overrides(data.overrides)
+      item_overrides[item] = []
+      final_override = {}
+      for override in overrides:
+         sprite_name = item + '.' + '.'.join(override['predicate'].keys())
+         handle_model(sprite_name, override['model'])
+         item_overrides[item].append(ModelOverride(sprite_name, override['predicate']))
+         for key,value in override['predicate'].items():
+            final_override[key] = not value
+      item_overrides[item].append(ModelOverride(item, final_override))
    renderer = model_resolver.Render(ctx, vanilla)
    renderer.default_render_size = 64
    for item, model in render_models.items():
@@ -81,19 +94,12 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
    lang.data['%1$s%418634357$s'] = '%2$s'
    resourcepack.languages['en_us'] = lang
    font = FontManager(rows=3)
-   font.legacy_space_texture = 'tryashtar.shulker_preview:space'
-   font.upcoming_char = ord('\uf800')
-   widths = [32768, 1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128, 256, 512, 1024]
-   for width in widths:
-      font.get_space(-width)
-   font.upcoming_char = ord('\uf820')
-   for width in widths:
-      font.get_space(width)
+   amber_spaces(font)
    font.upcoming_char = ord('\ue000')
-   resourcepack.textures['comma'] = beet.Texture(source_path='shared/comma.png')
-   resourcepack.textures['durability'] = beet.Texture(source_path='shared/durability_color.png')
-   resourcepack.textures['missingno'] = beet.Texture(source_path='shared/missingno.png')
-   resourcepack.textures['space'] = beet.Texture(source_path='shared/space.png')
+   resourcepack.textures['comma'] = beet.Texture(source_path='resources/shared/comma.png')
+   resourcepack.textures['durability'] = beet.Texture(source_path='resources/shared/durability_color.png')
+   resourcepack.textures['missingno'] = beet.Texture(source_path='resources/shared/missingno.png')
+   resourcepack.textures['space'] = beet.Texture(source_path='resources/shared/space.png')
    font.add_provider({
       'type': 'bitmap',
       'file': 'tryashtar.shulker_preview:comma.png',
@@ -160,56 +166,52 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
       name = canon(item)
       length = len(name)
       length_dict[length].append(name)
-   durability_dict = item_durability(registry['1.21.4'], data_version)
-   for row in range(font.rows):
-      process_item = [
-         "# get the length of this item and call the appropriate function",
-         'execute store result score #length shulker_preview run data get block ~1 1 ~ RecordItem.id',
-      ]
-      for length in sorted(length_dict.keys()):
-         process_item.append(f'execute if score #length shulker_preview matches {length} run function tryashtar.shulker_preview:render/row_{row}/item/length_{length}')
-         lines = process_item_lines(length_dict[length], row, durability_dict)
-         datapack.functions[f'render/row_{row}/item/length_{length}'] = beet.Function(lines)
-      process_item.extend([
-         '',
-         "# placeholder if item was not found",
-         f'execute unless entity @e[type=area_effect_cloud,tag=tryashtar.shulker_preview,distance=..0.0001] run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.missingno.{row}"}}\'}}',
-      ])
-      datapack.functions[f'render/row_{row}/item'] = beet.Function(process_item)
-   datapack.functions['meta/player_online'] = beet.Function(player_online(target))
+   ctx.meta['shulker_preview']['length_dict'] = length_dict
+   ctx.meta['shulker_preview']['item_overrides'] = item_overrides
+   ctx.meta['shulker_preview']['durability_dict'] = item_durability(registry['1.21.4'], data_version)
 
-def player_online(version: VersionRange) -> list[str]:
-   result = [
-      "# check for integrity of loot table override",
-      'replaceitem block 29999977 1 9832 container.0 tnt{loot_integrity:1b}',
-      'loot replace block 29999977 1 9832 container.0 mine 29999977 1 9832 golden_pickaxe{drop_contents:1b}',
-      'execute store success score #loot_table shulker_preview if data block 29999977 1 9832 {Items:[{tag:{loot_integrity:1b}}]}',
-      'execute if score #loot_table shulker_preview matches 0 run tellraw @a [{"text":"\\n⚠ ","color":"yellow"},{"text":"Broken loot table!","color":"red"},{"text":" ⚠\\n","color":"yellow"},{"text":"The shulker box loot table appears to have been modified by another data pack. This prevents shulker previews from working.\\n","color":"red"}]',
-      'execute if score #loot_table shulker_preview matches 0 run scoreboard players set #install shulker_preview -2',
-      'execute if score #loot_table shulker_preview matches 1 if score #install shulker_preview matches -2 run scoreboard players set #install shulker_preview 0',
-      '',
-      "# check for sufficient Minecraft version",
-      'execute store result score #version shulker_preview run data get entity @a[limit=1] DataVersion',
-      f'execute if score #version shulker_preview matches 1..{version.last.world-1} run tellraw @a [{{"text":"\\n⚠ ","color":"yellow"}},{{"text":"Outdated Minecraft version!","color":"red"}},{{"text":" ⚠\\n","color":"yellow"}},{{"text":"This shulker preview data pack is for version {version.first.name}.\\n","color":"red"}},{{"text":"Download for other versions here","color":"blue","underlined":true,"clickEvent":{{"action":"open_url","value":"https://tryashtar.github.io/shulker-preview"}}}},"\\n"]',
-      f'execute if score #version shulker_preview matches 1..{version.first.world-1} run scoreboard players set #install shulker_preview -1',
-      f'execute if score #version shulker_preview matches {version.last.world+1}.. run tellraw @a [{{"text":"\\n⚠ ","color":"yellow"}},{{"text":"Outdated Shulker Preview version!","color":"red"}},{{"text":" ⚠\\n","color":"yellow"}},{{"text":"This data pack is for version {version.first.name}.\\n","color":"red"}},{{"text":"Download for other versions here","color":"blue","underlined":true,"clickEvent":{{"action":"open_url","value":"https://tryashtar.github.io/shulker-preview"}}}},"\\n"]',
-      f'execute if score #version shulker_preview matches {version.last.world+1}.. run scoreboard players set #install shulker_preview -1',
-      f'execute if score #version shulker_preview matches {version.first.world}..{version.last.world} if score #install shulker_preview matches -1 run scoreboard players set #install shulker_preview 0',
-      '',
-      "# check for resource pack equipped/success message",
-      'scoreboard players add #install shulker_preview 0',
-      'execute if score #install shulker_preview matches 0 run function tryashtar.shulker_preview:meta/install',
-      '',
-      "# check for modded server",
-      'scoreboard players add #modded shulker_preview 0',
-      'execute if score #modded shulker_preview matches 0 store success score #modded shulker_preview run data get entity @a[limit=1] "Spigot.ticksLived"',
-      'execute if score #modded shulker_preview matches 0 store success score #modded shulker_preview run data get entity @a[limit=1] "Bukkit.updateLevel"',
-      'execute if score #modded shulker_preview matches 0 store success score #modded shulker_preview run data get entity @a[limit=1] "Paper.SpawnReason"',
-      '',
-      'execute if score #modded shulker_preview matches 1 run tellraw @a [{"text":"\\n⚠ ","color":"yellow"},{"text":"Modded server detected!","color":"red"},{"text":" ⚠\\n","color":"yellow"},{"text":"Bukkit and its derivatives can break vanilla behavior that shulker previews relies on.","color":"red"},{"text":"\\n⚠ ","color":"yellow"},{"text":"There is no guarantee it will work!","color":"red"},{"text":" ⚠\\n","color":"yellow"}]',
-      'execute if score #modded shulker_preview matches 1 run scoreboard players set #modded shulker_preview 2',
-   ]
-   return result
+@dataclasses.dataclass
+class ModelOverride:
+   sprite: str
+   predicate: dict[str, typing.Any]
+
+def override_check(item: str, predicate: dict, durability: int | None):
+   item = canon(item)
+   if len(predicate) == 0:
+      return ({'id':item}, None)
+   positive = {'id':item,'tag':{}}
+   negative = {'tag':{}}
+   if (broken := predicate.get('broken')) is not None and durability is not None:
+      if broken:
+         positive['tag']['Damage'] = durability - 1
+      else:
+         negative['tag']['Damage'] = durability - 1
+   if (charged := predicate.get('charged')) is not None:
+      if (firework := predicate.get('firework')) is None:
+         firework = 0
+      if firework:
+         positive['tag']['ChargedProjectiles'] = [{'id':"minecraft:firework_rocket"}]
+      elif charged:
+         positive['tag']['ChargedProjectiles'] = [{'id':"minecraft:arrow"}]
+      else:
+         negative['tag']['ChargedProjectiles'] = [{}]
+   if len(positive['tag']) == 0:
+      del positive['tag']
+   if len(negative['tag']) == 0:
+      del negative['tag']
+   if len(negative) == 0:
+      negative = None
+   return (positive, negative)
+
+def amber_spaces(font: FontManager):
+   font.legacy_space_texture = 'tryashtar.shulker_preview:space'
+   font.upcoming_char = ord('\uf800')
+   widths = [32768, 1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128, 256, 512, 1024]
+   for width in widths:
+      font.get_space(-width)
+   font.upcoming_char = ord('\uf820')
+   for width in widths:
+      font.get_space(width)
 
 def trim_overrides(overrides: list[dict[str, typing.Any]]) -> list[dict[str, typing.Any]]:
    result = []
@@ -218,42 +220,3 @@ def trim_overrides(overrides: list[dict[str, typing.Any]]) -> list[dict[str, typ
       if not any(x in pred for x in ['pulling', 'pull', 'angle', 'cast', 'time', 'blocking']):
          result.append(override)
    return result
-
-def process_item_lines(items: list[str], row: int, durability_info: dict[str, int]) -> list[str]:
-   lines: list[str] = []
-   has_potion = False
-   has_arrow = False
-   has_durability = False
-   for item in items:
-      if_item = f'if block ~1 1 ~ jukebox{{RecordItem:{{id:"{canon(item)}"}}}}'
-      if short(item) == 'elytra':
-         damage = durability_info['minecraft:elytra']
-         lines.extend([
-            f'execute if block ~1 1 ~ jukebox{{RecordItem:{{id:"minecraft:elytra",tag:{{Damage:{damage - 1}}}}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.broken_elytra.{row}"}}\'}}',
-            f'execute {if_item} unless block ~1 1 ~ jukebox{{RecordItem:{{id:"minecraft:elytra",tag:{{Damage:431}}}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.elytra.{row}"}}\'}}',
-         ])
-      elif short(item) == 'crossbow':
-         lines.extend([
-            f'execute if block ~1 1 ~ jukebox{{RecordItem:{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{id:"minecraft:arrow"}}]}}}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow_arrow.{row}"}}\'}}',
-            f'execute if block ~1 1 ~ jukebox{{RecordItem:{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{id:"minecraft:firework_rocket"}}]}}}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow_firework.{row}"}}\'}}',
-            f'execute {if_item} unless block ~1 1 ~ jukebox{{RecordItem:{{id:"minecraft:crossbow",tag:{{ChargedProjectiles:[{{}}]}}}}}} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.crossbow.{row}"}}\'}}',
-         ])
-      else:
-         lines.append(f'execute {if_item} run summon area_effect_cloud ~ ~ ~ {{Tags:["tryashtar.shulker_preview"],CustomName:\'{{"translate":"tryashtar.shulker_preview.item.{canon(item)}.{row}"}}\'}}')
-      if item in ('potion', 'splash_potion', 'lingering_potion'):
-         has_potion = True
-      if item == 'tipped_arrow':
-         has_arrow = True
-      if (durability := durability_info.get(item)) is not None:
-         lines.append(f'execute {if_item} run scoreboard players set #max shulker_preview {durability}')
-         has_durability = True
-   if has_potion:
-      lines.append(f'execute if data block ~1 1 ~ RecordItem.tag.Potion run function tryashtar.shulker_preview:render/row_{row}/overlay/potion')
-   if has_arrow:
-      lines.append(f'execute if data block ~1 1 ~ RecordItem.tag.Potion run function tryashtar.shulker_preview:render/row_{row}/overlay/arrow')
-   if has_durability:
-      lines.extend([
-         'execute store result score #durability shulker_preview run data get block ~1 1 ~ RecordItem.tag.Damage',
-         f'execute if data block ~1 1 ~ RecordItem.tag.Damage run function tryashtar.shulker_preview:render/row_{row}/overlay/durability',
-      ])
-   return lines

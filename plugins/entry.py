@@ -6,6 +6,7 @@ from plugins.version import fixed_release_registry, load_version_range, VersionR
 def main(ctx: beet.Context):
    registry = fixed_release_registry(ctx)
    target = load_version_range(registry, ctx.meta['shulker_preview']['target_version'])
+   ctx.meta['shulker_preview']['target_version'] = target
    ctx.meta['model_resolver']['minecraft_version'] = target.last.name
    plugin_version = ctx.meta['shulker_preview']['plugin']
    match plugin_version:
@@ -15,6 +16,9 @@ def main(ctx: beet.Context):
          plugins.v2.main(ctx, registry, target)
       case _:
          raise ValueError(plugin_version)
+
+def finish(ctx: beet.Context):
+   target = ctx.meta['shulker_preview']['target_version']
    export(ctx, target)
 
 def export(ctx: beet.Context, target: VersionRange):

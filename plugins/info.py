@@ -16,12 +16,13 @@ def version_info(jar: beet.contrib.vanilla.ClientJar) -> VersionInfo:
       return json.load(file.open('version.json'))
 
 def get_fake_model(item: str) -> dict[str, typing.Any] | None:
+   item = short(item)
    if item == 'shield':
-      with open('fake_models/shield.json', 'r', encoding='utf-8') as file:
+      with open('resources/fake_models/shield.json', 'r', encoding='utf-8') as file:
          model = json.load(file)
       return model
    if item == 'conduit':
-      with open('fake_models/conduit.json', 'r', encoding='utf-8') as file:
+      with open('resources/fake_models/conduit.json', 'r', encoding='utf-8') as file:
          model = json.load(file)
       return model
    if item.endswith('shulker_box'):
@@ -30,26 +31,26 @@ def get_fake_model(item: str) -> dict[str, typing.Any] | None:
       else:
          color = item.removesuffix('shulker_box').removesuffix('_')
          texture = f'minecraft:entity/shulker/shulker_{color}'
-      with open('fake_models/shulker_box.json', 'r', encoding='utf-8') as file:
+      with open('resources/fake_models/shulker_box.json', 'r', encoding='utf-8') as file:
          model = json.load(file)
       model['textures']['0'] = texture
       return model
    if item.endswith('_banner'):
       color = item.removesuffix('_banner')
-      with open('fake_models/banner.json', 'r', encoding='utf-8') as file:
+      with open('resources/fake_models/banner.json', 'r', encoding='utf-8') as file:
          model = json.load(file)
       return model
    if item.endswith('_bed'):
       color = item.removesuffix('_bed')
       texture = f'minecraft:entity/bed/{color}'
-      with open('fake_models/bed.json', 'r', encoding='utf-8') as file:
+      with open('resources/fake_models/bed.json', 'r', encoding='utf-8') as file:
          model = json.load(file)
       model['textures']['0'] = texture
       return model
    if item.endswith('chest'):
       kind = {'chest':'normal','trapped_chest':'trapped','ender_chest':'ender'}[item]
       texture = f'minecraft:entity/chest/{kind}'
-      with open('fake_models/chest.json', 'r', encoding='utf-8') as file:
+      with open('resources/fake_models/chest.json', 'r', encoding='utf-8') as file:
          model = json.load(file)
       model['textures']['0'] = texture
       return model
@@ -70,7 +71,7 @@ def get_fake_model(item: str) -> dict[str, typing.Any] | None:
             texture = 'entity/skeleton/wither_skeleton'
          case _:
             raise ValueError(kind)
-      with open(f'fake_models/{path}.json', 'r', encoding='utf-8') as file:
+      with open(f'resources/fake_models/{path}.json', 'r', encoding='utf-8') as file:
          model = json.load(file)
       if texture is not None:
          model['textures']['0'] = texture
