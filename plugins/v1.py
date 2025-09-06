@@ -1,3 +1,4 @@
+from plugins.util import ResourceLocation
 import collections
 import copy
 import dataclasses
@@ -9,7 +10,7 @@ import beet
 import beet.contrib.vanilla
 import model_resolver.render
 from plugins.version import VersionRange
-from plugins.util import Grid, map_2d, short, canon, model_data, colorize, rgba, LayeredModel, ElementModel, EntityModel, make_grid, invert_dict, FontManager, add_numbers, add_tooltip, get_space, JsonDict, NbtCompound
+from plugins.util import Grid, map_2d, short, canon, model_data, colorize, rgba, LayeredModel, ElementModel, EntityModel, make_grid, invert_dict, FontManager, add_numbers, add_tooltip, get_space, JsonDict, NbtCompound, Identifier
 from plugins.info import dye_colors, get_fake_model, get_registry, item_durability, legacy_banner_patterns, spawn_egg_colors, potion_colors, item_colors
 
 def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, target: VersionRange):
@@ -24,7 +25,7 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
    items.remove('minecraft:air')
    eggs = spawn_egg_colors(registry['1.21.4'].assets, data_version)
    colored = item_colors(registry['1.21.4'].assets, data_version)
-   colormap: dict[str, list[int | None]] = dict([
+   colormap: dict[Identifier, list[int | None]] = dict([
       *[(short(name), [value.base, value.overlay]) for name, value in eggs.items()],
       *[(short(name), [color]) for name, color in colored.items()],
       *[(short(name), [0xa06540]) for name in ['leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots', 'leather_horse_armor']],
@@ -120,7 +121,7 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
    font_result.data['providers'][0] = {'comment':'Many thanks to AmberW for this invaluable concept'} | font_result.data['providers'][0]
    ctx.assets.fonts['minecraft:default'] = font_result
 
-   length_dict: dict[int, list[str]] = collections.defaultdict(list)
+   length_dict: dict[int, list[Identifier]] = collections.defaultdict(list)
    for name in items:
       name = canon(name)
       length = len(name)
@@ -146,16 +147,16 @@ class Grids:
    blocks: Grid[Sprite]
 
 class ItemSpriteInfo:
-   def __init__(self, colormap: dict[str, list[int | None]]):
+   def __init__(self, colormap: dict[Identifier, list[int | None]]):
       self.colormap = colormap
       self.flat_items: dict[Sprite, PIL.Image.Image] = {}
-      self.render_models: dict[Sprite, str | JsonDict] = {}
-      self.item_overrides: dict[str, list[ModelOverride]] = {}
+      self.render_models: dict[Sprite, ResourceLocation | JsonDict] = {}
+      self.item_overrides: dict[Identifier, list[ModelOverride]] = {}
    
-   def import_item(self, item: str, pack: beet.ResourcePack):
+   def import_item(self, item: Identifier, pack: beet.ResourcePack):
       item = canon(item)
       nspace, path = item.split(':')
-      model_name = f'{nspace}:item/{path}'
+      model_name: ResourceLocation = f'{nspace}:item/{path}'
       data = self.handle_model(item, item, model_name, 'item', pack)
       overrides = trim_overrides(data.overrides)
       self.item_overrides[item] = []
@@ -168,7 +169,7 @@ class ItemSpriteInfo:
             final_override[key] = not value
       self.item_overrides[item].append(ModelOverride(sprite=item, predicate=final_override, kind='item'))
    
-   def handle_model(self, item: str, name: str, model_name: str, kind: SpriteKind, pack: beet.ResourcePack):
+   def handle_model(self, item: Identifier, name: str, model_name: ResourceLocation, kind: SpriteKind, pack: beet.ResourcePack):
       model = pack.models[canon(model_name)]
       data = model_data(pack.models, model)
       if isinstance(data, LayeredModel):
@@ -197,7 +198,7 @@ class ItemSpriteInfo:
       renderer.getter._vanilla = pack
       renderer.default_render_size = 64
       for model in self.render_models.values():
-         if isinstance(model, str):
+         if isinstance(model, Identifier):
             renderer.add_model_task(
                model=model,
                animation_mode='one_file',
@@ -211,17 +212,17 @@ class ItemSpriteInfo:
       block_items: dict[Sprite, PIL.Image.Image] = {}
       for sprite, task in zip(self.render_models.keys(), renderer.tasks):
          assert task.saved_img is not None
-         block_items[sprite] = task.saved_img
+         block_items[Sprite] = task.saved_img
       block_grid = make_grid(block_items, 64)
       item_grid = make_grid(self.flat_items, 16)
       return Grids(items=item_grid, blocks=block_grid)
 
-def override_check(item: str, predicate: JsonDict, durability: int | None) -> tuple[NbtCompound, NbtCompound | None]:
+def override_check(item: Identifier, predicate: JsonDict, durability: int | None) -> tuple[NbtCompound, NbtCompound | None]:
    item = canon(item)
    if len(predicate) == 0:
       return ({'id':item}, None)
-   positive = {'id':item,'tag':{}}
-   negative = {'tag':{}}
+   positive: NbtCompound = {'id':item,'tag':{}}
+   negative: NbtCompound = {'tag':{}}
    for key, value in predicate.items():
       match key:
          case 'broken':
@@ -247,7 +248,7 @@ def override_check(item: str, predicate: JsonDict, durability: int | None) -> tu
    if len(negative['tag']) == 0:
       del negative['tag']
    if len(negative) == 0:
-      negative = None
+      return (positive, None)
    return (positive, negative)
 
 def amber_spaces(font: FontManager):

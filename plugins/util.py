@@ -51,6 +51,8 @@ def rgba(color: int):
 def colorize(image: PIL.Image.Image, color) -> PIL.Image.Image:
    return PIL.ImageChops.multiply(image, PIL.Image.new('RGBA', image.size, color))
 
+Identifier = str
+ResourceLocation = str
 JsonDict = dict[str, typing.Any]
 NbtCompound = dict[str, typing.Any]
 
@@ -58,7 +60,7 @@ NbtCompound = dict[str, typing.Any]
 class LayeredModel:
    display: JsonDict
    overrides: list[JsonDict]
-   layers: list[str]
+   layers: list[ResourceLocation]
 
 @dataclasses.dataclass
 class ElementModel:
@@ -73,7 +75,7 @@ class EntityModel:
 
 def model_data(source: beet.NamespaceProxy[beet.Model], model: beet.Model) -> LayeredModel | ElementModel | EntityModel:
    display: JsonDict = {}
-   result: list[str | None] = []
+   result: list[ResourceLocation | None] = []
    overrides = model.data.get('overrides', [])
    while True:
       if (model_display := model.data.get('display')) is not None:
@@ -101,10 +103,10 @@ def model_data(source: beet.NamespaceProxy[beet.Model], model: beet.Model) -> La
          continue
       return LayeredModel(display=display, overrides=overrides, layers=[])
 
-def canon(location: str) -> str:
+def canon(location: ResourceLocation) -> ResourceLocation:
    return f'minecraft:{location}' if ':' not in location else location
 
-def short(location: str) -> str:
+def short(location: ResourceLocation) -> ResourceLocation:
    return location.removeprefix('minecraft:')
 
 K = typing.TypeVar('K')
@@ -114,6 +116,8 @@ def invert_dict(dictionary: dict[K, V]) -> dict[V, list[K]]:
    for key, value in dictionary.items():
       result[value].append(key)
    return dict(result)
+
+Char = str
 
 @dataclasses.dataclass
 class GridData:
@@ -127,23 +131,23 @@ class SpriteData:
 
 class FontManager:
    def __init__(self, rows: int):
-      self.legacy_space_texture: str | None = None
+      self.legacy_space_texture: ResourceLocation | None = None
       self.rows: int = rows
       self.upcoming_char: int = 1
-      self.spaces: dict[int, str] = {}
+      self.spaces: dict[int, Char] = {}
       self.sprites: dict[str, SpriteData] = {}
       self.grids: dict[str, GridData] = {}
       self.sprite_map: dict[str, SpriteData] = {}
       self.providers: list[JsonDict] = []
    
-   def add_sprite(self, texture: str) -> SpriteData:
+   def add_sprite(self, texture: ResourceLocation) -> SpriteData:
       if texture not in self.sprite_map:
          data = SpriteData(rows=[self.next_char() for _ in range(self.rows)], negative=self.next_char())
          self.sprites[texture + '.png'] = data
          self.sprite_map[texture] = data
       return self.sprite_map[texture]
    
-   def add_grid(self, grid: str, textures: list[list[str | None]]) -> GridData:
+   def add_grid(self, grid: ResourceLocation, textures: list[list[ResourceLocation | None]]) -> GridData:
       rows: list[list[str]] = [[] for _ in range(self.rows)]
       negative: list[str] = []
       for row in textures:
@@ -174,7 +178,7 @@ class FontManager:
    def get_sprite(self, name: str) -> SpriteData:
       return self.sprite_map[name]
    
-   def next_char(self) -> str:
+   def next_char(self) -> Char:
       char = self.upcoming_char
       for low, high in [(0xd800, 0xdbff), (0xdc00, 0xdfff), (0x05c8, 0x05d2), (0x05e8, 0x06ff), (0x070b, 0x0710), (0x072d, 0x072f), (0x074b, 0x074f), (0x07a4, 0x07a5), (0x07b1, 0x07c2), (0x07f4, 0x07f5), (0x07fa, 0x07fc), (0x07fe, 0x0800), (0x082e, 0x0832), (0x083c, 0x0842), (0x0856, 0x0858), (0x085c, 0x0862), (0x0868, 0x0897), (0x08a0, 0x08a2), (0x08b2, 0x08b8), (0x08c5, 0x08c9), (0xfb34, 0xfb48), (0xfbbf, 0xfbd5), (0xfd8d, 0xfd94), (0xfdc5, 0xfdce), (0xfdf0, 0xfdf2), (0xfe72, 0xfe78), (0xfefa, 0xfefe)]:
          if low <= char <= high:
@@ -184,7 +188,7 @@ class FontManager:
       self.upcoming_char = char + 1
       return chr(char)
       
-   def get_space(self, width: int) -> str:
+   def get_space(self, width: int) -> Char:
       if width in self.spaces:
          return self.spaces[width]
       char = self.next_char()
@@ -193,7 +197,7 @@ class FontManager:
    
    def build(self) -> beet.Font:
       result = beet.Font()
-      providers = []
+      providers: list[JsonDict] = []
       if len(self.spaces) > 0:
          if self.legacy_space_texture is None:
             spaces = {}
@@ -222,7 +226,7 @@ class FontManager:
       result.data['providers'] = providers
       return result
 
-def add_tooltip(font: FontManager, texture: str, bottom: int) -> str:
+def add_tooltip(font: FontManager, texture: ResourceLocation, bottom: int) -> str:
    ascent = 8
    slices: list[tuple[int, list[int]]] = [(8, [0]), (8, [2,3,4,5,6,7,8,bottom])]
    text = ''

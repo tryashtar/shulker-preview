@@ -8,7 +8,7 @@ import beet
 import beet.contrib.vanilla
 import zipfile
 import model_resolver.item_model.tint_source
-from plugins.util import short, canon, rgba, JsonDict
+from plugins.util import short, canon, rgba, JsonDict, Identifier
 
 PackVersionInfo = typing.TypedDict('PackVersionInfo', {'resource': int, 'data': int})
 VersionInfo = typing.TypedDict('VersionInfo', {'id': str, 'world_version': int, 'pack_version': int | PackVersionInfo})
@@ -16,7 +16,7 @@ def version_info(jar: beet.contrib.vanilla.ClientJar) -> VersionInfo:
    with zipfile.ZipFile(jar.path) as file:
       return json.load(file.open('version.json'))
 
-def get_fake_model(item: str) -> JsonDict | None:
+def get_fake_model(item: Identifier) -> JsonDict | None:
    item = short(item)
    if item == 'shield':
       with open('resources/fake_models/shield.json', 'r', encoding='utf-8') as file:
@@ -97,7 +97,7 @@ def generate_reports(release: beet.contrib.vanilla.Release) -> pathlib.Path:
       subprocess.run(data_command, cwd=path, check=True)
    return path / 'generated/reports'
 
-def get_registry(release: beet.contrib.vanilla.Release, registry: str) -> JsonDict:
+def get_registry(release: beet.contrib.vanilla.Release, registry: Identifier) -> JsonDict:
    path = generate_reports(release)
    with open(path / 'registries.json', encoding='utf-8') as file:
       data: JsonDict = json.load(file)[registry]['entries']
@@ -109,8 +109,8 @@ def get_item_components(release: beet.contrib.vanilla.Release) -> JsonDict:
       items: JsonDict = json.load(file)
    return {name: value['components'] for name, value in items.items()}
 
-def legacy_banner_patterns(data_version: int) -> dict[str, str]:
-   result: dict[str, str] = {
+def legacy_banner_patterns(data_version: int) -> dict[str, Identifier]:
+   result: dict[str, Identifier] = {
       'b': 'base',
       'bs': 'stripe_bottom',
       'ts': 'stripe_top',
@@ -156,10 +156,10 @@ def legacy_banner_patterns(data_version: int) -> dict[str, str]:
       result['pig'] = 'piglin'
    return result
 
-def potion_effects(data_version: int) -> dict[str, dict[str, int]]:
+def potion_effects(data_version: int) -> dict[Identifier, dict[Identifier, int]]:
    if data_version < 100:
       raise ValueError(data_version)
-   result: dict[str, dict[str, int]] = {
+   result: dict[Identifier, dict[Identifier, int]] = {
       'empty': {},
       'water': {},
       'mundane': {},
@@ -240,8 +240,8 @@ def dye_colors() -> dict[str, int]:
       'black': 0x1d1d21,
    }
 
-def effect_colors(data_version: int) -> dict[str, int]:
-   result: dict[str, int] = {
+def effect_colors(data_version: int) -> dict[Identifier, int]:
+   result: dict[Identifier, int] = {
       'speed': 0x33ebff,
       'slowness': 0x8bafe0,
       'haste': 0xd9c043,
@@ -299,8 +299,8 @@ def effect_colors(data_version: int) -> dict[str, int]:
       }
    return {canon(name): color for name, color in result.items()}
 
-def potion_colors(data_version: int) -> dict[str, int | None]:
-   result: dict[str, int | None] = {}
+def potion_colors(data_version: int) -> dict[Identifier, int | None]:
+   result: dict[Identifier, int | None] = {}
    potions = potion_effects(data_version)
    colors = effect_colors(data_version)
    for potion, contents in potions.items():
@@ -322,10 +322,10 @@ class DoubleTint:
    base: int
    overlay: int
    
-def spawn_egg_colors(pack: beet.ResourcePack, data_version: int) -> dict[str, DoubleTint]:
+def spawn_egg_colors(pack: beet.ResourcePack, data_version: int) -> dict[Identifier, DoubleTint]:
    if data_version < 100:
       raise ValueError(data_version)
-   result: dict[str, DoubleTint] = {}
+   result: dict[Identifier, DoubleTint] = {}
    for name, model in pack.item_models.items():
       if name.endswith('_spawn_egg'):
          tints = model.data['model']['tints']
@@ -346,8 +346,8 @@ def spawn_egg_colors(pack: beet.ResourcePack, data_version: int) -> dict[str, Do
       result['minecraft:armadillo_spawn_egg'] = DoubleTint(base=0xa67775, overlay=0x734b4f)
    return result
 
-def item_colors(pack: beet.ResourcePack, data_version: int) -> dict[str, int]:
-   result: dict[str, int] = {}
+def item_colors(pack: beet.ResourcePack, data_version: int) -> dict[Identifier, int]:
+   result: dict[Identifier, int] = {}
    for name, model in pack.item_models.items():
       if (tints := model.data['model'].get('tints')) is not None and len(tints) == 1:
          tint = tints[0]
@@ -363,9 +363,9 @@ def item_colors(pack: beet.ResourcePack, data_version: int) -> dict[str, int]:
             result[canon(final_name)] = tint['value']
    return result
 
-def item_durability(release: beet.contrib.vanilla.Release, data_version: int) -> dict[str, int]:
+def item_durability(release: beet.contrib.vanilla.Release, data_version: int) -> dict[Identifier, int]:
    entries = get_item_components(release)
-   result: dict[str, int] = {}
+   result: dict[Identifier, int] = {}
    for item, components in entries.items():
       if (damage := components.get('minecraft:max_damage')) is not None:
          result[item] = damage
