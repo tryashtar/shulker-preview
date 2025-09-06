@@ -160,7 +160,7 @@ wheels = [
 [[package]]
 name = "model-resolver"
 version = "1.11.0"
-source = { git = "https://github.com/edayot/model_resolver#cf82c58af8ec3ab9ddb143f0c6e781c5bf24a6e2" }
+source = { git = "https://github.com/edayot/model_resolver#7a1f2ad73b20f953044c7147fa76bea6badef150" }
 dependencies = [
     { name = "beet" },
     { name = "pillow" },

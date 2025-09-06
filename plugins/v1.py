@@ -33,21 +33,33 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
    info = ItemSpriteInfo(colormap=colormap)
    for name in items:
       info.import_item(name, vanilla.assets)
-   banner_model = info.render_models[('minecraft:white_banner', 'item')]
-   assert isinstance(banner_model, dict)
-   with open('resources/fake_models/banner_pattern.json', 'r', encoding='utf-8') as file:
-      pattern_model: JsonDict = json.load(file)
-      pattern_model['display'] = banner_model['display']
    patterns = legacy_banner_patterns(data_version)
-   banner_vanilla = registry['1.16']
-   for pattern in patterns.values():
-      for color, rgb in dye_colors().items():
-         model = copy.deepcopy(pattern_model)
-         image = banner_vanilla.assets.textures[f'minecraft:entity/banner/{pattern}'].image.convert('RGBA')
-         assert isinstance(image, PIL.Image.Image)
-         image = colorize(image, rgba(rgb))
-         model['textures']['0'] = image
-         info.render_models[(f'banner.{pattern}.{color}', 'overlay')] = model
+   if ctx.meta['shulker_preview']['banners']:
+      banner_model = info.render_models[('minecraft:white_banner', 'item')]
+      shield_model = info.render_models[('minecraft:shield', 'item')]
+      assert isinstance(banner_model, dict)
+      assert isinstance(shield_model, dict)
+      with open('resources/fake_models/banner_pattern.json', 'r', encoding='utf-8') as file:
+         banner_pattern_model: JsonDict = json.load(file)
+         banner_pattern_model['display'] = banner_model['display']
+      with open('resources/fake_models/shield_pattern.json', 'r', encoding='utf-8') as file:
+         shield_pattern_model: JsonDict = json.load(file)
+         shield_pattern_model['display'] = shield_model['display']
+      banner_vanilla = registry['1.16']
+      for pattern in patterns.values():
+         for color, rgb in dye_colors().items():
+            banner_model = copy.deepcopy(banner_pattern_model)
+            image = banner_vanilla.assets.textures[f'minecraft:entity/banner/{pattern}'].image.convert('RGBA')
+            assert isinstance(image, PIL.Image.Image)
+            image = colorize(image, rgba(rgb))
+            banner_model['textures']['0'] = image
+            info.render_models[(f'banner.{pattern}.{color}', 'overlay')] = banner_model
+            shield_model = copy.deepcopy(shield_pattern_model)
+            image = banner_vanilla.assets.textures[f'minecraft:entity/shield/{pattern}'].image.convert('RGBA')
+            assert isinstance(image, PIL.Image.Image)
+            image = colorize(image, rgba(rgb))
+            shield_model['textures']['0'] = image
+            info.render_models[(f'shield.{pattern}.{color}', 'overlay')] = shield_model
    arrow_overlay = vanilla.assets.textures['minecraft:item/tipped_arrow_head'].image.convert('RGBA')
    potion_overlay = vanilla.assets.textures['minecraft:item/potion_overlay'].image.convert('RGBA')
    potions = invert_dict(potion_colors(data_version))
@@ -212,7 +224,7 @@ class ItemSpriteInfo:
       block_items: dict[Sprite, PIL.Image.Image] = {}
       for sprite, task in zip(self.render_models.keys(), renderer.tasks):
          assert task.saved_img is not None
-         block_items[Sprite] = task.saved_img
+         block_items[sprite] = task.saved_img
       block_grid = make_grid(block_items, 64)
       item_grid = make_grid(self.flat_items, 16)
       return Grids(items=item_grid, blocks=block_grid)

@@ -9,6 +9,7 @@ meta:
   shulker_preview:
     target_version: '1.14.4'
     plugin: 1
+    banners: true
   model_resolver:
     preferred_minecraft_generated: java
     special_rendering: true

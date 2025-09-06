@@ -5,6 +5,7 @@ from plugins.v1 import override_check
 length_dict = ctx.meta['shulker_preview']['length_dict']
 durability_dict = ctx.meta['shulker_preview']['durability_dict']
 item_overrides = ctx.meta['shulker_preview']['item_overrides']
+banners_enabled = ctx.meta['shulker_preview']['banners']
 patterns = ctx.meta['shulker_preview']['patterns']
 
 def process_item(row: int):
@@ -27,7 +28,7 @@ def process_item(row: int):
                if durability is not None:
                   has_durability = True
                   execute if block ~1 1 ~ jukebox{RecordItem:{id:item}} run scoreboard players set #max shulker_preview durability
-            if has_banner:
+            if has_banner and banners_enabled:
                execute if data block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0] run function f"tryashtar.shulker_preview:render/row_{row}/overlay/banner"
             if has_durability:
                execute store result score #durability shulker_preview run data get block ~1 1 ~ RecordItem.tag.Damage
@@ -74,4 +75,5 @@ for row in range(3):
    process_item(row)
    process_count(row)
    process_durability(row)
-   process_banner(row)
+   if banners_enabled:
+      process_banner(row)
