@@ -8,10 +8,17 @@ import PIL.Image
 import PIL.ImageChops
 import beet
 
-def make_grid(entries: dict[str, PIL.Image.Image], icon_size: int) -> tuple[PIL.Image.Image, list[list[str | None]]]:
+@dataclasses.dataclass
+class Grid[T]:
+   image: PIL.Image.Image
+   entries: list[list[T | None]]
+
+T = typing.TypeVar('T')
+U = typing.TypeVar('U')
+def make_grid(entries: dict[T, PIL.Image.Image], icon_size: int) -> Grid[T]:
    width, height = grid_dimensions(len(entries))
    image = PIL.Image.new('RGBA', (width * icon_size, height * icon_size))
-   name_return: list[list[str | None]] = [[None] * width for _ in range(height)]
+   name_return: list[list[T | None]] = [[None] * width for _ in range(height)]
    for i, (name, sprite) in enumerate(entries.items()):
       pos_x = i % width
       pos_y = i // width
@@ -19,7 +26,14 @@ def make_grid(entries: dict[str, PIL.Image.Image], icon_size: int) -> tuple[PIL.
       x = pos_x * icon_size
       y = pos_y * icon_size
       image.paste(sprite, (x, y, x + icon_size, y + icon_size))
-   return (image, name_return)
+   return Grid(image=image, entries=name_return)
+
+def map_2d(array: list[list[T]], fn: typing.Callable[[T], U]) -> list[list[U]]:
+   result = []
+   for entry in array:
+      mapped = list(map(fn, entry))
+      result.append(mapped)
+   return result
 
 def grid_dimensions(area: int) -> tuple[int, int]:
    width = math.ceil(math.sqrt(area))
@@ -43,19 +57,19 @@ NbtCompound = dict[str, typing.Any]
 @dataclasses.dataclass
 class LayeredModel:
    display: JsonDict
-   overrides: list
+   overrides: list[JsonDict]
    layers: list[str]
 
 @dataclasses.dataclass
 class ElementModel:
    display: JsonDict
-   overrides: list
+   overrides: list[JsonDict]
    elements: list[JsonDict]
 
 @dataclasses.dataclass
 class EntityModel:
    display: JsonDict
-   overrides: list
+   overrides: list[JsonDict]
 
 def model_data(source: beet.NamespaceProxy[beet.Model], model: beet.Model) -> LayeredModel | ElementModel | EntityModel:
    display: JsonDict = {}

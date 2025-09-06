@@ -1,9 +1,11 @@
 from plugins.util import canon, short
+from plugins.info import dye_colors
 from plugins.v1 import override_check
 
 length_dict = ctx.meta['shulker_preview']['length_dict']
 durability_dict = ctx.meta['shulker_preview']['durability_dict']
 item_overrides = ctx.meta['shulker_preview']['item_overrides']
+patterns = ctx.meta['shulker_preview']['patterns']
 
 def process_item(row: int):
    function f"tryashtar.shulker_preview:render/row_{row}/item":
@@ -11,17 +13,22 @@ def process_item(row: int):
       for length in sorted(length_dict.keys()):
          execute if score #length shulker_preview matches length run function f"tryashtar.shulker_preview:render/row_{row}/item/length_{length}":
             has_durability = False
+            has_banner = False
             for item in length_dict[length]:
                durability = durability_dict.get(item)
                for override in item_overrides[item]:
                   pos, neg = override_check(item, override.predicate, durability)
                   if neg is None:
-                     execute if block ~1 1 ~ jukebox{RecordItem:pos} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.item.{override.sprite}.{row}"}}'}
+                     execute if block ~1 1 ~ jukebox{RecordItem:pos} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.{override.kind}.{override.sprite}.{row}"}}'}
                   else:
-                     execute if block ~1 1 ~ jukebox{RecordItem:pos} unless block ~1 1 ~ jukebox{RecordItem:neg} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.item.{override.sprite}.{row}"}}'}
+                     execute if block ~1 1 ~ jukebox{RecordItem:pos} unless block ~1 1 ~ jukebox{RecordItem:neg} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.{override.kind}.{override.sprite}.{row}"}}'}
+               if item.endswith('_banner'):
+                  has_banner = True
                if durability is not None:
                   has_durability = True
                   execute if block ~1 1 ~ jukebox{RecordItem:{id:item}} run scoreboard players set #max shulker_preview durability
+            if has_banner:
+               execute if data block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0] run function f"tryashtar.shulker_preview:render/row_{row}/overlay/banner"
             if has_durability:
                execute store result score #durability shulker_preview run data get block ~1 1 ~ RecordItem.tag.Damage
                execute if data block ~1 1 ~ RecordItem.tag.Damage run function f"tryashtar.shulker_preview:render/row_{row}/overlay/durability"
@@ -53,7 +60,18 @@ def process_durability(row: int):
             check = (lower, upper)
          execute if score #durability shulker_preview matches check run summon area_effect_cloud ~ ~0.3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.durability.{i}.{row}"}}'}
 
+def process_banner(row: int):
+   function f"tryashtar.shulker_preview:render/row_{row}/overlay/banner":
+      data modify block ~1 1 ~ RecordItem.tag.pattern set from block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0]
+      for index, color in enumerate(dye_colors().keys()):
+         execute if data block ~1 1 ~ RecordItem.tag.pattern{Color:index} run function f"tryashtar.shulker_preview:render/row_{row}/overlay/banner/{color}":
+            for code, pattern in patterns.items():
+               execute if data block ~1 1 ~ RecordItem.tag.pattern{Pattern:code} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.overlay.banner.{pattern}.{color}.{row}"}}'}
+      data remove block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0]
+      execute if data block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0] positioned ~ ~0.01 ~ run function f"tryashtar.shulker_preview:render/row_{row}/overlay/banner"
+
 for row in range(3):
    process_item(row)
    process_count(row)
    process_durability(row)
+   process_banner(row)

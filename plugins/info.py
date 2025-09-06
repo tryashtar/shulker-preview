@@ -7,6 +7,7 @@ import dataclasses
 import beet
 import beet.contrib.vanilla
 import zipfile
+import model_resolver.item_model.tint_source
 from plugins.util import short, canon, rgba, JsonDict
 
 PackVersionInfo = typing.TypedDict('PackVersionInfo', {'resource': int, 'data': int})
@@ -37,8 +38,11 @@ def get_fake_model(item: str) -> JsonDict | None:
       return model
    if item.endswith('_banner'):
       color = item.removesuffix('_banner')
+      tint = dye_colors()[color]
       with open('resources/fake_models/banner.json', 'r', encoding='utf-8') as file:
          model = json.load(file)
+      tint = model_resolver.item_model.tint_source.TintSourceConstant(type='constant', value=tint)
+      model['textures']['1'] = tuple([(model['textures']['1'], tint)])
       return model
    if item.endswith('_bed'):
       color = item.removesuffix('_bed')
@@ -104,6 +108,53 @@ def get_item_components(release: beet.contrib.vanilla.Release) -> JsonDict:
    with open(path / 'items.json', encoding='utf-8') as file:
       items: JsonDict = json.load(file)
    return {name: value['components'] for name, value in items.items()}
+
+def legacy_banner_patterns(data_version: int) -> dict[str, str]:
+   result: dict[str, str] = {
+      'b': 'base',
+      'bs': 'stripe_bottom',
+      'ts': 'stripe_top',
+      'ls': 'stripe_left',
+      'rs': 'stripe_right',
+      'cs': 'stripe_center',
+      'ms': 'stripe_middle',
+      'drs': 'stripe_downright',
+      'dls': 'stripe_downleft',
+      'ss': 'small_stripes',
+      'cr': 'cross',
+      'sc': 'straight_cross',
+      'ld': 'diagonal_left',
+      'rud': 'diagonal_right',
+      'lud': 'diagonal_up_left',
+      'rd': 'diagonal_up_right',
+      'vh': 'half_vertical',
+      'vhr': 'half_vertical_right',
+      'hh': 'half_horizontal',
+      'hhb': 'half_horizontal_bottom',
+      'bl': 'square_bottom_left',
+      'br': 'square_bottom_right',
+      'tl': 'square_top_left',
+      'tr': 'square_top_right',
+      'bt': 'triangle_bottom',
+      'tt': 'triangle_top',
+      'bts': 'triangles_bottom',
+      'tts': 'triangles_top',
+      'mc': 'circle',
+      'mr': 'rhombus',
+      'bo': 'border',
+      'cbo': 'curly_border',
+      'bri': 'bricks',
+      'gra': 'gradient',
+      'gru': 'gradient_up',
+      'cre': 'creeper',
+      'sku': 'skull',
+      'flo': 'flower',
+      'moj': 'mojang',
+      'glb': 'globe'
+   }
+   if data_version >= 2525: # 20w15a
+      result['pig'] = 'piglin'
+   return result
 
 def potion_effects(data_version: int) -> dict[str, dict[str, int]]:
    if data_version < 100:
@@ -172,21 +223,21 @@ def potion_effects(data_version: int) -> dict[str, dict[str, int]]:
 def dye_colors() -> dict[str, int]:
    return {
       'white': 0xf9fffe,
-      'light_gray': 0x9d9d97,
-      'gray': 0x474f52,
-      'black': 0x1d1d21,
-      'brown': 0x835432,
-      'red': 0xb02e26,
       'orange': 0xf9801d,
+      'magenta': 0xc74ebd,
+      'light_blue': 0x3ab3da,
       'yellow': 0xfed83d,
       'lime': 0x80c71f,
-      'green': 0x5e7c16,
-      'cyan': 0x169c9c,
-      'light_blue': 0x3ab3da,
-      'blue': 0x3c44aa,
-      'purple': 0x8932b8,
-      'magenta': 0xc74ebd,
       'pink': 0xf38baa,
+      'gray': 0x474f52,
+      'light_gray': 0x9d9d97,
+      'cyan': 0x169c9c,
+      'purple': 0x8932b8,
+      'blue': 0x3c44aa,
+      'brown': 0x835432,
+      'green': 0x5e7c16,
+      'red': 0xb02e26,
+      'black': 0x1d1d21,
    }
 
 def effect_colors(data_version: int) -> dict[str, int]:

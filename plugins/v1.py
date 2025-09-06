@@ -1,12 +1,16 @@
 import collections
+import copy
 import dataclasses
+import itertools
+import json
+import typing
 import PIL.Image
 import beet
 import beet.contrib.vanilla
 import model_resolver.render
 from plugins.version import VersionRange
-from plugins.util import short, canon, model_data, colorize, rgba, LayeredModel, ElementModel, EntityModel, make_grid, invert_dict, FontManager, add_numbers, add_tooltip, get_space, JsonDict, NbtCompound
-from plugins.info import get_fake_model, get_registry, item_durability, spawn_egg_colors, potion_colors, item_colors
+from plugins.util import Grid, map_2d, short, canon, model_data, colorize, rgba, LayeredModel, ElementModel, EntityModel, make_grid, invert_dict, FontManager, add_numbers, add_tooltip, get_space, JsonDict, NbtCompound
+from plugins.info import dye_colors, get_fake_model, get_registry, item_durability, legacy_banner_patterns, spawn_egg_colors, potion_colors, item_colors
 
 def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, target: VersionRange):
    datapack = ctx.data['tryashtar.shulker_preview']
@@ -25,75 +29,35 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
       *[(short(name), [color]) for name, color in colored.items()],
       *[(short(name), [0xa06540]) for name in ['leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots', 'leather_horse_armor']],
    ])
-   flat_items: dict[str, PIL.Image.Image] = {}
-   render_models: dict[str, str | JsonDict] = {}
-   def handle_model(name: str, model_name: str):
-      model = vanilla.assets.models[canon(model_name)]
-      data = model_data(vanilla.assets.models, model)
-      if isinstance(data, LayeredModel):
-         image_layers = [vanilla.assets.textures[x].image.convert('RGBA') for x in data.layers]
-         tint_layers = colormap.get(short(name))
-         image = PIL.Image.new('RGBA', image_layers[0].size)
-         for i, layer in enumerate(image_layers):
-            if tint_layers is not None and i < len(tint_layers) and (tint := tint_layers[i]) is not None:
-               layer = colorize(layer, rgba(tint))
-            image.paste(layer, (0, 0), layer)
-         flat_items[name] = image
-      elif isinstance(data, ElementModel):
-         render_models[name] = model_name
-      elif isinstance(data, EntityModel):
-         fake_model = get_fake_model(name)
-         if fake_model is None:
-            raise ValueError(name)
-         fake_model['display'] = data.display
-         render_models[name] = fake_model
-      else:
-         raise ValueError(name)
-      return data
-   item_overrides: dict[str, list[ModelOverride]] = {}
-   for item in items:
-      nspace, path = canon(item).split(':')
-      model_name = f'{nspace}:item/{path}'
-      data = handle_model(item, model_name)
-      overrides = trim_overrides(data.overrides)
-      item_overrides[item] = []
-      final_override = {}
-      for override in overrides:
-         sprite_name = item + '.' + '.'.join(override['predicate'].keys())
-         handle_model(sprite_name, override['model'])
-         item_overrides[item].append(ModelOverride(sprite=sprite_name, predicate=override['predicate']))
-         for key,value in override['predicate'].items():
-            final_override[key] = not value
-      item_overrides[item].append(ModelOverride(sprite=item, predicate=final_override))
-   renderer = model_resolver.render.Render(ctx)
-   renderer.getter._vanilla = vanilla
-   renderer.default_render_size = 64
-   for item, model in render_models.items():
-      if isinstance(model, str):
-         renderer.add_model_task(
-            model=model,
-            animation_mode='one_file',
-         )
-      else:
-         renderer.add_model_dict_task(
-            model=model,
-            animation_mode='one_file',
-         )
-   renderer.run()
-   block_items = {item: task.saved_img for item, task in zip(render_models.keys(), renderer.tasks)}
-   overlays: dict[str, PIL.Image.Image] = {}
+   info = ItemSpriteInfo(colormap=colormap)
+   for name in items:
+      info.import_item(name, vanilla.assets)
+   banner_model = info.render_models[('minecraft:white_banner', 'item')]
+   assert isinstance(banner_model, dict)
+   with open('resources/fake_models/banner_pattern.json', 'r', encoding='utf-8') as file:
+      pattern_model: JsonDict = json.load(file)
+      pattern_model['display'] = banner_model['display']
+   patterns = legacy_banner_patterns(data_version)
+   banner_vanilla = registry['1.16']
+   for pattern in patterns.values():
+      for color, rgb in dye_colors().items():
+         model = copy.deepcopy(pattern_model)
+         image = banner_vanilla.assets.textures[f'minecraft:entity/banner/{pattern}'].image.convert('RGBA')
+         assert isinstance(image, PIL.Image.Image)
+         image = colorize(image, rgba(rgb))
+         model['textures']['0'] = image
+         info.render_models[(f'banner.{pattern}.{color}', 'overlay')] = model
    arrow_overlay = vanilla.assets.textures['minecraft:item/tipped_arrow_head'].image.convert('RGBA')
    potion_overlay = vanilla.assets.textures['minecraft:item/potion_overlay'].image.convert('RGBA')
    potions = invert_dict(potion_colors(data_version))
    for color, potions in potions.items():
       if color is not None:
          potion_name = short(potions[0])
-         overlays[f'arrow.{potion_name}'] = colorize(arrow_overlay, rgba(color))
-         overlays[f'potion.{potion_name}'] = colorize(potion_overlay, rgba(color))
-   item_image, item_grid = make_grid(flat_items | overlays, 16)
-   block_image, block_grid = make_grid(block_items, 64)
-   resourcepack.textures['item_sheet'] = beet.Texture(item_image)
-   resourcepack.textures['block_sheet'] = beet.Texture(block_image)
+         info.flat_items[(f'arrow.{potion_name}', 'overlay')] = colorize(arrow_overlay, rgba(color))
+         info.flat_items[(f'potion.{potion_name}', 'overlay')] = colorize(potion_overlay, rgba(color))
+   grids = info.render(ctx, vanilla)
+   resourcepack.textures['item_sheet'] = beet.Texture(grids.items.image)
+   resourcepack.textures['block_sheet'] = beet.Texture(grids.blocks.image)
    
    lang = beet.Language()
    lang.data['%1$s%418634357$s'] = '%2$s'
@@ -145,40 +109,112 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
          ]})
       for num in range(14):
          lang.data[f"tryashtar.shulker_preview.durability.{num}.{row}"] = get_space(font, -16 + comma_forward) + durability[num] + get_space(font, 2 + comma_back)
-   font.add_grid('tryashtar.shulker_preview:item_sheet', item_grid)
-   font.add_grid('tryashtar.shulker_preview:block_sheet', block_grid)
-   for item in flat_items.keys():
-      sprite = font.get_sprite(item)
+   font.add_grid('tryashtar.shulker_preview:item_sheet', map_2d(grids.items.entries, lambda x: None if x is None else x[0]))
+   font.add_grid('tryashtar.shulker_preview:block_sheet', map_2d(grids.blocks.entries, lambda x: None if x is None else x[0]))
+   for (name, kind) in itertools.chain(info.flat_items.keys(), info.render_models.keys()):
+      sprite = font.get_sprite(name)
       for row in range(font.rows):
-         text = get_space(font, comma_forward) + sprite.rows[row] + sprite.negative + get_space(font, 15) + get_space(font, comma_back)
-         lang.data[f'tryashtar.shulker_preview.item.{canon(item)}.{row}'] = text
-   for item in block_items.keys():
-      sprite = font.get_sprite(item)
-      for row in range(font.rows):
-         text = get_space(font, comma_forward) + sprite.rows[row] + sprite.negative + get_space(font, 15) + get_space(font, comma_back)
-         lang.data[f'tryashtar.shulker_preview.item.{canon(item)}.{row}'] = text
-   for overlay in overlays.keys():
-      sprite = font.get_sprite(overlay)
-      for row in range(font.rows):
-         text = get_space(font, comma_forward) + sprite.rows[row] + sprite.negative + get_space(font, 15) + get_space(font, comma_back)
-         lang.data[f'tryashtar.shulker_preview.overlay.{overlay}.{row}'] = text
+         text = get_space(font, comma_forward + (-18 if kind == 'overlay' else 0)) + sprite.rows[row] + sprite.negative + get_space(font, 15 + comma_back)
+         lang.data[f'tryashtar.shulker_preview.{kind}.{name}.{row}'] = text
    font_result = font.build()
    font_result.data['providers'][0] = {'comment':'Many thanks to AmberW for this invaluable concept'} | font_result.data['providers'][0]
    ctx.assets.fonts['minecraft:default'] = font_result
 
    length_dict: dict[int, list[str]] = collections.defaultdict(list)
-   for item in items:
-      name = canon(item)
+   for name in items:
+      name = canon(name)
       length = len(name)
       length_dict[length].append(name)
    ctx.meta['shulker_preview']['length_dict'] = length_dict
-   ctx.meta['shulker_preview']['item_overrides'] = item_overrides
+   ctx.meta['shulker_preview']['item_overrides'] = info.item_overrides
    ctx.meta['shulker_preview']['durability_dict'] = item_durability(registry['1.21.4'], data_version)
+   ctx.meta['shulker_preview']['patterns'] = patterns
+
+SpriteKind = typing.Literal['item', 'override', 'overlay']
+
+Sprite = tuple[str, SpriteKind]
 
 @dataclasses.dataclass
 class ModelOverride:
    sprite: str
    predicate: JsonDict
+   kind: typing.Literal['item', 'override']
+   
+@dataclasses.dataclass
+class Grids:
+   items: Grid[Sprite]
+   blocks: Grid[Sprite]
+
+class ItemSpriteInfo:
+   def __init__(self, colormap: dict[str, list[int | None]]):
+      self.colormap = colormap
+      self.flat_items: dict[Sprite, PIL.Image.Image] = {}
+      self.render_models: dict[Sprite, str | JsonDict] = {}
+      self.item_overrides: dict[str, list[ModelOverride]] = {}
+   
+   def import_item(self, item: str, pack: beet.ResourcePack):
+      item = canon(item)
+      nspace, path = item.split(':')
+      model_name = f'{nspace}:item/{path}'
+      data = self.handle_model(item, item, model_name, 'item', pack)
+      overrides = trim_overrides(data.overrides)
+      self.item_overrides[item] = []
+      final_override = {}
+      for override in overrides:
+         sprite_name = item + '.' + '.'.join(override['predicate'].keys())
+         self.handle_model(item, sprite_name, override['model'], 'override', pack)
+         self.item_overrides[item].append(ModelOverride(sprite=sprite_name, predicate=override['predicate'], kind='override'))
+         for key,value in override['predicate'].items():
+            final_override[key] = not value
+      self.item_overrides[item].append(ModelOverride(sprite=item, predicate=final_override, kind='item'))
+   
+   def handle_model(self, item: str, name: str, model_name: str, kind: SpriteKind, pack: beet.ResourcePack):
+      model = pack.models[canon(model_name)]
+      data = model_data(pack.models, model)
+      if isinstance(data, LayeredModel):
+         image_layers = [pack.textures[x].image.convert('RGBA') for x in data.layers]
+         tint_layers = self.colormap.get(short(item))
+         image = PIL.Image.new('RGBA', image_layers[0].size)
+         for i, layer in enumerate(image_layers):
+            if tint_layers is not None and i < len(tint_layers) and (tint := tint_layers[i]) is not None:
+               layer = colorize(layer, rgba(tint))
+            image.paste(layer, (0, 0), layer)
+         self.flat_items[(name, kind)] = image
+      elif isinstance(data, ElementModel):
+         self.render_models[(name, kind)] = model_name
+      elif isinstance(data, EntityModel):
+         fake_model = get_fake_model(item)
+         if fake_model is None:
+            raise ValueError(item)
+         fake_model['display'] = data.display
+         self.render_models[(name, kind)] = fake_model
+      else:
+         raise ValueError(model_name)
+      return data
+   
+   def render(self, ctx: beet.Context, pack: beet.contrib.vanilla.Release) -> Grids:
+      renderer = model_resolver.render.Render(ctx)
+      renderer.getter._vanilla = pack
+      renderer.default_render_size = 64
+      for model in self.render_models.values():
+         if isinstance(model, str):
+            renderer.add_model_task(
+               model=model,
+               animation_mode='one_file',
+            )
+         else:
+            renderer.add_model_dict_task(
+               model=model,
+               animation_mode='one_file',
+            )
+      renderer.run()
+      block_items: dict[Sprite, PIL.Image.Image] = {}
+      for sprite, task in zip(self.render_models.keys(), renderer.tasks):
+         assert task.saved_img is not None
+         block_items[sprite] = task.saved_img
+      block_grid = make_grid(block_items, 64)
+      item_grid = make_grid(self.flat_items, 16)
+      return Grids(items=item_grid, blocks=block_grid)
 
 def override_check(item: str, predicate: JsonDict, durability: int | None) -> tuple[NbtCompound, NbtCompound | None]:
    item = canon(item)
@@ -201,7 +237,7 @@ def override_check(item: str, predicate: JsonDict, durability: int | None) -> tu
             elif value:
                positive['tag']['ChargedProjectiles'] = [{'id':"minecraft:arrow"}]
             else:
-               negative['tag']['ChargedProjectiles'] = [{}]      
+               negative['tag']['ChargedProjectiles'] = [{}]
          case 'firework':
             pass
          case _:
