@@ -1,6 +1,6 @@
 from plugins.util import canon, short
 from plugins.info import dye_colors
-from plugins.v1 import override_check
+from plugins.v1 import override_check, fake_dye_color
 
 length_dict = ctx.meta['shulker_preview']['length_dict']
 durability_dict = ctx.meta['shulker_preview']['durability_dict']
@@ -68,14 +68,14 @@ def process_durability(row: int):
 def process_banner(row: int):
    function f"tryashtar.shulker_preview:render/row_{row}/overlay/shield_base":
       for index, color in enumerate(dye_colors().keys()):
-         execute if data block ~1 1 ~ RecordItem.tag.pattern{Color:index} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.overlay.shield.base.{color}.{row}"}}'}
+         execute if data block ~1 1 ~ RecordItem.tag.BlockEntityTag{Base:index} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.overlay.shield.base.{row}","color":"{fake_dye_color(color)}"}}'}
    for kind in ("banner", "shield"):
       function f"tryashtar.shulker_preview:render/row_{row}/overlay/{kind}_pattern":
          data modify block ~1 1 ~ RecordItem.tag.pattern set from block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0]
          for index, color in enumerate(dye_colors().keys()):
             execute if data block ~1 1 ~ RecordItem.tag.pattern{Color:index} run function f"tryashtar.shulker_preview:render/row_{row}/overlay/{kind}_pattern/{color}":
                for code, pattern in patterns.items():
-                  execute if data block ~1 1 ~ RecordItem.tag.pattern{Pattern:code} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.overlay.{kind}.{pattern}.{color}.{row}"}}'}
+                  execute if data block ~1 1 ~ RecordItem.tag.pattern{Pattern:code} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.overlay.{kind}.{pattern}.{row}","color":"{fake_dye_color(color)}"}}'}
          data remove block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0]
          execute if data block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0] positioned ~ ~0.01 ~ run function f"tryashtar.shulker_preview:render/row_{row}/overlay/{kind}_pattern"
 

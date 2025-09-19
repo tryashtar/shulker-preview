@@ -7,7 +7,7 @@ scoreboard players set #13000 shulker_preview 13000
 forceload remove 29999977 9832
 forceload add 29999977 9832
 fill 29999976 0 9831 29999979 2 9833 bedrock
-setblock 29999977 1 9832 shulker_box{CustomName:'"tryashtar Global Shulker Box®"'}
+setblock 29999977 1 9832 shulker_box
 setblock 29999978 1 9832 jukebox
 
 # wait until a player is online to show status messages

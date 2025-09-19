@@ -47,19 +47,16 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
          shield_pattern_model['display'] = shield_model['display']
       banner_vanilla = registry['1.16']
       for pattern in patterns.values():
-         for color, rgb in dye_colors().items():
-            banner_model = copy.deepcopy(banner_pattern_model)
-            image = banner_vanilla.assets.textures[f'minecraft:entity/banner/{pattern}'].image.convert('RGBA')
-            assert isinstance(image, PIL.Image.Image)
-            image = colorize(image, rgba(rgb))
-            banner_model['textures']['0'] = image
-            info.render_models[(f'banner.{pattern}.{color}', 'overlay')] = banner_model
-            shield_model = copy.deepcopy(shield_pattern_model)
-            image = banner_vanilla.assets.textures[f'minecraft:entity/shield/{pattern}'].image.convert('RGBA')
-            assert isinstance(image, PIL.Image.Image)
-            image = colorize(image, rgba(rgb))
-            shield_model['textures']['0'] = image
-            info.render_models[(f'shield.{pattern}.{color}', 'overlay')] = shield_model
+         banner_model = copy.deepcopy(banner_pattern_model)
+         image = banner_vanilla.assets.textures[f'minecraft:entity/banner/{pattern}'].image.convert('RGBA')
+         assert isinstance(image, PIL.Image.Image)
+         banner_model['textures']['0'] = image
+         info.render_models[(f'banner.{pattern}', 'overlay')] = banner_model
+         shield_model = copy.deepcopy(shield_pattern_model)
+         image = banner_vanilla.assets.textures[f'minecraft:entity/shield/{pattern}'].image.convert('RGBA')
+         assert isinstance(image, PIL.Image.Image)
+         shield_model['textures']['0'] = image
+         info.render_models[(f'shield.{pattern}', 'overlay')] = shield_model
    arrow_overlay = vanilla.assets.textures['minecraft:item/tipped_arrow_head'].image.convert('RGBA')
    potion_overlay = vanilla.assets.textures['minecraft:item/potion_overlay'].image.convert('RGBA')
    potions = invert_dict(potion_colors(data_version))
@@ -118,8 +115,9 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
          'chars': [
             durability[0:5],
             durability[5:10],
-            durability[10:14] + '\u0000'
-         ]})
+            durability[10:14] + '\u0000',
+         ]
+      })
       for num in range(14):
          lang.data[f"tryashtar.shulker_preview.durability.{num}.{row}"] = get_space(font, -16 + comma_forward) + durability[num] + get_space(font, 2 + comma_back)
    font.add_grid('tryashtar.shulker_preview:item_sheet', map_2d(grids.items.entries, lambda x: None if x is None else x[0]))
@@ -264,6 +262,27 @@ def override_check(item: Identifier, predicate: JsonDict, durability: int | None
    if len(negative) == 0:
       return (positive, None)
    return (positive, negative)
+
+def fake_dye_color(dye: str) -> str:
+   colors: dict[str, str] = {
+      'white': 'white',
+      'orange': 'gold',
+      'magenta': 'light_purple',
+      'light_blue': 'aqua',
+      'yellow': 'yellow',
+      'lime': 'green',
+      'pink': 'light_purple',
+      'gray': 'dark_gray',
+      'light_gray': 'gray',
+      'cyan': 'dark_aqua',
+      'purple': 'dark_purple',
+      'blue': 'blue',
+      'brown': 'dark_red',
+      'green': 'dark_green',
+      'red': 'red',
+      'black': 'black',
+   }
+   return colors[dye]
 
 def amber_spaces(font: FontManager):
    font.legacy_space_texture = 'tryashtar.shulker_preview:space'
