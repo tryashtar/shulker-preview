@@ -28,8 +28,12 @@ def process_item(row: int):
                if durability is not None:
                   has_durability = True
                   execute if block ~1 1 ~ jukebox{RecordItem:{id:item}} run scoreboard players set #max shulker_preview durability
-            if has_banner and banners_enabled:
-               execute if data block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0] run function f"tryashtar.shulker_preview:render/row_{row}/overlay/banner"
+            if banners_enabled:
+               if has_banner:
+                  execute if data block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0] run function f"tryashtar.shulker_preview:render/row_{row}/overlay/banner_pattern"
+               if "minecraft:shield" in length_dict[length]:
+                  execute if data block ~1 1 ~ RecordItem.tag.BlockEntityTag.Base run function f"tryashtar.shulker_preview:render/row_{row}/overlay/shield_base"
+                  execute if data block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0] run function f"tryashtar.shulker_preview:render/row_{row}/overlay/shield_pattern"
             if has_durability:
                execute store result score #durability shulker_preview run data get block ~1 1 ~ RecordItem.tag.Damage
                execute if data block ~1 1 ~ RecordItem.tag.Damage run function f"tryashtar.shulker_preview:render/row_{row}/overlay/durability"
@@ -62,14 +66,18 @@ def process_durability(row: int):
          execute if score #durability shulker_preview matches check run summon area_effect_cloud ~ ~0.3 ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.durability.{i}.{row}"}}'}
 
 def process_banner(row: int):
-   function f"tryashtar.shulker_preview:render/row_{row}/overlay/banner":
-      data modify block ~1 1 ~ RecordItem.tag.pattern set from block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0]
+   function f"tryashtar.shulker_preview:render/row_{row}/overlay/shield_base":
       for index, color in enumerate(dye_colors().keys()):
-         execute if data block ~1 1 ~ RecordItem.tag.pattern{Color:index} run function f"tryashtar.shulker_preview:render/row_{row}/overlay/banner/{color}":
-            for code, pattern in patterns.items():
-               execute if data block ~1 1 ~ RecordItem.tag.pattern{Pattern:code} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.overlay.banner.{pattern}.{color}.{row}"}}'}
-      data remove block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0]
-      execute if data block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0] positioned ~ ~0.01 ~ run function f"tryashtar.shulker_preview:render/row_{row}/overlay/banner"
+         execute if data block ~1 1 ~ RecordItem.tag.pattern{Color:index} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.overlay.shield.base.{color}.{row}"}}'}
+   for kind in ("banner", "shield"):
+      function f"tryashtar.shulker_preview:render/row_{row}/overlay/{kind}_pattern":
+         data modify block ~1 1 ~ RecordItem.tag.pattern set from block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0]
+         for index, color in enumerate(dye_colors().keys()):
+            execute if data block ~1 1 ~ RecordItem.tag.pattern{Color:index} run function f"tryashtar.shulker_preview:render/row_{row}/overlay/{kind}_pattern/{color}":
+               for code, pattern in patterns.items():
+                  execute if data block ~1 1 ~ RecordItem.tag.pattern{Pattern:code} run summon area_effect_cloud ~ ~ ~ {Tags:["tryashtar.shulker_preview"],CustomName:f'{{"translate":"tryashtar.shulker_preview.overlay.{kind}.{pattern}.{color}.{row}"}}'}
+         data remove block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0]
+         execute if data block ~1 1 ~ RecordItem.tag.BlockEntityTag.Patterns[0] positioned ~ ~0.01 ~ run function f"tryashtar.shulker_preview:render/row_{row}/overlay/{kind}_pattern"
 
 for row in range(3):
    process_item(row)

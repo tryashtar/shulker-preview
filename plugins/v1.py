@@ -129,6 +129,8 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
       for row in range(font.rows):
          text = get_space(font, comma_forward + (-18 if kind == 'overlay' else 0)) + sprite.rows[row] + sprite.negative + get_space(font, 15 + comma_back)
          lang.data[f'tryashtar.shulker_preview.{kind}.{name}.{row}'] = text
+   if font.upcoming_char > 0xf8ff:
+      raise ValueError(font.upcoming_char)
    font_result = font.build()
    font_result.data['providers'][0] = {'comment':'Many thanks to AmberW for this invaluable concept'} | font_result.data['providers'][0]
    ctx.assets.fonts['minecraft:default'] = font_result
