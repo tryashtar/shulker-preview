@@ -9,7 +9,7 @@ import beet
 import beet.contrib.vanilla
 import model_resolver.render
 from plugins.version import VersionRange
-from plugins.util import Grid, map_2d, short, canon, model_data, LayeredModel, ElementModel, EntityModel, make_grid, FontManager, add_numbers, add_tooltip, get_space, JsonDict, NbtCompound, Identifier, ResourceLocation
+from plugins.util import map_2d, short, canon, model_data, LayeredModel, ElementModel, EntityModel, make_grid, FontManager, add_numbers, add_tooltip, get_space, JsonDict, NbtCompound, Identifier, ResourceLocation
 from plugins.info import get_fake_model, get_registry, item_durability, legacy_banner_patterns, spawn_egg_colors, item_colors
 
 def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, target: VersionRange):
@@ -79,8 +79,10 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
    colormap: dict[Identifier, list[Tint]] = dict([
       *[(short(name), [value.base, value.overlay]) for name, value in eggs.items()],
       *[(short(name), [color]) for name, color in colored.items()],
-      *[(short(name), [0xa06540, 'dye']) for name in ['leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots', 'leather_horse_armor']],
+      *[(short(name), ['dye', None]) for name in ['leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots', 'leather_horse_armor']],
       *[(short(name), ['potion', None]) for name in ['tipped_arrow', 'potion', 'splash_potion', 'lingering_potion']],
+      ('filled_map', [None, 'map']),
+      ('firework_star', [None, 'firework']),
    ])
    info = ItemSpriteInfo(colormap=colormap)
    for name in items:
@@ -100,12 +102,12 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
       banner_vanilla = registry['1.16']
       for pattern in patterns.values():
          banner_model = copy.deepcopy(banner_pattern_model)
-         image = banner_vanilla.assets.textures[f'minecraft:entity/banner/{pattern}'].image.convert('RGBA')
+         image = banner_vanilla.assets.textures[f'minecraft:entity/banner/{pattern}'].image
          assert isinstance(image, PIL.Image.Image)
          banner_model['textures']['0'] = image
          info.render_models[(f'banner.{pattern}', 'overlay')] = banner_model
          shield_model = copy.deepcopy(shield_pattern_model)
-         image = banner_vanilla.assets.textures[f'minecraft:entity/shield/{pattern}'].image.convert('RGBA')
+         image = banner_vanilla.assets.textures[f'minecraft:entity/shield/{pattern}'].image
          assert isinstance(image, PIL.Image.Image)
          shield_model['textures']['0'] = image
          info.render_models[(f'shield.{pattern}', 'overlay')] = shield_model
@@ -114,7 +116,14 @@ def main(ctx: beet.Context, registry: beet.contrib.vanilla.ReleaseRegistry, targ
       for row in range(font.rows):
          text = get_space(font, comma_forward + (-18 if kind == 'overlay' else 0)) + get_space(font, -3).join([x.rows[row] + x.negative for x in font_sprites]) + get_space(font, 15 + comma_back)
          lang.data[f'tryashtar.shulker_preview.{kind}.{name}.{row}'] = text
-   block_grid = info.render(ctx, vanilla)
+   block_textures = info.render(ctx, vanilla)
+   for sprite, image in block_textures.items():
+      alpha = image.split()[3]
+      partial = sum(1 if 50 <= x <= 190 else 0 for x in alpha.getdata())
+      if partial >= 300:
+         print(sprite)
+         block_textures[sprite] = dither_transparency(image)
+   block_grid = make_grid(block_textures, 64)
    resourcepack.textures['block_sheet'] = beet.Texture(block_grid.image)
    font.add_grid('tryashtar.shulker_preview:block_sheet', map_2d(block_grid.entries, lambda x: None if x is None else x[0]))
    for name, kind in info.render_models.keys():
@@ -143,7 +152,7 @@ SpriteKind = typing.Literal['item', 'override', 'overlay']
 
 Sprite = tuple[str, SpriteKind]
 
-Tint = typing.Union[int, typing.Literal['dye', 'potion'], None]
+Tint = typing.Union[int, typing.Literal['dye', 'potion', 'map', 'firework'], None]
 
 @dataclasses.dataclass
 class TextureLayer:
@@ -209,7 +218,7 @@ class ItemSpriteInfo:
          raise ValueError(model_name)
       return data
    
-   def render(self, ctx: beet.Context, pack: beet.contrib.vanilla.Release) -> Grid[Sprite]:
+   def render(self, ctx: beet.Context, pack: beet.contrib.vanilla.Release) -> dict[Sprite, PIL.Image.Image]:
       renderer = model_resolver.render.Render(ctx)
       renderer.getter._vanilla = pack
       renderer.default_render_size = 64
@@ -229,8 +238,7 @@ class ItemSpriteInfo:
       for sprite, task in zip(self.render_models.keys(), renderer.tasks):
          assert task.saved_img is not None
          block_items[sprite] = task.saved_img
-      block_grid = make_grid(block_items, 64)
-      return block_grid
+      return block_items
 
 def flatten_layers(textures: list[ResourceLocation], colors: list[Tint]) -> list[FlattenedLayers]:
    result: list[FlattenedLayers] = []
@@ -251,6 +259,13 @@ def flatten_layers(textures: list[ResourceLocation], colors: list[Tint]) -> list
    if current_layers is not None:
       result.append(FlattenedLayers(textures=current_layers, tint=last_color))
    return result
+
+def dither_transparency(image: PIL.Image.Image) -> PIL.Image.Image:
+   img = image.convert('RGBA')
+   alpha = img.split()[3]
+   dithered = alpha.convert(mode='1', dither=PIL.Image.Dither.FLOYDSTEINBERG)
+   img.putalpha(dithered)
+   return img
 
 def override_check(item: Identifier, predicate: JsonDict, durability: int | None) -> tuple[NbtCompound, NbtCompound | None]:
    item = canon(item)

@@ -344,6 +344,8 @@ def spawn_egg_colors(pack: beet.ResourcePack, data_version: int) -> dict[Identif
       result['minecraft:sniffer_spawn_egg'] = DoubleTint(base=0x962930, overlay=0x4d9960)
    if data_version < 3804: # 24w03a
       result['minecraft:armadillo_spawn_egg'] = DoubleTint(base=0xa67775, overlay=0x734b4f)
+   if data_version < 2510: # 20w09a
+      result['minecraft:zombie_pigman_spawn_egg'] = result['minecraft:zombified_piglin_spawn_egg']
    return result
 
 def item_colors(pack: beet.ResourcePack, data_version: int) -> dict[Identifier, int]:
